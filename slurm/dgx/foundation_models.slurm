@@ -13,5 +13,7 @@
 
 PROJECT_ROOT="${SLURM_SUBMIT_DIR:-$(pwd)}"
 cd "$PROJECT_ROOT"
+export PROJECT_ROOT
+export TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"
 export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-dgx_${SLURM_ARRAY_JOB_ID}}"
 source "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"

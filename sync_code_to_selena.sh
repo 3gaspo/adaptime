@@ -33,7 +33,8 @@ fi
 
 SELENA_HOST="${TIME_SELENA_HOST:-$nni@selena.hpc.edf.fr}"
 DESTINATION="${TIME_SELENA_CODE_ROOT:-$SELENA_HOST:~/codes/$PROJECT_NAME/}"
-SCRATCH_PROJECT_ROOT="${TIME_SELENA_SCRATCH_ROOT:-/scratch/users/$nni/codes/$PROJECT_NAME}"
+SCRATCH_STORAGE_ROOT="${TIME_SELENA_STORAGE_ROOT:-/scratch/users/$nni}"
+SCRATCH_PROJECT_ROOT="${TIME_SELENA_SCRATCH_ROOT:-$SCRATCH_STORAGE_ROOT/codes/$PROJECT_NAME}"
 
 echo "Synchronizing $PROJECT_NAME code from DGX to Selena..."
 rsync -rlptz --delete-delay --itemize-changes --partial --info=progress2 \
@@ -63,8 +64,10 @@ if [ "$DRY_RUN" = true ]; then
 fi
 
 ssh "$SELENA_HOST" \
-    "mkdir -p '$SCRATCH_PROJECT_ROOT/outputs' '$SCRATCH_PROJECT_ROOT/logs'"
+    "mkdir -p '$SCRATCH_STORAGE_ROOT/datasets' '$SCRATCH_STORAGE_ROOT/weights' '$SCRATCH_PROJECT_ROOT/outputs' '$SCRATCH_PROJECT_ROOT/logs'"
 
 echo "SUCCESS: Selena's $PROJECT_NAME code matches DGX."
+echo "Selena datasets: $SCRATCH_STORAGE_ROOT/datasets"
+echo "Selena weights: $SCRATCH_STORAGE_ROOT/weights"
 echo "Selena results: $SCRATCH_PROJECT_ROOT/outputs/results"
 echo "Selena logs: $SCRATCH_PROJECT_ROOT/logs"

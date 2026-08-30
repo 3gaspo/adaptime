@@ -18,6 +18,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 if [ "$cluster" = selena ]; then
     source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"
 else
+    TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"
+    export TIME_STORAGE_ROOT
     source "$PROJECT_ROOT/src/slurm/runtime_paths.sh"
 fi
 

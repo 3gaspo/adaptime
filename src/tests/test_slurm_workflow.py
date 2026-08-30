@@ -18,6 +18,7 @@ def main() -> None:
     ]
 
     dgx_model = (dgx / "foundation_models.slurm").read_text(encoding="utf-8")
+    dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
     selena_model = (selena / "foundation_models.slurm").read_text(encoding="utf-8")
     assert "#SBATCH --array=0-15%4" in dgx_model
     assert "#SBATCH --array" not in selena_model
@@ -27,6 +28,10 @@ def main() -> None:
     assert "#SBATCH --exclusive" in selena_model
     assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_model
     assert "/codes/improved/logs/" in selena_model
+    for front in (dgx_model, dgx_summary, selena_model):
+        assert "export PROJECT_ROOT" in front
+    for front in (dgx_model, dgx_summary):
+        assert 'export TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"' in front
     assert 'source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"' in selena_model
     assert 'source "$PROJECT_ROOT/src/slurm/benchmark_foundation_models.sh"' in selena_model
     assert 'TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"' in selena_model
@@ -93,6 +98,16 @@ def main() -> None:
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
         encoding="utf-8"
     )
+    common_runtime = (PROJECT_ROOT / "src/slurm/runtime_paths.sh").read_text(
+        encoding="utf-8"
+    )
+    assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$runtime_project_root}"' in common_runtime
+    assert 'TIME_DATA_ROOT="${TIME_DATA_ROOT:-$TIME_STORAGE_ROOT/datasets}"' in common_runtime
+    assert 'TIME_WEIGHTS="${TIME_WEIGHTS:-$TIME_STORAGE_ROOT/weights}"' in common_runtime
+    assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$selena_nni}"' in runtime
+    assert 'TIME_SCRATCH_ROOT="${TIME_SCRATCH_ROOT:-$TIME_STORAGE_ROOT/codes/$PROJECT_NAME}"' in runtime
+    assert 'TIME_DATA_ROOT="${TIME_DATA_ROOT:-$TIME_STORAGE_ROOT/datasets}"' in runtime
+    assert 'TIME_WEIGHTS="${TIME_WEIGHTS:-$TIME_STORAGE_ROOT/weights}"' in runtime
     assert 'TIME_OUTPUTS="${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}"' in runtime
     assert 'TIME_LOGS="${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}"' in runtime
 
@@ -102,6 +117,7 @@ def main() -> None:
     assert 'dependency="afterok:$evaluation_job"' in submit
     assert 'TIME_LAUNCH_ID=$launch_id' in submit
     assert "Selena: submit slurm/selena/foundation_models.slurm directly" in submit
+    assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"' in submit
     assert "dgx|selena" not in submit
 
     code_sync = (PROJECT_ROOT / "sync_code_to_selena.sh").read_text(encoding="utf-8")
@@ -126,6 +142,9 @@ def main() -> None:
     assert "--delete-delay" in code_sync
     assert "$SCRATCH_PROJECT_ROOT/outputs/results" in code_sync
     assert "$SCRATCH_PROJECT_ROOT/logs" in code_sync
+    assert 'SCRATCH_STORAGE_ROOT="${TIME_SELENA_STORAGE_ROOT:-/scratch/users/$nni}"' in code_sync
+    assert "'$SCRATCH_STORAGE_ROOT/datasets'" in code_sync
+    assert "'$SCRATCH_STORAGE_ROOT/weights'" in code_sync
     assert "outputs_selena" not in code_sync
     assert "logs_selena" not in code_sync
     assert "lightweight|detailed|full" in result_sync

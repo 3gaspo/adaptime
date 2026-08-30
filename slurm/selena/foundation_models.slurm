@@ -15,6 +15,7 @@
 
 PROJECT_ROOT="${SLURM_SUBMIT_DIR:-$(pwd)}"
 cd "$PROJECT_ROOT"
+export PROJECT_ROOT
 source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"
 export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"
 source "$PROJECT_ROOT/src/slurm/benchmark_foundation_models.sh"

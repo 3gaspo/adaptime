@@ -39,6 +39,12 @@ deliberately.
   result synchronization, replace oversized files with bounded metadata/text
   samples, pull `origin/main` through the configured proxy, and push only the
   selected artifact paths plus existing local commits.
+- Added a shared storage-root override so DGX resolves datasets and weights
+  below the user home outside `codes/`, while Selena resolves them beside
+  `codes/` in user scratch. Project outputs and logs remain project-owned.
+- Exported the Slurm front's `PROJECT_ROOT` so Selena's sequential workflow
+  preserves it across the child Bash processes used for individual model and
+  summary stages.
 
 ## Data and evaluation repairs
 
