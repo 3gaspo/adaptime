@@ -120,8 +120,12 @@ def main() -> None:
         "weights/",
         "outputs/",
         "logs/",
+        "outputs_selena/",
+        "logs_selena/",
     ):
         assert f"--exclude='{excluded}'" in code_sync
+    assert "outputs_selena/.gitkeep" not in code_sync
+    assert "logs_selena/.gitkeep" not in code_sync
     assert "--delete-delay" in code_sync
     assert "outputs_selena/results" in code_sync
     assert "lightweight|detailed|full" in result_sync
@@ -134,8 +138,8 @@ def main() -> None:
         encoding="utf-8"
     )
     assert 'source "$ROOT_DIR/src/slurm/foundation_model_runners.sh"' in direct
-    assert (PROJECT_ROOT / "outputs_selena/.gitkeep").is_file()
-    assert (PROJECT_ROOT / "logs_selena/.gitkeep").is_file()
+    assert not (PROJECT_ROOT / "outputs_selena/.gitkeep").exists()
+    assert not (PROJECT_ROOT / "logs_selena/.gitkeep").exists()
     print("TIME Slurm and DGX/Selena synchronization contract passed.")
 
 

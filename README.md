@@ -99,7 +99,8 @@ The Selena Slurm job runs the 16 model tasks sequentially in its allocation,
 logs each task and stage start/completion, and builds the joint summary only
 after every model runner succeeds. Scheduler streams are written below
 `logs_selena/` and benchmark artifacts below `outputs_selena/` in the Selena
-scratch checkout. DGX retains a parallel model array and dependent summary
+scratch project tree, not in the synchronized code checkout. DGX retains a
+parallel model array and dependent summary
 because its submission workflow supports those two jobs.
 
 For each task, window-level predictions (quantiles) and metrics are saved in

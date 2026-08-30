@@ -31,7 +31,9 @@ deliberately.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
   Selena writes to distinct `outputs_selena/results` and `logs_selena` trees;
   lightweight, detailed, and full pulls reflect TIME's summary, configuration,
-  metric, prediction, and scheduler-log artifact sizes.
+  metric, prediction, and scheduler-log artifact sizes. These directories are
+  runtime-created below scratch and result-pull-created on DGX; they are not
+  tracked placeholders or synchronized into the Selena code checkout.
 
 ## Data and evaluation repairs
 
