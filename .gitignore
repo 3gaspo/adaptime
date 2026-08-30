@@ -105,3 +105,10 @@ experiments/Kairos/
 granite-tsfm/
 local_tools/
 config/
+
+# Local thesis guidance
+AGENTS.md
+/FUTURE_WORK.md
+/PENDING_UPDATES.md
+/CLUSTER_STATUS.txt
+/docs/IMPROVEMENTS.md
