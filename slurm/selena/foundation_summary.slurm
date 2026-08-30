@@ -1,0 +1,19 @@
+#!/bin/bash
+#SBATCH --job-name=stime_summary
+#SBATCH --gres=gpu:1
+#SBATCH --output=/scratch/users/%u/codes/improved/logs_selena/foundation_summary_%j.out
+#SBATCH --error=/scratch/users/%u/codes/improved/logs_selena/foundation_summary_%j.err
+#SBATCH --time=01:00:00
+#SBATCH --partition=an
+#SBATCH --qos=an_preemptable
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=16000
+#SBATCH --exclusive
+#SBATCH --wckey=P12CU:DATASCIENCE
+
+PROJECT_ROOT="${SLURM_SUBMIT_DIR:-$(pwd)}"
+cd "$PROJECT_ROOT"
+source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"
+source "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"
