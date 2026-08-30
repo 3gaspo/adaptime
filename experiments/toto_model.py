@@ -32,8 +32,10 @@ from toto.inference.forecaster import TotoForecaster
 from toto.model.toto import Toto
 
 from timebench.evaluation import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.data import Dataset, get_dataset_settings, load_dataset_config
 from timebench.evaluation.utils import get_available_terms, clean_nan_target
+from timebench.paths import results_root
 
 load_dotenv()
 
@@ -105,7 +107,7 @@ def run_toto_experiment(
             raise ValueError(f"No terms defined for dataset '{dataset_name}' in config")
 
     if output_dir is None:
-        output_dir = "./output/results/toto"
+        output_dir = str(results_root() / "toto")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -171,6 +173,8 @@ def run_toto_experiment(
         freq = dataset.freq.lower()
         season_length = get_seasonality(freq)
         interval_seconds = _freq_to_seconds(freq)
+        timer = EvaluationTimer()
+        timer.start()
 
         print(f"  Running predictions on {split_name.lower()} data...")
         fc_quantiles = []
@@ -203,6 +207,7 @@ def run_toto_experiment(
 
         ds_config = f"{dataset_name}/{term}"
         fc_quantiles = np.stack(fc_quantiles, axis=0).astype(np.float32, copy=False)
+        inference_seconds = timer.stop()
         model_hyperparams = {
             "model_id": model_id,
             "context_length": context_length,
@@ -218,6 +223,7 @@ def run_toto_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
 
     print(f"\n{'='*60}")

@@ -24,12 +24,14 @@ from gluonts.time_feature import get_seasonality
 from uni2ts.model.moirai2 import Moirai2Forecast, Moirai2Module
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
+from timebench.paths import results_root
 
 load_dotenv()
 
@@ -73,7 +75,7 @@ def run_moirai2_experiment(
     print(f"Model: {hf_model_path}, Total parameters: {total_params:,}")
 
     if output_dir is None:
-        output_dir = "./output/results/moirai2"
+        output_dir = str(results_root() / "moirai2")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -131,11 +133,14 @@ def run_moirai2_experiment(
         print(f"  Running predictions...")
         predictor = model.create_predictor(batch_size=batch_size)
         test_data = dataset.test_data
+        timer = EvaluationTimer()
+        timer.start()
         forecasts = list(predictor.predict(test_data.input))
         fc_quantiles = []
         for fc in forecasts:
             fc_quantiles.append(fc.forecast_array[np.newaxis, ...])
         fc_quantiles = np.concatenate(fc_quantiles, axis=0)  # (num_total_instances, num_quantiles, prediction_length)
+        inference_seconds = timer.stop()
 
         season_length = get_seasonality(dataset.freq)
 
@@ -155,6 +160,7 @@ def run_moirai2_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
         print(f"  Completed: {metadata['num_series']} series x {metadata['num_windows']} windows")
         print(f"  Output: {metadata.get('output_dir', output_dir)}")

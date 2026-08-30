@@ -4,6 +4,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$ROOT_DIR/src/slurm/runtime_paths.sh"
 ENV_NAME="${ENV_NAME:-visiontspp}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
 
@@ -103,4 +104,3 @@ python experiments/visiontspp.py --dataset "azure2019_U/5T"
 ########################### Industry ###########################
 python experiments/visiontspp.py --dataset "Smart_Manufacturing/H"
 python experiments/visiontspp.py --dataset "MetroPT-3/5T"
-

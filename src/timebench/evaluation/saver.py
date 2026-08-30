@@ -4,7 +4,7 @@ Prediction saving utilities for per-window evaluation.
 Output structure:
     output_dir/
         {dataset_config}/
-            predictions.npz  # Contains predictions and ground truth
+            predictions.npz  # Contains quantile predictions and levels
             metrics.npz      # Contains per-window metrics
             config.json    # Contains dataset config
 """
@@ -27,6 +27,7 @@ def save_window_predictions(
     seasonality: int = 1,
     model_hyperparams: dict = None,
     quantile_levels: list[float] = None,
+    inference_seconds: float | None = None,
 ) -> dict:
     """
     Save predictions and metrics for each test window.
@@ -48,6 +49,9 @@ def save_window_predictions(
         seasonality: Seasonal period length for MASE computation
         model_hyperparams: Dictionary of model hyperparameters to save in config
         quantile_levels: Quantile levels for output (default: [0.1, 0.2, ..., 0.9])
+        inference_seconds: Accelerator-synchronized wall time for the complete
+            test forecasting loop. Model loading, dataset construction, metric
+            computation, and result saving must be excluded.
 
     Output files:
         predictions.npz:
@@ -58,7 +62,7 @@ def save_window_predictions(
             - Each metric array with shape (num_series, num_windows, num_variates)
 
         config.json:
-            - Dataset configuration and config (without shapes and metric_shape)
+            - Dataset, forecast-shape, metric, and model configuration
 
     Returns:
         config: Dictionary containing dataset config
@@ -81,6 +85,11 @@ def save_window_predictions(
 
     # Count number of series during experiment (test_data contains num_series_exp * num_windows instances)
     num_total_instances = fc_quantiles.shape[0]
+    if num_total_instances % num_windows != 0:
+        raise ValueError(
+            f"Forecast instance count ({num_total_instances}) must be divisible "
+            f"by the configured number of windows ({num_windows})."
+        )
     num_series_exp = num_total_instances // num_windows  # != num_series in original dataset if to_univariate is True
 
     print(f"    Total instances: {num_total_instances}, Series during experiment: {num_series_exp}, Windows: {num_windows}")
@@ -237,6 +246,12 @@ def save_window_predictions(
         "metric_names": list(metrics.keys()),
         "prediction_scale_factor": prediction_scale_factor,  # For float16 overflow prevention
     }
+
+    if inference_seconds is not None:
+        inference_seconds = float(inference_seconds)
+        if not np.isfinite(inference_seconds) or inference_seconds < 0:
+            raise ValueError("inference_seconds must be finite and non-negative")
+        config["inference_seconds"] = inference_seconds
 
     # Add model hyperparameters if provided
     if model_hyperparams:

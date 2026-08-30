@@ -4,6 +4,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$ROOT_DIR/src/slurm/runtime_paths.sh"
 ENV_NAME="${ENV_NAME:-moirai}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
 

@@ -16,7 +16,6 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from time import time
 
 import numpy as np
 
@@ -29,12 +28,14 @@ from gluonts.time_feature import get_seasonality
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
+from timebench.paths import results_root
 
 from tsicl.pipeline import TSICL
 
@@ -71,7 +72,7 @@ def run_tsicl_experiment(
         quantile_levels = DEFAULT_QUANTILE_LEVELS
 
     if output_dir is None:
-        output_dir = "./output/results/ts_icl"
+        output_dir = str(results_root() / "ts_icl")
     Path(output_dir).mkdir(exist_ok=True,parents=True)
 
     print(f"\n{'='*60}")
@@ -141,12 +142,12 @@ def run_tsicl_experiment(
 
         # Batch Inference with lazy loading
         fc_quantiles_batches = []
+        timer = EvaluationTimer()
+        timer.start()
         eval_input_list = list(eval_data.input)  # Convert to list for indexing
         total_items = len(eval_input_list)
 
         original_stderr = sys.stderr
-
-        t0 = time()
 
         for start in range(0, total_items, batch_size):
             end = min(start + batch_size, total_items)
@@ -186,7 +187,7 @@ def run_tsicl_experiment(
         # Concatenate all batches into a single array
         # Shape: (num_total_instances, num_quantiles, num_variates, prediction_length)
         fc_quantiles = np.concatenate(fc_quantiles_batches, axis=0)
-        t1 = time()
+        inference_seconds = timer.stop()
 
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
@@ -203,11 +204,12 @@ def run_tsicl_experiment(
             seasonality       = season_length,
             model_hyperparams = model_hyperparams,
             quantile_levels   = quantile_levels,
+            inference_seconds = inference_seconds,
         )
 
         print(f"  Completed: {metadata["num_series"]} series × {metadata["num_windows"]} windows")
         print(f"  Output: {metadata.get("output_dir", output_dir)}")
-        print(f"  Inference time: {t1-t0}s")
+        print(f"  Inference time: {inference_seconds:.3f}s")
 
     print(f"\n{'='*60}")
     print("All experiments completed!")

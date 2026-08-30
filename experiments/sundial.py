@@ -24,12 +24,14 @@ from gluonts.time_feature import get_seasonality
 from transformers import AutoModelForCausalLM
 
 from timebench.evaluation import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms, clean_nan_target
+from timebench.paths import results_root
 
 load_dotenv()
 
@@ -106,7 +108,7 @@ def run_sundial_experiment(
             raise ValueError(f"No terms defined for dataset '{dataset_name}' in config")
 
     if output_dir is None:
-        output_dir = f"./output/results/sundial_base"
+        output_dir = str(results_root() / "sundial_base")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -169,6 +171,8 @@ def run_sundial_experiment(
         print(f"    - Windows: {num_windows}")
 
         season_length = get_seasonality(dataset.freq)
+        timer = EvaluationTimer()
+        timer.start()
 
         all_inputs = []
 
@@ -218,6 +222,7 @@ def run_sundial_experiment(
         samples = _normalize_samples_array(flat_preds, prediction_length)
         fc_quantiles = np.quantile(samples, quantile_levels_array, axis=1)
         fc_quantiles = np.moveaxis(fc_quantiles, 0, 1).astype(np.float32, copy=False)
+        inference_seconds = timer.stop()
 
         ds_config = f"{dataset_name}/{term}"
 
@@ -236,6 +241,7 @@ def run_sundial_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
         print(f"  Completed: {metadata['num_series']} series × {metadata['num_windows']} windows")
         print(f"  Output: {metadata.get('output_dir', output_dir)}")

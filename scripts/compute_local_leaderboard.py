@@ -4,15 +4,15 @@ Compute Overall Leaderboard from TIME evaluation results.
 
 This script:
 1. Downloads Seasonal Naive results from HuggingFace Hub (if not found locally)
-2. Loads your model results from output/results/{model_name}
+2. Loads your model results from TIME_OUTPUTS/results/{model_name}
 3. Computes Overall leaderboard metrics (normalized by Seasonal Naive)
 4. Prints the results in a formatted table
 
 Usage:
-    python scripts/compute_overall_leaderboard.py
+    python scripts/compute_local_leaderboard.py
 
 The script uses default values:
-    - Results directory: output/results
+    - Results directory: TIME_OUTPUTS/results (or ./outputs/results locally)
     - Sorting metric: MASE
 
 Requirements:
@@ -22,6 +22,7 @@ Requirements:
     - scipy
 """
 
+import argparse
 import sys
 from pathlib import Path
 from typing import Optional
@@ -31,8 +32,12 @@ import numpy as np
 from scipy import stats
 from huggingface_hub import snapshot_download
 
-# Add parent directory to path to import timebench utilities
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add the source tree when running directly from a checkout.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from timebench.paths import results_root as default_results_root
+from timebench.paths import weights_root
 
 # HuggingFace repository for Seasonal Naive results
 HF_OUTPUT_REPO_ID = "Real-TSF/TIME-Output"
@@ -44,7 +49,7 @@ def check_local_seasonal_naive(results_dir: Path) -> Optional[Path]:
     Check if Seasonal Naive results exist locally.
 
     Args:
-        results_dir: Path to results directory (e.g., output/results)
+        results_dir: Path to results directory (e.g., outputs/results)
 
     Returns:
         Path to results directory if found, None otherwise
@@ -389,10 +394,28 @@ def get_overall_leaderboard(df_datasets: pd.DataFrame, metric: str = "MASE") -> 
 
 
 def main():
-    # Fixed configuration
-    results_dir = "output/results"
-    metric = "MASE"
-    cache_dir = None
+    parser = argparse.ArgumentParser(description="Compute the local TIME leaderboard.")
+    parser.add_argument(
+        "--results-dir",
+        default=str(default_results_root()),
+        help="TIME results root (default: TIME_OUTPUTS/results)",
+    )
+    parser.add_argument(
+        "--metric",
+        choices=["MASE", "CRPS"],
+        default="MASE",
+        help="Metric used to sort the overall leaderboard",
+    )
+    parser.add_argument(
+        "--cache-dir",
+        default=str(weights_root() / "huggingface"),
+        help="Hugging Face cache used for the Seasonal Naive results",
+    )
+    args = parser.parse_args()
+
+    results_dir = args.results_dir
+    metric = args.metric
+    cache_dir = args.cache_dir
 
     print("=" * 80)
     print("TIME Overall Leaderboard Calculator")
@@ -427,13 +450,18 @@ def main():
         sys.exit(1)
 
     # Load user results
-    user_results = get_all_datasets_results(results_root)
+    all_local_results = get_all_datasets_results(results_root)
 
-    if user_results.empty:
+    if all_local_results.empty:
         print(f"❌ No results found in {results_root}")
         sys.exit(1)
 
-    print(f"✅ Loaded {len(user_results)} user results")
+    # The baseline is loaded explicitly below. Excluding a local copy here
+    # avoids duplicate rows and order-dependent ranks.
+    user_results = all_local_results[
+        all_local_results["model"] != SEASONAL_NAIVE_MODEL
+    ]
+    print(f"✅ Loaded {len(user_results)} non-baseline user results")
 
     # Step 3: Load Seasonal Naive results
     print(f"\nStep 3: Loading Seasonal Naive results...")

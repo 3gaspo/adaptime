@@ -1,7 +1,6 @@
 # Codes are adapted from https://github.com/Nixtla/tsfeatures
 
 import re
-import warnings
 from typing import Callable, Dict, List, Literal, Optional, Tuple
 
 import numpy as np
@@ -16,9 +15,6 @@ from collections import ChainMap
 from statsmodels.tsa.seasonal import MSTL
 
 
-
-
-warnings.filterwarnings("ignore")
 
 
 # ========================
@@ -275,12 +271,8 @@ def preprocess_for_tsfeatures(
 def _get_feats(index,
                ts,
                freq,
+               features,
                scale = True,
-               features = [acf_features, arch_stat, crossing_points,
-                          entropy, flat_spots, heterogeneity, holt_parameters,
-                          lumpiness, nonlinearity, pacf_features, stl_features,
-                          stability, hw_parameters, unitroot_kpss, unitroot_pp,
-                          series_length, hurst],
                 dict_freqs = FREQS):
 
     if freq is None:

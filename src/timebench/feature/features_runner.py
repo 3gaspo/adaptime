@@ -7,7 +7,7 @@ Usage:
 
 Input format:
     Expects preprocessed CSV files from preprocess.py located at:
-    ./data/processed_csv/{dataset}/{freq}/*.csv
+    ${TIME_DATA_ROOT}/processed_csv/{dataset}/{freq}/*.csv
 
     Each CSV file has format:
     - First column: timestamp
@@ -38,6 +38,7 @@ from timebench.evaluation.utils import (
     get_test_length,
     find_dataset_config,
 )
+from timebench.paths import data_root, outputs_root
 
 # Default config path relative to this module
 DEFAULT_CONFIG_PATH = Path(__file__).parent.parent / "config" / "datasets.yaml"
@@ -167,7 +168,7 @@ def compute_dataset_features(
     dataset_name: str,
     freq: str,
     csv_dir: str,
-    output_dir: str = "./output",
+    output_dir: str | None = None,
     test_length: int | None = None,
     split_mode: str = "test",
     decomp_method: str = "stl",
@@ -200,6 +201,8 @@ def compute_dataset_features(
         None. Saves features to {output_dir}/{decomp_method}_features/{dataset}/{freq}/{split_mode}.csv
     """
     start = time.time()
+    if output_dir is None:
+        output_dir = str(outputs_root())
 
     # dataset_id for joining with results (format: "{dataset_name}/{freq}")
     dataset_id = f"{dataset_name}/{freq}"
@@ -310,7 +313,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    # Process single dataset (expects data at ./data/processed_csv/Water_Quality_Darwin/15T/*.csv)
+    # Process one dataset from TIME_DATA_ROOT/processed_csv
     # Uses test_length from config/datasets.yaml
     python -m timebench.feature.features_runner --dataset Water_Quality_Darwin/15T
 
@@ -327,7 +330,7 @@ Examples:
     parser.add_argument(
         "--dataset",
         type=str,
-        default="Oil_Price/B",
+        default=None,
         help="Dataset key in format '{name}/{freq}' (e.g., 'Water_Quality_Darwin/15T')"
     )
     parser.add_argument(
@@ -358,13 +361,13 @@ Examples:
     parser.add_argument(
         "--csv_dir",
         type=str,
-        default='./data/processed_csv',
+        default=str(data_root() / "processed_csv"),
         help="Base directory for processed CSV files"
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default='./output',
+        default=str(outputs_root()),
         help="Base directory for output files"
     )
 
@@ -382,7 +385,7 @@ Examples:
 
         for dataset_key in tqdm(datasets_config.keys(), desc="Processing datasets", unit="dataset"):
             dataset_name, freq = parse_dataset_key(dataset_key)
-            # Path: ./data/processed_csv/{dataset_name}/{freq}/
+            # Path: TIME_DATA_ROOT/processed_csv/{dataset_name}/{freq}/
             dataset_csv_dir = os.path.join(args.csv_dir, dataset_name, freq)
 
             if not os.path.isdir(dataset_csv_dir):
@@ -420,7 +423,7 @@ Examples:
         dataset_key, freq, dataset_cfg = find_dataset_config(datasets_config, args.dataset)
         dataset_name, _ = parse_dataset_key(dataset_key)
 
-        # Path: ./data/processed_csv/{dataset_name}/{freq}/
+        # Path: TIME_DATA_ROOT/processed_csv/{dataset_name}/{freq}/
         dataset_csv_dir = os.path.join(args.csv_dir, dataset_name, freq)
 
         if not os.path.isdir(dataset_csv_dir):

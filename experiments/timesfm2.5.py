@@ -25,6 +25,7 @@ from dotenv import load_dotenv
 from gluonts.time_feature import get_seasonality
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
 
 from timebench.evaluation.data import (
@@ -32,6 +33,7 @@ from timebench.evaluation.data import (
     get_dataset_settings,
     load_dataset_config,
 )
+from timebench.paths import results_root
 
 # Load environment variables
 load_dotenv()
@@ -69,7 +71,7 @@ def run_timesfm_experiment(
         quantile_levels = DEFAULT_QUANTILE_LEVELS
 
     if output_dir is None:
-        output_dir = "./output/results/TimesFM-2.5"
+        output_dir = str(results_root() / "TimesFM-2.5")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -148,6 +150,8 @@ def run_timesfm_experiment(
         print(f"    - Windows: {num_windows}")
 
         season_length = get_seasonality(dataset.freq)
+        timer = EvaluationTimer()
+        timer.start()
 
         # Prepare Data for Batch Prediction
         print(f"  Preparing input batches from {split_name} data...")
@@ -186,6 +190,7 @@ def run_timesfm_experiment(
                 print(f"    Processed {i + batch_size}/{num_total_instances}...")
 
         fc_quantiles = np.concatenate(fc_quantiles, axis=0)  # (total_instances, 9, horizon)
+        inference_seconds = timer.stop()
         ds_config = f"{dataset_name}/{term}"
 
         model_hyperparams = {
@@ -204,6 +209,7 @@ def run_timesfm_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
         print(f"  Completed: {metadata['num_series']} series x {metadata['num_windows']} windows")
         print(f"  Output: {metadata.get('output_dir', output_dir)}")

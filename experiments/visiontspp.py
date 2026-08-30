@@ -32,12 +32,14 @@ from visionts import VisionTSpp, freq_to_seasonality_list
 import visionts.util as visionts_util
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms, clean_nan_target
+from timebench.paths import results_root, weights_root
 
 
 warnings.filterwarnings("ignore")
@@ -117,7 +119,7 @@ def run_visiontspp_experiment(
         quantile_levels = DEFAULT_QUANTILE_LEVELS
 
     if output_dir is None:
-        output_dir = f"./output/results/visiontspp_{model_size}"
+        output_dir = str(results_root() / f"visiontspp_{model_size}")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -129,7 +131,7 @@ def run_visiontspp_experiment(
 
     print(f"  Preparing VisionTS++ model...")
 
-    local_dir = "./hf_models/VisionTSpp"
+    local_dir = str(weights_root() / "VisionTSpp")
     if model_size == "base":
         arch = "mae_base"
         ckpt_filename = "visiontspp_base.ckpt"
@@ -203,6 +205,8 @@ def run_visiontspp_experiment(
 
         data_type = "test"
         print(f"  Running predictions on {data_type} data...")
+        timer = EvaluationTimer()
+        timer.start()
 
         context_list = []
 
@@ -325,6 +329,7 @@ def run_visiontspp_experiment(
         print("")
 
         fc_quantiles = np.stack(fc_quantiles, axis=0).astype(np.float32, copy=False)
+        inference_seconds = timer.stop()
 
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
@@ -344,6 +349,7 @@ def run_visiontspp_experiment(
             seasonality=gluonts_season,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
 
         print(f"  Completed: {metadata['num_series']} series × {metadata['num_windows']} windows")

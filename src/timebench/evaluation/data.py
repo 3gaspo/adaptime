@@ -13,7 +13,6 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional
 import datasets
 import pyarrow.compute as pc
 import yaml
-from dotenv import load_dotenv
 from gluonts.dataset import DataEntry
 from gluonts.dataset.common import ProcessDataEntry
 from gluonts.dataset.split import TestData, TrainingDataset, split
@@ -22,6 +21,8 @@ from gluonts.time_feature import norm_freq_str
 from gluonts.transform import Transformation
 from pandas.tseries.frequencies import to_offset
 from toolz import compose
+
+from timebench.paths import dataset_storage_root
 
 # --- Constants from Gift-Eval---
 # Default prediction length by frequency (used when no config provided)
@@ -152,25 +153,31 @@ class Dataset:
             Prediction length. If None, use default calculation based on freq and term.
         test_length : int
             Length of test set (in time steps). Required parameter.
-            Windows is auto-calculated: ceil(test_length / prediction_length)
+            Windows is auto-calculated: floor(test_length / prediction_length)
         val_length : int
             Length of validation set (in time steps). Required parameter.
-            Val windows is auto-calculated: ceil(val_length / prediction_length)
+            Val windows is auto-calculated: floor(val_length / prediction_length)
         storage_env_var : str
-            Environment variable name for dataset storage path (used if storage_path is None).
+            Environment variable name for dataset storage path. `TIME_DATASET`
+            falls back to `<project>/datasets/hf_dataset`; other variables must
+            be explicitly defined.
         storage_path : str or Path, optional
             Direct path to dataset storage. If provided, overrides storage_env_var.
         """
-        # Use direct storage_path if provided, otherwise fall back to environment variable
+        # Use direct storage_path if provided, otherwise fall back to environment/default path.
         if storage_path is not None:
             resolved_storage_path = Path(storage_path)
         else:
-            load_dotenv()
-            env_path = os.getenv(storage_env_var)
-            if not env_path:
-                raise ValueError(f"Environment variable '{storage_env_var}' not set. "
-                               "Either set the environment variable or provide storage_path parameter.")
-            resolved_storage_path = Path(env_path)
+            if storage_env_var == "TIME_DATASET":
+                resolved_storage_path = dataset_storage_root()
+            else:
+                env_path = os.getenv(storage_env_var)
+                if not env_path:
+                    raise ValueError(
+                        f"Environment variable '{storage_env_var}' not set. "
+                        "Either set the environment variable or provide storage_path."
+                    )
+                resolved_storage_path = Path(env_path)
 
         dataset_path = resolved_storage_path / name
 
@@ -251,14 +258,8 @@ class Dataset:
         """
         Get variate names for a specific item.
 
-        Note: In the same dataset, all series have the same variate names.
-        This method returns the cached variate names regardless of item_idx.
-
-        Parameters
-        ----------
-        item_idx : int
-            Index of the item (ignored, kept for API compatibility).
-            All items in the same dataset have the same variate names.
+        In the same dataset, all series have the same variate names, so this
+        method returns the names cached from the first item.
 
         Returns
         -------
@@ -272,6 +273,20 @@ class Dataset:
     def _validate_lengths(self):
         """Validate test_length and val_length against min_series_length."""
         min_len = self._min_series_length
+
+        if self._test_length is None or self._test_length <= 0:
+            raise ValueError("test_length must be a positive integer.")
+        if self._val_length is None or self._val_length < 0:
+            raise ValueError("val_length must be a non-negative integer.")
+        if self._test_length < self.prediction_length:
+            raise ValueError(
+                "test_length must contain at least one complete prediction horizon."
+            )
+        if 0 < self._val_length < self.prediction_length:
+            raise ValueError(
+                "A non-zero val_length must contain at least one complete "
+                "prediction horizon."
+            )
 
         # Check test_length
         if self._test_length > min_len:
@@ -298,6 +313,11 @@ class Dataset:
                 f"This may leave insufficient data for training.",
                 UserWarning
             )
+        if self._test_length + self._val_length > min_len:
+            raise ValueError(
+                f"test_length + val_length ({self._test_length + self._val_length}) "
+                f"exceeds min_series_length ({min_len})."
+            )
 
     @cached_property
     def windows(self) -> int:
@@ -307,7 +327,7 @@ class Dataset:
         """
         self._validate_lengths()
         w = math.floor(self._test_length / self.prediction_length)
-        return max(1, w)
+        return w
 
     @cached_property
     def val_windows(self) -> int:
@@ -316,8 +336,10 @@ class Dataset:
         Auto-calculated: floor(val_length / prediction_length)
         """
         self._validate_lengths()
+        if self._val_length == 0:
+            return 0
         w = math.floor(self._val_length / self.prediction_length)
-        return max(1, w)
+        return w
 
     @cached_property
     def _series_lengths(self):
@@ -353,15 +375,19 @@ class Dataset:
 
     @property
     def training_dataset(self) -> TrainingDataset:
+        """Prefix ending before the configured validation and test intervals."""
+        self._validate_lengths()
         training_dataset, _ = split(
-            self.gluonts_dataset, offset=-self.prediction_length * (self.windows + 1)
+            self.gluonts_dataset, offset=-(self._test_length + self._val_length)
         )
         return training_dataset
 
     @property
     def validation_dataset(self) -> TrainingDataset:
+        """Prefix ending at the test boundary (training plus validation history)."""
+        self._validate_lengths()
         validation_dataset, _ = split(
-            self.gluonts_dataset, offset=-self.prediction_length * self.windows
+            self.gluonts_dataset, offset=-self._test_length
         )
         return validation_dataset
 
@@ -383,6 +409,9 @@ class Dataset:
         Get validation data in the same format as test_data.
         Returns TestData with val_windows instances for evaluation.
         """
+        if self.val_windows == 0:
+            raise ValueError("val_data is unavailable because val_length is zero.")
+
         # Split at offset that includes both test and val windows
         # Validation set is before test set, so we need to split further back
         _, val_template = split(

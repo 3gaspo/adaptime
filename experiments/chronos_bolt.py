@@ -26,12 +26,14 @@ from gluonts.time_feature import get_seasonality
 from chronos import BaseChronosPipeline
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
+from timebench.paths import results_root
 
 # Load environment variables
 load_dotenv()
@@ -60,7 +62,7 @@ def run_chronos_bolt_experiment(
         quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     if output_dir is None:
-        output_dir = f"./output/results/chronos_bolt_{model_size}"
+        output_dir = str(results_root() / f"chronos_bolt_{model_size}")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -115,6 +117,8 @@ def run_chronos_bolt_experiment(
         print(f"    - Windows: {num_windows}")
 
         season_length = get_seasonality(dataset.freq)
+        timer = EvaluationTimer()
+        timer.start()
 
         # ---------------------------------------------------------
         # Running Inference
@@ -176,6 +180,7 @@ def run_chronos_bolt_experiment(
         # Shape: (num_total_instances, num_quantiles, prediction_length) for univariate
         # or (num_total_instances, num_quantiles, num_variates, prediction_length) for multivariate
         fc_quantiles = np.concatenate(fc_quantiles, axis=0)
+        inference_seconds = timer.stop()
 
         # ---------------------------------------------------------
         # Saving Results
@@ -195,6 +200,7 @@ def run_chronos_bolt_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
         print(f"  Output: {metadata.get('output_dir', output_dir)}")
 

@@ -25,6 +25,7 @@ from dotenv import load_dotenv
 from gluonts.time_feature import get_seasonality
 
 from timebench.evaluation import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
@@ -32,6 +33,7 @@ from timebench.evaluation.data import (
 )
 from timebench.evaluation.utils import get_available_terms
 from timebench.models import SeasonalNaivePredictor
+from timebench.paths import results_root
 
 # Load environment variables
 load_dotenv()
@@ -67,7 +69,7 @@ def run_seasonal_naive_experiment(
             raise ValueError(f"No terms defined for dataset '{dataset_name}' in config")
 
     if output_dir is None:
-        output_dir = "./output/results/seasonal_naive"
+        output_dir = str(results_root() / "seasonal_naive")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -126,6 +128,8 @@ def run_seasonal_naive_experiment(
         print(f"    - Season length: {season_length}")
 
         # Generate predictions
+        timer = EvaluationTimer()
+        timer.start()
         forecasts = list(predictor.predict(eval_data.input))
 
         fc_samples = []
@@ -141,6 +145,7 @@ def run_seasonal_naive_experiment(
         # np.quantile returns (num_quantiles, num_total_instances, 1, prediction_length), need to transpose
         fc_quantiles = fc_quantiles.transpose(1, 0, 2, 3)  # (num_total_instances, num_quantiles, 1, prediction_length)
         fc_quantiles = fc_quantiles.squeeze(axis=2)
+        inference_seconds = timer.stop()
 
         # Compute metrics
         ds_config = f"{dataset_name}/{term}"
@@ -157,6 +162,7 @@ def run_seasonal_naive_experiment(
             output_base_dir=output_dir,
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
+            inference_seconds=inference_seconds,
         )
         print(f"  Completed: {metadata['num_series']} series x {metadata['num_windows']} windows")
         print(f"  Output: {metadata.get('output_dir', output_dir)}")
@@ -223,4 +229,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

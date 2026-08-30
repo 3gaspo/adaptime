@@ -6,9 +6,13 @@
 [![huggingface](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-LeaderBoard-FFD21E)](https://huggingface.co/spaces/Real-TSF/TIME-leaderboard)
 [![huggingface](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-CSVFiles-FFD21E)](https://huggingface.co/datasets/Real-TSF/TIME-ProcessedCSV)
 [![huggingface](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Results&Features-FFD21E)](https://huggingface.co/datasets/Real-TSF/TIME-Output)
-[![License: MIT](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 TIME is a task-centric time series forecasting benchmark comprising various fresh datasets, tailored for zero-shot TSFM evaluation. This codebase provides a full workflow spanning from data preprocessing to model evaluation.
+
+This maintained derivative preserves TIME's benchmark behavior while adding
+reusable consistency and runtime repairs. The complete tracked delta is listed
+in [Improvements](docs/IMPROVEMENTS.md).
 
 ## 📅 Update Log
 
@@ -41,12 +45,23 @@ conda activate timebench
 pip install -e .
 ```
 
+Model-specific packages remain defined by their corresponding `run_*.sh`
+scripts because several upstream models require mutually independent
+environments or source checkouts.
+
 2. Download the dataset from [huggingface](https://huggingface.co/datasets/Real-TSF/TIME)
 
-3. Define the path for HF datasets in `.env`. (Used as `storage_env_var` in [`Dataset`](src/timebench/evaluation/data.py#L120)).
+3. Define paths in `.env` when overriding the local defaults. `TIME_DATASET`
+is the root containing the HF Arrow dataset directories used by
+[`Dataset`](src/timebench/evaluation/data.py); it defaults to
+`datasets/hf_dataset/`.
 
 ```bash
-echo "TIME_DATASET=PATH_TO_DATASET" >> .env
+TIME_DATA_ROOT=./datasets
+TIME_DATASET=./datasets/hf_dataset
+TIME_WEIGHTS=./weights
+TIME_OUTPUTS=./outputs
+TIME_LOGS=./logs
 ```
 
 ## 🚀 Getting Started
@@ -66,14 +81,42 @@ bash scripts/run_chronos2.sh
 nohup bash scripts/run_chronos2.sh > run_chronos2.txt 2>&1 &
 ```
 
-For each task, window-level predictions (quantiles) and metrics will be saved in `output/results/{model_name}/{dataset}/{freq}/{term}/`.
+To run every included foundation-model reproduction runner sequentially and
+write a joint performance/timing table after all runs complete:
+
+```bash
+bash scripts/run_all_foundation_models.sh
+```
+
+For each task, window-level predictions (quantiles) and metrics are saved in
+`${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's
+`config.json` also records `inference_seconds`: accelerator-synchronized wall
+time for the complete test forecasting loop. Model loading, dataset
+construction, metric computation, and result saving are excluded.
+
+### Foundation-model performance and timing
+
+The all-model runner writes
+`${TIME_OUTPUTS}/foundation_model_summary.csv` and a Markdown rendering beside
+it. The table can also be regenerated from completed or partial local results:
+
+```bash
+python scripts/compute_foundation_summary.py
+```
+
+For each model, the reported MASE first averages short, medium, and long terms
+equally within each dataset/frequency and then averages those dataset/frequency
+means equally. Series, channels, windows, and datasets with more configured
+terms therefore do not receive extra weight. Inference seconds are summed over
+the same test tasks and are left blank unless every reported task has timing
+metadata; the task-coverage columns make partial runs explicit.
 
 ### Compute Overall Metrics
 
 Once the evaluations are complete, use the following script to aggregate the raw outputs into the overall metrics in leaderboard. This process automatically fetches the Seasonal Naive results from Hugging Face and computes the aggregated metrics across all tasks.
 
 ```bash
-# Compute Overall Leaderboard based on `output/results` (sorted by MASE)
+# Compute Overall Leaderboard based on `TIME_OUTPUTS/results` (sorted by MASE)
 python scripts/compute_local_leaderboard.py
 
 ```
@@ -114,7 +157,9 @@ To add a new model, follow these steps:
 
 -  **Generate predictions and save results**
 
-   TIME uses a flexible evaluation interface that doesn't rely on GluonTS. Simply compute quantile predictions (`fc_quantiles`) externally and pass them to `save_window_predictions`:
+   TIME's prediction saver is model-framework-independent, while the `Dataset`
+   loader and window construction use GluonTS. Compute quantile predictions
+   (`fc_quantiles`) externally and pass them to `save_window_predictions`:
 
    ```python
    from timebench.evaluation.saver import save_window_predictions
@@ -128,13 +173,13 @@ To add a new model, follow these steps:
        dataset=dataset,
        fc_quantiles=fc_quantiles,
        ds_config=f"{dataset_name}/{freq}/{term}",
-       output_base_dir="output/results",
+       output_base_dir="outputs/results",
        seasonality=season_length,
        model_hyperparams={"model_name": "your_model"},
    )
    ```
 
-   This function automatically computes per-window metrics and saves predictions, metrics, and configuration files to `output/results/{model_name}/{dataset}/{freq}/{term}/`.
+   This function automatically computes per-window metrics and saves predictions, metrics, and configuration files to `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`.
 
 2. **Create a run script in `scripts/`**
 
@@ -146,7 +191,7 @@ To add a new model, follow these steps:
 ### Submit Results to TIME Leaderboard
 
    Once your evaluation is complete and you are ready to feature on the TIME leaderboard:
-   - Open a Pull Request to upload your `output/results/{model_name}/` folder to the [TIME-Output repository](https://huggingface.co/datasets/Real-TSF/TIME-Output/tree/main/results) on Hugging Face.
+   - Open a Pull Request to upload your `${TIME_OUTPUTS}/results/{model_name}/` folder to the [TIME-Output repository](https://huggingface.co/datasets/Real-TSF/TIME-Output/tree/main/results) on Hugging Face.
       ```python
       from huggingface_hub import HfApi
 
@@ -155,7 +200,7 @@ To add a new model, follow these steps:
       model_name = "YOUR_MODEL_NAME"
 
       api.upload_folder(
-         folder_path=f"output/results/{model_name}",  # Path to your local results folder
+         folder_path=f"outputs/results/{model_name}",  # Or TIME_OUTPUTS/results/{model_name}
          path_in_repo=f"results/{model_name}",
          repo_id="Real-TSF/TIME-Output",
          repo_type="dataset",
@@ -170,7 +215,8 @@ To add a new model, follow these steps:
 
 Our codebase provides utilities for data preprocessing and computing time series features. For detailed instructions, please refer to the documentation in the `docs/` directory:
 - [Data Preprocessing Guide](docs/PREPROCESS.md): Screen,preprocess and clean raw CSV datasets
-- [Data Format Specification](docs/DATA_FORMAT.md): Convert processed CSV files into the efficient Arrow format
+- [Data Format Specification](docs/DATASET_FORMAT.md): Convert processed CSV files into the efficient Arrow format
+- [Dataset Split Contract](docs/SPLITS.md): Interpret training prefixes and generated validation/test windows
 - [Time Series Features](docs/FEATURES.md): Compute TSfeatures from processed csv files
 
 ### Adding New Datasets

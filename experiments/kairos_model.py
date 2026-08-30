@@ -32,12 +32,14 @@ from gluonts.time_feature import get_seasonality
 from tsfm.model.kairos import AutoModel
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms, clean_nan_target
+from timebench.paths import results_root
 
 load_dotenv()
 
@@ -80,7 +82,7 @@ def run_kairos_experiment(
             raise ValueError(f"No terms defined for dataset '{dataset_name}' in config")
 
     if output_dir is None:
-        output_dir = "./output/results/kairos"
+        output_dir = str(results_root() / "kairos")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -138,6 +140,8 @@ def run_kairos_experiment(
         print(f"    - Windows: {num_windows}")
 
         season_length = get_seasonality(dataset.freq)
+        timer = EvaluationTimer()
+        timer.start()
 
         all_inputs = []
         print("  Preparing input batches...")
@@ -182,6 +186,7 @@ def run_kairos_experiment(
         flat_preds = np.concatenate(raw_predictions, axis=0)
 
         fc_quantiles = flat_preds.astype(np.float32, copy=False)
+        inference_seconds = timer.stop()
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
             "model_id": model_id,
@@ -197,6 +202,7 @@ def run_kairos_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
         print(f"  Completed: {metadata['num_series']} series x {metadata['num_windows']} windows")
         print(f"  Output: {metadata.get('output_dir', output_dir)}")

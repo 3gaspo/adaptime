@@ -26,12 +26,14 @@ from gluonts.time_feature import get_seasonality
 from uni2ts.model.moirai import MoiraiForecast, MoiraiModule
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
+from timebench.paths import results_root
 
 # Load environment variables
 load_dotenv()
@@ -73,7 +75,7 @@ def run_moirai_experiment(
             raise ValueError(f"No terms defined for dataset '{dataset_name}' in config")
 
     if output_dir is None:
-        output_dir = f"./output/results/moirai_{model_size}"
+        output_dir = str(results_root() / f"moirai_{model_size}")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -145,6 +147,8 @@ def run_moirai_experiment(
             try:
                 # Model prediction (this uses GPU memory and may cause OOM)
                 predictor = model.create_predictor(batch_size=batch_size)
+                timer = EvaluationTimer()
+                timer.start()
                 forecasts = list(predictor.predict(dataset.test_data.input))
                 fc_samples = []
                 for fc in forecasts:
@@ -170,6 +174,7 @@ def run_moirai_experiment(
                     fc_quantiles = fc_quantiles.transpose(1, 0, 3, 2)
                 else:
                     raise ValueError(f"Unexpected fc_samples shape: {fc_samples.shape}")
+                inference_seconds = timer.stop()
 
                 season_length = get_seasonality(dataset.freq)
 
@@ -192,6 +197,7 @@ def run_moirai_experiment(
                     seasonality=season_length,
                     model_hyperparams=model_hyperparams,
                     quantile_levels=quantile_levels,
+                    inference_seconds=inference_seconds,
                 )
                 print(f"  Completed: {metadata['num_series']} series × {metadata['num_windows']} windows")
                 print(f"  Output: {metadata.get('output_dir', output_dir)}")
