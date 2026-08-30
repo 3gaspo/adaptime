@@ -30,12 +30,14 @@ from gluonts.time_feature import get_seasonality
 from tirex import ForecastModel, load_model
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms
+from timebench.paths import results_root
 
 load_dotenv()
 
@@ -65,7 +67,7 @@ def run_tirex_experiment(
         quantile_levels = DEFAULT_QUANTILE_LEVELS
 
     if output_dir is None:
-        output_dir = "./output/results/TiRex"
+        output_dir = str(results_root() / "TiRex")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -130,6 +132,8 @@ def run_tirex_experiment(
         print(f"    - Windows: {num_windows}")
 
         season_length = get_seasonality(dataset.freq)
+        timer = EvaluationTimer()
+        timer.start()
 
         fc_quantiles = []
 
@@ -171,6 +175,7 @@ def run_tirex_experiment(
         print(f"\r    Processed {total_items}/{total_items} items. Done.")
 
         fc_quantiles = np.concatenate(fc_quantiles, axis=0).astype(np.float32, copy=False)
+        inference_seconds = timer.stop()
 
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
@@ -186,6 +191,7 @@ def run_tirex_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
         print(
             f"  Completed: {metadata['num_series']} series x {metadata['num_windows']} windows"

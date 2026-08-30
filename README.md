@@ -9,6 +9,45 @@ The Adaptime formulation and executable pipeline are currently being designed.
 No final training protocol, retrieval policy, experiment grid, or result is
 claimed at this stage.
 
+## Inherited foundation-model benchmark
+
+The inherited TIME runners evaluate all included foundation models and record
+accelerator-synchronized wall time for each complete test forecasting loop.
+Model loading, dataset construction, metric computation, and result saving are
+excluded from `inference_seconds`.
+
+Define optional runtime-root overrides in `.env`; local defaults are
+`datasets/`, `datasets/hf_dataset/`, `weights/`, `outputs/`, and `logs/`.
+
+```bash
+TIME_DATA_ROOT=./datasets
+TIME_DATASET=./datasets/hf_dataset
+TIME_WEIGHTS=./weights
+TIME_OUTPUTS=./outputs
+TIME_LOGS=./logs
+```
+
+Run every foundation-model reproduction runner sequentially and write the
+joint performance/timing table:
+
+```bash
+bash scripts/run_all_foundation_models.sh
+```
+
+The command writes `foundation_model_summary.csv` and a Markdown rendering
+under `TIME_OUTPUTS`. To regenerate them from existing complete or partial
+results, run:
+
+```bash
+python scripts/compute_foundation_summary.py
+```
+
+The reported MASE first averages short, medium, and long settings equally
+within each dataset/frequency, then averages dataset/frequency means equally.
+Inference seconds are summed over the same test tasks and remain blank unless
+all reported tasks contain timing metadata; the table includes explicit task
+coverage.
+
 ## Documentation
 
 - [Code architecture](docs/architecture.md) owns the source-responsibility map
@@ -20,9 +59,9 @@ claimed at this stage.
 - [Results recap](docs/results_recap.md) owns concise analysis of completed and
   inspected experiments.
 - [Data preprocessing](docs/PREPROCESS.md),
-  [dataset format](docs/DATASET_FORMAT.md), and
-  [time-series features](docs/FEATURES.md) currently describe the inherited
-  TIME utilities.
+  [dataset format](docs/DATASET_FORMAT.md),
+  [dataset splits](docs/SPLITS.md), and
+  [time-series features](docs/FEATURES.md) describe inherited TIME utilities.
 
 ## Current scope
 

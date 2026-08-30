@@ -25,12 +25,14 @@ from dotenv import load_dotenv
 from gluonts.time_feature import get_seasonality
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
+from timebench.paths import results_root
 
 from tsfm_public import PatchTSTFMForPrediction
 
@@ -71,7 +73,7 @@ def run_patchtst_fm_experiment(
         quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     if output_dir is None:
-        output_dir = "./output/results/PatchTST-FM-R1"
+        output_dir = str(results_root() / "PatchTST-FM-R1")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -128,6 +130,8 @@ def run_patchtst_fm_experiment(
         print(f"    - Windows: {num_windows}")
 
         season_length = get_seasonality(dataset.freq)
+        timer = EvaluationTimer()
+        timer.start()
 
         # ---------------------------------------------------------
         # 1. Running Inference (PatchTST-FM Specific Logic)
@@ -210,6 +214,7 @@ def run_patchtst_fm_experiment(
         # Concatenate all batches into a single array
         # Shape: (num_total_instances, num_quantiles, prediction_length)
         fc_quantiles = np.concatenate(fc_quantiles_batches, axis=0)
+        inference_seconds = timer.stop()
 
         # ---------------------------------------------------------
         # 3. Saving Results
@@ -229,6 +234,7 @@ def run_patchtst_fm_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
 
         print(f"  Completed: {metadata['num_series']} series × {metadata['num_windows']} windows")

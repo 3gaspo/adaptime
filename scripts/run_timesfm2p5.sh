@@ -4,6 +4,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$ROOT_DIR/src/slurm/runtime_paths.sh"
 ENV_NAME="${ENV_NAME:-timesfm2p5}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
 TIMESFM_REPO="${TIMESFM_REPO:-https://github.com/google-research/timesfm.git}"

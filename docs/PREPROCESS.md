@@ -45,13 +45,13 @@ The pipeline will log any automatic fixes it applies (such as filling missing ti
 [Preprocess] Filled 1330 missing timestamps.
 [Preprocess] Filled 1330 missing timestamps.
 [Preprocess] Filled 1330 missing timestamps.
-[Preprocess] Saved details to: ./data/processed_summary/SG_PM25/H/SG_PM25_raw.json
+[Preprocess] Saved details to: ./datasets/processed_summary/SG_PM25/H/SG_PM25_raw.json
 
 ============================================================
 [Finished] Dataset: SG_PM25 | Freq: H
 Success: 1/1 files processed
 Total rows: 38688 | Total cols: 5
-Summary saved to: ./data/processed_summary/SG_PM25/H/_summary.json
+Summary saved to: ./datasets/processed_summary/SG_PM25/H/_summary.json
 ============================================================
 ```
 
@@ -67,20 +67,20 @@ python -m timebench.preprocess \
 If any data fails the quality checks (e.g., high missing rates, pure noise), it will trigger an Action Required prompt. This prompt breaks down the problematic variables and provides direct, copy-pasteable commands for you to execute the cleanup.
 ```
 [Preprocess] Batch mode: 8 files found in docs/Water_Quality_Darwin_raw
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_0.json
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_1.json
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_2.json
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_3.json
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_4.json
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_5.json
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_6.json
-[Preprocess] Saved details to: ./data/processed_summary/Water_Quality_Darwin/15T/item_7.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_0.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_1.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_2.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_3.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_4.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_5.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_6.json
+[Preprocess] Saved details to: ./datasets/processed_summary/Water_Quality_Darwin/15T/item_7.json
 
 ============================================================
 [Finished] Dataset: Water_Quality_Darwin | Freq: 15T
 Success: 8/8 files processed
 Total rows: 117099 | Total cols: 48
-Summary saved to: ./data/processed_summary/Water_Quality_Darwin/15T/_summary.json
+Summary saved to: ./datasets/processed_summary/Water_Quality_Darwin/15T/_summary.json
 ============================================================
 
 ⚠️  [Action Required] Problematic Data Detected
@@ -91,9 +91,9 @@ Summary saved to: ./data/processed_summary/Water_Quality_Darwin/15T/_summary.jso
      └─ item_7.csv: ❌ Missing rate failed: 52.38%
 
    -> Option A (Recommended): Remove the affected series to keep the variate clean
-      python -m timebench.preprocess --remove_series item_7.csv --target_dir ./data/processed_csv/Water_Quality_Darwin/15T
+      python -m timebench.preprocess --remove_series item_7.csv --target_dir ./datasets/processed_csv/Water_Quality_Darwin/15T
    -> Option B: Remove the variates entirely from all series
-      python -m timebench.preprocess --remove_variate TURB --target_dir ./data/processed_csv/Water_Quality_Darwin/15T
+      python -m timebench.preprocess --remove_variate TURB --target_dir ./datasets/processed_csv/Water_Quality_Darwin/15T
 
 💡 Tip: Append '--dry_run' to preview deletions without modifying files.
 ============================================================
@@ -134,14 +134,14 @@ If you decide that cleanup is necessary, you have two targeted options:
 Best for: A variable fails the quality checks across the majority of the series. Removing it globally keeps the rest of the dataset uniform.
 
 ```
-python -m timebench.preprocess --remove_variate VARIATE_NAME --target_dir ./data/processed_csv/Dataset/Freq
+python -m timebench.preprocess --remove_variate VARIATE_NAME --target_dir ./datasets/processed_csv/Dataset/Freq
 ```
 
 ### Option 2: Remove Specific Series (File-level)
 Best for: A variable fails in only a few specific series (e.g., < 50%). Instead of deleting that variable from the entire dataset, you can delete the few corrupted CSV files to preserve the variable globally.
 
 ```
-python -m timebench.preprocess --remove_series SERIES_NAME.csv --target_dir ./data/processed_csv/Dataset/Freq
+python -m timebench.preprocess --remove_series SERIES_NAME.csv --target_dir ./datasets/processed_csv/Dataset/Freq
 ```
 After executing a cleanup command, the pipeline automatically synchronizes your dataset:
 
@@ -152,6 +152,6 @@ After executing a cleanup command, the pipeline automatically synchronizes your 
 
 ## 6. Next Steps
 
-* Proceed to convert the cleaned CSVs into Arrow formats (see [DATA_FORMAT.md](./DATASET_FORMAT.md)).
+* Proceed to convert the cleaned CSVs into Arrow formats (see [DATASET_FORMAT.md](./DATASET_FORMAT.md)).
 
 * Extract time series features using the `features_runner.py` module (see [FEATURES.md](./FEATURES.md)).

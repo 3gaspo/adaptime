@@ -34,7 +34,9 @@ from timebench.evaluation.data import (
     load_dataset_config,
 )
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
+from timebench.paths import results_root
 
 # Load environment variables
 load_dotenv()
@@ -93,7 +95,7 @@ def run_timesfm3_experiment(
         quantile_levels = DEFAULT_QUANTILE_LEVELS
 
     if output_dir is None:
-        output_dir = "./output/results/TimesFM-3"
+        output_dir = str(results_root() / "TimesFM-3")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -146,6 +148,8 @@ def run_timesfm3_experiment(
             storage_path=storage_path,
         )
 
+        timer = EvaluationTimer()
+        timer.start()
         eval_data = dataset.test_data
         eval_input_list = list(eval_data.input)
         total_items = len(eval_input_list)
@@ -207,10 +211,8 @@ def run_timesfm3_experiment(
             if current_batch_idx % 5 == 0 or current_batch_idx == total_batches:
                 print(f"    Processed batch [{current_batch_idx}/{total_batches}] ({len(batch_contexts)} series)...")
 
-        if torch.cuda.is_available():
-            torch.cuda.synchronize()
-
         fc_quantiles = np.concatenate(fc_quantiles_batches, axis=0)
+        inference_seconds = timer.stop()
         ds_config = f"{dataset_name}/{term}"
 
         model_hyperparams = {
@@ -228,6 +230,7 @@ def run_timesfm3_experiment(
             seasonality=season_length,
             model_hyperparams=model_hyperparams,
             quantile_levels=quantile_levels,
+            inference_seconds=inference_seconds,
         )
         print(f"  Completed: {metadata['num_series']} series x {metadata['num_windows']} windows")
         print(f"  Output saved to: {metadata.get('output_dir', output_dir)}")
