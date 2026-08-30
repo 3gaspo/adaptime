@@ -71,7 +71,7 @@ rsync -rlptz --partial --prune-empty-dirs --info=progress2 \
     "$PROJECT_ROOT/outputs_selena/"
 
 if [ -n "$JOB_ID" ]; then
-    echo "Pulling Selena logs for foundation array $JOB_ID..."
+    echo "Pulling Selena logs for foundation workflow $JOB_ID..."
     rsync -rlptz --partial --prune-empty-dirs --info=progress2 \
         '--include=*/' \
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \

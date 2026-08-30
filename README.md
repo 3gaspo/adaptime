@@ -88,6 +88,20 @@ write a joint performance/timing table after all runs complete:
 bash scripts/run_all_foundation_models.sh
 ```
 
+On Selena, submit the complete workflow directly as a Slurm script; do not
+submit the Bash runner or a Bash submission wrapper:
+
+```bash
+sbatch slurm/selena/foundation_models.slurm
+```
+
+The Selena Slurm job runs the 16 model tasks sequentially in its allocation,
+logs each task and stage start/completion, and builds the joint summary only
+after every model runner succeeds. Scheduler streams are written below
+`logs_selena/` and benchmark artifacts below `outputs_selena/` in the Selena
+scratch checkout. DGX retains a parallel model array and dependent summary
+because its submission workflow supports those two jobs.
+
 For each task, window-level predictions (quantiles) and metrics are saved in
 `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's
 `config.json` also records `inference_seconds`: accelerator-synchronized wall

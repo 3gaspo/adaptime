@@ -15,13 +15,12 @@ def main() -> None:
     ]
     assert sorted(path.name for path in selena.glob("*.slurm")) == [
         "foundation_models.slurm",
-        "foundation_summary.slurm",
     ]
 
     dgx_model = (dgx / "foundation_models.slurm").read_text(encoding="utf-8")
     selena_model = (selena / "foundation_models.slurm").read_text(encoding="utf-8")
     assert "#SBATCH --array=0-15%4" in dgx_model
-    assert "#SBATCH --array=0-15%4" in selena_model
+    assert "#SBATCH --array" not in selena_model
     assert "#SBATCH --partition=h100" in dgx_model
     assert "#SBATCH --partition=an" in selena_model
     assert "#SBATCH --qos=an_preemptable" in selena_model
@@ -29,6 +28,8 @@ def main() -> None:
     assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_model
     assert "/codes/improved/logs_selena/" in selena_model
     assert 'source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"' in selena_model
+    assert 'source "$PROJECT_ROOT/src/slurm/benchmark_foundation_models.sh"' in selena_model
+    assert 'TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"' in selena_model
 
     mapping = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
         encoding="utf-8"
@@ -77,6 +78,18 @@ def main() -> None:
     assert "SLURM_ARRAY_TASK_ID" in model_workflow
     assert "timesfm_${model}" in model_workflow
 
+    selena_workflow = (
+        PROJECT_ROOT / "src/slurm/benchmark_foundation_models.sh"
+    ).read_text(encoding="utf-8")
+    assert 'model_indices=("${!FOUNDATION_MODELS[@]}")' in selena_workflow
+    assert 'bash "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"' in selena_workflow
+    assert 'bash "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in selena_workflow
+
+    slurm_runner = (PROJECT_ROOT / "src/slurm/run_time_script.sh").read_text(
+        encoding="utf-8"
+    )
+    assert 'srun --ntasks=1 bash "$run_path"' in slurm_runner
+
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
         encoding="utf-8"
     )
@@ -88,6 +101,8 @@ def main() -> None:
     )
     assert 'dependency="afterok:$evaluation_job"' in submit
     assert 'TIME_LAUNCH_ID=$launch_id' in submit
+    assert "Selena: submit slurm/selena/foundation_models.slurm directly" in submit
+    assert "dgx|selena" not in submit
 
     code_sync = (PROJECT_ROOT / "sync_code_to_selena.sh").read_text(encoding="utf-8")
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(

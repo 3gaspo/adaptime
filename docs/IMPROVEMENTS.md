@@ -22,10 +22,12 @@ deliberately.
   macro-average weights H settings equally within dataset/frequency entries
   and then weights those entries equally; timing totals require complete task
   coverage.
-- Added matching DGX and Selena Slurm array workflows: one isolated task per
-  foundation-model runner, explicit stage/task/workflow completion records,
-  durable status files below the configured log root, and a dependent summary
-  job.
+- Added a DGX Slurm array with one isolated job per foundation-model runner and
+  a dependent summary job. Added a TSFM-style Selena Slurm front submitted
+  directly with `sbatch`; its single allocation runs all model tasks and the
+  final summary sequentially without a Bash submission wrapper. Both paths
+  emit explicit stage/task/workflow completion records and durable status
+  files below the configured log root.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
   Selena writes to distinct `outputs_selena/results` and `logs_selena` trees;
   lightweight, detailed, and full pulls reflect TIME's summary, configuration,
