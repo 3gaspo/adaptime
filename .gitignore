@@ -111,13 +111,15 @@ AGENTS.md
 /CLUSTER_STATUS.txt
 /docs/IMPROVEMENTS.md
 /docs/INTERNAL_WORKFLOW.md
-/slurm/selena/
-/src/slurm/selena_runtime.sh
 .venv/
 outputs/*
 !outputs/.gitkeep
 logs/*
 !logs/.gitkeep
+outputs_selena/*
+!outputs_selena/.gitkeep
+logs_selena/*
+!logs_selena/.gitkeep
 datasets/*
 !datasets/.gitkeep
 weights/*
