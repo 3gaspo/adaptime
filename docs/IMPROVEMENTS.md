@@ -11,10 +11,13 @@ deliberately.
   placeholders for datasets, weights, outputs, and logs.
 - Routed every model runner's default results below `TIME_OUTPUTS/results` and
   VisionTS++ checkpoints below `TIME_WEIGHTS`.
-- Added shared Hugging Face/Torch cache defaults and a local cluster wrapper
-  that calls the existing TIME run scripts with externally configured paths.
-- Completed the previously headerless Seasonal Naive shell runner with an
-  executable environment setup and project-root resolution.
+- Added shared Hugging Face/Torch cache defaults and a cluster wrapper that
+  calls the existing TIME run scripts through a prepared uv
+  environment with externally configured paths. Removed the runners' Conda
+  and job-time package installation; the Slurm jobs never mutate their
+  environments themselves.
+- Completed the previously headerless Seasonal Naive shell runner with
+  project-root resolution and the same prepared-environment contract.
 - Added one accelerator-synchronized test-loop timer used by every model
   runner. Each task stores total inference seconds in `config.json`, excluding
   model loading, dataset construction, metric computation, and result saving.
@@ -34,6 +37,12 @@ deliberately.
   `logs/selena/` subtrees. Lightweight, detailed, and full pulls reflect
   TIME's summary, configuration, metric, prediction, and scheduler-log
   artifact sizes. Code synchronization excludes every output and log tree.
+- Kept DGX and Selena uv environments independent: code synchronization
+  preserves Selena's `.venv`, `pyproject.toml`, and `uv.lock`, including when
+  `.venv` is a symlink. Selena loads `python/3.12_pypsa` before uv runs and
+  forbids uv-managed Python downloads. Dataset and weight payloads now live
+  outside the code tree, so code synchronization no longer needs exclusions
+  for those project-relative names.
 - Added a manual DGX publisher that selects both native and synchronized
   Selena logs and outputs. Its lightweight, detailed, and full tiers mirror
   result synchronization, replace oversized files with bounded metadata/text

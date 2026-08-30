@@ -11,7 +11,7 @@ source "$ROOT_DIR/src/slurm/foundation_model_runners.sh"
 cd "$ROOT_DIR"
 for runner in "${FOUNDATION_RUNNERS[@]}"; do
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting $runner"
-    bash "$SCRIPT_DIR/$runner"
+    uv run --no-sync bash "$SCRIPT_DIR/$runner"
 done
 
-"${SUMMARY_PYTHON:-python}" "$SCRIPT_DIR/compute_foundation_summary.py"
+uv run --no-sync python "$SCRIPT_DIR/compute_foundation_summary.py"

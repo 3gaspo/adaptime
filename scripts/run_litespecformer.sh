@@ -5,32 +5,12 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$ROOT_DIR/src/slurm/runtime_paths.sh"
-ENV_NAME="${ENV_NAME:-litespecformer}"
-PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
 MODEL_ID="${MODEL_ID:-FlowVortex/LiteSpecFormer-1.0-36M}"
 BATCH_SIZE="${BATCH_SIZE:-512}"
 CONTEXT_LENGTH="${CONTEXT_LENGTH:-}"
 
 log_info() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] INFO: $1"
-}
-
-setup_conda_env() {
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-
-    if conda env list | awk '{print $1}' | grep -x "$ENV_NAME" >/dev/null 2>&1; then
-        log_info "Activating existing env: $ENV_NAME"
-        conda activate "$ENV_NAME"
-    else
-        log_info "Creating new env: $ENV_NAME"
-        conda create -n "$ENV_NAME" python="$PYTHON_VERSION" -y
-        conda activate "$ENV_NAME"
-
-        log_info "Installing dependencies..."
-        pip install -e "$ROOT_DIR"
-        pip install litespecformer torch datasets gluonts python-dotenv \
-            transformers accelerate einops huggingface_hub
-    fi
 }
 
 run_experiment() {
@@ -48,7 +28,6 @@ run_experiment() {
         "${extra_args[@]}"
 }
 
-setup_conda_env
 cd "$ROOT_DIR" || exit 1
 
 log_info "Model: $MODEL_ID"

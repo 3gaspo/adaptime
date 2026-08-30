@@ -5,8 +5,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$ROOT_DIR/src/slurm/runtime_paths.sh"
-ENV_NAME="${ENV_NAME:-timesfm2p5}"
-PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
 TIMESFM_REPO="${TIMESFM_REPO:-https://github.com/google-research/timesfm.git}"
 TIMESFM_DIR="${TIMESFM_DIR:-$ROOT_DIR/experiments/timesfm}"
 HF_HOME="${HF_HOME:-$ROOT_DIR/experiments/.cache/huggingface}"
@@ -24,28 +22,7 @@ setup_timesfm_repo() {
     fi
 }
 
-setup_conda_env() {
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-
-    if conda env list | awk '{print $1}' | grep -x "$ENV_NAME" >/dev/null 2>&1; then
-        log_info "Activating existing env: $ENV_NAME"
-        conda activate "$ENV_NAME"
-    else
-        log_info "Creating new env: $ENV_NAME"
-        conda create -n "$ENV_NAME" python="$PYTHON_VERSION" -y
-        conda activate "$ENV_NAME"
-
-        log_info "Installing dependencies..."
-        cd "$TIMESFM_DIR"
-        pip install -e .
-        pip install datasets gluonts dotenv torch
-        cd "$ROOT_DIR"
-    fi
-}
-
-
 setup_timesfm_repo
-setup_conda_env
 
 export HF_HOME
 export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"

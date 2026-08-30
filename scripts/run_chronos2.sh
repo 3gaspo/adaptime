@@ -5,31 +5,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$ROOT_DIR/src/slurm/runtime_paths.sh"
-ENV_NAME="${ENV_NAME:-chronos}"
-PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
-
-log_info() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] INFO: $1"
-}
-
-setup_conda_env() {
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-
-    if conda env list | awk '{print $1}' | grep -x "$ENV_NAME" >/dev/null 2>&1; then
-        log_info "Activating existing env: $ENV_NAME"
-        conda activate "$ENV_NAME"
-    else
-        log_info "Creating new env: $ENV_NAME"
-        conda create -n "$ENV_NAME" python="$PYTHON_VERSION" -y
-        conda activate "$ENV_NAME"
-
-        log_info "Installing dependencies..."
-        pip install chronos-forecasting torch datasets gluonts dotenv
-    fi
-}
-
-setup_conda_env
-
 ########################### Nature ###########################
 python experiments/chronos2.py --dataset "Water_Quality_Darwin/15T"
 python experiments/chronos2.py --dataset "current_velocity/5T"

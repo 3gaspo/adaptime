@@ -37,17 +37,16 @@ in [Improvements](docs/IMPROVEMENTS.md).
 
 ## ⚙️ Installation
 
-1. We recommend using Conda to manage the environment
+1. Synchronize the project environment with uv:
 
 ```bash
-conda create -n timebench python=3.11 -y
-conda activate timebench
-pip install -e .
+uv sync
 ```
 
-Model-specific packages remain defined by their corresponding `run_*.sh`
-scripts because several upstream models require mutually independent
-environments or source checkouts.
+The cluster launchers run the benchmark through this prepared uv environment;
+they do not create Conda environments or install packages during a Slurm job.
+Model-specific packages and external source checkouts must therefore be ready
+before submission.
 
 2. Download the dataset from [huggingface](https://huggingface.co/datasets/Real-TSF/TIME)
 
@@ -69,16 +68,16 @@ TIME_LOGS=./logs
 ### Model Forecasting
 We provide the complete codebase and scripts required to reproduce all results from our benchmark.
 
-For each model, use the corresponding script in the `scripts/` directory to automatically set up the Conda environment and run evaluations across all tasks.
-
-⚠️ **Important Note**: Please ensure the script's Conda environment name doesn't conflict with your existing ones..
+For each model, use the corresponding script in the `scripts/` directory from
+the synchronized uv environment.
 
 ```
 # Example: Running the evaluation for Chronos2
-bash scripts/run_chronos2.sh
+uv run --no-sync bash scripts/run_chronos2.sh
 
 # We recommand using nohup to run the scripts in the background
-nohup bash scripts/run_chronos2.sh > run_chronos2.txt 2>&1 &
+nohup uv run --no-sync \
+  bash scripts/run_chronos2.sh > run_chronos2.txt 2>&1 &
 ```
 
 To run every included foundation-model reproduction runner sequentially and
@@ -105,6 +104,13 @@ a parallel model array and dependent summary because its submission workflow
 supports those two jobs. Cluster fronts keep their shared dataset and weight
 roots outside the code checkout; direct local runs retain the project-relative
 defaults shown above.
+
+Both DGX and Selena invoke each runner with `uv run --no-sync`. Their uv
+environments are independent: DGX uses the repository's `pyproject.toml` and
+`uv.lock`, while DGX-to-Selena code synchronization
+preserves Selena's local `pyproject.toml`, `uv.lock`, and `.venv`. The Selena
+front also loads `python/3.12_pypsa` before the first uv command and disables
+managed Python downloads.
 
 For each task, window-level predictions (quantiles) and metrics are saved in
 `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's
@@ -202,7 +208,7 @@ To add a new model, follow these steps:
 2. **Create a run script in `scripts/`**
 
    Create a shell script (e.g., `scripts/run_your_model.sh`) to run your model across all tasks. The script should:
-   - Set up the Conda environment with required dependencies
+   - Assume the required dependencies are present in the synchronized uv environment
    - Call your experiment script for each task
    - Include specific hyperparams configuration and ensure reproducibility
 

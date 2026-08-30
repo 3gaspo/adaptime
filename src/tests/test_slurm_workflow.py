@@ -41,7 +41,7 @@ def main() -> None:
     )
     assert mapping.count("    run_") == 16
     assert "FOUNDATION_MODEL_COUNT" in mapping
-    for runner in (
+    foundation_runners = (
         "run_chronos_bolt.sh",
         "run_chronos2.sh",
         "run_kairos.sh",
@@ -58,7 +58,8 @@ def main() -> None:
         "run_toto.sh",
         "run_tsicl.sh",
         "run_visiontspp.sh",
-    ):
+    )
+    for runner in foundation_runners:
         assert (PROJECT_ROOT / "scripts" / runner).is_file()
 
     workflow = (PROJECT_ROOT / "src/slurm/workflow_common.sh").read_text(
@@ -78,7 +79,8 @@ def main() -> None:
     model_workflow = (PROJECT_ROOT / "src/slurm/run_foundation_model.sh").read_text(
         encoding="utf-8"
     )
-    assert 'export ENV_NAME="${TIME_ENV_NAME:-time_${model}}"' in model_workflow
+    assert "environment=uv" in model_workflow
+    assert "export ENV_NAME=" not in model_workflow
     assert "TIME_MODEL_INDEX" in model_workflow
     assert "SLURM_ARRAY_TASK_ID" in model_workflow
     assert "timesfm_${model}" in model_workflow
@@ -93,7 +95,14 @@ def main() -> None:
     slurm_runner = (PROJECT_ROOT / "src/slurm/run_time_script.sh").read_text(
         encoding="utf-8"
     )
-    assert 'srun --ntasks=1 bash "$run_path"' in slurm_runner
+    assert 'runner_command=(uv run --no-sync bash "$run_path")' in slurm_runner
+    assert 'srun --ntasks=1 "${runner_command[@]}"' in slurm_runner
+
+    summary = (
+        PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"
+    ).read_text(encoding="utf-8")
+    assert "uv run --no-sync python" in summary
+    assert "conda" not in summary
 
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
         encoding="utf-8"
@@ -110,6 +119,8 @@ def main() -> None:
     assert 'TIME_WEIGHTS="${TIME_WEIGHTS:-$TIME_STORAGE_ROOT/weights}"' in runtime
     assert 'TIME_OUTPUTS="${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}"' in runtime
     assert 'TIME_LOGS="${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}"' in runtime
+    assert "module load python/3.12_pypsa" in runtime
+    assert "export UV_PYTHON_DOWNLOADS=never" in runtime
 
     submit = (PROJECT_ROOT / "scripts/submit_foundation_models.sh").read_text(
         encoding="utf-8"
@@ -128,17 +139,20 @@ def main() -> None:
     for excluded in (
         ".git/",
         ".env",
+        ".venv",
+        "pyproject.toml",
+        "uv.lock",
         "AGENTS.md",
         "FUTURE_WORK.md",
         "PENDING_UPDATES.md",
         "CLUSTER_STATUS.txt",
         "docs/INTERNAL_WORKFLOW.md",
-        "datasets/",
-        "weights/",
         "outputs/",
         "logs/",
     ):
         assert f"--exclude='{excluded}'" in code_sync
+    assert "--exclude='datasets/'" not in code_sync
+    assert "--exclude='weights/'" not in code_sync
     assert "--delete-delay" in code_sync
     assert "$SCRATCH_PROJECT_ROOT/outputs/results" in code_sync
     assert "$SCRATCH_PROJECT_ROOT/logs" in code_sync
@@ -170,6 +184,12 @@ def main() -> None:
         encoding="utf-8"
     )
     assert 'source "$ROOT_DIR/src/slurm/foundation_model_runners.sh"' in direct
+    assert 'uv run --no-sync bash "$SCRIPT_DIR/$runner"' in direct
+    for runner_path in (PROJECT_ROOT / "scripts").glob("run_*.sh"):
+        runner_text = runner_path.read_text(encoding="utf-8")
+        assert "conda" not in runner_text.lower()
+        assert "pip install" not in runner_text
+        assert not any(line.startswith("srun ") for line in runner_text.splitlines())
     assert not (PROJECT_ROOT / "outputs_selena").exists()
     assert not (PROJECT_ROOT / "logs_selena").exists()
     print("TIME Slurm and DGX/Selena synchronization contract passed.")

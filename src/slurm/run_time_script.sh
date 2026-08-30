@@ -28,8 +28,9 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] datasets: $TIME_DATASET"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] weights: $TIME_WEIGHTS"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] outputs: $TIME_OUTPUTS"
 
+runner_command=(uv run --no-sync bash "$run_path")
 if [ -n "${SLURM_JOB_ID:-}" ]; then
-    srun --ntasks=1 bash "$run_path"
+    srun --ntasks=1 "${runner_command[@]}"
 else
-    bash "$run_path"
+    "${runner_command[@]}"
 fi

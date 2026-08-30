@@ -5,8 +5,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$ROOT_DIR/src/slurm/runtime_paths.sh"
-ENV_NAME="${ENV_NAME:-granite-tsfm}"
-PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
 GRANITE_TSFM_REPO="${GRANITE_TSFM_REPO:-https://github.com/ibm-granite/granite-tsfm.git}"
 GRANITE_TSFM_DIR="${GRANITE_TSFM_DIR:-$ROOT_DIR/experiments/granite-tsfm}"
 
@@ -22,33 +20,7 @@ setup_granite_tsfm_repo() {
     fi
 }
 
-setup_conda_env() {
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-
-    if conda env list | awk '{print $1}' | grep -x "$ENV_NAME" >/dev/null 2>&1; then
-        log_info "Activating existing env: $ENV_NAME"
-        conda activate "$ENV_NAME"
-    else
-        log_info "Creating new env: $ENV_NAME"
-        conda create -n "$ENV_NAME" python="$PYTHON_VERSION" -y
-        conda activate "$ENV_NAME"
-
-        log_info "Installing dependencies..."
-        pip install torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cu128
-        pip install datasets gluonts dotenv
-        # pip install datasets gluonts dotenv torch
-
-        cd "$GRANITE_TSFM_DIR"
-        pip install ".[notebooks]"
-        cd "$ROOT_DIR"
-    fi
-}
-
 setup_granite_tsfm_repo
-setup_conda_env
-
-
-
 ########################### Nature ###########################
 python experiments/patchtst_fm.py --dataset "Water_Quality_Darwin/15T"
 python experiments/patchtst_fm.py --dataset "current_velocity/5T"

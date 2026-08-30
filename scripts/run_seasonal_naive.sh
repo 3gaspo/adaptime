@@ -5,18 +5,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$ROOT_DIR/src/slurm/runtime_paths.sh"
-ENV_NAME="${ENV_NAME:-time-seasonal-naive}"
-PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
-
-source "$(conda info --base)/etc/profile.d/conda.sh"
-if conda env list | awk '{print $1}' | grep -x "$ENV_NAME" >/dev/null 2>&1; then
-    conda activate "$ENV_NAME"
-else
-    conda create -n "$ENV_NAME" python="$PYTHON_VERSION" -y
-    conda activate "$ENV_NAME"
-    pip install -e "$ROOT_DIR[stats]"
-fi
-
 cd "$ROOT_DIR"
 
 ########################### Nature ###########################
