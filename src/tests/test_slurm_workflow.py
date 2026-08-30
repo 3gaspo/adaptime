@@ -93,7 +93,19 @@ def main() -> None:
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
         encoding="utf-8"
     )
-    for excluded in (".git/", "datasets/", "weights/", "outputs/", "logs/"):
+    for excluded in (
+        ".git/",
+        ".env",
+        "AGENTS.md",
+        "FUTURE_WORK.md",
+        "PENDING_UPDATES.md",
+        "CLUSTER_STATUS.txt",
+        "docs/INTERNAL_WORKFLOW.md",
+        "datasets/",
+        "weights/",
+        "outputs/",
+        "logs/",
+    ):
         assert f"--exclude='{excluded}'" in code_sync
     assert "--delete-delay" in code_sync
     assert "outputs_selena/results" in code_sync
