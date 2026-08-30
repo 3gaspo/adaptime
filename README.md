@@ -97,11 +97,12 @@ sbatch slurm/selena/foundation_models.slurm
 
 The Selena Slurm job runs the 16 model tasks sequentially in its allocation,
 logs each task and stage start/completion, and builds the joint summary only
-after every model runner succeeds. Scheduler streams are written below
-`logs_selena/` and benchmark artifacts below `outputs_selena/` in the Selena
-scratch project tree, not in the synchronized code checkout. DGX retains a
-parallel model array and dependent summary
-because its submission workflow supports those two jobs.
+after every model runner succeeds. Scheduler streams and benchmark artifacts
+use the `logs/` and `outputs/` directories in the Selena scratch project tree,
+not in the synchronized code checkout. When pulled to DGX, those remote trees
+remain distinct under local `logs/selena/` and `outputs/selena/`. DGX retains
+a parallel model array and dependent summary because its submission workflow
+supports those two jobs.
 
 For each task, window-level predictions (quantiles) and metrics are saved in
 `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's

@@ -26,7 +26,7 @@ def main() -> None:
     assert "#SBATCH --qos=an_preemptable" in selena_model
     assert "#SBATCH --exclusive" in selena_model
     assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_model
-    assert "/codes/improved/logs_selena/" in selena_model
+    assert "/codes/improved/logs/" in selena_model
     assert 'source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"' in selena_model
     assert 'source "$PROJECT_ROOT/src/slurm/benchmark_foundation_models.sh"' in selena_model
     assert 'TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"' in selena_model
@@ -93,8 +93,8 @@ def main() -> None:
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
         encoding="utf-8"
     )
-    assert 'TIME_OUTPUTS="${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs_selena}"' in runtime
-    assert 'TIME_LOGS="${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs_selena}"' in runtime
+    assert 'TIME_OUTPUTS="${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}"' in runtime
+    assert 'TIME_LOGS="${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}"' in runtime
 
     submit = (PROJECT_ROOT / "scripts/submit_foundation_models.sh").read_text(
         encoding="utf-8"
@@ -108,6 +108,7 @@ def main() -> None:
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
         encoding="utf-8"
     )
+    publisher = (PROJECT_ROOT / "publish_job.sh").read_text(encoding="utf-8")
     for excluded in (
         ".git/",
         ".env",
@@ -120,26 +121,38 @@ def main() -> None:
         "weights/",
         "outputs/",
         "logs/",
-        "outputs_selena/",
-        "logs_selena/",
     ):
         assert f"--exclude='{excluded}'" in code_sync
-    assert "outputs_selena/.gitkeep" not in code_sync
-    assert "logs_selena/.gitkeep" not in code_sync
     assert "--delete-delay" in code_sync
-    assert "outputs_selena/results" in code_sync
+    assert "$SCRATCH_PROJECT_ROOT/outputs/results" in code_sync
+    assert "$SCRATCH_PROJECT_ROOT/logs" in code_sync
+    assert "outputs_selena" not in code_sync
+    assert "logs_selena" not in code_sync
     assert "lightweight|detailed|full" in result_sync
     assert "config.json" in result_sync
     assert "metrics.npz" in result_sync
-    assert '"$SOURCE_ROOT/outputs_selena/"' in result_sync
-    assert '"$SOURCE_ROOT/logs_selena/"' in result_sync
+    assert '"$SOURCE_ROOT/outputs/"' in result_sync
+    assert '"$SOURCE_ROOT/logs/"' in result_sync
+    assert '"$PROJECT_ROOT/outputs/selena"' in result_sync
+    assert '"$PROJECT_ROOT/logs/selena"' in result_sync
+    assert "outputs_selena" not in result_sync
+    assert "logs_selena" not in result_sync
+
+    assert "lightweight|detailed|full" in publisher
+    assert '. "$proxy_script"' in publisher
+    assert "git pull --ff-only origin main" in publisher
+    assert '"$project_root"/logs/selena/' in publisher
+    assert "foundation_model_summary.csv" in publisher
+    assert "config.json" in publisher
+    assert "metrics.npz" in publisher
+    assert "git push origin main" in publisher
 
     direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(
         encoding="utf-8"
     )
     assert 'source "$ROOT_DIR/src/slurm/foundation_model_runners.sh"' in direct
-    assert not (PROJECT_ROOT / "outputs_selena/.gitkeep").exists()
-    assert not (PROJECT_ROOT / "logs_selena/.gitkeep").exists()
+    assert not (PROJECT_ROOT / "outputs_selena").exists()
+    assert not (PROJECT_ROOT / "logs_selena").exists()
     print("TIME Slurm and DGX/Selena synchronization contract passed.")
 
 

@@ -51,8 +51,6 @@ rsync -rlptz --delete-delay --itemize-changes --partial --info=progress2 \
     --exclude='weights/' \
     --exclude='outputs/' \
     --exclude='logs/' \
-    --exclude='outputs_selena/' \
-    --exclude='logs_selena/' \
     --exclude='experiments/Kairos/' \
     --exclude='experiments/granite-tsfm/' \
     --exclude='experiments/timesfm_*/' \
@@ -65,8 +63,8 @@ if [ "$DRY_RUN" = true ]; then
 fi
 
 ssh "$SELENA_HOST" \
-    "mkdir -p '$SCRATCH_PROJECT_ROOT/outputs_selena' '$SCRATCH_PROJECT_ROOT/logs_selena'"
+    "mkdir -p '$SCRATCH_PROJECT_ROOT/outputs' '$SCRATCH_PROJECT_ROOT/logs'"
 
 echo "SUCCESS: Selena's $PROJECT_NAME code matches DGX."
-echo "Selena results: $SCRATCH_PROJECT_ROOT/outputs_selena/results"
-echo "Selena logs: $SCRATCH_PROJECT_ROOT/logs_selena"
+echo "Selena results: $SCRATCH_PROJECT_ROOT/outputs/results"
+echo "Selena logs: $SCRATCH_PROJECT_ROOT/logs"

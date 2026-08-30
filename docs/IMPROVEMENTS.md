@@ -29,11 +29,16 @@ deliberately.
   emit explicit stage/task/workflow completion records and durable status
   files below the configured log root.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
-  Selena writes to distinct `outputs_selena/results` and `logs_selena` trees;
-  lightweight, detailed, and full pulls reflect TIME's summary, configuration,
-  metric, prediction, and scheduler-log artifact sizes. These directories are
-  runtime-created below scratch and result-pull-created on DGX; they are not
-  tracked placeholders or synchronized into the Selena code checkout.
+  Selena writes to the standard `outputs/` and `logs/` trees below its scratch
+  project root; DGX pulls them into distinct local `outputs/selena/` and
+  `logs/selena/` subtrees. Lightweight, detailed, and full pulls reflect
+  TIME's summary, configuration, metric, prediction, and scheduler-log
+  artifact sizes. Code synchronization excludes every output and log tree.
+- Added a manual DGX publisher that selects both native and synchronized
+  Selena logs and outputs. Its lightweight, detailed, and full tiers mirror
+  result synchronization, replace oversized files with bounded metadata/text
+  samples, pull `origin/main` through the configured proxy, and push only the
+  selected artifact paths plus existing local commits.
 
 ## Data and evaluation repairs
 

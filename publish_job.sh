@@ -1,0 +1,187 @@
+#!/bin/bash
+# Manually publish selected TIME logs and artifacts from the DGX Git owner.
+set -euo pipefail
+
+usage() {
+    echo "usage: bash publish_job.sh [JOB_ID] [--size lightweight|detailed|full] [--message TEXT] [--project-root PATH]" >&2
+}
+
+project_root="$(pwd)"
+job_id=""
+message=""
+publish_size="lightweight"
+if [ "$#" -gt 0 ] && [[ "$1" != --* ]]; then
+    job_id="$1"
+    shift
+fi
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --job-id) job_id="$2"; shift 2 ;;
+        --size) publish_size="$2"; shift 2 ;;
+        --message) message="$2"; shift 2 ;;
+        --project-root) project_root="$2"; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        *) usage; echo "unknown argument: $1" >&2; exit 2 ;;
+    esac
+done
+
+case "$publish_size" in
+    lightweight|detailed|full) ;;
+    *) usage; echo "publication size must be lightweight, detailed, or full" >&2; exit 2 ;;
+esac
+if [ -n "$job_id" ] && ! [[ "$job_id" =~ ^[0-9]+$ ]]; then
+    usage
+    echo "JOB_ID must be numeric" >&2
+    exit 2
+fi
+
+project_root="$(cd "$project_root" && pwd)"
+cd "$project_root"
+[ "$(git rev-parse --show-toplevel)" = "$project_root" ] || {
+    echo "run from a project Git root or pass --project-root: $project_root" >&2
+    exit 1
+}
+[ "$(git symbolic-ref --short HEAD)" = main ] || {
+    echo "publisher requires the main branch" >&2
+    exit 1
+}
+
+proxy_script="${PROXY_SCRIPT_PATH:-$HOME/codes/proxy.sh}"
+[ -f "$proxy_script" ] || {
+    echo "proxy script not found: $proxy_script" >&2
+    exit 1
+}
+. "$proxy_script"
+git pull --ff-only origin main
+
+paths=()
+if [ -n "$job_id" ]; then
+    shopt -s nullglob
+    out_logs=(
+        "$project_root"/logs/*_"$job_id".out
+        "$project_root"/logs/*_"$job_id"_*.out
+        "$project_root"/logs/selena/*_"$job_id".out
+        "$project_root"/logs/selena/*_"$job_id"_*.out
+    )
+    shopt -u nullglob
+    [ "${#out_logs[@]}" -gt 0 ] || {
+        echo "no local or synchronized Selena logs found for job $job_id" >&2
+        exit 1
+    }
+    for out_log in "${out_logs[@]}"; do
+        err_log="${out_log%.out}.err"
+        [ -f "$err_log" ] || {
+            echo "missing stderr pair for $out_log" >&2
+            exit 1
+        }
+        paths+=(
+            "${out_log#"$project_root"/}"
+            "${err_log#"$project_root"/}"
+        )
+    done
+    [ -n "$message" ] || message="slurm: publish job $job_id"
+else
+    [ -d logs ] || {
+        echo "logs directory not found" >&2
+        exit 1
+    }
+    paths+=(logs)
+    [ -n "$message" ] || message="slurm: publish $publish_size logs and outputs"
+fi
+
+if [ "$publish_size" = full ]; then
+    [ ! -d outputs ] || paths+=(outputs)
+elif [ -d outputs ]; then
+    while IFS= read -r -d '' artifact; do
+        paths+=("${artifact#"$project_root"/}")
+    done < <(
+        if [ "$publish_size" = detailed ]; then
+            find "$project_root/outputs" -type f \( \
+                -name foundation_model_summary.csv -o \
+                -name foundation_model_summary.md -o \
+                -name config.json -o \
+                -name metrics.npz \) -print0
+        else
+            find "$project_root/outputs" -type f \( \
+                -name foundation_model_summary.csv -o \
+                -name foundation_model_summary.md -o \
+                -name config.json \) -print0
+        fi
+    )
+fi
+
+exclusions=(
+    ':(exclude,glob)**/*.pt'
+    ':(exclude,glob)**/*.npy'
+    ':(exclude,glob)**/*.cbm'
+)
+max_publish_bytes="${PUBLISH_MAX_FILE_BYTES:-100000000}"
+max_sample_bytes="${PUBLISH_SAMPLE_MAX_BYTES:-10000000}"
+for limit in "$max_publish_bytes" "$max_sample_bytes"; do
+    [[ "$limit" =~ ^[1-9][0-9]*$ ]] || {
+        echo "publisher byte limits must be positive integers" >&2
+        exit 2
+    }
+done
+[ "$max_sample_bytes" -lt "$max_publish_bytes" ] || {
+    echo "PUBLISH_SAMPLE_MAX_BYTES must be smaller than PUBLISH_MAX_FILE_BYTES" >&2
+    exit 2
+}
+
+sample_paths=()
+oversize_exclusions=()
+for selected_path in "${paths[@]}"; do
+    while IFS= read -r -d '' file; do
+        relative="${file#"$project_root"/}"
+        case "$relative" in
+            *.pt|*.npy|*.cbm) continue ;;
+        esac
+        file_bytes="$(stat -c '%s' -- "$file")"
+        [ "$file_bytes" -gt "$max_publish_bytes" ] || continue
+
+        sample_relative="${relative}.sample.txt"
+        sample_file="$project_root/$sample_relative"
+        stale_at_utc=""
+        if [ -f "$sample_file" ]; then
+            stale_at_utc="$(sed -n 's/^git_stale_at_utc: //p' "$sample_file" | head -n 1)"
+        fi
+        [ -n "$stale_at_utc" ] || stale_at_utc="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        sample_bytes=$(( (file_bytes + 9) / 10 ))
+        if [ "$sample_bytes" -gt "$max_sample_bytes" ]; then
+            sample_bytes="$max_sample_bytes"
+        fi
+        mkdir -p -- "$(dirname "$sample_file")"
+        {
+            echo "Oversized publication artifact sample"
+            echo "source: $relative"
+            echo "original_bytes: $file_bytes"
+            echo "git_stale_at_utc: $stale_at_utc"
+            echo "git_stale_reason: associated file became stale on Git due to file size"
+            if LC_ALL=C grep -Iq -m 1 . -- "$file"; then
+                echo "sample: first $sample_bytes bytes (10% capped at $max_sample_bytes bytes)"
+                echo
+                head -c "$sample_bytes" -- "$file"
+            else
+                echo "sample: binary or empty content omitted"
+            fi
+        } > "$sample_file"
+        sample_paths+=("$sample_relative")
+        oversize_exclusions+=(":(exclude,literal)$relative")
+        echo "Replacing oversized artifact ($file_bytes bytes) with $sample_relative"
+    done < <(find "$project_root/$selected_path" -type f -print0)
+done
+publish_paths=("${paths[@]}" "${sample_paths[@]}")
+
+if [ -n "$job_id" ]; then
+    echo "Publishing job $job_id logs and $publish_size TIME artifacts:"
+else
+    echo "Publishing DGX and synchronized Selena logs plus $publish_size TIME artifacts:"
+fi
+printf '  %s\n' "${paths[@]}"
+git add -v -f -- "${publish_paths[@]}" "${exclusions[@]}" "${oversize_exclusions[@]}"
+if ! git diff --cached --quiet -- "${publish_paths[@]}" "${exclusions[@]}" "${oversize_exclusions[@]}"; then
+    git commit --only -m "$message" -- "${publish_paths[@]}" "${exclusions[@]}" "${oversize_exclusions[@]}"
+else
+    echo "No new artifact changes; pushing existing local commits."
+fi
+git push origin main
