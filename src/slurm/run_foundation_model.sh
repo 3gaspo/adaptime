@@ -14,9 +14,6 @@ fi
 
 model="${FOUNDATION_MODELS[$model_index]}"
 runner="${FOUNDATION_RUNNERS[$model_index]}"
-if [ "$model" = timesfm2p5 ] || [ "$model" = timesfm3 ]; then
-    export TIMESFM_DIR="${TIMESFM_DIR:-$PROJECT_ROOT/experiments/timesfm_${model}}"
-fi
 
 TIME_WORKFLOW_NAME=foundation_models
 TIME_TASK_NAME="$model"

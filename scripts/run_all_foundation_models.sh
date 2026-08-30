@@ -14,4 +14,5 @@ for runner in "${FOUNDATION_RUNNERS[@]}"; do
     uv run --no-sync bash "$SCRIPT_DIR/$runner"
 done
 
-uv run --no-sync python "$SCRIPT_DIR/compute_foundation_summary.py"
+uv run --no-sync python "$SCRIPT_DIR/compute_foundation_summary.py" \
+    --models "${FOUNDATION_MODELS[@]}"

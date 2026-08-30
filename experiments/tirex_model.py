@@ -2,7 +2,7 @@
 TiRex model experiments for time series forecasting.
 
 Requires:
-    pip install tirex
+    tirex-ts
 
 Usage:
     python experiments/tirex_model.py
@@ -67,7 +67,7 @@ def run_tirex_experiment(
         quantile_levels = DEFAULT_QUANTILE_LEVELS
 
     if output_dir is None:
-        output_dir = str(results_root() / "TiRex")
+        output_dir = str(results_root() / "tirex")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -179,6 +179,7 @@ def run_tirex_experiment(
 
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
+            "model": "tirex",
             "model_id": model_id,
             "quantile_levels": quantile_levels,
         }

@@ -52,9 +52,6 @@ rsync -rlptz --delete-delay --itemize-changes --partial --info=progress2 \
     --exclude='docs/INTERNAL_WORKFLOW.md' \
     --exclude='outputs/' \
     --exclude='logs/' \
-    --exclude='experiments/Kairos/' \
-    --exclude='experiments/granite-tsfm/' \
-    --exclude='experiments/timesfm_*/' \
     "$PROJECT_ROOT/" \
     "$DESTINATION"
 
@@ -64,11 +61,12 @@ if [ "$DRY_RUN" = true ]; then
 fi
 
 ssh "$SELENA_HOST" \
-    "mkdir -p '$SCRATCH_STORAGE_ROOT/datasets' '$SCRATCH_STORAGE_ROOT/weights' '$SCRATCH_PROJECT_ROOT/outputs' '$SCRATCH_PROJECT_ROOT/logs'"
+    "mkdir -p '$SCRATCH_STORAGE_ROOT/datasets' '$SCRATCH_STORAGE_ROOT/weights' '$SCRATCH_STORAGE_ROOT/venvs' '$SCRATCH_PROJECT_ROOT/outputs' '$SCRATCH_PROJECT_ROOT/logs'"
 
 echo "SUCCESS: Selena's $PROJECT_NAME code matches DGX."
 echo "Preserved on Selena: .venv, pyproject.toml, and uv.lock."
 echo "Selena datasets: $SCRATCH_STORAGE_ROOT/datasets"
 echo "Selena weights: $SCRATCH_STORAGE_ROOT/weights"
+echo "Selena uv environments: $SCRATCH_STORAGE_ROOT/venvs"
 echo "Selena results: $SCRATCH_PROJECT_ROOT/outputs/results"
 echo "Selena logs: $SCRATCH_PROJECT_ROOT/logs"

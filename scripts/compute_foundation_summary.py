@@ -14,8 +14,17 @@ import numpy as np
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+DEFAULT_MODELS = (
+    "chronos_bolt",
+    "chronos2",
+    "tirex",
+    "toto",
+    "ts_icl",
+    "seasonal_naive",
+)
 
-def load_result_cells(root: Path, include_seasonal_naive: bool = False) -> list[dict]:
+
+def load_result_cells(root: Path, models: set[str] | None = None) -> list[dict]:
     """Load one dataset/frequency/horizon cell from every complete result directory."""
     cells = []
     for metrics_path in sorted(root.glob("*/*/*/*/metrics.npz")):
@@ -23,7 +32,7 @@ def load_result_cells(root: Path, include_seasonal_naive: bool = False) -> list[
         if len(relative.parts) != 5:
             continue
         model, dataset, freq, horizon, _ = relative.parts
-        if model == "seasonal_naive" and not include_seasonal_naive:
+        if models is not None and model not in models:
             continue
 
         with np.load(metrics_path) as metrics:
@@ -153,15 +162,15 @@ def main() -> None:
         help="Markdown table to write",
     )
     parser.add_argument(
-        "--include-seasonal-naive",
-        action="store_true",
-        help="Include the Seasonal Naive baseline in the table",
+        "--models",
+        nargs="+",
+        default=DEFAULT_MODELS,
+        help="Canonical model result directories to summarize",
     )
     args = parser.parse_args()
 
-    rows = summarize_cells(
-        load_result_cells(args.results_dir, args.include_seasonal_naive)
-    )
+    models = set(args.models)
+    rows = summarize_cells(load_result_cells(args.results_dir, models))
     if not rows:
         raise SystemExit(f"No MASE result cells found below {args.results_dir}")
 

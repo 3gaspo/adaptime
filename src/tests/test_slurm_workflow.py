@@ -20,7 +20,7 @@ def main() -> None:
     dgx_model = (dgx / "foundation_models.slurm").read_text(encoding="utf-8")
     dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
     selena_model = (selena / "foundation_models.slurm").read_text(encoding="utf-8")
-    assert "#SBATCH --array=0-15%4" in dgx_model
+    assert "#SBATCH --array=0-5%4" in dgx_model
     assert "#SBATCH --array" not in selena_model
     assert "#SBATCH --partition=h100" in dgx_model
     assert "#SBATCH --partition=an" in selena_model
@@ -39,25 +39,24 @@ def main() -> None:
     mapping = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
         encoding="utf-8"
     )
-    assert mapping.count("    run_") == 16
+    assert mapping.count("    run_") == 6
     assert "FOUNDATION_MODEL_COUNT" in mapping
+    for model in (
+        "chronos_bolt",
+        "chronos2",
+        "tirex",
+        "toto",
+        "ts_icl",
+        "seasonal_naive",
+    ):
+        assert f"    {model}\n" in mapping
     foundation_runners = (
         "run_chronos_bolt.sh",
         "run_chronos2.sh",
-        "run_kairos.sh",
-        "run_litespecformer.sh",
-        "run_moirai.sh",
-        "run_moirai2.sh",
-        "run_patchtst_fm.sh",
-        "run_sundial.sh",
-        "run_timesfm1.sh",
-        "run_timesfm2.sh",
-        "run_timesfm2p5.sh",
-        "run_timesfm3.sh",
         "run_tirex.sh",
         "run_toto.sh",
         "run_tsicl.sh",
-        "run_visiontspp.sh",
+        "run_seasonal_naive.sh",
     )
     for runner in foundation_runners:
         assert (PROJECT_ROOT / "scripts" / runner).is_file()
@@ -83,7 +82,7 @@ def main() -> None:
     assert "export ENV_NAME=" not in model_workflow
     assert "TIME_MODEL_INDEX" in model_workflow
     assert "SLURM_ARRAY_TASK_ID" in model_workflow
-    assert "timesfm_${model}" in model_workflow
+    assert "TIMESFM_DIR" not in model_workflow
 
     selena_workflow = (
         PROJECT_ROOT / "src/slurm/benchmark_foundation_models.sh"
@@ -102,6 +101,7 @@ def main() -> None:
         PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"
     ).read_text(encoding="utf-8")
     assert "uv run --no-sync python" in summary
+    assert '--models "${FOUNDATION_MODELS[@]}"' in summary
     assert "conda" not in summary
 
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
@@ -159,8 +159,12 @@ def main() -> None:
     assert 'SCRATCH_STORAGE_ROOT="${TIME_SELENA_STORAGE_ROOT:-/scratch/users/$nni}"' in code_sync
     assert "'$SCRATCH_STORAGE_ROOT/datasets'" in code_sync
     assert "'$SCRATCH_STORAGE_ROOT/weights'" in code_sync
+    assert "'$SCRATCH_STORAGE_ROOT/venvs'" in code_sync
     assert "outputs_selena" not in code_sync
     assert "logs_selena" not in code_sync
+    assert "experiments/Kairos/" not in code_sync
+    assert "experiments/granite-tsfm/" not in code_sync
+    assert "experiments/timesfm_*/" not in code_sync
     assert "lightweight|detailed|full" in result_sync
     assert "config.json" in result_sync
     assert "metrics.npz" in result_sync
@@ -185,11 +189,44 @@ def main() -> None:
     )
     assert 'source "$ROOT_DIR/src/slurm/foundation_model_runners.sh"' in direct
     assert 'uv run --no-sync bash "$SCRIPT_DIR/$runner"' in direct
+    removed_runners = (
+        "run_kairos.sh",
+        "run_litespecformer.sh",
+        "run_moirai.sh",
+        "run_moirai2.sh",
+        "run_patchtst_fm.sh",
+        "run_sundial.sh",
+        "run_timesfm1.sh",
+        "run_timesfm2.sh",
+        "run_timesfm2p5.sh",
+        "run_timesfm3.sh",
+        "run_visiontspp.sh",
+    )
+    removed_experiments = (
+        "kairos_model.py",
+        "litespecformer_model.py",
+        "moirai.py",
+        "moirai2.py",
+        "patchtst_fm.py",
+        "sundial.py",
+        "timesfm1.0.py",
+        "timesfm2.0.py",
+        "timesfm2.5.py",
+        "timesfm3.py",
+        "visiontspp.py",
+    )
+    for runner in removed_runners:
+        assert not (PROJECT_ROOT / "scripts" / runner).exists()
+    for experiment in removed_experiments:
+        assert not (PROJECT_ROOT / "experiments" / experiment).exists()
     for runner_path in (PROJECT_ROOT / "scripts").glob("run_*.sh"):
         runner_text = runner_path.read_text(encoding="utf-8")
         assert "conda" not in runner_text.lower()
         assert "pip install" not in runner_text
         assert not any(line.startswith("srun ") for line in runner_text.splitlines())
+    for runner in foundation_runners:
+        runner_text = (PROJECT_ROOT / "scripts" / runner).read_text(encoding="utf-8")
+        assert "set -euo pipefail" in runner_text
     assert not (PROJECT_ROOT / "outputs_selena").exists()
     assert not (PROJECT_ROOT / "logs_selena").exists()
     print("TIME Slurm and DGX/Selena synchronization contract passed.")

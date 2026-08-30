@@ -1,6 +1,5 @@
 """
 Chronos-2 model experiments for time series forecasting.
-(Refactored to match Moirai interface, logging format, and evaluation logic)
 
 Usage:
     python experiments/chronos2.py
@@ -71,7 +70,7 @@ def run_chronos2_experiment(
         quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     if output_dir is None:
-        output_dir = str(results_root() / "chronos2_base")
+        output_dir = str(results_root() / "chronos2")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -218,7 +217,7 @@ def run_chronos2_experiment(
         # ---------------------------------------------------------
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
-            "model": f"chronos2-{model_size}",
+            "model": "chronos2",
             "context_length": context_length,
             "quantile_levels": quantile_levels,
         }

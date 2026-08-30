@@ -2,7 +2,7 @@
 TS-ICL model experiments for time series forecasting.
 
 Requires:
-    pip install tsicl[bench]
+    tsicl
 
 Usage:
     python experiments/ts_icl.py
@@ -191,7 +191,7 @@ def run_tsicl_experiment(
 
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
-            "model": "TS-ICL",
+            "model": "ts_icl",
             "context_length": context_length,
             "quantile_levels": quantile_levels,
         }

@@ -9,8 +9,12 @@ deliberately.
 
 - Added one environment-variable path contract and local artifact
   placeholders for datasets, weights, outputs, and logs.
-- Routed every model runner's default results below `TIME_OUTPUTS/results` and
-  VisionTS++ checkpoints below `TIME_WEIGHTS`.
+- Routed every retained model runner's default results below
+  `TIME_OUTPUTS/results` using its canonical model alias.
+- Narrowed the maintained benchmark surface to `chronos_bolt`, `chronos2`,
+  `tirex`, `toto`, `ts_icl`, and `seasonal_naive`. Removed every other model
+  adapter and runner, including TimesFM 2, plus the unused non-seasonal Naive
+  wrapper. Current summaries ignore old result directories outside this set.
 - Added shared Hugging Face/Torch cache defaults and a cluster wrapper that
   calls the existing TIME run scripts through a prepared uv
   environment with externally configured paths. Removed the runners' Conda
@@ -21,11 +25,11 @@ deliberately.
 - Added one accelerator-synchronized test-loop timer used by every model
   runner. Each task stores total inference seconds in `config.json`, excluding
   model loading, dataset construction, metric computation, and result saving.
-- Added an all-foundation-model runner and CSV/Markdown summary whose MASE
+- Added a six-model runner and CSV/Markdown summary whose MASE
   macro-average weights H settings equally within dataset/frequency entries
   and then weights those entries equally; timing totals require complete task
   coverage.
-- Added a DGX Slurm array with one isolated job per foundation-model runner and
+- Added a six-task DGX Slurm array with one isolated job per model runner and
   a dependent summary job. Added a TSFM-style Selena Slurm front submitted
   directly with `sbatch`; its single allocation runs all model tasks and the
   final summary sequentially without a Bash submission wrapper. Both paths
@@ -37,12 +41,14 @@ deliberately.
   `logs/selena/` subtrees. Lightweight, detailed, and full pulls reflect
   TIME's summary, configuration, metric, prediction, and scheduler-log
   artifact sizes. Code synchronization excludes every output and log tree.
-- Kept DGX and Selena uv environments independent: code synchronization
-  preserves Selena's `.venv`, `pyproject.toml`, and `uv.lock`, including when
-  `.venv` is a symlink. Selena loads `python/3.12_pypsa` before uv runs and
-  forbids uv-managed Python downloads. Dataset and weight payloads now live
-  outside the code tree, so code synchronization no longer needs exclusions
-  for those project-relative names.
+- Kept DGX and Selena uv environments independent while making every retained
+  model on a given cluster use that cluster's single shared environment. Code
+  synchronization preserves Selena's `.venv`, `pyproject.toml`, and `uv.lock`,
+  including when `.venv` is a symlink. Selena loads `python/3.12_pypsa` before
+  uv runs and forbids uv-managed Python downloads. Dataset and weight payloads
+  now live outside the code tree, so code synchronization no longer needs
+  exclusions for those project-relative names or removed external source
+  checkouts.
 - Added a manual DGX publisher that selects both native and synchronized
   Selena logs and outputs. Its lightweight, detailed, and full tiers mirror
   result synchronization, replace oversized files with bounded metadata/text

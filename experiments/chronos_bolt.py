@@ -62,7 +62,7 @@ def run_chronos_bolt_experiment(
         quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     if output_dir is None:
-        output_dir = str(results_root() / f"chronos_bolt_{model_size}")
+        output_dir = str(results_root() / "chronos_bolt")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -187,7 +187,7 @@ def run_chronos_bolt_experiment(
         # ---------------------------------------------------------
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
-            "model": f"chronos-bolt-{model_size}",
+            "model": "chronos_bolt",
             "context_length": context_length,
             "quantile_levels": quantile_levels,
         }

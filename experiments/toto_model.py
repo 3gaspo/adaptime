@@ -209,6 +209,7 @@ def run_toto_experiment(
         fc_quantiles = np.stack(fc_quantiles, axis=0).astype(np.float32, copy=False)
         inference_seconds = timer.stop()
         model_hyperparams = {
+            "model": "toto",
             "model_id": model_id,
             "context_length": context_length,
             "requested_num_samples": num_samples,
