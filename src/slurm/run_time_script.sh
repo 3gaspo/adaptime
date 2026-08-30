@@ -28,4 +28,8 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] datasets: $TIME_DATASET"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] weights: $TIME_WEIGHTS"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] outputs: $TIME_OUTPUTS"
 
-bash "$run_path"
+if [ -n "${SLURM_JOB_ID:-}" ]; then
+    srun --ntasks=1 bash "$run_path"
+else
+    bash "$run_path"
+fi
