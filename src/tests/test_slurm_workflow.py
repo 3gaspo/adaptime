@@ -20,7 +20,7 @@ def main() -> None:
     dgx_model = (dgx / "foundation_models.slurm").read_text(encoding="utf-8")
     dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
     selena_model = (selena / "foundation_models.slurm").read_text(encoding="utf-8")
-    assert "#SBATCH --array=0-5%4" in dgx_model
+    assert "#SBATCH --array=0-4%4" in dgx_model
     assert "#SBATCH --array" not in selena_model
     assert "#SBATCH --partition=h100" in dgx_model
     assert "#SBATCH --partition=an" in selena_model
@@ -39,13 +39,12 @@ def main() -> None:
     mapping = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
         encoding="utf-8"
     )
-    assert mapping.count("    run_") == 6
+    assert mapping.count("    run_") == 5
     assert "FOUNDATION_MODEL_COUNT" in mapping
     for model in (
         "chronos_bolt",
         "chronos2",
         "tirex",
-        "toto",
         "ts_icl",
         "seasonal_naive",
     ):
@@ -54,7 +53,6 @@ def main() -> None:
         "run_chronos_bolt.sh",
         "run_chronos2.sh",
         "run_tirex.sh",
-        "run_toto.sh",
         "run_tsicl.sh",
         "run_seasonal_naive.sh",
     )
@@ -200,6 +198,7 @@ def main() -> None:
         "run_timesfm2.sh",
         "run_timesfm2p5.sh",
         "run_timesfm3.sh",
+        "run_toto.sh",
         "run_visiontspp.sh",
     )
     removed_experiments = (
@@ -213,6 +212,7 @@ def main() -> None:
         "timesfm2.0.py",
         "timesfm2.5.py",
         "timesfm3.py",
+        "toto_model.py",
         "visiontspp.py",
     )
     for runner in removed_runners:

@@ -5,7 +5,6 @@ FOUNDATION_MODELS=(
     chronos_bolt
     chronos2
     tirex
-    toto
     ts_icl
     seasonal_naive
 )
@@ -14,7 +13,6 @@ FOUNDATION_RUNNERS=(
     run_chronos_bolt.sh
     run_chronos2.sh
     run_tirex.sh
-    run_toto.sh
     run_tsicl.sh
     run_seasonal_naive.sh
 )

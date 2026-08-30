@@ -18,7 +18,6 @@ DEFAULT_MODELS = (
     "chronos_bolt",
     "chronos2",
     "tirex",
-    "toto",
     "ts_icl",
     "seasonal_naive",
 )

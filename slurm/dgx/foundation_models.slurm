@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=time_foundation
-#SBATCH --array=0-5%4
+#SBATCH --array=0-4%4
 #SBATCH --gres=gpu:1
 #SBATCH --output=logs/foundation_%A_%a.out
 #SBATCH --error=logs/foundation_%A_%a.err

@@ -12,9 +12,11 @@ deliberately.
 - Routed every retained model runner's default results below
   `TIME_OUTPUTS/results` using its canonical model alias.
 - Narrowed the maintained benchmark surface to `chronos_bolt`, `chronos2`,
-  `tirex`, `toto`, `ts_icl`, and `seasonal_naive`. Removed every other model
-  adapter and runner, including TimesFM 2, plus the unused non-seasonal Naive
-  wrapper. Current summaries ignore old result directories outside this set.
+  `tirex`, `ts_icl`, and `seasonal_naive`. Removed every other model adapter
+  and runner, including Toto and TimesFM 2, plus the unused non-seasonal Naive
+  wrapper. Toto was removed because its exact NumPy and scikit-learn pins
+  conflict with TS-ICL in the required single shared environment. Current
+  summaries ignore old result directories outside this set.
 - Added shared Hugging Face/Torch cache defaults and a cluster wrapper that
   calls the existing TIME run scripts through a prepared uv
   environment with externally configured paths. Removed the runners' Conda
@@ -25,11 +27,11 @@ deliberately.
 - Added one accelerator-synchronized test-loop timer used by every model
   runner. Each task stores total inference seconds in `config.json`, excluding
   model loading, dataset construction, metric computation, and result saving.
-- Added a six-model runner and CSV/Markdown summary whose MASE
+- Added a five-model runner and CSV/Markdown summary whose MASE
   macro-average weights H settings equally within dataset/frequency entries
   and then weights those entries equally; timing totals require complete task
   coverage.
-- Added a six-task DGX Slurm array with one isolated job per model runner and
+- Added a five-task DGX Slurm array with one isolated job per model runner and
   a dependent summary job. Added a TSFM-style Selena Slurm front submitted
   directly with `sbatch`; its single allocation runs all model tasks and the
   final summary sequentially without a Bash submission wrapper. Both paths

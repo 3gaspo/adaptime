@@ -11,7 +11,7 @@
 TIME is a task-centric time series forecasting benchmark comprising various fresh datasets, tailored for zero-shot TSFM evaluation. This codebase provides a full workflow spanning from data preprocessing to model evaluation.
 
 This maintained derivative preserves TIME's benchmark behavior while adding
-reusable consistency and runtime repairs around a focused six-model benchmark.
+reusable consistency and runtime repairs around a focused five-model benchmark.
 The complete tracked delta is listed in [Improvements](docs/IMPROVEMENTS.md).
 
 ## 📅 Update Log
@@ -46,10 +46,10 @@ uv sync
 The cluster launchers run the benchmark through this prepared uv environment;
 they do not create Conda environments or install packages during a Slurm job.
 The maintained runners are exactly `chronos_bolt`, `chronos2`, `tirex`,
-`toto`, `ts_icl`, and `seasonal_naive`. All six share one prepared uv
-environment on each cluster, which must include `chronos-forecasting`,
-`tirex-ts`, `toto-ts`, `tsicl`, and `statsforecast` before submission. No
-external model-source checkout is required.
+`ts_icl`, and `seasonal_naive`. All five share one prepared uv environment on
+each cluster, which must include `chronos-forecasting`, `tirex-ts`, `tsicl`,
+and `statsforecast` before submission. No external model-source checkout is
+required.
 
 2. Download the dataset from [huggingface](https://huggingface.co/datasets/Real-TSF/TIME)
 
@@ -69,7 +69,7 @@ TIME_LOGS=./logs
 ## 🚀 Getting Started
 
 ### Model Forecasting
-We provide the code and scripts required to reproduce the maintained six-model
+We provide the code and scripts required to reproduce the maintained five-model
 benchmark.
 
 For each model, use the corresponding script in the `scripts/` directory from
@@ -98,7 +98,7 @@ submit the Bash runner or a Bash submission wrapper:
 sbatch slurm/selena/foundation_models.slurm
 ```
 
-The Selena Slurm job runs the six model tasks sequentially in its allocation,
+The Selena Slurm job runs the five model tasks sequentially in its allocation,
 logs each task and stage start/completion, and builds the joint summary only
 after every model runner succeeds. Scheduler streams and benchmark artifacts
 use the `logs/` and `outputs/` directories in the Selena scratch project tree,
@@ -109,7 +109,7 @@ supports those two jobs. Cluster fronts keep their shared dataset and weight
 roots outside the code checkout; direct local runs retain the project-relative
 defaults shown above.
 
-Both DGX and Selena invoke each runner with `uv run --no-sync`. The six models
+Both DGX and Selena invoke each runner with `uv run --no-sync`. The five models
 share one prepared environment within each cluster, but the two cluster
 environments are independent: DGX uses the repository's `pyproject.toml` and
 `uv.lock`, while DGX-to-Selena code synchronization
@@ -125,9 +125,9 @@ construction, metric computation, and result saving are excluded.
 
 ### Foundation-model performance and timing
 
-The six-model runner writes
+The five-model runner writes
 `${TIME_OUTPUTS}/foundation_model_summary.csv` and a Markdown rendering beside
-it. By default, the table includes only the six maintained canonical result
+it. By default, the table includes only the five maintained canonical result
 directories, so result trees from removed runners are not mixed into current
 evidence. It can also be regenerated from completed or partial local results:
 
