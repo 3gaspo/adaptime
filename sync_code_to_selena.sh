@@ -39,8 +39,14 @@ echo "Synchronizing $PROJECT_NAME code from DGX to Selena..."
 rsync -rlptz --delete-delay --itemize-changes --partial --info=progress2 \
     "${RSYNC_OPTIONS[@]}" \
     --exclude='.git/' \
+    --exclude='.env' \
     --exclude='.venv/' \
     --exclude='.secrets/' \
+    --exclude='AGENTS.md' \
+    --exclude='FUTURE_WORK.md' \
+    --exclude='PENDING_UPDATES.md' \
+    --exclude='CLUSTER_STATUS.txt' \
+    --exclude='docs/INTERNAL_WORKFLOW.md' \
     --exclude='datasets/' \
     --exclude='weights/' \
     --exclude='outputs/' \

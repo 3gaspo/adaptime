@@ -75,6 +75,7 @@ if [ -n "$JOB_ID" ]; then
     rsync -rlptz --partial --prune-empty-dirs --info=progress2 \
         '--include=*/' \
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \
+        "--include=*_${JOB_ID}.out" "--include=*_${JOB_ID}.err" \
         "--include=*/selena_${JOB_ID}/***" '--exclude=*' \
         "$SOURCE_ROOT/logs_selena/" \
         "$PROJECT_ROOT/logs_selena/"
