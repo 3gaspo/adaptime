@@ -42,33 +42,26 @@ fi
 
 SELENA_HOST="${TIME_SELENA_HOST:-$nni@selena.hpc.edf.fr}"
 SOURCE_ROOT="${TIME_SELENA_RESULTS_ROOT:-$SELENA_HOST:/scratch/users/$nni/codes/$PROJECT_NAME}"
-DGX_OUTPUT_ROOT="$PROJECT_ROOT/outputs_selena"
-DGX_LOG_ROOT="$PROJECT_ROOT/logs_selena"
+DGX_OUTPUT_ROOT="$PROJECT_ROOT/outputs/selena"
+DGX_LOG_ROOT="$PROJECT_ROOT/logs/selena"
 mkdir -p "$DGX_OUTPUT_ROOT" "$DGX_LOG_ROOT"
 
 OUTPUT_FILTERS=()
 if [ "$SYNC_SIZE" = lightweight ]; then
     OUTPUT_FILTERS=(
-        '--include=/reports/'
-        '--include=/reports/***'
+        '--include=*/'
+        '--include=/foundation_model_summary.csv'
+        '--include=/foundation_model_summary.md'
+        '--include=config.json'
         '--exclude=*'
     )
 elif [ "$SYNC_SIZE" = detailed ]; then
     OUTPUT_FILTERS=(
         '--include=*/'
-        '--include=*.json'
-        '--include=*.csv'
-        '--include=*.tsv'
-        '--include=*.tex'
-        '--include=*.md'
-        '--include=*.txt'
-        '--include=*.log'
-        '--include=*.yaml'
-        '--include=*.yml'
-        '--include=*.png'
-        '--include=*.svg'
-        '--include=*.pdf'
-        '--include=*.html'
+        '--include=/foundation_model_summary.csv'
+        '--include=/foundation_model_summary.md'
+        '--include=config.json'
+        '--include=metrics.npz'
         '--exclude=*'
     )
 fi
@@ -76,7 +69,7 @@ fi
 echo "Pulling $PROJECT_NAME Selena outputs to DGX ($SYNC_SIZE)..."
 rsync -rlptz --partial --prune-empty-dirs --info=progress2 \
     "${OUTPUT_FILTERS[@]}" \
-    "$SOURCE_ROOT/outputs_selena/" \
+    "$SOURCE_ROOT/outputs/" \
     "$DGX_OUTPUT_ROOT/"
 
 if [ -n "$JOB_ID" ]; then
@@ -86,13 +79,13 @@ if [ -n "$JOB_ID" ]; then
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \
         "--include=*_${JOB_ID}.out" "--include=*_${JOB_ID}.err" \
         "--include=*/selena_${JOB_ID}/***" '--exclude=*' \
-        "$SOURCE_ROOT/logs_selena/" \
+        "$SOURCE_ROOT/logs/" \
         "$DGX_LOG_ROOT/"
 else
     echo "Pulling all Selena logs and workflow status..."
     rsync -rlptz --partial --info=progress2 \
-        "$SOURCE_ROOT/logs_selena/" \
+        "$SOURCE_ROOT/logs/" \
         "$DGX_LOG_ROOT/"
 fi
 
-echo "SUCCESS: $SYNC_SIZE outputs_selena artifacts and requested logs_selena were pulled from Selena to DGX."
+echo "SUCCESS: $SYNC_SIZE TIME outputs and requested logs were pulled from Selena to DGX."

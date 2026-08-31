@@ -31,12 +31,12 @@ deliberately.
   macro-average weights H settings equally within dataset/frequency entries
   and then weights those entries equally; timing totals require complete task
   coverage.
-- Added a five-task DGX Slurm array with one isolated job per model runner and
-  a dependent summary job. Added a TSFM-style Selena Slurm front submitted
-  directly with `sbatch`; its single allocation runs all model tasks and the
-  final summary sequentially without a Bash submission wrapper. Both paths
-  emit explicit stage/task/workflow completion records and durable status
-  files below the configured log root.
+- Added matching DGX and Selena Slurm fronts for each retained model plus a
+  separate dependent summary front. One submission helper creates five
+  independently schedulable model jobs and starts the summary only after all
+  five succeed. Dataset/frequency and horizon-term loops remain sequential
+  inside each model allocation. Both clusters emit explicit task/workflow
+  completion records and durable status files below the configured log root.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
   Selena writes to the standard `outputs/` and `logs/` trees below its scratch
   project root; DGX pulls them into distinct local `outputs/selena/` and
@@ -52,10 +52,10 @@ deliberately.
   exclusions for those project-relative names or removed external source
   checkouts.
 - Added a manual DGX publisher that selects both native and synchronized
-  Selena logs and outputs. Its lightweight, detailed, and full tiers mirror
-  result synchronization, replace oversized files with bounded metadata/text
-  samples, pull `origin/main` through the configured proxy, and push only the
-  selected artifact paths plus existing local commits.
+  Selena logs and outputs. Its TIME-specific lightweight, detailed, and full
+  tiers mirror result synchronization, replace oversized files with bounded
+  metadata/text samples, pull `origin/main` through the configured proxy, and
+  push only the selected artifact paths plus existing local commits.
 - Added a shared storage-root override so DGX resolves datasets and weights
   below the user home outside `codes/`, while Selena resolves them beside
   `codes/` in user scratch. Project outputs and logs remain project-owned.

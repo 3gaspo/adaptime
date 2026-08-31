@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=stsicl
 #SBATCH --gres=gpu:1
-#SBATCH --output=/scratch/users/%u/codes/improved/logs_selena/%x_%j.out
-#SBATCH --error=/scratch/users/%u/codes/improved/logs_selena/%x_%j.err
+#SBATCH --output=/scratch/users/%u/codes/improved/logs/%x_%j.out
+#SBATCH --error=/scratch/users/%u/codes/improved/logs/%x_%j.err
 #SBATCH --time=23:00:00
 #SBATCH --partition=an
 #SBATCH --qos=an_preemptable

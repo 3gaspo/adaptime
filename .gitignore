@@ -115,8 +115,6 @@ outputs/*
 !outputs/.gitkeep
 logs/*
 !logs/.gitkeep
-outputs_selena/*
-logs_selena/*
 datasets/*
 !datasets/.gitkeep
 weights/*
