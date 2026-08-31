@@ -1,0 +1,19 @@
+2026-08-31 22:45:03 | workflow foundation_models started launch_id=selena_20260831T204500Z_25857 task=chronos_bolt
+2026-08-31 22:45:03 | stage evaluate started
+2026-08-31 22:45:03 | task model=chronos_bolt runner=run_chronos_bolt.sh environment=uv started
+[2026-08-31 22:45:03] TIME runner: run_chronos_bolt.sh
+[2026-08-31 22:45:03] datasets: /scratch/users/h61084/datasets/hf_dataset
+[2026-08-31 22:45:03] weights: /scratch/users/h61084/weights
+[2026-08-31 22:45:03] outputs: /scratch/users/h61084/codes/improved/outputs
+
+############################################################
+# Dataset 1/1: Water_Quality_Darwin/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Water_Quality_Darwin/15T
+Model: amazon/chronos-bolt-base
+Terms: ['short', 'medium', 'long']
+============================================================
+Loading Chronos-Bolt model: amazon/chronos-bolt-base from /fslarge/scratch/users/h61084/weights/chronos-bolt-base...
