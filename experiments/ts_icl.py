@@ -35,9 +35,9 @@ from timebench.evaluation.data import (
     get_dataset_settings,
     load_dataset_config,
 )
-from timebench.paths import results_root
+from timebench.paths import foundation_weight_path, results_root
 
-from tsicl.pipeline import TSICL
+from tsicl import TSICL
 
 
 DEFAULT_QUANTILE_LEVELS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
@@ -52,6 +52,7 @@ def run_tsicl_experiment(
     context_length: int = 2048,
     config_path: Path | None = None,
     quantile_levels: list[float] | None = None,
+    model_path: str | Path | None = None,
 ):
     """ Run TS_ICL experiments."""
 
@@ -74,6 +75,11 @@ def run_tsicl_experiment(
     if output_dir is None:
         output_dir = str(results_root() / "ts_icl")
     Path(output_dir).mkdir(exist_ok=True,parents=True)
+    checkpoint_path = foundation_weight_path(
+        "tsicl/tsicl-v1.ckpt",
+        explicit=model_path,
+        directory=False,
+    )
 
     print(f"\n{'='*60}")
     print(f"Dataset: {dataset_name}")
@@ -92,10 +98,9 @@ def run_tsicl_experiment(
 
         # instantiate model:
         print(f"  Initializing model pipeline...")
-        ckpt_version = model_size + ".ckpt"
         model = TSICL(
-            checkpoint_version  = ckpt_version,
-            allow_auto_download = True
+            model_path=str(checkpoint_path),
+            allow_auto_download=False,
         )
 
         # Dataset Initialization
@@ -242,6 +247,8 @@ def main():
                         help="Maximum context length")
     parser.add_argument("--config", type=str, default=None,
                         help="Path to datasets.yaml config file")
+    parser.add_argument("--model-path", type=str, default=None,
+                        help="Local TS-ICL checkpoint file")
 
     args = parser.parse_args()
 
@@ -262,22 +269,17 @@ def main():
         print(f"# Dataset {idx}/{total_datasets}: {dataset_name}")
         print(f"{'#'*60}")
 
-        try:
-            run_tsicl_experiment(
-                dataset_name=dataset_name,
-                terms=args.terms,
-                model_size=args.model_size,
-                output_dir=args.output_dir,
-                batch_size=args.batch_size,
-                context_length=args.context_length,
-                config_path=config_path,
-                quantile_levels=args.quantiles,
-            )
-        except Exception as e:
-            print(f"ERROR: Failed to run experiment for {dataset_name}: {e}")
-            import traceback
-            traceback.print_exc()
-            continue
+        run_tsicl_experiment(
+            dataset_name=dataset_name,
+            terms=args.terms,
+            model_size=args.model_size,
+            output_dir=args.output_dir,
+            batch_size=args.batch_size,
+            context_length=args.context_length,
+            config_path=config_path,
+            quantile_levels=args.quantiles,
+            model_path=args.model_path,
+        )
 
     print(f"\n{'#'*60}")
     print(f"# All {total_datasets} dataset(s) completed!")

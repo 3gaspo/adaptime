@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import numpy as np
 import torch
 from dotenv import load_dotenv
-from chronos import Chronos2Pipeline
+from chronos import BaseChronosPipeline
 from gluonts.time_feature import get_seasonality
 
 from timebench.evaluation.saver import save_window_predictions
@@ -32,7 +32,7 @@ from timebench.evaluation.data import (
     get_dataset_settings,
     load_dataset_config,
 )
-from timebench.paths import results_root
+from timebench.paths import foundation_weight_path, results_root
 
 # Load environment variables
 load_dotenv()
@@ -49,6 +49,7 @@ def run_chronos2_experiment(
     context_length: int = 2048,
     config_path: Path | None = None,
     quantile_levels: list[float] | None = None,
+    model_path: str | Path | None = None,
 ):
     """
     Run Chronos-2 model experiments.
@@ -74,16 +75,18 @@ def run_chronos2_experiment(
 
     os.makedirs(output_dir, exist_ok=True)
 
-    # Model Mapping
-    model_map = {
-        "chronos2": "amazon/chronos-2",
-        # Add other sizes if released
-    }
-    hf_model_path = model_map.get(model_size, "amazon/chronos-2")
+    if model_size != "chronos2":
+        raise ValueError(f"Unsupported Chronos-2 model size: {model_size}")
+    checkpoint_path = foundation_weight_path(
+        "chronos2",
+        explicit=model_path,
+        directory=True,
+    )
 
     print(f"\n{'='*60}")
     print(f"Dataset: {dataset_name}")
-    print(f"Model: {hf_model_path}")
+    print("Model: amazon/chronos-2")
+    print(f"Checkpoint: {checkpoint_path}")
     print(f"Terms: {terms}")
     print(f"{'='*60}")
 
@@ -99,10 +102,11 @@ def run_chronos2_experiment(
         print(f"  Config: prediction_length={prediction_length}, test_length={test_length}, val_length={val_length}")
 
         # Initialize Chronos Pipeline
-        print(f"  Initializing Chronos pipeline ({hf_model_path})...")
-        pipeline = Chronos2Pipeline.from_pretrained(
-            hf_model_path,
+        print(f"  Initializing Chronos pipeline ({checkpoint_path})...")
+        pipeline = BaseChronosPipeline.from_pretrained(
+            str(checkpoint_path),
             device_map=device_map,
+            local_files_only=True,
         )
 
         # Dataset Initialization
@@ -266,6 +270,8 @@ def main():
                         help="Maximum context length")
     parser.add_argument("--config", type=str, default=None,
                         help="Path to datasets.yaml config file")
+    parser.add_argument("--model-path", type=str, default=None,
+                        help="Local Chronos-2 checkpoint directory")
 
     args = parser.parse_args()
 
@@ -289,22 +295,17 @@ def main():
         print(f"# Dataset {idx}/{total_datasets}: {dataset_name}")
         print(f"{'#'*60}")
 
-        try:
-            run_chronos2_experiment(
-                dataset_name=dataset_name,
-                terms=args.terms,
-                model_size=args.model_size,
-                output_dir=args.output_dir,
-                batch_size=args.batch_size,
-                context_length=args.context_length,
-                config_path=config_path,
-                quantile_levels=args.quantiles,
-            )
-        except Exception as e:
-            print(f"ERROR: Failed to run experiment for {dataset_name}: {e}")
-            import traceback
-            traceback.print_exc()
-            continue
+        run_chronos2_experiment(
+            dataset_name=dataset_name,
+            terms=args.terms,
+            model_size=args.model_size,
+            output_dir=args.output_dir,
+            batch_size=args.batch_size,
+            context_length=args.context_length,
+            config_path=config_path,
+            quantile_levels=args.quantiles,
+            model_path=args.model_path,
+        )
 
     print(f"\n{'#'*60}")
     print(f"# All {total_datasets} dataset(s) completed!")

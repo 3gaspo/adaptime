@@ -63,6 +63,32 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
         self.assertIn("math.floor(self._test_length / self.prediction_length)", source)
         self.assertIn("math.floor(self._val_length / self.prediction_length)", source)
 
+    def test_foundation_runners_are_offline_and_fail_fast(self) -> None:
+        experiments = {
+            "chronos_bolt.py": ("local_files_only=True", "chronos-bolt-{model_size}"),
+            "chronos2.py": (
+                "BaseChronosPipeline.from_pretrained",
+                "local_files_only=True",
+                '"chronos2"',
+            ),
+            "tirex_model.py": ("TiRexZero.from_pretrained", '"tirex/model.ckpt"'),
+            "ts_icl.py": ("allow_auto_download=False", '"tsicl/tsicl-v1.ckpt"'),
+            "seasonal_naive.py": (),
+        }
+        for name, required in experiments.items():
+            source = (PROJECT_ROOT / "experiments" / name).read_text(encoding="utf-8")
+            self.assertNotIn("Failed to run experiment", source, name)
+            self.assertNotIn("except Exception", source, name)
+            for text in required:
+                self.assertIn(text, source, name)
+
+        runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("export HF_HUB_OFFLINE=1", runtime)
+        self.assertIn("export HF_DATASETS_OFFLINE=1", runtime)
+        self.assertIn("export TRANSFORMERS_OFFLINE=1", runtime)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,7 +6,7 @@ Requires:
 
 Usage:
     python experiments/tirex_model.py
-    python experiments/tirex_model.py --model-id "NX-AI/TiRex"
+    python experiments/tirex_model.py --model-path weights/tirex/model.ckpt
     python experiments/tirex_model.py --model-size base
     python experiments/tirex_model.py --dataset "Traffic/15T" --terms short medium long
     python experiments/tirex_model.py --dataset "SG_Weather/D" "SG_PM25/H"  # Multiple datasets
@@ -16,7 +16,6 @@ Usage:
 import argparse
 import os
 import sys
-import traceback
 from pathlib import Path
 
 # Ensure timebench is importable
@@ -27,7 +26,7 @@ import torch
 from dotenv import load_dotenv
 from gluonts.time_feature import get_seasonality
 
-from tirex import ForecastModel, load_model
+from tirex import ForecastModel, TiRexZero
 
 from timebench.evaluation.saver import save_window_predictions
 from timebench.evaluation.timing import EvaluationTimer
@@ -37,7 +36,7 @@ from timebench.evaluation.data import (
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms
-from timebench.paths import results_root
+from timebench.paths import foundation_weight_path, results_root
 
 load_dotenv()
 
@@ -47,7 +46,7 @@ DEFAULT_QUANTILE_LEVELS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 def run_tirex_experiment(
     dataset_name: str,
     terms: list[str] | None = None,
-    model_id: str = "NX-AI/TiRex",
+    model_path: str | Path | None = None,
     output_dir: str | None = None,
     batch_size: int = 128,
     config_path: Path | None = None,
@@ -73,13 +72,23 @@ def run_tirex_experiment(
 
     print(f"\n{'='*60}")
     print(f"Dataset: {dataset_name}")
-    print(f"Model: {model_id}")
+    checkpoint_path = foundation_weight_path(
+        "tirex/model.ckpt",
+        explicit=model_path,
+        directory=False,
+    )
+    print("Model: NX-AI/TiRex")
+    print(f"Checkpoint: {checkpoint_path}")
     print(f"Terms: {terms}")
     print(f"{'='*60}")
 
-    print(f"  Loading TiRex model ({model_id})...")
+    print(f"  Loading TiRex model ({checkpoint_path})...")
 
-    model: ForecastModel = load_model(model_id, device=device)
+    model: ForecastModel = TiRexZero.from_pretrained(
+        str(checkpoint_path),
+        backend="torch",
+        device=device,
+    )
 
     for term in terms:
         print(f"\n--- Term: {term} ---")
@@ -180,7 +189,7 @@ def run_tirex_experiment(
         ds_config = f"{dataset_name}/{term}"
         model_hyperparams = {
             "model": "tirex",
-            "model_id": model_id,
+            "model_id": "NX-AI/TiRex",
             "quantile_levels": quantile_levels,
         }
 
@@ -223,10 +232,10 @@ def main():
         help="Terms to evaluate. If not specified, auto-detect from config.",
     )
     parser.add_argument(
-        "--model-id",
+        "--model-path",
         type=str,
         default=None,
-        help="Model id (overrides --model-size)",
+        help="Local TiRex model.ckpt file",
     )
     parser.add_argument(
         "--model-size",
@@ -271,24 +280,15 @@ def main():
         print(f"# Dataset {idx}/{total_datasets}: {dataset_name}")
         print(f"{'#'*60}")
 
-        try:
-            model_size_map = {
-                "base": "NX-AI/TiRex",
-            }
-            model_id = args.model_id or model_size_map.get(args.model_size, "NX-AI/TiRex")
-            run_tirex_experiment(
-                dataset_name=dataset_name,
-                terms=args.terms,
-                model_id=model_id,
-                output_dir=args.output_dir,
-                batch_size=args.batch_size,
-                config_path=config_path,
-                quantile_levels=args.quantiles,
-            )
-        except Exception as e:
-            print(f"ERROR: Failed to run experiment for {dataset_name}: {e}")
-            traceback.print_exc()
-            continue
+        run_tirex_experiment(
+            dataset_name=dataset_name,
+            terms=args.terms,
+            model_path=args.model_path,
+            output_dir=args.output_dir,
+            batch_size=args.batch_size,
+            config_path=config_path,
+            quantile_levels=args.quantiles,
+        )
 
     print(f"\n{'#'*60}")
     print(f"# All {total_datasets} dataset(s) completed!")

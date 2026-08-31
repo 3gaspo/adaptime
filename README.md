@@ -48,8 +48,20 @@ they do not create Conda environments or install packages during a Slurm job.
 The maintained runners are exactly `chronos_bolt`, `chronos2`, `tirex`,
 `ts_icl`, and `seasonal_naive`. All five share one prepared uv environment on
 each cluster, which must include `chronos-forecasting`, `tirex-ts`, `tsicl`,
-and `statsforecast` before submission. No external model-source checkout is
-required.
+and `statsforecast` before submission. Learned-model runners never download
+weights at runtime. They require these local paths below `TIME_WEIGHTS`:
+
+```text
+chronos2/
+chronos-bolt-base/
+tirex/model.ckpt
+tsicl/tsicl-v1.ckpt
+```
+
+Each learned-model command also accepts `--model-path` as an explicit local
+override. A missing checkpoint or any dataset failure terminates the runner
+with a nonzero exit code, so dependent summaries cannot treat an incomplete
+model as successful.
 
 2. Download the dataset from [huggingface](https://huggingface.co/datasets/Real-TSF/TIME)
 
@@ -91,31 +103,11 @@ write a joint performance/timing table after all runs complete:
 bash scripts/run_all_foundation_models.sh
 ```
 
-On Selena, submit the complete workflow directly as a Slurm script; do not
-submit the Bash runner or a Bash submission wrapper:
-
-```bash
-sbatch slurm/selena/foundation_models.slurm
-```
-
-The Selena Slurm job runs the five model tasks sequentially in its allocation,
-logs each task and stage start/completion, and builds the joint summary only
-after every model runner succeeds. Scheduler streams and benchmark artifacts
-use the `logs/` and `outputs/` directories in the Selena scratch project tree,
-not in the synchronized code checkout. When pulled to DGX, those remote trees
-remain distinct under local `logs/selena/` and `outputs/selena/`. DGX retains
-a parallel model array and dependent summary because its submission workflow
-supports those two jobs. Cluster fronts keep their shared dataset and weight
-roots outside the code checkout; direct local runs retain the project-relative
-defaults shown above.
-
-Both DGX and Selena invoke each runner with `uv run --no-sync`. The five models
-share one prepared environment within each cluster, but the two cluster
-environments are independent: DGX uses the repository's `pyproject.toml` and
-`uv.lock`, while DGX-to-Selena code synchronization
-preserves Selena's local `pyproject.toml`, `uv.lock`, and `.venv`. The Selena
-front also loads `python/3.12_pypsa` before the first uv command and disables
-managed Python downloads.
+The cluster submission helper launches one independently schedulable job per
+model and a summary job with an `afterok` dependency on all five. Every cluster
+uses its own prepared environment and local weight tree; no job installs a
+package or retrieves a checkpoint. Cluster-specific submission and
+synchronization commands remain in the local internal workflow document.
 
 For each task, window-level predictions (quantiles) and metrics are saved in
 `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's

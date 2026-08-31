@@ -209,19 +209,13 @@ def main():
         print(f"# Dataset {idx}/{total_datasets}: {dataset_name}")
         print(f"{'#'*60}")
 
-        try:
-            run_seasonal_naive_experiment(
-                dataset_name=dataset_name,
-                terms=args.terms,
-                output_dir=args.output_dir,
-                num_samples=args.num_samples,
-                config_path=config_path,
-            )
-        except Exception as e:
-            print(f"ERROR: Failed to run experiment for {dataset_name}: {e}")
-            import traceback
-            traceback.print_exc()
-            continue
+        run_seasonal_naive_experiment(
+            dataset_name=dataset_name,
+            terms=args.terms,
+            output_dir=args.output_dir,
+            num_samples=args.num_samples,
+            config_path=config_path,
+        )
 
     print(f"\n{'#'*60}")
     print(f"# All {total_datasets} dataset(s) completed!")

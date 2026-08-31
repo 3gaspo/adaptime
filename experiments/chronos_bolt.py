@@ -33,7 +33,7 @@ from timebench.evaluation.data import (
     get_dataset_settings,
     load_dataset_config,
 )
-from timebench.paths import results_root
+from timebench.paths import foundation_weight_path, results_root
 
 # Load environment variables
 load_dotenv()
@@ -48,6 +48,7 @@ def run_chronos_bolt_experiment(
     context_length: int = 512,
     config_path: Path | None = None,
     quantile_levels: list[float] | None = None,
+    model_path: str | Path | None = None,
 ):
     print("Loading configuration...")
     config = load_dataset_config(config_path)
@@ -73,12 +74,18 @@ def run_chronos_bolt_experiment(
     print(f"{'='*60}")
 
     model_name = f"amazon/chronos-bolt-{model_size}"
-    print(f"Loading Chronos-Bolt model: {model_name}...")
+    checkpoint_path = foundation_weight_path(
+        f"chronos-bolt-{model_size}",
+        explicit=model_path,
+        directory=True,
+    )
+    print(f"Loading Chronos-Bolt model: {model_name} from {checkpoint_path}...")
 
     device_map = "cuda" if torch.cuda.is_available() else "cpu"
     pipeline = BaseChronosPipeline.from_pretrained(
-        model_name,
+        str(checkpoint_path),
         device_map=device_map,
+        local_files_only=True,
     )
 
     for term in terms:
@@ -235,6 +242,8 @@ def main():
                         help="Maximum context length")
     parser.add_argument("--config", type=str, default=None,
                         help="Path to datasets.yaml config file")
+    parser.add_argument("--model-path", type=str, default=None,
+                        help="Local Chronos-Bolt checkpoint directory")
 
     args = parser.parse_args()
 
@@ -250,22 +259,17 @@ def main():
         print(f"# Dataset {idx}/{len(datasets)}: {dataset_name}")
         print(f"{'#'*60}")
 
-        try:
-            run_chronos_bolt_experiment(
-                dataset_name=dataset_name,
-                terms=args.terms,
-                model_size=args.model_size,
-                output_dir=args.output_dir,
-                batch_size=args.batch_size,
-                context_length=args.context_length,
-                config_path=config_path,
-                quantile_levels=args.quantiles,
-            )
-        except Exception as e:
-            print(f"ERROR: Failed to run experiment for {dataset_name}: {e}")
-            import traceback
-            traceback.print_exc()
-            continue
+        run_chronos_bolt_experiment(
+            dataset_name=dataset_name,
+            terms=args.terms,
+            model_size=args.model_size,
+            output_dir=args.output_dir,
+            batch_size=args.batch_size,
+            context_length=args.context_length,
+            config_path=config_path,
+            quantile_levels=args.quantiles,
+            model_path=args.model_path,
+        )
 
     print(f"\n{'#'*60}")
     print("# All datasets completed!")

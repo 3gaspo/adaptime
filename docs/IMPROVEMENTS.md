@@ -22,6 +22,14 @@ deliberately.
   environment with externally configured paths. Removed the runners' Conda
   and job-time package installation; the Slurm jobs never mutate their
   environments themselves.
+- Aligned learned-model loading with the TSFM offline contract. Chronos-2,
+  Chronos-Bolt, TiRex, and TS-ICL resolve explicit local checkpoints below
+  `TIME_WEIGHTS`; Chronos uses local-only loading, TS-ICL disables automatic
+  download, and Selena exports the upstream offline-mode switches.
+- Made every retained runner fail on its first unsuccessful dataset instead of
+  printing a traceback, continuing the sweep, and returning exit code zero.
+  Workflow completion markers and dependent summaries now reflect the runner's
+  actual terminal status.
 - Completed the previously headerless Seasonal Naive shell runner with
   project-root resolution and the same prepared-environment contract.
 - Added one accelerator-synchronized test-loop timer used by every model
@@ -59,9 +67,8 @@ deliberately.
 - Added a shared storage-root override so DGX resolves datasets and weights
   below the user home outside `codes/`, while Selena resolves them beside
   `codes/` in user scratch. Project outputs and logs remain project-owned.
-- Exported the Slurm front's `PROJECT_ROOT` so Selena's sequential workflow
-  preserves it across the child Bash processes used for individual model and
-  summary stages.
+- Exported each Slurm front's `PROJECT_ROOT` so individual model and summary
+  child Bash processes preserve the submitted project checkout.
 
 ## Data and evaluation repairs
 

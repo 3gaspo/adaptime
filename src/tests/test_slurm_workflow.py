@@ -141,6 +141,9 @@ def main() -> None:
     assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}}"' in runtime
     assert "module load python/3.12_pypsa" in runtime
     assert "export UV_PYTHON_DOWNLOADS=never" in runtime
+    assert "export HF_HUB_OFFLINE=1" in runtime
+    assert "export HF_DATASETS_OFFLINE=1" in runtime
+    assert "export TRANSFORMERS_OFFLINE=1" in runtime
 
     submit = (PROJECT_ROOT / "scripts/submit_foundation_models.sh").read_text(
         encoding="utf-8"
@@ -234,6 +237,18 @@ def main() -> None:
     for runner in foundation_runners:
         runner_text = (PROJECT_ROOT / "scripts" / runner).read_text(encoding="utf-8")
         assert "set -euo pipefail" in runner_text
+    for experiment in (
+        "chronos_bolt.py",
+        "chronos2.py",
+        "tirex_model.py",
+        "ts_icl.py",
+        "seasonal_naive.py",
+    ):
+        experiment_text = (PROJECT_ROOT / "experiments" / experiment).read_text(
+            encoding="utf-8"
+        )
+        assert "Failed to run experiment" not in experiment_text
+        assert "except Exception" not in experiment_text
     print("TIME Slurm and DGX/Selena synchronization contract passed.")
 
 

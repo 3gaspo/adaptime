@@ -3,6 +3,9 @@
 PROJECT_ROOT="${PROJECT_ROOT:?PROJECT_ROOT must be set by the Slurm front}"
 module load python/3.12_pypsa || exit 1
 export UV_PYTHON_DOWNLOADS=never
+export HF_HUB_OFFLINE=1
+export HF_DATASETS_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
 NNI_FILE="${TIME_NNI_FILE:-$HOME/codes/.secrets/nni}"
 if [ ! -f "$NNI_FILE" ]; then
     echo "missing Selena NNI file: $NNI_FILE" >&2

@@ -42,9 +42,10 @@ for workflow in foundation_models foundation_summary; do
         task="$(sed -n 's/^task=//p' "$status_file")"
         state="$(sed -n 's/^state=//p' "$status_file")"
         stage="$(sed -n 's/^stage=//p' "$status_file")"
+        launched="$(sed -n 's/^launched_at=//p' "$status_file")"
         updated="$(sed -n 's/^updated_at=//p' "$status_file")"
-        printf '%-22s %-28s state=%-9s stage=%-12s updated=%s\n' \
-            "$workflow" "$task" "$state" "$stage" "$updated"
+        printf '%-22s %-28s state=%-9s stage=%-12s launched=%s updated=%s\n' \
+            "$workflow" "$task" "$state" "$stage" "$launched" "$updated"
     done
 done
 

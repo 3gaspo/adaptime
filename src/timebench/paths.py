@@ -30,6 +30,22 @@ def weights_root() -> Path:
     return _configured_path("TIME_WEIGHTS", PROJECT_ROOT / "weights")
 
 
+def foundation_weight_path(
+    relative: str | Path,
+    *,
+    explicit: str | Path | None = None,
+    directory: bool,
+) -> Path:
+    """Resolve one required local foundation-model checkpoint."""
+    path = Path(explicit).expanduser() if explicit else weights_root() / relative
+    path = path.resolve()
+    valid = path.is_dir() if directory else path.is_file()
+    if not valid:
+        expected = "directory" if directory else "file"
+        raise FileNotFoundError(f"Foundation-model weight {expected} not found: {path}")
+    return path
+
+
 def outputs_root() -> Path:
     """Generated predictions, metrics, features, and reports."""
     return _configured_path("TIME_OUTPUTS", PROJECT_ROOT / "outputs")

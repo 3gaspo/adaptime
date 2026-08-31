@@ -69,12 +69,18 @@ def main() -> None:
     assert by_model["model_a"]["tasks"] == 3
     assert by_model["model_b"]["inference_seconds"] is None
 
-    runners = [
+    runners = sorted(
         path
         for path in (PROJECT_ROOT / "experiments").glob("*.py")
         if path.name != "__init__.py"
+    )
+    assert [path.name for path in runners] == [
+        "chronos2.py",
+        "chronos_bolt.py",
+        "seasonal_naive.py",
+        "tirex_model.py",
+        "ts_icl.py",
     ]
-    assert len(runners) == 17
     for runner in runners:
         source = runner.read_text(encoding="utf-8")
         assert "from timebench.evaluation.timing import EvaluationTimer" in source
