@@ -1,0 +1,11 @@
+workflow=foundation_models
+launch_id=selena_2973134
+task=tirex
+state=completed
+stage=none
+active_task=none
+updated_at=2026-08-30T22:25:25Z
+exit_code=0
+slurm_job_id=2973134
+slurm_array_job_id=none
+slurm_array_task_id=none
