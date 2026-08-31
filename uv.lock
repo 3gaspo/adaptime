@@ -2399,7 +2399,6 @@ dependencies = [
     { name = "scipy" },
     { name = "statsforecast" },
     { name = "statsmodels" },
-    { name = "tirex-ts", extra = ["gluonts", "hfdataset"] },
     { name = "toolz" },
     { name = "torch" },
     { name = "tqdm" },
@@ -2424,36 +2423,11 @@ requires-dist = [
     { name = "scipy", specifier = ">=1.14.1,<2" },
     { name = "statsforecast", specifier = ">=1.7.0,<3" },
     { name = "statsmodels" },
-    { name = "tirex-ts", extras = ["gluonts", "hfdataset"], specifier = "==1.4.2" },
     { name = "toolz" },
     { name = "torch", specifier = ">=2.5.1,<2.10" },
     { name = "tqdm" },
     { name = "tsfeatures" },
     { name = "tsicl", specifier = "==0.2.1" },
-]
-
-[[package]]
-name = "tirex-ts"
-version = "1.4.2"
-source = { registry = "https://nexus.retd.edf.fr/repository/pypi-all/simple" }
-dependencies = [
-    { name = "huggingface-hub" },
-    { name = "numpy" },
-    { name = "scikit-learn" },
-    { name = "torch" },
-]
-sdist = { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/tirex-ts/1.4.2/tirex_ts-1.4.2.tar.gz", hash = "sha256:0ccbf558f3adb0b4eefe05ae4cabdd44b62c0707f925ba3e93ae64c38ab47c52" }
-wheels = [
-    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/tirex-ts/1.4.2/tirex_ts-1.4.2-py3-none-any.whl", hash = "sha256:e470b2e1a4ad2fe6ab95012da6b92ffa20f69ff3a5d44b5b37ba3cd86ff2b2e0" },
-]
-
-[package.optional-dependencies]
-gluonts = [
-    { name = "gluonts" },
-    { name = "pandas" },
-]
-hfdataset = [
-    { name = "datasets" },
 ]
 
 [[package]]

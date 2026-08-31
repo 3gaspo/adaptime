@@ -78,7 +78,6 @@ def main() -> None:
         "chronos2.py",
         "chronos_bolt.py",
         "seasonal_naive.py",
-        "tirex_model.py",
         "ts_icl.py",
     ]
     for runner in runners:

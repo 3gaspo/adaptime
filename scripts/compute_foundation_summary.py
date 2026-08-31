@@ -17,7 +17,6 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 DEFAULT_MODELS = (
     "chronos_bolt",
     "chronos2",
-    "tirex",
     "ts_icl",
     "seasonal_naive",
 )

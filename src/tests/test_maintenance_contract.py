@@ -71,7 +71,6 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
                 "local_files_only=True",
                 '"chronos2"',
             ),
-            "tirex_model.py": ("TiRexZero.from_pretrained", '"tirex/model.ckpt"'),
             "ts_icl.py": ("allow_auto_download=False", '"tsicl/tsicl-v1.ckpt"'),
             "seasonal_naive.py": (),
         }
@@ -88,6 +87,35 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
         self.assertIn("export HF_HUB_OFFLINE=1", runtime)
         self.assertIn("export HF_DATASETS_OFFLINE=1", runtime)
         self.assertIn("export TRANSFORMERS_OFFLINE=1", runtime)
+
+    def test_time_dataset_download_and_current_model_surface(self) -> None:
+        downloader = (PROJECT_ROOT / "scripts/download_time_dataset.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('DEFAULT_REPO_ID = "Real-TSF/TIME"', downloader)
+        self.assertIn("resolved_revision = info.sha", downloader)
+        self.assertIn('destination.rglob("state.json")', downloader)
+
+        self.assertFalse((PROJECT_ROOT / "experiments/tirex_model.py").exists())
+        self.assertFalse((PROJECT_ROOT / "scripts/run_tirex.sh").exists())
+        self.assertFalse(
+            (PROJECT_ROOT / "slurm/dgx/foundation_models/tirex.slurm").exists()
+        )
+        self.assertFalse(
+            (PROJECT_ROOT / "slurm/selena/foundation_models/tirex_selena.slurm").exists()
+        )
+        dependencies = tomllib.loads(
+            (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        )["project"]["dependencies"]
+        self.assertFalse(any("tirex" in dependency.lower() for dependency in dependencies))
+        registry = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
+            encoding="utf-8"
+        )
+        summary = (PROJECT_ROOT / "scripts/compute_foundation_summary.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("tirex", registry.lower())
+        self.assertNotIn('"tirex"', summary.lower())
 
 
 if __name__ == "__main__":

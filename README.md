@@ -11,7 +11,7 @@
 TIME is a task-centric time series forecasting benchmark comprising various fresh datasets, tailored for zero-shot TSFM evaluation. This codebase provides a full workflow spanning from data preprocessing to model evaluation.
 
 This maintained derivative preserves TIME's benchmark behavior while adding
-reusable consistency and runtime repairs around a focused five-model benchmark.
+reusable consistency and runtime repairs around a focused four-model benchmark.
 The complete tracked delta is listed in [Improvements](docs/IMPROVEMENTS.md).
 
 ## 📅 Update Log
@@ -45,16 +45,15 @@ uv sync
 
 The cluster launchers run the benchmark through this prepared uv environment;
 they do not create Conda environments or install packages during a Slurm job.
-The maintained runners are exactly `chronos_bolt`, `chronos2`, `tirex`,
-`ts_icl`, and `seasonal_naive`. All five share one prepared uv environment on
-each cluster, which must include `chronos-forecasting`, `tirex-ts`, `tsicl`,
-and `statsforecast` before submission. Learned-model runners never download
+The maintained runners are exactly `chronos_bolt`, `chronos2`, `ts_icl`, and
+`seasonal_naive`. All four share one prepared uv environment on each cluster,
+which must include `chronos-forecasting`, `tsicl`, and `statsforecast` before
+submission. Learned-model runners never download
 weights at runtime. They require these local paths below `TIME_WEIGHTS`:
 
 ```text
 chronos2/
 chronos-bolt-base/
-tirex/model.ckpt
 tsicl/tsicl-v1.ckpt
 ```
 
@@ -63,7 +62,17 @@ override. A missing checkpoint or any dataset failure terminates the runner
 with a nonzero exit code, so dependent summaries cannot treat an incomplete
 model as successful.
 
-2. Download the dataset from [huggingface](https://huggingface.co/datasets/Real-TSF/TIME)
+2. Download the official saved-Arrow dataset on an internet-connected
+preparation host such as DGX:
+
+```bash
+PYTHONPATH=src uv run --no-sync python scripts/download_time_dataset.py \
+  --destination "$HOME/datasets/hf_dataset"
+```
+
+The command resolves `Real-TSF/TIME` to an immutable repository revision,
+downloads it into an empty directory, and verifies that saved Arrow datasets
+are present. Evaluation jobs never invoke this downloader.
 
 3. Define paths in `.env` when overriding the local defaults. `TIME_DATASET`
 is the root containing the HF Arrow dataset directories used by
@@ -81,7 +90,7 @@ TIME_LOGS=./logs
 ## 🚀 Getting Started
 
 ### Model Forecasting
-We provide the code and scripts required to reproduce the maintained five-model
+We provide the code and scripts required to reproduce the maintained four-model
 benchmark.
 
 For each model, use the corresponding script in the `scripts/` directory from
@@ -104,7 +113,7 @@ bash scripts/run_all_foundation_models.sh
 ```
 
 The cluster submission helper launches one independently schedulable job per
-model and a summary job with an `afterok` dependency on all five. Every cluster
+model and a summary job with an `afterok` dependency on all four. Every cluster
 uses its own prepared environment and local weight tree; no job installs a
 package or retrieves a checkpoint. Cluster-specific submission and
 synchronization commands remain in the local internal workflow document.
@@ -117,9 +126,9 @@ construction, metric computation, and result saving are excluded.
 
 ### Foundation-model performance and timing
 
-The five-model runner writes
+The four-model runner writes
 `${TIME_OUTPUTS}/foundation_model_summary.csv` and a Markdown rendering beside
-it. By default, the table includes only the five maintained canonical result
+it. By default, the table includes only the four maintained canonical result
 directories, so result trees from removed runners are not mixed into current
 evidence. It can also be regenerated from completed or partial local results:
 

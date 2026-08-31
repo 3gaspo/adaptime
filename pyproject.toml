@@ -42,7 +42,6 @@ dependencies = [
     "scipy>=1.14.1,<2",
     "statsforecast>=1.7.0,<3",
     "statsmodels",
-    "tirex-ts[gluonts,hfdataset]==1.4.2",
     "toolz",
     "torch>=2.5.1,<2.10",
     "tqdm",
