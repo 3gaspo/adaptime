@@ -66,13 +66,16 @@ model as successful.
 preparation host such as DGX:
 
 ```bash
-PYTHONPATH=src uv run --no-sync python scripts/download_time_dataset.py \
-  --destination "$HOME/datasets/hf_dataset"
+PYTHONPATH=src uv run --no-sync python scripts/download_time_dataset.py --destination "$HOME/datasets/hf_dataset"
 ```
 
 The command resolves `Real-TSF/TIME` to an immutable repository revision,
-downloads it into an empty directory, and verifies that saved Arrow datasets
-are present. Evaluation jobs never invoke this downloader.
+uses ordinary HTTP instead of the Xet/CAS transfer path, and verifies that
+saved Arrow datasets are present. If a transfer is interrupted, rerun the same
+command with `--resume`; completed files are retained and the recorded revision
+is reused. Evaluation jobs never invoke this downloader. Setting `HF_TOKEN`
+before the command is optional for this public dataset but raises Hub rate
+limits.
 
 3. Define paths in `.env` when overriding the local defaults. `TIME_DATASET`
 is the root containing the HF Arrow dataset directories used by

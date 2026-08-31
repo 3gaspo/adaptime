@@ -93,7 +93,15 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn('DEFAULT_REPO_ID = "Real-TSF/TIME"', downloader)
+        self.assertIn('os.environ["HF_HUB_DISABLE_XET"] = "1"', downloader)
+        self.assertLess(
+            downloader.index('os.environ["HF_HUB_DISABLE_XET"] = "1"'),
+            downloader.index("from huggingface_hub import"),
+        )
         self.assertIn("resolved_revision = info.sha", downloader)
+        self.assertIn('REVISION_FILE = ".time_snapshot_revision"', downloader)
+        self.assertIn("if destination_has_files and not resume", downloader)
+        self.assertIn("max_workers=max_workers", downloader)
         self.assertIn('destination.rglob("state.json")', downloader)
 
         self.assertFalse((PROJECT_ROOT / "experiments/tirex_model.py").exists())

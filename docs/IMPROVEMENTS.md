@@ -10,8 +10,9 @@ deliberately.
 - Added one environment-variable path contract and local artifact
   placeholders for datasets, weights, outputs, and logs.
 - Added an explicit preparation-host downloader for an immutable revision of
-  the official `Real-TSF/TIME` saved-Arrow tree, with an empty-destination
-  requirement and post-download format validation.
+  the official `Real-TSF/TIME` saved-Arrow tree, with ordinary HTTP transfer,
+  revision-pinned interrupted-download recovery, and post-download format
+  validation.
 - Routed every retained model runner's default results below
   `TIME_OUTPUTS/results` using its canonical model alias.
 - Narrowed the maintained benchmark surface to `chronos_bolt`, `chronos2`,
