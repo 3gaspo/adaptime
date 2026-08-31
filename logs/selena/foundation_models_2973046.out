@@ -1,3 +1,0 @@
-2026-08-30 19:28:50 | workflow foundation_models started launch_id=selena_2973046 task=all_foundation_models
-2026-08-30 19:28:50 | stage evaluate started
-2026-08-30 19:28:50 | task model=chronos_bolt runner=run_chronos_bolt.sh started

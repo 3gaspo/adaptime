@@ -1,4 +1,0 @@
-/fssmall/home/h61084/codes/improved/src/slurm/run_foundation_model.sh: line 5: PROJECT_ROOT: PROJECT_ROOT must be set by the Slurm front
-2026-08-30 19:28:50 | task model=chronos_bolt runner=run_chronos_bolt.sh completed status=failed exit_code=1
-2026-08-30 19:28:50 | stage evaluate completed status=failed exit_code=1
-2026-08-30 19:28:50 | workflow foundation_models completed status=failed exit_code=1
