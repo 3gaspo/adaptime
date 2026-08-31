@@ -14,10 +14,6 @@ fi
 
 model="${FOUNDATION_MODELS[$model_index]}"
 runner="${FOUNDATION_RUNNERS[$model_index]}"
-export ENV_NAME="${TIME_ENV_NAME:-time_${model}}"
-if [ "$model" = timesfm2p5 ] || [ "$model" = timesfm3 ]; then
-    export TIMESFM_DIR="${TIMESFM_DIR:-$PROJECT_ROOT/experiments/timesfm_${model}}"
-fi
 
 TIME_WORKFLOW_NAME=foundation_models
 TIME_TASK_NAME="$model"
@@ -28,7 +24,7 @@ source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 
 time_workflow_init
 time_stage_start evaluate
-time_task_start "model=$model runner=$runner environment=$ENV_NAME"
+time_task_start "model=$model runner=$runner environment=uv"
 TIME_RUN_SCRIPT="$runner" source "$PROJECT_ROOT/src/slurm/run_time_script.sh"
 time_task_complete
 time_stage_complete

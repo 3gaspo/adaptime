@@ -17,6 +17,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
+TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"
+export TIME_STORAGE_ROOT
 source "$PROJECT_ROOT/src/slurm/runtime_paths.sh"
 mkdir -p "$TIME_LOGS"
 

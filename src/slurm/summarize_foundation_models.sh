@@ -4,6 +4,7 @@ set -euo pipefail
 
 PROJECT_ROOT="${PROJECT_ROOT:?PROJECT_ROOT must be set by the Slurm front}"
 source "$PROJECT_ROOT/src/slurm/runtime_paths.sh"
+source "$PROJECT_ROOT/src/slurm/foundation_model_runners.sh"
 
 TIME_WORKFLOW_NAME=foundation_summary
 TIME_TASK_NAME=macro_mase_and_timing
@@ -16,18 +17,11 @@ time_workflow_init
 time_stage_start summarize
 time_task_start "foundation_model_summary outputs=$TIME_OUTPUTS"
 
-if [ -n "${SUMMARY_PYTHON:-}" ]; then
-    summary_command=(
-        "$SUMMARY_PYTHON"
-        "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
-    )
-else
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-    summary_command=(
-        "$CONDA_EXE" run -n "${TIME_SUMMARY_ENV:-time_chronos2}" \
-        python "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
-    )
-fi
+summary_command=(
+    uv run --no-sync python
+    "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
+    --models "${FOUNDATION_MODELS[@]}"
+)
 
 if [ -n "${SLURM_JOB_ID:-}" ]; then
     srun --ntasks=1 "${summary_command[@]}"

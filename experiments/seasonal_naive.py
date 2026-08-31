@@ -152,6 +152,7 @@ def run_seasonal_naive_experiment(
 
         # Prepare model hyperparameters for metadata
         model_hyperparams = {
+            "model": "seasonal_naive",
             "season_length": season_length,
         }
 
