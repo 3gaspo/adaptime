@@ -26,6 +26,9 @@ deliberately.
   Chronos-Bolt, TiRex, and TS-ICL resolve explicit local checkpoints below
   `TIME_WEIGHTS`; Chronos uses local-only loading, TS-ICL disables automatic
   download, and Selena exports the upstream offline-mode switches.
+- Made Selena load its preserved project `.env` before applying cluster path
+  defaults while retaining submission-time environment overrides as highest
+  priority. Model jobs reject a missing `TIME_DATASET` before entering uv.
 - Made every retained runner fail on its first unsuccessful dataset instead of
   printing a traceback, continuing the sweep, and returning exit code zero.
   Workflow completion markers and dependent summaries now reflect the runner's

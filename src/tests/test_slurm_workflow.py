@@ -118,6 +118,8 @@ def main() -> None:
     )
     assert 'runner_command=(uv run --no-sync bash "$run_path")' in slurm_runner
     assert 'srun --ntasks=1 "${runner_command[@]}"' in slurm_runner
+    assert 'if [ ! -d "$TIME_DATASET" ]' in slurm_runner
+    assert 'TIME dataset directory not found: $TIME_DATASET' in slurm_runner
 
     summary = (
         PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"
@@ -144,6 +146,14 @@ def main() -> None:
     assert "export HF_HUB_OFFLINE=1" in runtime
     assert "export HF_DATASETS_OFFLINE=1" in runtime
     assert "export TRANSFORMERS_OFFLINE=1" in runtime
+    assert runtime.index('source "$PROJECT_ROOT/.env"') < runtime.index(
+        'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$selena_nni}"'
+    )
+    assert 'if [[ -v "$runtime_path_variable" ]]' in runtime
+    assert (
+        'runtime_path_overrides["$runtime_path_variable"]="${!runtime_path_variable}"'
+        in runtime
+    )
 
     submit = (PROJECT_ROOT / "scripts/submit_foundation_models.sh").read_text(
         encoding="utf-8"
