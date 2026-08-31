@@ -34,6 +34,10 @@ deliberately.
 - Made Selena load its preserved project `.env` before applying cluster path
   defaults while retaining submission-time environment overrides as highest
   priority. Model jobs reject a missing `TIME_DATASET` before entering uv.
+- Avoided Hugging Face `datasets` 2.x's NumPy formatter at the saved-Arrow
+  boundary. TIME now keeps rows in their native representation and converts
+  only numeric GluonTS fields with `np.asarray`, preserving values while
+  remaining compatible with the shared NumPy 2 environment.
 - Made every retained runner fail on its first unsuccessful dataset instead of
   printing a traceback, continuing the sweep, and returning exit code zero.
   Workflow completion markers and dependent summaries now reflect the runner's
@@ -56,7 +60,9 @@ deliberately.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
   Selena writes to the standard `outputs/` and `logs/` trees below its scratch
   project root; DGX pulls them into distinct local `outputs/selena/` and
-  `logs/selena/` subtrees. Lightweight, detailed, and full pulls reflect
+  `logs/selena/` subtrees. Selena has no current runtime directories named
+  `outputs_selena/` or `logs_selena/`; the `selena/` namespace is added only
+  on DGX after synchronization. Lightweight, detailed, and full pulls reflect
   TIME's summary, configuration, metric, prediction, and scheduler-log
   artifact sizes. Code synchronization excludes every output and log tree.
 - Kept DGX and Selena uv environments independent while making every retained

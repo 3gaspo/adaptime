@@ -120,6 +120,9 @@ model and a summary job with an `afterok` dependency on all four. Every cluster
 uses its own prepared environment and local weight tree; no job installs a
 package or retrieves a checkpoint. Cluster-specific submission and
 synchronization commands remain in the local internal workflow document.
+Each execution host writes to its standard `outputs/` and `logs/` roots;
+artifact synchronization may namespace a source host below subdirectories on
+the receiving host, but does not rename the source runtime directories.
 
 For each task, window-level predictions (quantiles) and metrics are saved in
 `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's
