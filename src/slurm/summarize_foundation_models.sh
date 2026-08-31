@@ -16,11 +16,15 @@ source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 time_workflow_init
 time_stage_start summarize
 time_task_start "foundation_model_summary outputs=$TIME_OUTPUTS"
+reports_root="$OUTPUTS_ROOT/reports"
+mkdir -p "$reports_root"
 
 summary_command=(
     uv run --no-sync python
     "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
     --models "${FOUNDATION_MODELS[@]}"
+    --csv "$reports_root/foundation_model_summary.csv"
+    --markdown "$reports_root/foundation_model_summary.md"
 )
 
 if [ -n "${SLURM_JOB_ID:-}" ]; then

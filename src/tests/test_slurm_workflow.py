@@ -4,50 +4,73 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MODELS = (
+    "chronos_bolt",
+    "chronos2",
+    "tirex",
+    "ts_icl",
+    "seasonal_naive",
+)
 
 
 def main() -> None:
     dgx = PROJECT_ROOT / "slurm/dgx"
     selena = PROJECT_ROOT / "slurm/selena"
+    dgx_models = dgx / "foundation_models"
+    selena_models = selena / "foundation_models"
     assert sorted(path.name for path in dgx.glob("*.slurm")) == [
-        "foundation_models.slurm",
         "foundation_summary.slurm",
     ]
     assert sorted(path.name for path in selena.glob("*.slurm")) == [
-        "foundation_models.slurm",
+        "foundation_summary_selena.slurm",
+    ]
+    assert sorted(path.name for path in dgx_models.glob("*.slurm")) == [
+        f"{model}.slurm" for model in sorted(MODELS)
+    ]
+    assert sorted(path.name for path in selena_models.glob("*.slurm")) == [
+        f"{model}_selena.slurm" for model in sorted(MODELS)
     ]
 
-    dgx_model = (dgx / "foundation_models.slurm").read_text(encoding="utf-8")
+    for model in MODELS:
+        dgx_front = (dgx_models / f"{model}.slurm").read_text(encoding="utf-8")
+        selena_front = (selena_models / f"{model}_selena.slurm").read_text(
+            encoding="utf-8"
+        )
+        assert "#SBATCH --array" not in dgx_front
+        assert "#SBATCH --array" not in selena_front
+        assert "#SBATCH --partition=h100" in dgx_front
+        assert "#SBATCH --partition=an" in selena_front
+        assert "#SBATCH --qos=an_preemptable" in selena_front
+        assert "#SBATCH --exclusive" in selena_front
+        assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_front
+        assert f"/codes/{PROJECT_ROOT.name}/logs_selena/" in selena_front
+        assert f"export TIME_MODEL={model}" in dgx_front
+        assert f"export TIME_MODEL={model}" in selena_front
+        for front in (dgx_front, selena_front):
+            assert "export PROJECT_ROOT" in front
+            assert 'source "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"' in front
+        assert 'export TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"' in dgx_front
+        assert 'source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"' in selena_front
+        assert 'TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"' in selena_front
+
     dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
-    selena_model = (selena / "foundation_models.slurm").read_text(encoding="utf-8")
-    assert "#SBATCH --array=0-4%4" in dgx_model
-    assert "#SBATCH --array" not in selena_model
-    assert "#SBATCH --partition=h100" in dgx_model
-    assert "#SBATCH --partition=an" in selena_model
-    assert "#SBATCH --qos=an_preemptable" in selena_model
-    assert "#SBATCH --exclusive" in selena_model
-    assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_model
-    assert "/codes/improved/logs/" in selena_model
-    for front in (dgx_model, dgx_summary, selena_model):
-        assert "export PROJECT_ROOT" in front
-    for front in (dgx_model, dgx_summary):
-        assert 'export TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"' in front
-    assert 'source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"' in selena_model
-    assert 'source "$PROJECT_ROOT/src/slurm/benchmark_foundation_models.sh"' in selena_model
-    assert 'TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"' in selena_model
+    selena_summary = (selena / "foundation_summary_selena.slurm").read_text(
+        encoding="utf-8"
+    )
+    assert 'source "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in dgx_summary
+    assert 'source "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in selena_summary
+    assert "#SBATCH --partition=h100" in dgx_summary
+    assert "#SBATCH --partition=an" in selena_summary
+    assert "#SBATCH --qos=an_preemptable" in selena_summary
+    assert "#SBATCH --exclusive" in selena_summary
+    assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_summary
 
     mapping = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
         encoding="utf-8"
     )
     assert mapping.count("    run_") == 5
     assert "FOUNDATION_MODEL_COUNT" in mapping
-    for model in (
-        "chronos_bolt",
-        "chronos2",
-        "tirex",
-        "ts_icl",
-        "seasonal_naive",
-    ):
+    for model in MODELS:
         assert f"    {model}\n" in mapping
     foundation_runners = (
         "run_chronos_bolt.sh",
@@ -77,17 +100,18 @@ def main() -> None:
         encoding="utf-8"
     )
     assert "environment=uv" in model_workflow
-    assert "export ENV_NAME=" not in model_workflow
-    assert "TIME_MODEL_INDEX" in model_workflow
-    assert "SLURM_ARRAY_TASK_ID" in model_workflow
+    assert "TIME_MODEL:?" in model_workflow
+    assert "TIME_MODEL_INDEX" not in model_workflow
+    assert "SLURM_ARRAY_TASK_ID" not in model_workflow
     assert "TIMESFM_DIR" not in model_workflow
 
-    selena_workflow = (
+    sequential_workflow = (
         PROJECT_ROOT / "src/slurm/benchmark_foundation_models.sh"
     ).read_text(encoding="utf-8")
-    assert 'model_indices=("${!FOUNDATION_MODELS[@]}")' in selena_workflow
-    assert 'bash "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"' in selena_workflow
-    assert 'bash "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in selena_workflow
+    assert 'for model_index in "${!FOUNDATION_MODELS[@]}"' in sequential_workflow
+    assert 'TIME_MODEL="$model"' in sequential_workflow
+    assert 'bash "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"' in sequential_workflow
+    assert 'bash "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in sequential_workflow
 
     slurm_runner = (PROJECT_ROOT / "src/slurm/run_time_script.sh").read_text(
         encoding="utf-8"
@@ -100,6 +124,7 @@ def main() -> None:
     ).read_text(encoding="utf-8")
     assert "uv run --no-sync python" in summary
     assert '--models "${FOUNDATION_MODELS[@]}"' in summary
+    assert 'reports_root="$OUTPUTS_ROOT/reports"' in summary
     assert "conda" not in summary
 
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
@@ -108,26 +133,23 @@ def main() -> None:
     common_runtime = (PROJECT_ROOT / "src/slurm/runtime_paths.sh").read_text(
         encoding="utf-8"
     )
-    assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$runtime_project_root}"' in common_runtime
-    assert 'TIME_DATA_ROOT="${TIME_DATA_ROOT:-$TIME_STORAGE_ROOT/datasets}"' in common_runtime
-    assert 'TIME_WEIGHTS="${TIME_WEIGHTS:-$TIME_STORAGE_ROOT/weights}"' in common_runtime
+    assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$runtime_project_root/outputs}}"' in common_runtime
+    assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$runtime_project_root/logs}}"' in common_runtime
     assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$selena_nni}"' in runtime
     assert 'TIME_SCRATCH_ROOT="${TIME_SCRATCH_ROOT:-$TIME_STORAGE_ROOT/codes/$PROJECT_NAME}"' in runtime
-    assert 'TIME_DATA_ROOT="${TIME_DATA_ROOT:-$TIME_STORAGE_ROOT/datasets}"' in runtime
-    assert 'TIME_WEIGHTS="${TIME_WEIGHTS:-$TIME_STORAGE_ROOT/weights}"' in runtime
-    assert 'TIME_OUTPUTS="${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}"' in runtime
-    assert 'TIME_LOGS="${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}"' in runtime
+    assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs_selena}}"' in runtime
+    assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs_selena}}"' in runtime
     assert "module load python/3.12_pypsa" in runtime
     assert "export UV_PYTHON_DOWNLOADS=never" in runtime
 
     submit = (PROJECT_ROOT / "scripts/submit_foundation_models.sh").read_text(
         encoding="utf-8"
     )
-    assert 'dependency="afterok:$evaluation_job"' in submit
+    assert "dgx|selena" in submit
+    assert 'for model in "${FOUNDATION_MODELS[@]}"' in submit
+    assert 'dependency="$(IFS=:; echo "${model_jobs[*]}")"' in submit
+    assert '--dependency="afterok:$dependency"' in submit
     assert 'TIME_LAUNCH_ID=$launch_id' in submit
-    assert "Selena: submit slurm/selena/foundation_models.slurm directly" in submit
-    assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"' in submit
-    assert "dgx|selena" not in submit
 
     code_sync = (PROJECT_ROOT / "sync_code_to_selena.sh").read_text(encoding="utf-8")
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
@@ -145,41 +167,29 @@ def main() -> None:
         "PENDING_UPDATES.md",
         "CLUSTER_STATUS.txt",
         "docs/INTERNAL_WORKFLOW.md",
+        "datasets/",
+        "weights/",
         "outputs/",
         "logs/",
+        "outputs_selena/",
+        "logs_selena/",
     ):
         assert f"--exclude='{excluded}'" in code_sync
-    assert "--exclude='datasets/'" not in code_sync
-    assert "--exclude='weights/'" not in code_sync
     assert "--delete-delay" in code_sync
-    assert "$SCRATCH_PROJECT_ROOT/outputs/results" in code_sync
-    assert "$SCRATCH_PROJECT_ROOT/logs" in code_sync
-    assert 'SCRATCH_STORAGE_ROOT="${TIME_SELENA_STORAGE_ROOT:-/scratch/users/$nni}"' in code_sync
-    assert "'$SCRATCH_STORAGE_ROOT/datasets'" in code_sync
-    assert "'$SCRATCH_STORAGE_ROOT/weights'" in code_sync
-    assert "'$SCRATCH_STORAGE_ROOT/venvs'" in code_sync
-    assert "outputs_selena" not in code_sync
-    assert "logs_selena" not in code_sync
-    assert "experiments/Kairos/" not in code_sync
-    assert "experiments/granite-tsfm/" not in code_sync
-    assert "experiments/timesfm_*/" not in code_sync
+    assert "$SCRATCH_PROJECT_ROOT/outputs_selena" in code_sync
+    assert "$SCRATCH_PROJECT_ROOT/logs_selena" in code_sync
     assert "lightweight|detailed|full" in result_sync
-    assert "config.json" in result_sync
-    assert "metrics.npz" in result_sync
-    assert '"$SOURCE_ROOT/outputs/"' in result_sync
-    assert '"$SOURCE_ROOT/logs/"' in result_sync
-    assert '"$PROJECT_ROOT/outputs/selena"' in result_sync
-    assert '"$PROJECT_ROOT/logs/selena"' in result_sync
-    assert "outputs_selena" not in result_sync
-    assert "logs_selena" not in result_sync
+    assert '"$SOURCE_ROOT/outputs_selena/"' in result_sync
+    assert '"$SOURCE_ROOT/logs_selena/"' in result_sync
+    assert '"$PROJECT_ROOT/outputs_selena"' in result_sync
+    assert '"$PROJECT_ROOT/logs_selena"' in result_sync
 
-    assert "lightweight|detailed|full" in publisher
+    assert "lightweight|detailed" in publisher
+    assert "lightweight|detailed|full" not in publisher
     assert '. "$proxy_script"' in publisher
     assert "git pull --ff-only origin main" in publisher
-    assert '"$project_root"/logs/selena/' in publisher
-    assert "foundation_model_summary.csv" in publisher
-    assert "config.json" in publisher
-    assert "metrics.npz" in publisher
+    assert '"$project_root"/logs_selena/' in publisher
+    assert "for output_tree in outputs outputs_selena" in publisher
     assert "git push origin main" in publisher
 
     direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(
@@ -227,8 +237,6 @@ def main() -> None:
     for runner in foundation_runners:
         runner_text = (PROJECT_ROOT / "scripts" / runner).read_text(encoding="utf-8")
         assert "set -euo pipefail" in runner_text
-    assert not (PROJECT_ROOT / "outputs_selena").exists()
-    assert not (PROJECT_ROOT / "logs_selena").exists()
     print("TIME Slurm and DGX/Selena synchronization contract passed.")
 
 
