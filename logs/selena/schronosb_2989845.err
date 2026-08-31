@@ -1,2 +1,51 @@
 /fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
   warnings.warn(
+Loading weights:   0%|          | 0/269 [00:00<?, ?it/s]Loading weights:   0%|          | 1/269 [00:00<01:46,  2.53it/s]Loading weights:   9%|▊         | 23/269 [00:00<00:04, 59.99it/s]Loading weights:  18%|█▊        | 48/269 [00:00<00:02, 103.29it/s]Loading weights:  24%|██▍       | 65/269 [00:00<00:01, 115.49it/s]Loading weights:  30%|███       | 81/269 [00:00<00:01, 114.21it/s]Loading weights:  42%|████▏     | 113/269 [00:00<00:00, 164.55it/s]Loading weights:  51%|█████▏    | 138/269 [00:01<00:00, 186.06it/s]Loading weights:  63%|██████▎   | 169/269 [00:01<00:00, 219.35it/s]Loading weights:  72%|███████▏  | 194/269 [00:01<00:00, 199.35it/s]Loading weights:  80%|████████  | 216/269 [00:01<00:00, 202.12it/s]Loading weights:  88%|████████▊ | 238/269 [00:01<00:00, 204.55it/s]Loading weights:  99%|█████████▉| 266/269 [00:01<00:00, 221.53it/s]Loading weights: 100%|██████████| 269/269 [00:01<00:00, 161.35it/s]
+Traceback (most recent call last):
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos_bolt.py", line 279, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos_bolt.py", line 262, in main
+    run_chronos_bolt_experiment(
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos_bolt.py", line 101, in run_chronos_bolt_experiment
+    to_univariate = False if Dataset(name=dataset_name, term=term,to_univariate=False).target_dim == 1 else True
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/experiments/../src/timebench/evaluation/data.py", line 196, in __init__
+    self.freq,
+    ^^^^^^^^^
+  File "/software/rd/tools/python/3.12_pypsa/lib/python3.12/functools.py", line 998, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/experiments/../src/timebench/evaluation/data.py", line 221, in freq
+    return self.hf_dataset[0]["freq"]
+           ~~~~~~~~~~~~~~~^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/arrow_dataset.py", line 2810, in __getitem__
+    return self._getitem(key)
+           ^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/arrow_dataset.py", line 2795, in _getitem
+    formatted_output = format_table(
+                       ^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 629, in format_table
+    return formatter(pa_table, query_type=query_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 396, in __call__
+    return self.format_row(pa_table)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/np_formatter.py", line 89, in format_row
+    row = self.numpy_arrow_extractor().extract_row(pa_table)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 158, in extract_row
+    return _unnest(self.extract_batch(pa_table))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 164, in extract_batch
+    return {col: self._arrow_array_to_numpy(pa_table[col]) for col in pa_table.column_names}
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 196, in _arrow_array_to_numpy
+    return np.array(array, copy=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Unable to avoid copy while creating an array as requested.
+If using `np.array(obj, copy=False)` replace it with `np.asarray(obj)` to allow a copy when needed (no behavior change in NumPy 1.x).
+For more details, see https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword.
+srun: error: sean0001: task 0: Exited with exit code 1
+2026-08-31 22:46:44 | task model=chronos_bolt runner=run_chronos_bolt.sh environment=uv completed status=failed exit_code=1
+2026-08-31 22:46:44 | stage evaluate completed status=failed exit_code=1
+2026-08-31 22:46:44 | workflow foundation_models completed status=failed exit_code=1

@@ -17,3 +17,6 @@ Model: amazon/chronos-bolt-base
 Terms: ['short', 'medium', 'long']
 ============================================================
 Loading Chronos-Bolt model: amazon/chronos-bolt-base from /fslarge/scratch/users/h61084/weights/chronos-bolt-base...
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=1440, val_length=1440

@@ -1,2 +1,51 @@
 /fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
   warnings.warn(
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:   1%|          | 1/170 [00:00<00:44,  3.80it/s]Loading weights:   1%|          | 2/170 [00:00<00:31,  5.32it/s]Loading weights:  13%|█▎        | 22/170 [00:00<00:02, 64.01it/s]Loading weights:  25%|██▌       | 43/170 [00:00<00:01, 107.95it/s]Loading weights:  43%|████▎     | 73/170 [00:00<00:00, 164.95it/s]Loading weights:  55%|█████▍    | 93/170 [00:00<00:00, 173.96it/s]Loading weights:  74%|███████▍  | 126/170 [00:00<00:00, 219.81it/s]Loading weights:  92%|█████████▏| 156/170 [00:01<00:00, 238.66it/s]Loading weights: 100%|██████████| 170/170 [00:01<00:00, 160.79it/s]
+Traceback (most recent call last):
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos2.py", line 315, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos2.py", line 298, in main
+    run_chronos2_experiment(
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos2.py", line 113, in run_chronos2_experiment
+    dataset = Dataset(
+              ^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/experiments/../src/timebench/evaluation/data.py", line 196, in __init__
+    self.freq,
+    ^^^^^^^^^
+  File "/software/rd/tools/python/3.12_pypsa/lib/python3.12/functools.py", line 998, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/experiments/../src/timebench/evaluation/data.py", line 221, in freq
+    return self.hf_dataset[0]["freq"]
+           ~~~~~~~~~~~~~~~^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/arrow_dataset.py", line 2810, in __getitem__
+    return self._getitem(key)
+           ^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/arrow_dataset.py", line 2795, in _getitem
+    formatted_output = format_table(
+                       ^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 629, in format_table
+    return formatter(pa_table, query_type=query_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 396, in __call__
+    return self.format_row(pa_table)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/np_formatter.py", line 89, in format_row
+    row = self.numpy_arrow_extractor().extract_row(pa_table)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 158, in extract_row
+    return _unnest(self.extract_batch(pa_table))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 164, in extract_batch
+    return {col: self._arrow_array_to_numpy(pa_table[col]) for col in pa_table.column_names}
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/datasets/formatting/formatting.py", line 196, in _arrow_array_to_numpy
+    return np.array(array, copy=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Unable to avoid copy while creating an array as requested.
+If using `np.array(obj, copy=False)` replace it with `np.asarray(obj)` to allow a copy when needed (no behavior change in NumPy 1.x).
+For more details, see https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword.
+srun: error: sean0003: task 0: Exited with exit code 1
+2026-08-31 22:46:44 | task model=chronos2 runner=run_chronos2.sh environment=uv completed status=failed exit_code=1
+2026-08-31 22:46:44 | stage evaluate completed status=failed exit_code=1
+2026-08-31 22:46:44 | workflow foundation_models completed status=failed exit_code=1
