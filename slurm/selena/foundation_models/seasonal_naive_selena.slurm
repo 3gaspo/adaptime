@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=sseasonal
 #SBATCH --gres=gpu:1
-#SBATCH --output=/scratch/users/%u/codes/adaptime/logs_selena/%x_%j.out
-#SBATCH --error=/scratch/users/%u/codes/adaptime/logs_selena/%x_%j.err
+#SBATCH --output=/scratch/users/%u/codes/adaptime/logs/%x_%j.out
+#SBATCH --error=/scratch/users/%u/codes/adaptime/logs/%x_%j.err
 #SBATCH --time=23:00:00
 #SBATCH --partition=an
 #SBATCH --qos=an_preemptable

@@ -43,7 +43,7 @@ def main() -> None:
         assert "#SBATCH --qos=an_preemptable" in selena_front
         assert "#SBATCH --exclusive" in selena_front
         assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_front
-        assert f"/codes/{PROJECT_ROOT.name}/logs_selena/" in selena_front
+        assert f"/codes/{PROJECT_ROOT.name}/logs/" in selena_front
         assert f"export TIME_MODEL={model}" in dgx_front
         assert f"export TIME_MODEL={model}" in selena_front
         for front in (dgx_front, selena_front):
@@ -124,7 +124,7 @@ def main() -> None:
     ).read_text(encoding="utf-8")
     assert "uv run --no-sync python" in summary
     assert '--models "${FOUNDATION_MODELS[@]}"' in summary
-    assert 'reports_root="$OUTPUTS_ROOT/reports"' in summary
+    assert "reports_root" not in summary
     assert "conda" not in summary
 
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
@@ -137,8 +137,8 @@ def main() -> None:
     assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$runtime_project_root/logs}}"' in common_runtime
     assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$selena_nni}"' in runtime
     assert 'TIME_SCRATCH_ROOT="${TIME_SCRATCH_ROOT:-$TIME_STORAGE_ROOT/codes/$PROJECT_NAME}"' in runtime
-    assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs_selena}}"' in runtime
-    assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs_selena}}"' in runtime
+    assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}}"' in runtime
+    assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}}"' in runtime
     assert "module load python/3.12_pypsa" in runtime
     assert "export UV_PYTHON_DOWNLOADS=never" in runtime
 
@@ -167,29 +167,26 @@ def main() -> None:
         "PENDING_UPDATES.md",
         "CLUSTER_STATUS.txt",
         "docs/INTERNAL_WORKFLOW.md",
-        "datasets/",
-        "weights/",
         "outputs/",
         "logs/",
-        "outputs_selena/",
-        "logs_selena/",
     ):
         assert f"--exclude='{excluded}'" in code_sync
+    assert "--exclude='datasets/'" not in code_sync
+    assert "--exclude='weights/'" not in code_sync
     assert "--delete-delay" in code_sync
-    assert "$SCRATCH_PROJECT_ROOT/outputs_selena" in code_sync
-    assert "$SCRATCH_PROJECT_ROOT/logs_selena" in code_sync
+    assert "$SCRATCH_PROJECT_ROOT/outputs/results" in code_sync
+    assert "$SCRATCH_PROJECT_ROOT/logs" in code_sync
     assert "lightweight|detailed|full" in result_sync
-    assert '"$SOURCE_ROOT/outputs_selena/"' in result_sync
-    assert '"$SOURCE_ROOT/logs_selena/"' in result_sync
-    assert '"$PROJECT_ROOT/outputs_selena"' in result_sync
-    assert '"$PROJECT_ROOT/logs_selena"' in result_sync
+    assert '"$SOURCE_ROOT/outputs/"' in result_sync
+    assert '"$SOURCE_ROOT/logs/"' in result_sync
+    assert '"$PROJECT_ROOT/outputs/selena"' in result_sync
+    assert '"$PROJECT_ROOT/logs/selena"' in result_sync
 
-    assert "lightweight|detailed" in publisher
-    assert "lightweight|detailed|full" not in publisher
+    assert "lightweight|detailed|full" in publisher
     assert '. "$proxy_script"' in publisher
     assert "git pull --ff-only origin main" in publisher
-    assert '"$project_root"/logs_selena/' in publisher
-    assert "for output_tree in outputs outputs_selena" in publisher
+    assert '"$project_root"/logs/selena/' in publisher
+    assert 'find "$project_root/outputs"' in publisher
     assert "git push origin main" in publisher
 
     direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(
