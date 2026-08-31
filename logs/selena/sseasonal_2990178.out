@@ -1,0 +1,7 @@
+2026-08-31 23:57:03 | workflow foundation_models started launch_id=selena_20260831T215700Z_55438 task=seasonal_naive
+2026-08-31 23:57:03 | stage evaluate started
+2026-08-31 23:57:03 | task model=seasonal_naive runner=run_seasonal_naive.sh environment=uv started
+[2026-08-31 23:57:03] TIME runner: run_seasonal_naive.sh
+[2026-08-31 23:57:03] datasets: /scratch/users/h61084/datasets/hf_dataset
+[2026-08-31 23:57:03] weights: /scratch/users/h61084/weights
+[2026-08-31 23:57:03] outputs: /scratch/users/h61084/codes/improved/outputs
