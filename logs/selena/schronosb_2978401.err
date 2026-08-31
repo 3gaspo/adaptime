@@ -1,0 +1,18 @@
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+Loading weights:   0%|          | 0/269 [00:00<?, ?it/s]Loading weights:   0%|          | 1/269 [00:00<01:36,  2.79it/s]Loading weights:   4%|▎         | 10/269 [00:00<00:10, 25.05it/s]Loading weights:  14%|█▍        | 39/269 [00:00<00:02, 92.95it/s]Loading weights:  24%|██▍       | 65/269 [00:00<00:01, 116.60it/s]Loading weights:  38%|███▊      | 103/269 [00:00<00:00, 175.48it/s]Loading weights:  48%|████▊     | 129/269 [00:00<00:00, 194.93it/s]Loading weights:  60%|█████▉    | 161/269 [00:01<00:00, 227.68it/s]Loading weights:  70%|██████▉   | 187/269 [00:01<00:00, 203.50it/s]Loading weights:  78%|███████▊  | 210/269 [00:01<00:00, 205.98it/s]Loading weights:  87%|████████▋ | 233/269 [00:01<00:00, 191.18it/s]Loading weights:  97%|█████████▋| 260/269 [00:01<00:00, 204.25it/s]Loading weights: 100%|██████████| 269/269 [00:01<00:00, 163.12it/s]
+Traceback (most recent call last):
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos_bolt.py", line 279, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos_bolt.py", line 262, in main
+    run_chronos_bolt_experiment(
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos_bolt.py", line 101, in run_chronos_bolt_experiment
+    to_univariate = False if Dataset(name=dataset_name, term=term,to_univariate=False).target_dim == 1 else True
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/experiments/../src/timebench/evaluation/data.py", line 185, in __init__
+    raise FileNotFoundError(f"Dataset not found at: {dataset_path}")
+FileNotFoundError: Dataset not found at: /scratch/users/h61084/datasets/hf_dataset/Water_Quality_Darwin/15T
+srun: error: sean0004: task 0: Exited with exit code 1
+2026-08-31 13:47:15 | task model=chronos_bolt runner=run_chronos_bolt.sh environment=uv completed status=failed exit_code=1
+2026-08-31 13:47:15 | stage evaluate completed status=failed exit_code=1
+2026-08-31 13:47:15 | workflow foundation_models completed status=failed exit_code=1

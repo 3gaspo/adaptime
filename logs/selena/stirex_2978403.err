@@ -1,0 +1,17 @@
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/fssmall/home/h61084/codes/improved/experiments/tirex_model.py", line 298, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/improved/experiments/tirex_model.py", line 283, in main
+    run_tirex_experiment(
+  File "/fssmall/home/h61084/codes/improved/experiments/tirex_model.py", line 75, in run_tirex_experiment
+    checkpoint_path = foundation_weight_path(
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/experiments/../src/timebench/paths.py", line 45, in foundation_weight_path
+    raise FileNotFoundError(f"Foundation-model weight {expected} not found: {path}")
+FileNotFoundError: Foundation-model weight file not found: /fslarge/scratch/users/h61084/weights/tirex/model.ckpt
+srun: error: sean0010: task 0: Exited with exit code 1
+2026-08-31 13:46:55 | task model=tirex runner=run_tirex.sh environment=uv completed status=failed exit_code=1
+2026-08-31 13:46:55 | stage evaluate completed status=failed exit_code=1
+2026-08-31 13:46:55 | workflow foundation_models completed status=failed exit_code=1
