@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Global_Price/Q/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 1409203.5176806445,
+      "finite_values": 300,
+      "total_values": 300
+    },
+    "MAE": {
+      "mean": 275.9386874662836,
+      "finite_values": 300,
+      "total_values": 300
+    },
+    "RMSE": {
+      "mean": 320.2108056174238,
+      "finite_values": 300,
+      "total_values": 300
+    },
+    "MAPE": {
+      "mean": 0.179574369315234,
+      "finite_values": 300,
+      "total_values": 300
+    },
+    "sMAPE": {
+      "mean": 0.19086806253337527,
+      "finite_values": 300,
+      "total_values": 300
+    },
+    "MASE": {
+      "mean": 1.5423093902423455,
+      "finite_values": 300,
+      "total_values": 300
+    },
+    "ND": {
+      "mean": 0.18065982309787731,
+      "finite_values": 300,
+      "total_values": 300
+    },
+    "CRPS": {
+      "mean": 0.14614016175915825,
+      "finite_values": 300,
+      "total_values": 300
+    }
+  },
+  "launch_id": "selena_20260901T173551Z_23108",
+  "model": "ts_icl",
+  "inference_seconds": 1.8530064914375544
+}

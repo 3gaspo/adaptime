@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Coastal_T_S/20T/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 0.04486281593622882,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "MAE": {
+      "mean": 0.1574169600451434,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "RMSE": {
+      "mean": 0.1906637101325202,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "MAPE": {
+      "mean": 0.0065785579899595254,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "sMAPE": {
+      "mean": 0.00659186221877656,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "MASE": {
+      "mean": 1.2496745974943226,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "ND": {
+      "mean": 0.006570992289183027,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "CRPS": {
+      "mean": 0.005139547677163534,
+      "finite_values": 45,
+      "total_values": 45
+    }
+  },
+  "launch_id": "selena_20260901T173551Z_23108",
+  "model": "ts_icl",
+  "inference_seconds": 1.1185013195499778
+}

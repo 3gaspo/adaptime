@@ -30,7 +30,9 @@
     "CRPS"
   ],
   "prediction_scale_factor": 10.0,
-  "inference_seconds": 0.4917516987770796,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_20260901T173551Z_23108",
+  "inference_seconds": 0.4890062300255522,
   "model": "seasonal_naive",
   "season_length": 12
 }

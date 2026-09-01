@@ -1,0 +1,49 @@
+{
+  "dataset_config": "NE_China_Wind/H/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 0.2462678027432028,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "MAE": {
+      "mean": 0.3567768893885336,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "RMSE": {
+      "mean": 0.4121044954941254,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "MAPE": {
+      "mean": 0.919515891519438,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "sMAPE": {
+      "mean": 0.7284766707857291,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "MASE": {
+      "mean": 0.8898112491125987,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "ND": {
+      "mean": 0.5354172464140782,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "CRPS": {
+      "mean": 0.43076661690697937,
+      "finite_values": 40,
+      "total_values": 40
+    }
+  },
+  "launch_id": "selena_20260901T173551Z_23108",
+  "model": "ts_icl",
+  "inference_seconds": 0.9837564593181014
+}

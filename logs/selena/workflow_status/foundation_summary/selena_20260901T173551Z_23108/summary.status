@@ -1,0 +1,12 @@
+workflow=foundation_summary
+launch_id=selena_20260901T173551Z_23108
+task=macro_mase_and_timing
+state=completed
+stage=none
+active_task=none
+launched_at=2026-09-01T18:23:52Z
+updated_at=2026-09-01T18:23:55Z
+exit_code=0
+slurm_job_id=3008109
+slurm_array_job_id=none
+slurm_array_task_id=none

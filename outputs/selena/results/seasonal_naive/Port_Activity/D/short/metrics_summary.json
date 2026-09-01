@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Port_Activity/D/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 2180714687.1661057,
+      "finite_values": 2376,
+      "total_values": 2376
+    },
+    "MAE": {
+      "mean": 25922.530588745107,
+      "finite_values": 2376,
+      "total_values": 2376
+    },
+    "RMSE": {
+      "mean": 31099.789837143413,
+      "finite_values": 2376,
+      "total_values": 2376
+    },
+    "MAPE": {
+      "mean": 9.670565248783976,
+      "finite_values": 2376,
+      "total_values": 2376
+    },
+    "sMAPE": {
+      "mean": 1.227506195853139,
+      "finite_values": 2376,
+      "total_values": 2376
+    },
+    "MASE": {
+      "mean": 1.146303920041468,
+      "finite_values": 2376,
+      "total_values": 2376
+    },
+    "ND": {
+      "mean": 1.9376138323598642,
+      "finite_values": 2376,
+      "total_values": 2376
+    },
+    "CRPS": {
+      "mean": 3.4429509675060705,
+      "finite_values": 2376,
+      "total_values": 2376
+    }
+  },
+  "launch_id": "selena_20260901T173551Z_23108",
+  "model": "seasonal_naive",
+  "inference_seconds": 23.476201765006408
+}

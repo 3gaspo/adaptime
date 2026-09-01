@@ -1,0 +1,12 @@
+2026-09-01 20:23:52 | workflow foundation_summary started launch_id=selena_20260901T173551Z_23108 task=macro_mase_and_timing
+2026-09-01 20:23:52 | stage summarize started
+2026-09-01 20:23:52 | task foundation_model_summary outputs=/scratch/users/h61084/codes/improved/outputs started
+Foundation-model summary written to /scratch/users/h61084/codes/improved/outputs/foundation_model_summary.csv and /scratch/users/h61084/codes/improved/outputs/foundation_model_summary.md
+
+chronos2                     state=completed  MASE=1.122040  inference=436.629s  coverage=98/98 timed tasks
+ts_icl                       state=completed  MASE=1.167895  inference=2553.966s  coverage=98/98 timed tasks
+chronos_bolt                 state=completed  MASE=1.238911  inference=954.222s  coverage=98/98 timed tasks
+seasonal_naive               state=completed  MASE=1.551718  inference=2313.758s  coverage=98/98 timed tasks
+2026-09-01 20:23:55 | task foundation_model_summary outputs=/scratch/users/h61084/codes/improved/outputs completed status=success
+2026-09-01 20:23:55 | stage summarize completed status=success
+2026-09-01 20:23:55 | workflow foundation_summary completed status=success exit_code=0

@@ -30,6 +30,8 @@
     "CRPS"
   ],
   "prediction_scale_factor": 100.0,
-  "inference_seconds": 0.838884805329144,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_20260901T173551Z_23108",
+  "inference_seconds": 0.8388311099261045,
   "model": "chronos_bolt"
 }

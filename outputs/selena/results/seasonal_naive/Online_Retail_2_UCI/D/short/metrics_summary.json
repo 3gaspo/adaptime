@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Online_Retail_2_UCI/D/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 1418038906.906628,
+      "finite_values": 6,
+      "total_values": 6
+    },
+    "MAE": {
+      "mean": 28501.02221204649,
+      "finite_values": 6,
+      "total_values": 6
+    },
+    "RMSE": {
+      "mean": 33975.31457634686,
+      "finite_values": 6,
+      "total_values": 6
+    },
+    "MAPE": {
+      "mean": 0.8867450122813997,
+      "finite_values": 6,
+      "total_values": 6
+    },
+    "sMAPE": {
+      "mean": 0.9123874253087298,
+      "finite_values": 6,
+      "total_values": 6
+    },
+    "MASE": {
+      "mean": 1.7318192869488918,
+      "finite_values": 6,
+      "total_values": 6
+    },
+    "ND": {
+      "mean": 0.8970369406447246,
+      "finite_values": 6,
+      "total_values": 6
+    },
+    "CRPS": {
+      "mean": 0.8891128815779683,
+      "finite_values": 6,
+      "total_values": 6
+    }
+  },
+  "launch_id": "selena_20260901T173551Z_23108",
+  "model": "seasonal_naive",
+  "inference_seconds": 0.062111367005854845
+}
