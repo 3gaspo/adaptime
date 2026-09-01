@@ -51,12 +51,19 @@ deliberately.
   macro-average weights H settings equally within dataset/frequency entries
   and then weights those entries equally; timing totals require complete task
   coverage.
+- Added a compact `metrics_summary.json` beside every task result, containing
+  finite aggregate metrics and coverage counts. Lightweight result transfer
+  and publication include these files, while detailed transfer retains raw
+  per-window `metrics.npz` arrays.
 - Added matching DGX and Selena Slurm fronts for each retained model plus a
   separate dependent summary front. One submission helper creates four
-  independently schedulable model jobs and starts the summary only after all
-  four succeed. Dataset/frequency and horizon-term loops remain sequential
-  inside each model allocation. Both clusters emit explicit task/workflow
-  completion records and durable status files below the configured log root.
+  independently schedulable model jobs and starts the summary after all four
+  terminate. The report filters task artifacts by launch ID and includes each
+  model's terminal status, so a failed model yields an explicit partial report
+  rather than blocking aggregation or mixing stale tasks. Dataset/frequency
+  and horizon-term loops remain sequential inside each model allocation. Both
+  clusters emit explicit task/workflow completion records and durable status
+  files below the configured log root.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
   Selena writes to the standard `outputs/` and `logs/` trees below its scratch
   project root; DGX pulls them into distinct local `outputs/selena/` and
@@ -78,6 +85,8 @@ deliberately.
   tiers mirror result synchronization, replace oversized files with bounded
   metadata/text samples, pull `origin/main` through the configured proxy, and
   push only the selected artifact paths plus existing local commits.
+- Made job-specific transfer and publication retain structured workflow status
+  records, not only scheduler stdout/stderr pairs.
 - Added a shared storage-root override so DGX resolves datasets and weights
   below the user home outside `codes/`, while Selena resolves them beside
   `codes/` in user scratch. Project outputs and logs remain project-owned.
@@ -94,6 +103,13 @@ deliberately.
   floor-based complete-window rule.
 - Rejected forecast arrays whose instance count cannot be reshaped into the
   configured number of windows.
+- Normalized both TS-ICL forecast return forms: one tensor for stackable
+  contexts and a list of tensors for variable-length contexts. Both now enter
+  TIME evaluation as `(batch, quantile, variate, horizon)` arrays.
+- Suppressed only the known pandas frequency-alias deprecation messages that
+  Seasonal Naive amplified once per forecast window, while retaining unrelated
+  warnings. Undefined all-zero MAPE/sMAPE cells now remain NaN without emitting
+  NumPy empty-mean warnings.
 - Removed duplicate Seasonal Naive rows from local leaderboard aggregation and
   made result/cache paths configurable.
 

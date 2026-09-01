@@ -17,6 +17,48 @@ def get_available_terms(dataset_name: str, config: dict) -> list[str]:
     return available_terms
 
 
+def normalize_tsicl_quantiles(quantiles) -> np.ndarray:
+    """Convert either documented TS-ICL forecast form to TIME's batch layout.
+
+    TS-ICL returns one tensor for stackable contexts and a list of tensors for
+    variable-length contexts. Tensor output is ``(batch, variate, horizon,
+    quantile)``; each list item is ``(variate, horizon, quantile)``. TIME uses
+    ``(batch, quantile, variate, horizon)`` for both cases.
+    """
+
+    def to_numpy(value) -> np.ndarray:
+        if hasattr(value, "detach"):
+            value = value.detach()
+        if hasattr(value, "cpu"):
+            value = value.cpu()
+        return np.asarray(value)
+
+    if isinstance(quantiles, list):
+        if not quantiles:
+            raise ValueError("TS-ICL returned an empty quantile list")
+        normalized = []
+        for index, item in enumerate(quantiles):
+            array = to_numpy(item)
+            if array.ndim != 3:
+                raise ValueError(
+                    "TS-ICL list quantiles must have shape "
+                    f"(variate, horizon, quantile); item {index} has {array.shape}"
+                )
+            normalized.append(array.transpose(2, 0, 1))
+        try:
+            return np.stack(normalized, axis=0)
+        except ValueError as error:
+            raise ValueError("TS-ICL list quantiles have inconsistent output shapes") from error
+
+    array = to_numpy(quantiles)
+    if array.ndim != 4:
+        raise ValueError(
+            "TS-ICL tensor quantiles must have shape "
+            f"(batch, variate, horizon, quantile); received {array.shape}"
+        )
+    return array.transpose(0, 3, 1, 2)
+
+
 def impute_nans_1d(series: np.ndarray) -> np.ndarray:
     series = series.astype(np.float32, copy=False)
     if not np.isnan(series).any():

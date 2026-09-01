@@ -20,7 +20,6 @@ from pathlib import Path
 import numpy as np
 
 import torch
-from einops import rearrange
 
 from gluonts.time_feature import get_seasonality
 
@@ -29,7 +28,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from timebench.evaluation.saver import save_window_predictions
 from timebench.evaluation.timing import EvaluationTimer
-from timebench.evaluation.utils import get_available_terms
+from timebench.evaluation.utils import get_available_terms, normalize_tsicl_quantiles
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
@@ -152,8 +151,6 @@ def run_tsicl_experiment(
         eval_input_list = list(eval_data.input)  # Convert to list for indexing
         total_items = len(eval_input_list)
 
-        original_stderr = sys.stderr
-
         for start in range(0, total_items, batch_size):
             end = min(start + batch_size, total_items)
             # Load context only for current batch
@@ -162,27 +159,21 @@ def run_tsicl_experiment(
                 for i in range(start, end)
             ]
             
-            try:
-                with torch.no_grad():
-                    _, batch_q = model.forecast(
-                        inputs            = batch_contexts,
-                        prediction_length = prediction_length,
-                        batch_size        = batch_size,
-                        quantile_levels   = quantile_levels,
-                        context_length    = context_length,
-                        device            = torch.device(device_map),
-                        denormalize       = True,
-                        squeeze_output    = False
-                    )
-                    assert isinstance(batch_q, torch.Tensor)
-                    batch_q = rearrange(batch_q, "b c t q -> b q c t").cpu().numpy()
-                    # (batch, num_quantiles, num_variates, prediction_length)
+            with torch.no_grad():
+                _, batch_q = model.forecast(
+                    inputs            = batch_contexts,
+                    prediction_length = prediction_length,
+                    batch_size        = batch_size,
+                    quantile_levels   = quantile_levels,
+                    context_length    = context_length,
+                    device            = torch.device(device_map),
+                    denormalize       = True,
+                    squeeze_output    = False
+                )
 
-            finally:
-                sys.stderr = original_stderr
-
-            # Stack into batch: (batch_size, num_quantiles, num_variates, prediction_length)
-            batch_q_array = batch_q
+            # TS-ICL returns a tensor for stackable contexts and a list for
+            # variable-length contexts. Normalize both documented forms.
+            batch_q_array = normalize_tsicl_quantiles(batch_q)
             fc_quantiles_batches.append(batch_q_array)
 
             # Optional progress logging

@@ -53,6 +53,7 @@ if [ "$SYNC_SIZE" = lightweight ]; then
         '--include=/foundation_model_summary.csv'
         '--include=/foundation_model_summary.md'
         '--include=config.json'
+        '--include=metrics_summary.json'
         '--exclude=*'
     )
 elif [ "$SYNC_SIZE" = detailed ]; then
@@ -61,6 +62,7 @@ elif [ "$SYNC_SIZE" = detailed ]; then
         '--include=/foundation_model_summary.csv'
         '--include=/foundation_model_summary.md'
         '--include=config.json'
+        '--include=metrics_summary.json'
         '--include=metrics.npz'
         '--exclude=*'
     )
@@ -78,7 +80,7 @@ if [ -n "$JOB_ID" ]; then
         '--include=*/' \
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \
         "--include=*_${JOB_ID}.out" "--include=*_${JOB_ID}.err" \
-        "--include=*/selena_${JOB_ID}/***" '--exclude=*' \
+        '--include=/workflow_status/***' '--exclude=*' \
         "$SOURCE_ROOT/logs/" \
         "$DGX_LOG_ROOT/"
 else

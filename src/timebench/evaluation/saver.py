@@ -6,7 +6,8 @@ Output structure:
         {dataset_config}/
             predictions.npz  # Contains quantile predictions and levels
             metrics.npz      # Contains per-window metrics
-            config.json    # Contains dataset config
+            metrics_summary.json  # Contains lightweight aggregate metrics
+            config.json     # Contains dataset config
 """
 
 import json
@@ -60,6 +61,9 @@ def save_window_predictions(
 
         metrics.npz:
             - Each metric array with shape (num_series, num_windows, num_variates)
+
+        metrics_summary.json:
+            - Finite mean and coverage counts for each metric
 
         config.json:
             - Dataset, forecast-shape, metric, and model configuration
@@ -245,7 +249,12 @@ def save_window_predictions(
         "context_length": context_len,
         "metric_names": list(metrics.keys()),
         "prediction_scale_factor": prediction_scale_factor,  # For float16 overflow prevention
+        "metrics_summary_file": "metrics_summary.json",
     }
+
+    launch_id = os.environ.get("TIME_LAUNCH_ID")
+    if launch_id:
+        config["launch_id"] = launch_id
 
     if inference_seconds is not None:
         inference_seconds = float(inference_seconds)
@@ -262,10 +271,35 @@ def save_window_predictions(
         json.dump(config, f, indent=2)
     print(f"    Saved config to {config_path}")
 
+    metric_summaries = {}
+    for metric_name, metric_values in metrics.items():
+        finite_values = metric_values[np.isfinite(metric_values)]
+        metric_summaries[metric_name] = {
+            "mean": float(np.mean(finite_values)) if finite_values.size else None,
+            "finite_values": int(finite_values.size),
+            "total_values": int(metric_values.size),
+        }
+    metrics_summary = {
+        "dataset_config": ds_config,
+        "aggregation": "mean over finite series/window/variate metric values",
+        "metrics": metric_summaries,
+    }
+    if launch_id:
+        metrics_summary["launch_id"] = launch_id
+    if model_hyperparams and "model" in model_hyperparams:
+        metrics_summary["model"] = model_hyperparams["model"]
+    if inference_seconds is not None:
+        metrics_summary["inference_seconds"] = inference_seconds
+
+    metrics_summary_path = os.path.join(ds_output_dir, "metrics_summary.json")
+    with open(metrics_summary_path, "w") as f:
+        json.dump(metrics_summary, f, indent=2)
+    print(f"    Saved aggregate metrics to {metrics_summary_path}")
+
     # Print average metrics summary
     print("    Metrics summary (averaged over all series/windows/variates):")
     for metric_name, metric_values in metrics.items():
-        mean_val = np.nanmean(metric_values)
-        print(f"      {metric_name}: {mean_val:.4f}")
+        mean_val = metric_summaries[metric_name]["mean"]
+        print(f"      {metric_name}: {'undefined' if mean_val is None else f'{mean_val:.4f}'}")
 
     return config

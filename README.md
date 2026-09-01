@@ -116,7 +116,7 @@ bash scripts/run_all_foundation_models.sh
 ```
 
 The cluster submission helper launches one independently schedulable job per
-model and a summary job with an `afterok` dependency on all four. Every cluster
+model and a summary job with an `afterany` dependency on all four. Every cluster
 uses its own prepared environment and local weight tree; no job installs a
 package or retrieves a checkpoint. Cluster-specific submission and
 synchronization commands remain in the local internal workflow document.
@@ -126,17 +126,21 @@ the receiving host, but does not rename the source runtime directories.
 
 For each task, window-level predictions (quantiles) and metrics are saved in
 `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's
-`config.json` also records `inference_seconds`: accelerator-synchronized wall
-time for the complete test forecasting loop. Model loading, dataset
-construction, metric computation, and result saving are excluded.
+`config.json` records its launch ID and `inference_seconds`: accelerator-
+synchronized wall time for the complete test forecasting loop. The compact
+`metrics_summary.json` beside it records each metric's finite mean and coverage
+counts; raw per-window arrays remain in `metrics.npz`. Model loading, dataset
+construction, metric computation, and result saving are excluded from timing.
 
 ### Foundation-model performance and timing
 
-The four-model runner writes
+After all four model jobs terminate, even if one failed, the summary job writes
 `${TIME_OUTPUTS}/foundation_model_summary.csv` and a Markdown rendering beside
-it. By default, the table includes only the four maintained canonical result
-directories, so result trees from removed runners are not mixed into current
-evidence. It can also be regenerated from completed or partial local results:
+it. Cluster summaries select only artifacts stamped with the current launch ID
+and include terminal model states, so partial results cannot be mistaken for a
+complete launch or mixed with stale tasks. By default, manual summaries include
+only the four maintained canonical result directories. They can be regenerated
+from synchronized lightweight task summaries:
 
 ```bash
 python scripts/compute_foundation_summary.py

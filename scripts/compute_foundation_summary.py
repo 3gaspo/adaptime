@@ -22,28 +22,31 @@ DEFAULT_MODELS = (
 )
 
 
-def load_result_cells(root: Path, models: set[str] | None = None) -> list[dict]:
+def load_result_cells(
+    root: Path,
+    models: set[str] | None = None,
+    launch_id: str | None = None,
+) -> list[dict]:
     """Load one dataset/frequency/horizon cell from every complete result directory."""
     cells = []
-    for metrics_path in sorted(root.glob("*/*/*/*/metrics.npz")):
-        relative = metrics_path.relative_to(root)
+    for summary_path in sorted(root.glob("*/*/*/*/metrics_summary.json")):
+        relative = summary_path.relative_to(root)
         if len(relative.parts) != 5:
             continue
         model, dataset, freq, horizon, _ = relative.parts
         if models is not None and model not in models:
             continue
 
-        with np.load(metrics_path) as metrics:
-            if "MASE" not in metrics.files:
-                continue
-            mase = float(np.nanmean(metrics["MASE"]))
+        config_path = summary_path.with_name("config.json")
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        if launch_id is not None and config.get("launch_id") != launch_id:
+            continue
 
-        config_path = metrics_path.with_name("config.json")
-        config = (
-            json.loads(config_path.read_text(encoding="utf-8"))
-            if config_path.exists()
-            else {}
-        )
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        mase = summary.get("metrics", {}).get("MASE", {}).get("mean")
+        if mase is None:
+            continue
+        mase = float(mase)
         inference_seconds = config.get("inference_seconds")
         if inference_seconds is not None:
             inference_seconds = float(inference_seconds)
@@ -96,10 +99,66 @@ def summarize_cells(cells: list[dict]) -> list[dict]:
     return sorted(rows, key=lambda row: (row["MASE_macro"], row["model"]))
 
 
+def load_model_statuses(status_dir: Path | None) -> dict[str, dict[str, str]]:
+    """Load terminal per-model workflow status for one launch when available."""
+    if status_dir is None or not status_dir.is_dir():
+        return {}
+
+    statuses = {}
+    for status_path in sorted(status_dir.glob("*.status")):
+        values = {}
+        for line in status_path.read_text(encoding="utf-8").splitlines():
+            key, separator, value = line.partition("=")
+            if separator:
+                values[key] = value
+        statuses[status_path.stem] = values
+    return statuses
+
+
+def add_model_status(
+    metric_rows: list[dict],
+    models: list[str] | tuple[str, ...],
+    statuses: dict[str, dict[str, str]],
+    launch_id: str | None,
+) -> list[dict]:
+    """Attach launch status and retain failed models with no metric cells."""
+    by_model = {row["model"]: row for row in metric_rows}
+    selected_models = models if statuses else [row["model"] for row in metric_rows]
+    rows = []
+    for model in selected_models:
+        row = by_model.get(
+            model,
+            {
+                "model": model,
+                "MASE_macro": None,
+                "inference_seconds": None,
+                "datasets": 0,
+                "tasks": 0,
+                "timed_tasks": 0,
+            },
+        ).copy()
+        status = statuses.get(model, {})
+        row["launch_id"] = launch_id or status.get("launch_id", "")
+        row["state"] = status.get("state", "")
+        row["exit_code"] = status.get("exit_code", "")
+        rows.append(row)
+    return sorted(
+        rows,
+        key=lambda row: (
+            row["MASE_macro"] is None,
+            float("inf") if row["MASE_macro"] is None else row["MASE_macro"],
+            row["model"],
+        ),
+    )
+
+
 def write_csv(rows: list[dict], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
+        "launch_id",
         "model",
+        "state",
+        "exit_code",
         "MASE_macro",
         "inference_seconds",
         "datasets",
@@ -122,13 +181,15 @@ def write_markdown(rows: list[dict], path: Path) -> None:
         "Inference seconds are summed over the same test forecasting tasks; "
         "a blank total means at least one task lacks timing metadata.",
         "",
-        "| Model | MASE (macro) | Inference seconds | Datasets | Tasks | Timed tasks |",
-        "|---|---:|---:|---:|---:|---:|",
+        "| Model | State | Exit | MASE (macro) | Inference seconds | Datasets | Tasks | Timed tasks |",
+        "|---|---|---:|---:|---:|---:|---:|---:|",
     ]
     for row in rows:
         seconds = row["inference_seconds"]
+        mase = row["MASE_macro"]
         lines.append(
-            f"| {row['model']} | {row['MASE_macro']:.6f} | "
+            f"| {row['model']} | {row['state']} | {row['exit_code']} | "
+            f"{'' if mase is None else f'{mase:.6f}'} | "
             f"{'' if seconds is None else f'{seconds:.3f}'} | "
             f"{row['datasets']} | {row['tasks']} | {row['timed_tasks']} |"
         )
@@ -165,12 +226,29 @@ def main() -> None:
         default=DEFAULT_MODELS,
         help="Canonical model result directories to summarize",
     )
+    parser.add_argument(
+        "--launch-id",
+        default=None,
+        help="Include only task artifacts stamped with this launch ID",
+    )
+    parser.add_argument(
+        "--status-dir",
+        type=Path,
+        default=None,
+        help="Per-model workflow status directory for the selected launch",
+    )
     args = parser.parse_args()
 
     models = set(args.models)
-    rows = summarize_cells(load_result_cells(args.results_dir, models))
+    metric_rows = summarize_cells(
+        load_result_cells(args.results_dir, models, launch_id=args.launch_id)
+    )
+    statuses = load_model_statuses(args.status_dir)
+    rows = add_model_status(metric_rows, args.models, statuses, args.launch_id)
     if not rows:
-        raise SystemExit(f"No MASE result cells found below {args.results_dir}")
+        raise SystemExit(
+            f"No aggregate metric cells or model statuses found below {args.results_dir}"
+        )
 
     write_csv(rows, args.csv)
     write_markdown(rows, args.markdown)
@@ -179,8 +257,11 @@ def main() -> None:
     for row in rows:
         seconds = row["inference_seconds"]
         seconds_text = "incomplete" if seconds is None else f"{seconds:.3f}s"
+        mase = row["MASE_macro"]
+        mase_text = "incomplete" if mase is None else f"{mase:.6f}"
         print(
-            f"{row['model']:<28} MASE={row['MASE_macro']:.6f}  "
+            f"{row['model']:<28} state={row['state'] or 'unknown'}  "
+            f"MASE={mase_text}  "
             f"inference={seconds_text}  "
             f"coverage={row['timed_tasks']}/{row['tasks']} timed tasks"
         )

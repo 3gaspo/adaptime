@@ -159,7 +159,7 @@ def main() -> None:
     assert "dgx|selena" in submit
     assert 'for model in "${FOUNDATION_MODELS[@]}"' in submit
     assert 'dependency="$(IFS=:; echo "${model_jobs[*]}")"' in submit
-    assert '--dependency="afterok:$dependency"' in submit
+    assert '--dependency="afterany:$dependency"' in submit
     assert 'TIME_LAUNCH_ID=$launch_id' in submit
 
     code_sync = (PROJECT_ROOT / "sync_code_to_selena.sh").read_text(encoding="utf-8")

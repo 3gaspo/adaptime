@@ -15,7 +15,30 @@ Usage:
 import argparse
 import os
 import sys
+import warnings
 from pathlib import Path
+
+# Pandas still accepts TIME's established frequency aliases, but GluonTS and
+# StatsForecast emit the same deprecation warning for every forecast window.
+# Silence only those known alias warnings; all other warnings remain visible.
+warnings.filterwarnings(
+    "ignore",
+    message=(
+        r"'(?:T|H|M|Q)' is deprecated and will be removed in a future version, "
+        r"please use '(?:min|h|ME|QE)' instead\."
+    ),
+    category=FutureWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r"Period with BDay freq is deprecated and will be removed in a future version\..*",
+    category=FutureWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r"Using `json`-module for json-handling\..*",
+    category=UserWarning,
+)
 
 # Ensure timebench is importable
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))

@@ -21,6 +21,8 @@ summary_command=(
     uv run --no-sync python
     "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
     --models "${FOUNDATION_MODELS[@]}"
+    --launch-id "$TIME_LAUNCH_ID"
+    --status-dir "$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"
 )
 
 if [ -n "${SLURM_JOB_ID:-}" ]; then
