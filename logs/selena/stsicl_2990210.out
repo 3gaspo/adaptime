@@ -1,0 +1,377 @@
+2026-09-01 00:03:13 | workflow foundation_models started launch_id=selena_20260831T220311Z_5849 task=ts_icl
+2026-09-01 00:03:13 | stage evaluate started
+2026-09-01 00:03:13 | task model=ts_icl runner=run_tsicl.sh environment=uv started
+[2026-09-01 00:03:13] TIME runner: run_tsicl.sh
+[2026-09-01 00:03:13] datasets: /scratch/users/h61084/datasets/hf_dataset
+[2026-09-01 00:03:13] weights: /scratch/users/h61084/weights
+[2026-09-01 00:03:13] outputs: /scratch/users/h61084/codes/improved/outputs
+
+############################################################
+# Dataset 1/1: Water_Quality_Darwin/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Water_Quality_Darwin/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=1440, val_length=1440
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Series length: min=8662,               max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 16
+    - Windows: 90
+    Processed 160/630...
+    Processed 320/630...
+    Processed 480/630...
+    Processed 630/630...
+    Total instances: 630, Series during experiment: 7, Windows: 90
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2.4406
+      MAE: 0.4819
+      RMSE: 0.5741
+      MAPE: 0.0637
+      sMAPE: 0.0586
+      MASE: 0.6738
+      ND: 0.0608
+      CRPS: 0.0481
+  Completed: 7 series × 90 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 107.418s
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Series length: min=8662,               max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 96
+    - Windows: 15
+    Total instances: 105, Series during experiment: 7, Windows: 15
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 4.1850
+      MAE: 0.6728
+      RMSE: 0.8521
+      MAPE: 0.0875
+      sMAPE: 0.0761
+      MASE: 1.0025
+      ND: 0.0756
+      CRPS: 0.0602
+  Completed: 7 series × 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 15.201s
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Series length: min=8662,               max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 288
+    - Windows: 5
+    Total instances: 35, Series during experiment: 7, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/Water_Quality_Darwin/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9.9407
+      MAE: 0.9790
+      RMSE: 1.2299
+      MAPE: 0.1198
+      sMAPE: 0.0988
+      MASE: 1.4835
+      ND: 0.0985
+      CRPS: 0.0784
+  Completed: 7 series × 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 5.365s
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/5T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=36, test_length=4320, val_length=4320
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=26486,               max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 36
+    - Windows: 120
+    Total instances: 120, Series during experiment: 1, Windows: 120
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.1018
+      MAE: 0.5676
+      RMSE: 0.6768
+      MAPE: 0.4209
+      sMAPE: 0.3450
+      MASE: 0.4067
+      ND: 0.2929
+      CRPS: 0.2302
+  Completed: 1 series × 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 18.952s
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=4320, val_length=4320
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=26486,               max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 288
+    - Windows: 15
+    Total instances: 15, Series during experiment: 1, Windows: 15
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.1449
+      MAE: 0.8054
+      RMSE: 0.9830
+      MAPE: 0.6744
+      sMAPE: 0.4108
+      MASE: 0.6444
+      ND: 0.3626
+      CRPS: 0.2818
+  Completed: 1 series × 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 2.311s
+
+--- Term: long ---
+  Config: prediction_length=864, test_length=4320, val_length=4320
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=26486,               max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 864
+    - Windows: 5
+    Total instances: 5, Series during experiment: 1, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/5T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 6.0612
+      MAE: 0.9560
+      RMSE: 1.1603
+      MAPE: 0.8441
+      sMAPE: 0.4962
+      MASE: 1.0940
+      ND: 0.4478
+      CRPS: 0.3638
+  Completed: 1 series × 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 1.582s
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/10T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/10T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=18, test_length=2160, val_length=2160
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 10T
+    - Num series: 10
+    - Target dim: 6
+    - Series length: min=7481,               max=31957, avg=20668.5
+    - Test split: 2160 steps
+    - Prediction length: 18
+    - Windows: 120
+    Processed 160/1200...
+    Processed 320/1200...
+    Processed 480/1200...
+    Processed 640/1200...
+    Processed 800/1200...
+    Processed 960/1200...
+    Processed 1120/1200...
+    Total instances: 1200, Series during experiment: 10, Windows: 120
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 7.5322
+      MAE: 0.7542
+      RMSE: 0.9460
+      MAPE: 3401.5310
+      sMAPE: 0.4606
+      MASE: 0.5857
+      ND: 0.3464
+      CRPS: 0.2733
+  Completed: 10 series × 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 173.710s
+
+--- Term: medium ---
+  Config: prediction_length=144, test_length=2160, val_length=2160
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 10T
+    - Num series: 10
+    - Target dim: 6
+    - Series length: min=7481,               max=31957, avg=20668.5
+    - Test split: 2160 steps
+    - Prediction length: 144
+    - Windows: 15
+    Processed 150/150...
+    Total instances: 150, Series during experiment: 10, Windows: 15
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 10.3316
+      MAE: 0.9472
+      RMSE: 1.2529
+      MAPE: 3552.2521
+      sMAPE: 0.5114
+      MASE: 0.7734
+      ND: 0.3588
+      CRPS: 0.2834
+  Completed: 10 series × 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 22.318s
+
+--- Term: long ---
+  Config: prediction_length=432, test_length=2160, val_length=2160
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 10T
+    - Num series: 10
+    - Target dim: 6
+    - Series length: min=7481,               max=31957, avg=20668.5
+    - Test split: 2160 steps
+    - Prediction length: 432
+    - Windows: 5
+    Total instances: 50, Series during experiment: 10, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/ts_icl/current_velocity/10T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 12.9431
+      MAE: 1.1220
+      RMSE: 1.4615
+      MAPE: 3492.0686
+      sMAPE: 0.5718
+      MASE: 1.0624
+      ND: 0.4088
+      CRPS: 0.3229
+  Completed: 10 series × 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+  Inference time: 7.900s
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/ts_icl
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=1440, val_length=1440
+  Initializing model pipeline...
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 5
+    - Target dim: 6
+    - Series length: min=3710,               max=17953, avg=8503.2
+    - Test split: 1440 steps
+    - Prediction length: 12
+    - Windows: 120

@@ -1,0 +1,36 @@
+{
+  "dataset_config": "Uncertainty_1M/M/short",
+  "num_series": 1,
+  "num_windows": 7,
+  "num_variates": 3,
+  "prediction_length": 6,
+  "num_quantiles": 9,
+  "quantile_levels": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "freq": "M",
+  "seasonality": 12,
+  "context_length": 774,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "inference_seconds": 0.15511868335306644,
+  "model": "seasonal_naive",
+  "season_length": 12
+}

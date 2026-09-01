@@ -1,0 +1,4050 @@
+2026-09-01 00:03:17 | workflow foundation_models started launch_id=selena_20260831T220311Z_5849 task=seasonal_naive
+2026-09-01 00:03:17 | stage evaluate started
+2026-09-01 00:03:17 | task model=seasonal_naive runner=run_seasonal_naive.sh environment=uv started
+[2026-09-01 00:03:17] TIME runner: run_seasonal_naive.sh
+[2026-09-01 00:03:17] datasets: /scratch/users/h61084/datasets/hf_dataset
+[2026-09-01 00:03:17] weights: /scratch/users/h61084/weights
+[2026-09-01 00:03:17] outputs: /scratch/users/h61084/codes/improved/outputs
+
+############################################################
+# Dataset 1/1: Water_Quality_Darwin/15T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Water_Quality_Darwin/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Series length: min=8662, max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 16
+    - Windows: 90
+    - Season length: 96
+    Total instances: 3780, Series during experiment: 42, Windows: 90
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.1608
+      MAE: 0.7658
+      RMSE: 0.8736
+      MAPE: 0.1056
+      sMAPE: 0.0979
+      MASE: 1.1103
+      ND: 0.1025
+      CRPS: 0.1054
+  Completed: 7 series x 90 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Series length: min=8662, max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 96
+    - Windows: 15
+    - Season length: 96
+    Total instances: 630, Series during experiment: 42, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.2304
+      MAE: 0.7710
+      RMSE: 0.9618
+      MAPE: 0.1050
+      sMAPE: 0.0968
+      MASE: 1.1103
+      ND: 0.0979
+      CRPS: 0.1000
+  Completed: 7 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Series length: min=8662, max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 288
+    - Windows: 5
+    - Season length: 96
+    Total instances: 210, Series during experiment: 42, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Water_Quality_Darwin/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9.4268
+      MAE: 1.1035
+      RMSE: 1.3834
+      MAPE: 0.1695
+      sMAPE: 0.1421
+      MASE: 1.6247
+      ND: 0.1451
+      CRPS: 0.1375
+  Completed: 7 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/5T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: current_velocity/5T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=36, test_length=4320, val_length=4320
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=26486, max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 36
+    - Windows: 120
+    - Season length: 288
+    Total instances: 720, Series during experiment: 6, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9.4896
+      MAE: 1.1073
+      RMSE: 1.2496
+      MAPE: 0.9562
+      sMAPE: 0.5039
+      MASE: 0.9243
+      ND: 0.5818
+      CRPS: 0.4548
+  Completed: 1 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=4320, val_length=4320
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=26486, max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 288
+    - Windows: 15
+    - Season length: 288
+    Total instances: 90, Series during experiment: 6, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 8.9651
+      MAE: 1.0848
+      RMSE: 1.3155
+      MAPE: 0.9605
+      sMAPE: 0.4979
+      MASE: 0.9173
+      ND: 0.5059
+      CRPS: 0.3990
+  Completed: 1 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=864, test_length=4320, val_length=4320
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=26486, max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 864
+    - Windows: 5
+    - Season length: 288
+    Total instances: 30, Series during experiment: 6, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/5T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9.5881
+      MAE: 1.1359
+      RMSE: 1.4009
+      MAPE: 0.9219
+      sMAPE: 0.5159
+      MASE: 1.0921
+      ND: 0.4891
+      CRPS: 0.4121
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/10T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: current_velocity/10T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=18, test_length=2160, val_length=2160
+  Dataset info:
+    - Frequency: 10T
+    - Num series: 10
+    - Target dim: 6
+    - Series length: min=7481, max=31957, avg=20668.5
+    - Test split: 2160 steps
+    - Prediction length: 18
+    - Windows: 120
+    - Season length: 144
+    Total instances: 7200, Series during experiment: 60, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 10 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 15.5419
+      MAE: 1.2001
+      RMSE: 1.4379
+      MAPE: 5390.3734
+      sMAPE: 0.5434
+      MASE: 1.0527
+      ND: 0.5634
+      CRPS: 0.4464
+  Completed: 10 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=144, test_length=2160, val_length=2160
+  Dataset info:
+    - Frequency: 10T
+    - Num series: 10
+    - Target dim: 6
+    - Series length: min=7481, max=31957, avg=20668.5
+    - Test split: 2160 steps
+    - Prediction length: 144
+    - Windows: 15
+    - Season length: 144
+    Total instances: 900, Series during experiment: 60, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 10 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 15.2731
+      MAE: 1.1968
+      RMSE: 1.5606
+      MAPE: 4348.2778
+      sMAPE: 0.5447
+      MASE: 1.0557
+      ND: 0.4859
+      CRPS: 0.3836
+  Completed: 10 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=432, test_length=2160, val_length=2160
+  Dataset info:
+    - Frequency: 10T
+    - Num series: 10
+    - Target dim: 6
+    - Series length: min=7481, max=31957, avg=20668.5
+    - Test split: 2160 steps
+    - Prediction length: 432
+    - Windows: 5
+    - Season length: 144
+    Total instances: 300, Series during experiment: 60, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 10 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/10T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 19.8102
+      MAE: 1.4488
+      RMSE: 1.8633
+      MAPE: 5113.4069
+      sMAPE: 0.6146
+      MASE: 1.4411
+      ND: 0.5613
+      CRPS: 0.4507
+  Completed: 10 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/15T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: current_velocity/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 5
+    - Target dim: 6
+    - Series length: min=3710, max=17953, avg=8503.2
+    - Test split: 1440 steps
+    - Prediction length: 12
+    - Windows: 120
+    - Season length: 96
+    Total instances: 3600, Series during experiment: 30, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 30 flat series -> 5 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 14.7247
+      MAE: 1.2447
+      RMSE: 1.4603
+      MAPE: 188164.6085
+      sMAPE: 0.6270
+      MASE: 1.0040
+      ND: 0.6885
+      CRPS: 0.5419
+  Completed: 5 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 5
+    - Target dim: 6
+    - Series length: min=3710, max=17953, avg=8503.2
+    - Test split: 1440 steps
+    - Prediction length: 96
+    - Windows: 15
+    - Season length: 96
+    Total instances: 450, Series during experiment: 30, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 30 flat series -> 5 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 14.7504
+      MAE: 1.2436
+      RMSE: 1.5648
+      MAPE: 212689.7702
+      sMAPE: 0.6283
+      MASE: 1.0051
+      ND: 0.6052
+      CRPS: 0.4772
+  Completed: 5 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 5
+    - Target dim: 6
+    - Series length: min=3710, max=17953, avg=8503.2
+    - Test split: 1440 steps
+    - Prediction length: 288
+    - Windows: 5
+    - Season length: 96
+    Total instances: 150, Series during experiment: 30, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 30 flat series -> 5 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 16.3633
+      MAE: 1.3305
+      RMSE: 1.6842
+      MAPE: 126850.5204
+      sMAPE: 0.6391
+      MASE: 1.1615
+      ND: 0.6138
+      CRPS: 0.4936
+  Completed: 5 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/20T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: current_velocity/20T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=9, test_length=1080, val_length=1080
+  Dataset info:
+    - Frequency: 20T
+    - Num series: 27
+    - Target dim: 6
+    - Series length: min=2529, max=16759, avg=6460.2
+    - Test split: 1080 steps
+    - Prediction length: 9
+    - Windows: 120
+    - Season length: 72
+    Total instances: 19440, Series during experiment: 162, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 162 flat series -> 27 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 11.2992
+      MAE: 1.0851
+      RMSE: 1.2222
+      MAPE: 1.8158
+      sMAPE: 0.5699
+      MASE: 1.0282
+      ND: 0.6759
+      CRPS: 0.5366
+  Completed: 27 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=1080, val_length=1080
+  Dataset info:
+    - Frequency: 20T
+    - Num series: 27
+    - Target dim: 6
+    - Series length: min=2529, max=16759, avg=6460.2
+    - Test split: 1080 steps
+    - Prediction length: 72
+    - Windows: 15
+    - Season length: 72
+    Total instances: 2430, Series during experiment: 162, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 162 flat series -> 27 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 11.2425
+      MAE: 1.0816
+      RMSE: 1.3362
+      MAPE: 1.7881
+      sMAPE: 0.5721
+      MASE: 1.0264
+      ND: 0.5382
+      CRPS: 0.4282
+  Completed: 27 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=216, test_length=1080, val_length=1080
+  Dataset info:
+    - Frequency: 20T
+    - Num series: 27
+    - Target dim: 6
+    - Series length: min=2529, max=16759, avg=6460.2
+    - Test split: 1080 steps
+    - Prediction length: 216
+    - Windows: 5
+    - Season length: 72
+    Total instances: 810, Series during experiment: 162, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 162 flat series -> 27 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/20T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 13.8397
+      MAE: 1.2408
+      RMSE: 1.5510
+      MAPE: 2.3286
+      sMAPE: 0.6341
+      MASE: 1.3408
+      ND: 0.6096
+      CRPS: 0.4917
+  Completed: 27 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: current_velocity/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: current_velocity/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 21
+    - Target dim: 6
+    - Series length: min=2208, max=5587, avg=3502.3
+    - Test split: 672 steps
+    - Prediction length: 24
+    - Windows: 28
+    - Season length: 24
+    Total instances: 3528, Series during experiment: 126, Windows: 28
+    Collecting ground truth and context...
+    Detected to_univariate case: 126 flat series -> 21 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 10.2861
+      MAE: 1.0326
+      RMSE: 1.2810
+      MAPE: 4261269715073.6973
+      sMAPE: 0.5205
+      MASE: 1.0420
+      ND: 0.4775
+      CRPS: 0.3792
+  Completed: 21 series x 28 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=168, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 21
+    - Target dim: 6
+    - Series length: min=2208, max=5587, avg=3502.3
+    - Test split: 672 steps
+    - Prediction length: 168
+    - Windows: 4
+    - Season length: 24
+    Total instances: 504, Series during experiment: 126, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 126 flat series -> 21 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 20.6039
+      MAE: 1.5391
+      RMSE: 1.9153
+      MAPE: 4466900371376.4121
+      sMAPE: 0.6677
+      MASE: 1.8773
+      ND: 0.6315
+      CRPS: 0.5250
+  Completed: 21 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=336, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 21
+    - Target dim: 6
+    - Series length: min=2208, max=5587, avg=3502.3
+    - Test split: 672 steps
+    - Prediction length: 336
+    - Windows: 2
+    - Season length: 24
+    Total instances: 252, Series during experiment: 126, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 126 flat series -> 21 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/current_velocity/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 25.4283
+      MAE: 1.6683
+      RMSE: 2.0768
+      MAPE: 4226217268348.8174
+      sMAPE: 0.6858
+      MASE: 2.0330
+      ND: 0.6402
+      CRPS: 0.5841
+  Completed: 21 series x 2 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: CPHL/15T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: CPHL/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 2
+    - Target dim: 1
+    - Series length: min=9956, max=10831, avg=10393.5
+    - Test split: 1440 steps
+    - Prediction length: 12
+    - Windows: 120
+    - Season length: 96
+    Total instances: 240, Series during experiment: 2, Windows: 120
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.1699
+      MAE: 0.2743
+      RMSE: 0.3071
+      MAPE: 0.4473
+      sMAPE: 0.3686
+      MASE: 1.3561
+      ND: 0.4271
+      CRPS: 0.3509
+  Completed: 2 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 2
+    - Target dim: 1
+    - Series length: min=9956, max=10831, avg=10393.5
+    - Test split: 1440 steps
+    - Prediction length: 96
+    - Windows: 15
+    - Season length: 96
+    Total instances: 30, Series during experiment: 2, Windows: 15
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.1791
+      MAE: 0.2845
+      RMSE: 0.3500
+      MAPE: 0.4697
+      sMAPE: 0.3862
+      MASE: 1.4128
+      ND: 0.3927
+      CRPS: 0.3176
+  Completed: 2 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 2
+    - Target dim: 1
+    - Series length: min=9956, max=10831, avg=10393.5
+    - Test split: 1440 steps
+    - Prediction length: 288
+    - Windows: 5
+    - Season length: 96
+    Total instances: 10, Series during experiment: 2, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.2372
+      MAE: 0.3193
+      RMSE: 0.3937
+      MAPE: 0.5210
+      sMAPE: 0.3882
+      MASE: 1.5806
+      ND: 0.4262
+      CRPS: 0.3495
+  Completed: 2 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: CPHL/30T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: CPHL/30T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 30T
+    - Num series: 2
+    - Target dim: 1
+    - Series length: min=11808, max=17566, avg=14687.0
+    - Test split: 1440 steps
+    - Prediction length: 12
+    - Windows: 120
+    - Season length: 48
+    Total instances: 240, Series during experiment: 2, Windows: 120
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1.2701
+      MAE: 0.6541
+      RMSE: 0.7881
+      MAPE: 0.5898
+      sMAPE: 0.4119
+      MASE: 1.7348
+      ND: 0.4379
+      CRPS: 0.3574
+  Completed: 2 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=48, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 30T
+    - Num series: 2
+    - Target dim: 1
+    - Series length: min=11808, max=17566, avg=14687.0
+    - Test split: 1440 steps
+    - Prediction length: 48
+    - Windows: 30
+    - Season length: 48
+    Total instances: 60, Series during experiment: 2, Windows: 30
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1.2140
+      MAE: 0.6390
+      RMSE: 0.7943
+      MAPE: 0.5868
+      sMAPE: 0.4086
+      MASE: 1.7037
+      ND: 0.4188
+      CRPS: 0.3439
+  Completed: 2 series x 30 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=144, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 30T
+    - Num series: 2
+    - Target dim: 1
+    - Series length: min=11808, max=17566, avg=14687.0
+    - Test split: 1440 steps
+    - Prediction length: 144
+    - Windows: 10
+    - Season length: 48
+    Total instances: 20, Series during experiment: 2, Windows: 10
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/30T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1.4747
+      MAE: 0.7262
+      RMSE: 0.8853
+      MAPE: 0.7648
+      sMAPE: 0.5089
+      MASE: 2.0490
+      ND: 0.4700
+      CRPS: 0.3765
+  Completed: 2 series x 10 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: CPHL/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: CPHL/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 4
+    - Target dim: 1
+    - Series length: min=2490, max=8783, avg=4971.2
+    - Test split: 672 steps
+    - Prediction length: 24
+    - Windows: 28
+    - Season length: 24
+    Total instances: 112, Series during experiment: 4, Windows: 28
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.5702
+      MAE: 0.4241
+      RMSE: 0.5129
+      MAPE: 0.4198
+      sMAPE: 0.3564
+      MASE: 1.4985
+      ND: 0.3595
+      CRPS: 0.2919
+  Completed: 4 series x 28 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=168, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 4
+    - Target dim: 1
+    - Series length: min=2490, max=8783, avg=4971.2
+    - Test split: 672 steps
+    - Prediction length: 168
+    - Windows: 4
+    - Season length: 24
+    Total instances: 16, Series during experiment: 4, Windows: 4
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.7003
+      MAE: 0.5277
+      RMSE: 0.6518
+      MAPE: 0.5941
+      sMAPE: 0.4995
+      MASE: 2.1501
+      ND: 0.4990
+      CRPS: 0.3922
+  Completed: 4 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=336, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 4
+    - Target dim: 1
+    - Series length: min=2490, max=8783, avg=4971.2
+    - Test split: 672 steps
+    - Prediction length: 336
+    - Windows: 2
+    - Season length: 24
+    Total instances: 8, Series during experiment: 4, Windows: 2
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/CPHL/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.8364
+      MAE: 0.5675
+      RMSE: 0.7235
+      MAPE: 0.6189
+      sMAPE: 0.5404
+      MASE: 2.4343
+      ND: 0.5353
+      CRPS: 0.4460
+  Completed: 4 series x 2 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Coastal_T_S/5T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Coastal_T_S/5T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=36, test_length=4320, val_length=4320
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 18
+    - Target dim: 3
+    - Series length: min=44614, max=105408, avg=68604.9
+    - Test split: 4320 steps
+    - Prediction length: 36
+    - Windows: 120
+    - Season length: 288
+    Total instances: 6480, Series during experiment: 54, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 54 flat series -> 18 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 222.7940
+      MAE: 3.4539
+      RMSE: 4.4835
+      MAPE: 0.1143
+      sMAPE: 0.0811
+      MASE: 1.2744
+      ND: 0.0804
+      CRPS: 0.0826
+  Completed: 18 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=4320, val_length=4320
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 18
+    - Target dim: 3
+    - Series length: min=44614, max=105408, avg=68604.9
+    - Test split: 4320 steps
+    - Prediction length: 288
+    - Windows: 15
+    - Season length: 288
+    Total instances: 810, Series during experiment: 54, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 54 flat series -> 18 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 224.3232
+      MAE: 3.4836
+      RMSE: 4.5632
+      MAPE: 0.1161
+      sMAPE: 0.0810
+      MASE: 1.2831
+      ND: 0.0805
+      CRPS: 0.0823
+  Completed: 18 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=864, test_length=4320, val_length=4320
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 18
+    - Target dim: 3
+    - Series length: min=44614, max=105408, avg=68604.9
+    - Test split: 4320 steps
+    - Prediction length: 864
+    - Windows: 5
+    - Season length: 288
+    Total instances: 270, Series during experiment: 54, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 54 flat series -> 18 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/5T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 235.7268
+      MAE: 3.7321
+      RMSE: 4.8361
+      MAPE: 0.1205
+      sMAPE: 0.0908
+      MASE: 1.5601
+      ND: 0.0869
+      CRPS: 0.0920
+  Completed: 18 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Coastal_T_S/15T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Coastal_T_S/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 5
+    - Target dim: 3
+    - Series length: min=16686, max=23134, avg=20870.2
+    - Test split: 1440 steps
+    - Prediction length: 12
+    - Windows: 120
+    - Season length: 96
+    Total instances: 1800, Series during experiment: 15, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 5 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 207.2450
+      MAE: 4.9850
+      RMSE: 6.5848
+      MAPE: 0.1585
+      sMAPE: 0.1243
+      MASE: 1.4862
+      ND: 0.1255
+      CRPS: 0.1090
+  Completed: 5 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 5
+    - Target dim: 3
+    - Series length: min=16686, max=23134, avg=20870.2
+    - Test split: 1440 steps
+    - Prediction length: 96
+    - Windows: 15
+    - Season length: 96
+    Total instances: 225, Series during experiment: 15, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 5 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 208.1905
+      MAE: 5.0104
+      RMSE: 6.6911
+      MAPE: 0.1603
+      sMAPE: 0.1237
+      MASE: 1.4847
+      ND: 0.1234
+      CRPS: 0.1071
+  Completed: 5 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 5
+    - Target dim: 3
+    - Series length: min=16686, max=23134, avg=20870.2
+    - Test split: 1440 steps
+    - Prediction length: 288
+    - Windows: 5
+    - Season length: 96
+    Total instances: 75, Series during experiment: 15, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 5 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 219.7664
+      MAE: 5.2974
+      RMSE: 6.9018
+      MAPE: 0.1625
+      sMAPE: 0.1363
+      MASE: 1.6320
+      ND: 0.1305
+      CRPS: 0.1105
+  Completed: 5 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Coastal_T_S/20T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Coastal_T_S/20T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=9, test_length=1080, val_length=1080
+  Dataset info:
+    - Frequency: 20T
+    - Num series: 1
+    - Target dim: 3
+    - Series length: min=8198, max=8198, avg=8198.0
+    - Test split: 1080 steps
+    - Prediction length: 9
+    - Windows: 120
+    - Season length: 72
+    Total instances: 360, Series during experiment: 3, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0512
+      MAE: 0.1676
+      RMSE: 0.1766
+      MAPE: 0.0068
+      sMAPE: 0.0068
+      MASE: 1.2876
+      ND: 0.0068
+      CRPS: 0.0055
+  Completed: 1 series x 120 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=1080, val_length=1080
+  Dataset info:
+    - Frequency: 20T
+    - Num series: 1
+    - Target dim: 3
+    - Series length: min=8198, max=8198, avg=8198.0
+    - Test split: 1080 steps
+    - Prediction length: 72
+    - Windows: 15
+    - Season length: 72
+    Total instances: 45, Series during experiment: 3, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0506
+      MAE: 0.1683
+      RMSE: 0.1984
+      MAPE: 0.0068
+      sMAPE: 0.0068
+      MASE: 1.2982
+      ND: 0.0068
+      CRPS: 0.0055
+  Completed: 1 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=216, test_length=1080, val_length=1080
+  Dataset info:
+    - Frequency: 20T
+    - Num series: 1
+    - Target dim: 3
+    - Series length: min=8198, max=8198, avg=8198.0
+    - Test split: 1080 steps
+    - Prediction length: 216
+    - Windows: 5
+    - Season length: 72
+    Total instances: 15, Series during experiment: 3, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/20T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.1195
+      MAE: 0.2479
+      RMSE: 0.3104
+      MAPE: 0.0104
+      sMAPE: 0.0104
+      MASE: 1.8637
+      ND: 0.0104
+      CRPS: 0.0081
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Coastal_T_S/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Coastal_T_S/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 24
+    - Target dim: 3
+    - Series length: min=2733, max=8784, avg=5488.8
+    - Test split: 672 steps
+    - Prediction length: 24
+    - Windows: 28
+    - Season length: 24
+    Total instances: 2016, Series during experiment: 72, Windows: 28
+    Collecting ground truth and context...
+    Detected to_univariate case: 72 flat series -> 24 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 28.1108
+      MAE: 1.5811
+      RMSE: 1.9284
+      MAPE: 0.0411
+      sMAPE: 0.0393
+      MASE: 1.2436
+      ND: 0.0389
+      CRPS: 0.0357
+  Completed: 24 series x 28 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=168, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 24
+    - Target dim: 3
+    - Series length: min=2733, max=8784, avg=5488.8
+    - Test split: 672 steps
+    - Prediction length: 168
+    - Windows: 4
+    - Season length: 24
+    Total instances: 288, Series during experiment: 72, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 72 flat series -> 24 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 35.9517
+      MAE: 2.0004
+      RMSE: 2.4326
+      MAPE: 0.0573
+      sMAPE: 0.0517
+      MASE: 2.1597
+      ND: 0.0544
+      CRPS: 0.0522
+  Completed: 24 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=336, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: H
+    - Num series: 24
+    - Target dim: 3
+    - Series length: min=2733, max=8784, avg=5488.8
+    - Test split: 672 steps
+    - Prediction length: 336
+    - Windows: 2
+    - Season length: 24
+    Total instances: 144, Series during experiment: 72, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 72 flat series -> 24 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Coastal_T_S/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 44.8183
+      MAE: 2.1834
+      RMSE: 2.7100
+      MAPE: 0.0630
+      sMAPE: 0.0548
+      MASE: 2.7489
+      ND: 0.0566
+      CRPS: 0.0621
+  Completed: 24 series x 2 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: SG_Weather/D
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: SG_Weather/D
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=3, test_length=366, val_length=366
+  Dataset info:
+    - Frequency: D
+    - Num series: 6
+    - Target dim: 4
+    - Series length: min=2953, max=2953, avg=2953.0
+    - Test split: 366 steps
+    - Prediction length: 3
+    - Windows: 122
+    - Season length: 1
+    Total instances: 2928, Series during experiment: 24, Windows: 122
+    Collecting ground truth and context...
+    Detected to_univariate case: 24 flat series -> 6 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3679.3895
+      MAE: 22.4757
+      RMSE: 25.9003
+      MAPE: 0.5295
+      sMAPE: 0.2856
+      MASE: 1.0846
+      ND: 0.3250
+      CRPS: 0.2965
+  Completed: 6 series x 122 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=7, test_length=366, val_length=366
+  Dataset info:
+    - Frequency: D
+    - Num series: 6
+    - Target dim: 4
+    - Series length: min=2953, max=2953, avg=2953.0
+    - Test split: 366 steps
+    - Prediction length: 7
+    - Windows: 52
+    - Season length: 1
+    Total instances: 1248, Series during experiment: 24, Windows: 52
+    Collecting ground truth and context...
+    Detected to_univariate case: 24 flat series -> 6 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 4314.0595
+      MAE: 25.6350
+      RMSE: 30.4094
+      MAPE: 0.6058
+      sMAPE: 0.3193
+      MASE: 1.2200
+      ND: 0.3454
+      CRPS: 0.3202
+  Completed: 6 series x 52 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=14, test_length=366, val_length=366
+  Dataset info:
+    - Frequency: D
+    - Num series: 6
+    - Target dim: 4
+    - Series length: min=2953, max=2953, avg=2953.0
+    - Test split: 366 steps
+    - Prediction length: 14
+    - Windows: 26
+    - Season length: 1
+    Total instances: 624, Series during experiment: 24, Windows: 26
+    Collecting ground truth and context...
+    Detected to_univariate case: 24 flat series -> 6 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Weather/D/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 4206.2924
+      MAE: 25.1383
+      RMSE: 30.6032
+      MAPE: 0.5864
+      sMAPE: 0.3185
+      MASE: 1.2532
+      ND: 0.3269
+      CRPS: 0.3504
+  Completed: 6 series x 26 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: SG_PM25/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: SG_PM25/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=2208, val_length=2160
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 5
+    - Series length: min=38688, max=38688, avg=38688.0
+    - Test split: 2208 steps
+    - Prediction length: 24
+    - Windows: 92
+    - Season length: 24
+    Total instances: 460, Series during experiment: 5, Windows: 92
+    Collecting ground truth and context...
+    Detected to_univariate case: 5 flat series -> 1 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 71.2916
+      MAE: 6.2278
+      RMSE: 7.7631
+      MAPE: 0.6789
+      sMAPE: 0.5171
+      MASE: 1.1786
+      ND: 0.5386
+      CRPS: 0.4311
+  Completed: 1 series x 92 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=2208, val_length=2160
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 5
+    - Series length: min=38688, max=38688, avg=38688.0
+    - Test split: 2208 steps
+    - Prediction length: 72
+    - Windows: 30
+    - Season length: 24
+    Total instances: 150, Series during experiment: 5, Windows: 30
+    Collecting ground truth and context...
+    Detected to_univariate case: 5 flat series -> 1 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 73.0804
+      MAE: 6.3680
+      RMSE: 8.0519
+      MAPE: 0.6834
+      sMAPE: 0.5336
+      MASE: 1.2050
+      ND: 0.5339
+      CRPS: 0.4387
+  Completed: 1 series x 30 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=168, test_length=2208, val_length=2160
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 5
+    - Series length: min=38688, max=38688, avg=38688.0
+    - Test split: 2208 steps
+    - Prediction length: 168
+    - Windows: 13
+    - Season length: 24
+    Total instances: 65, Series during experiment: 5, Windows: 13
+    Collecting ground truth and context...
+    Detected to_univariate case: 5 flat series -> 1 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_PM25/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 84.2177
+      MAE: 6.9323
+      RMSE: 8.8557
+      MAPE: 0.7835
+      sMAPE: 0.5521
+      MASE: 1.3085
+      ND: 0.5787
+      CRPS: 0.4979
+  Completed: 1 series x 13 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: NE_China_Wind/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: NE_China_Wind/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=720, val_length=720
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 4
+    - Series length: min=8764, max=8764, avg=8764.0
+    - Test split: 720 steps
+    - Prediction length: 24
+    - Windows: 30
+    - Season length: 24
+    Total instances: 120, Series during experiment: 4, Windows: 30
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.2704
+      MAE: 0.3628
+      RMSE: 0.4082
+      MAPE: 1.6483
+      sMAPE: 0.6472
+      MASE: 0.8392
+      ND: 0.7711
+      CRPS: 0.6347
+  Completed: 1 series x 30 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=720, val_length=720
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 4
+    - Series length: min=8764, max=8764, avg=8764.0
+    - Test split: 720 steps
+    - Prediction length: 72
+    - Windows: 10
+    - Season length: 24
+    Total instances: 40, Series during experiment: 4, Windows: 10
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.3934
+      MAE: 0.4635
+      RMSE: 0.5268
+      MAPE: 1.8727
+      sMAPE: 0.7703
+      MASE: 1.1164
+      ND: 0.7713
+      CRPS: 0.6656
+  Completed: 1 series x 10 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=168, test_length=720, val_length=720
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 4
+    - Series length: min=8764, max=8764, avg=8764.0
+    - Test split: 720 steps
+    - Prediction length: 168
+    - Windows: 4
+    - Season length: 24
+    Total instances: 16, Series during experiment: 4, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/NE_China_Wind/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.5110
+      MAE: 0.5378
+      RMSE: 0.6521
+      MAPE: 2.0074
+      sMAPE: 0.8052
+      MASE: 1.4094
+      ND: 0.7459
+      CRPS: 0.7037
+  Completed: 1 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Australia_Solar/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Australia_Solar/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=2520, val_length=2520
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 3
+    - Series length: min=35064, max=35064, avg=35064.0
+    - Test split: 2520 steps
+    - Prediction length: 24
+    - Windows: 105
+    - Season length: 24
+    Total instances: 315, Series during experiment: 3, Windows: 105
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (2244993.43) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 39887252957.5145
+      MAE: 100484.2840
+      RMSE: 131299.1655
+      MAPE: 1239.0869
+      sMAPE: 0.6349
+      MASE: 0.7107
+      ND: 0.3604
+      CRPS: 0.3176
+  Completed: 1 series x 105 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=2520, val_length=2520
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 3
+    - Series length: min=35064, max=35064, avg=35064.0
+    - Test split: 2520 steps
+    - Prediction length: 72
+    - Windows: 35
+    - Season length: 24
+    Total instances: 105, Series during experiment: 3, Windows: 35
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (2454677.75) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 43368384528.3357
+      MAE: 107747.7853
+      RMSE: 151024.0361
+      MAPE: 1358.6173
+      sMAPE: 0.6704
+      MASE: 0.7712
+      ND: 0.3346
+      CRPS: 0.3066
+  Completed: 1 series x 35 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=168, test_length=2520, val_length=2520
+  Dataset info:
+    - Frequency: H
+    - Num series: 1
+    - Target dim: 3
+    - Series length: min=35064, max=35064, avg=35064.0
+    - Test split: 2520 steps
+    - Prediction length: 168
+    - Windows: 15
+    - Season length: 24
+    Total instances: 45, Series during experiment: 3, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (2524508.04) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Australia_Solar/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 33618241513.7411
+      MAE: 99420.7624
+      RMSE: 145122.9869
+      MAPE: 783.4579
+      sMAPE: 0.6662
+      MASE: 0.7263
+      ND: 0.3226
+      CRPS: 0.3104
+  Completed: 1 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: epf_electricity_price/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: epf_electricity_price/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=2520, val_length=2520
+  Dataset info:
+    - Frequency: H
+    - Num series: 5
+    - Target dim: 1
+    - Series length: min=52416, max=52416, avg=52416.0
+    - Test split: 2520 steps
+    - Prediction length: 24
+    - Windows: 105
+    - Season length: 24
+    Total instances: 525, Series during experiment: 5, Windows: 105
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 252.2907
+      MAE: 9.2879
+      RMSE: 11.4482
+      MAPE: 1.6353
+      sMAPE: 0.2333
+      MASE: 1.4461
+      ND: 0.2402
+      CRPS: 0.1983
+  Completed: 5 series x 105 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=2520, val_length=2520
+  Dataset info:
+    - Frequency: H
+    - Num series: 5
+    - Target dim: 1
+    - Series length: min=52416, max=52416, avg=52416.0
+    - Test split: 2520 steps
+    - Prediction length: 72
+    - Windows: 35
+    - Season length: 24
+    Total instances: 175, Series during experiment: 5, Windows: 35
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 440.9985
+      MAE: 12.2575
+      RMSE: 15.3439
+      MAPE: 2.2685
+      sMAPE: 0.2870
+      MASE: 1.8971
+      ND: 0.2949
+      CRPS: 0.2434
+  Completed: 5 series x 35 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=168, test_length=2520, val_length=2520
+  Dataset info:
+    - Frequency: H
+    - Num series: 5
+    - Target dim: 1
+    - Series length: min=52416, max=52416, avg=52416.0
+    - Test split: 2520 steps
+    - Prediction length: 168
+    - Windows: 15
+    - Season length: 24
+    Total instances: 75, Series during experiment: 5, Windows: 15
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/epf_electricity_price/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 472.2448
+      MAE: 12.8919
+      RMSE: 16.8552
+      MAPE: 1.8133
+      sMAPE: 0.3247
+      MASE: 2.0336
+      ND: 0.3048
+      CRPS: 0.2624
+  Completed: 5 series x 15 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: OpenElectricity_NEM/5T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: OpenElectricity_NEM/5T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=4032, val_length=4032
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 10
+    - Series length: min=43488, max=43488, avg=43488.0
+    - Test split: 4032 steps
+    - Prediction length: 24
+    - Windows: 168
+    - Season length: 288
+    Total instances: 1680, Series during experiment: 10, Windows: 168
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 140733.7191
+      MAE: 178.2938
+      RMSE: 187.8167
+      MAPE: 6.8382
+      sMAPE: 0.3485
+      MASE: 1.0390
+      ND: 0.4874
+      CRPS: 0.4106
+  Completed: 1 series x 168 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=4032, val_length=4032
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 10
+    - Series length: min=43488, max=43488, avg=43488.0
+    - Test split: 4032 steps
+    - Prediction length: 96
+    - Windows: 42
+    - Season length: 288
+    Total instances: 420, Series during experiment: 10, Windows: 42
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 137122.6466
+      MAE: 176.1305
+      RMSE: 204.5852
+      MAPE: 7.0789
+      sMAPE: 0.3474
+      MASE: 1.0298
+      ND: 0.4127
+      CRPS: 0.3417
+  Completed: 1 series x 42 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=4032, val_length=4032
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 10
+    - Series length: min=43488, max=43488, avg=43488.0
+    - Test split: 4032 steps
+    - Prediction length: 288
+    - Windows: 14
+    - Season length: 288
+    Total instances: 140, Series during experiment: 10, Windows: 14
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/OpenElectricity_NEM/5T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 140700.8677
+      MAE: 179.4349
+      RMSE: 236.3561
+      MAPE: 6.7288
+      sMAPE: 0.3524
+      MASE: 1.0498
+      ND: 0.3254
+      CRPS: 0.2732
+  Completed: 1 series x 14 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: EWELD_Load/15T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: EWELD_Load/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=1344, val_length=1344
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 1
+    - Target dim: 10
+    - Series length: min=20544, max=20544, avg=20544.0
+    - Test split: 1344 steps
+    - Prediction length: 24
+    - Windows: 56
+    - Season length: 96
+    Total instances: 560, Series during experiment: 10, Windows: 56
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2317.5129
+      MAE: 19.8093
+      RMSE: 24.6465
+      MAPE: 0.7834
+      sMAPE: 0.4439
+      MASE: 0.9517
+      ND: 1.2796
+      CRPS: 2.4172
+  Completed: 1 series x 56 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1344, val_length=1344
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 1
+    - Target dim: 10
+    - Series length: min=20544, max=20544, avg=20544.0
+    - Test split: 1344 steps
+    - Prediction length: 96
+    - Windows: 14
+    - Season length: 96
+    Total instances: 140, Series during experiment: 10, Windows: 14
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2394.4367
+      MAE: 20.1387
+      RMSE: 26.9538
+      MAPE: 0.7459
+      sMAPE: 0.4502
+      MASE: 0.9604
+      ND: 0.3505
+      CRPS: 0.3234
+  Completed: 1 series x 14 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=672, test_length=1344, val_length=1344
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 1
+    - Target dim: 10
+    - Series length: min=20544, max=20544, avg=20544.0
+    - Test split: 1344 steps
+    - Prediction length: 672
+    - Windows: 2
+    - Season length: 96
+    Total instances: 20, Series during experiment: 10, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/EWELD_Load/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2674.5835
+      MAE: 21.3879
+      RMSE: 28.8785
+      MAPE: 0.7927
+      sMAPE: 0.4824
+      MASE: 1.0889
+      ND: 0.3612
+      CRPS: 0.4003
+  Completed: 1 series x 2 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: SG_Carpark/15T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: SG_Carpark/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 354
+    - Target dim: 1
+    - Series length: min=14495, max=14495, avg=14495.0
+    - Test split: 672 steps
+    - Prediction length: 16
+    - Windows: 42
+    - Season length: 96
+    Total instances: 14868, Series during experiment: 354, Windows: 42
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 984.8709
+      MAE: 14.9229
+      RMSE: 17.0996
+      MAPE: 0.0893
+      sMAPE: 0.0915
+      MASE: 0.9504
+      ND: 0.0856
+      CRPS: 0.0778
+  Completed: 354 series x 42 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 354
+    - Target dim: 1
+    - Series length: min=14495, max=14495, avg=14495.0
+    - Test split: 672 steps
+    - Prediction length: 96
+    - Windows: 7
+    - Season length: 96
+    Total instances: 2478, Series during experiment: 354, Windows: 7
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 991.5088
+      MAE: 14.9990
+      RMSE: 19.9665
+      MAPE: 0.0890
+      sMAPE: 0.0923
+      MASE: 0.9567
+      ND: 0.0786
+      CRPS: 0.0701
+  Completed: 354 series x 7 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=672, test_length=672, val_length=672
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 354
+    - Target dim: 1
+    - Series length: min=14495, max=14495, avg=14495.0
+    - Test split: 672 steps
+    - Prediction length: 672
+    - Windows: 1
+    - Season length: 96
+    Total instances: 354, Series during experiment: 354, Windows: 1
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/SG_Carpark/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1506.5851
+      MAE: 21.5515
+      RMSE: 28.7040
+      MAPE: 0.1209
+      sMAPE: 0.1246
+      MASE: 1.3482
+      ND: 0.1125
+      CRPS: 0.1034
+  Completed: 354 series x 1 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Finland_Traffic/15T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Finland_Traffic/15T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=2976, val_length=2880
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 1
+    - Target dim: 1
+    - Series length: min=35136, max=35136, avg=35136.0
+    - Test split: 2976 steps
+    - Prediction length: 16
+    - Windows: 186
+    - Season length: 96
+    Total instances: 186, Series during experiment: 1, Windows: 186
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2650.5532
+      MAE: 33.3976
+      RMSE: 39.0224
+      MAPE: 0.4566
+      sMAPE: 0.3930
+      MASE: 0.8112
+      ND: 0.4000
+      CRPS: 0.5093
+  Completed: 1 series x 186 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=2976, val_length=2880
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 1
+    - Target dim: 1
+    - Series length: min=35136, max=35136, avg=35136.0
+    - Test split: 2976 steps
+    - Prediction length: 96
+    - Windows: 31
+    - Season length: 96
+    Total instances: 31, Series during experiment: 1, Windows: 31
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2768.1463
+      MAE: 34.7300
+      RMSE: 46.8295
+      MAPE: 0.4625
+      sMAPE: 0.4310
+      MASE: 0.8436
+      ND: 0.2783
+      CRPS: 0.2490
+  Completed: 1 series x 31 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=672, test_length=2976, val_length=2880
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 1
+    - Target dim: 1
+    - Series length: min=35136, max=35136, avg=35136.0
+    - Test split: 2976 steps
+    - Prediction length: 672
+    - Windows: 4
+    - Season length: 96
+    Total instances: 4, Series during experiment: 1, Windows: 4
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Finland_Traffic/15T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 4100.7130
+      MAE: 45.7483
+      RMSE: 63.7121
+      MAPE: 0.7477
+      sMAPE: 0.5981
+      MASE: 1.1086
+      ND: 0.3493
+      CRPS: 0.3704
+  Completed: 1 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Port_Activity/D
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Port_Activity/D
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=365, val_length=90
+  Dataset info:
+    - Frequency: D
+    - Num series: 99
+    - Target dim: 2
+    - Series length: min=2127, max=2127, avg=2127.0
+    - Test split: 365 steps
+    - Prediction length: 30
+    - Windows: 12
+    - Season length: 1
+    Total instances: 2376, Series during experiment: 198, Windows: 12
+    Collecting ground truth and context...
+    Detected to_univariate case: 198 flat series -> 99 series x 2 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (1963383.12) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Port_Activity/D/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Port_Activity/D/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Port_Activity/D/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2407828741.5951
+      MAE: 26364.6625
+      RMSE: 31555.0374
+      MAPE: 8.9123
+      sMAPE: 1.2325
+      MASE: 1.1523
+      ND: 1.9322
+      CRPS: 3.4080
+  Completed: 99 series x 12 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Port_Activity/W
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Port_Activity/W
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=13, test_length=52, val_length=13
+  Dataset info:
+    - Frequency: W
+    - Num series: 99
+    - Target dim: 2
+    - Series length: min=304, max=304, avg=304.0
+    - Test split: 52 steps
+    - Prediction length: 13
+    - Windows: 4
+    - Season length: 1
+    Total instances: 792, Series during experiment: 198, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 198 flat series -> 99 series x 2 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (4297177.86) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Port_Activity/W/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Port_Activity/W/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Port_Activity/W/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 11036440673.2058
+      MAE: 59183.8912
+      RMSE: 69805.9305
+      MAPE: 0.8010
+      sMAPE: 0.4751
+      MASE: 1.0495
+      ND: 0.4646
+      CRPS: 0.4954
+  Completed: 99 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: ECDC_COVID/D
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: ECDC_COVID/D
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=150, val_length=30
+  Dataset info:
+    - Frequency: D
+    - Num series: 9
+    - Target dim: 1
+    - Series length: min=794, max=1229, avg=1116.6
+    - Test split: 150 steps
+    - Prediction length: 30
+    - Windows: 5
+    - Season length: 1
+    Total instances: 45, Series during experiment: 9, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/ECDC_COVID/D/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/ECDC_COVID/D/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/ECDC_COVID/D/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 67056.2321
+      MAE: 155.0314
+      RMSE: 174.9510
+      MAPE: 0.5688
+      sMAPE: 0.3854
+      MASE: 3.7038
+      ND: 0.4248
+      CRPS: 0.6137
+  Completed: 9 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: ECDC_COVID/W
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: ECDC_COVID/W
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=13, test_length=52, val_length=13
+  Dataset info:
+    - Frequency: W
+    - Num series: 16
+    - Target dim: 1
+    - Series length: min=114, max=196, avg=165.4
+    - Test split: 52 steps
+    - Prediction length: 13
+    - Windows: 4
+    - Season length: 1
+    Total instances: 64, Series during experiment: 16, Windows: 4
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/ECDC_COVID/W/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/ECDC_COVID/W/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/ECDC_COVID/W/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3009748.2568
+      MAE: 628.0181
+      RMSE: 718.6536
+      MAPE: 1.2164
+      sMAPE: 0.5776
+      MASE: 1.5831
+      ND: 0.7347
+      CRPS: 0.8104
+  Completed: 16 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Global_Influenza/W
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Global_Influenza/W
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=13, test_length=52, val_length=13
+  Dataset info:
+    - Frequency: W
+    - Num series: 15
+    - Target dim: 4
+    - Series length: min=154, max=210, avg=205.6
+    - Test split: 52 steps
+    - Prediction length: 13
+    - Windows: 4
+    - Season length: 1
+    Total instances: 240, Series during experiment: 60, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 15 series x 4 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (92540.54) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Global_Influenza/W/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Global_Influenza/W/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Global_Influenza/W/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 7703398.3928
+      MAE: 790.6157
+      RMSE: 954.0694
+      MAPE: 1.8122
+      sMAPE: 0.6664
+      MASE: 4.2948
+      ND: 0.9819
+      CRPS: 1.3409
+  Completed: 15 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Crypto/D
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Crypto/D
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=273, val_length=92
+  Dataset info:
+    - Frequency: D
+    - Num series: 1
+    - Target dim: 4
+    - Series length: min=2842, max=2842, avg=2842.0
+    - Test split: 273 steps
+    - Prediction length: 30
+    - Windows: 9
+    - Season length: 1
+    Total instances: 36, Series during experiment: 4, Windows: 9
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (125167.44) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Crypto/D/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Crypto/D/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Crypto/D/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 11672412.7553
+      MAE: 1371.7113
+      RMSE: 1624.2234
+      MAPE: 0.0960
+      sMAPE: 0.0956
+      MASE: 6.3058
+      ND: 0.0968
+      CRPS: 0.0834
+  Completed: 1 series x 9 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: US_Term_Structure/B
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: US_Term_Structure/B
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=20, test_length=717, val_length=100
+  Dataset info:
+    - Frequency: B
+    - Num series: 1
+    - Target dim: 40
+    - Series length: min=9326, max=9326, avg=9326.0
+    - Test split: 717 steps
+    - Prediction length: 20
+    - Windows: 35
+    - Season length: 5
+    Total instances: 1400, Series during experiment: 40, Windows: 35
+    Collecting ground truth and context...
+    Detected to_univariate case: 40 flat series -> 1 series x 40 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/US_Term_Structure/B/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/US_Term_Structure/B/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/US_Term_Structure/B/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0278
+      MAE: 0.1197
+      RMSE: 0.1393
+      MAPE: 1.0735
+      sMAPE: 0.3057
+      MASE: 1.7299
+      ND: 0.3128
+      CRPS: 0.2475
+  Completed: 1 series x 35 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Oil_Price/B
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Oil_Price/B
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=20, test_length=717, val_length=100
+  Dataset info:
+    - Frequency: B
+    - Num series: 1
+    - Target dim: 12
+    - Series length: min=5035, max=5035, avg=5035.0
+    - Test split: 717 steps
+    - Prediction length: 20
+    - Windows: 35
+    - Season length: 5
+    Total instances: 420, Series during experiment: 12, Windows: 35
+    Collecting ground truth and context...
+    Detected to_univariate case: 12 flat series -> 1 series x 12 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Oil_Price/B/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Oil_Price/B/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Oil_Price/B/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.3929
+      MAE: 0.7220
+      RMSE: 0.8422
+      MAPE: 0.0664
+      sMAPE: 0.0649
+      MASE: 1.5172
+      ND: 0.0661
+      CRPS: 0.0540
+  Completed: 1 series x 35 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Job_Claims/W
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Job_Claims/W
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=13, test_length=52, val_length=13
+  Dataset info:
+    - Frequency: W
+    - Num series: 1
+    - Target dim: 2
+    - Series length: min=196, max=196, avg=196.0
+    - Test split: 52 steps
+    - Prediction length: 13
+    - Windows: 4
+    - Season length: 1
+    Total instances: 8, Series during experiment: 2, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 2 flat series -> 1 series x 2 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (2000333.75) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Job_Claims/W/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Job_Claims/W/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Job_Claims/W/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 538373551.8856
+      MAE: 15092.0258
+      RMSE: 18132.6601
+      MAPE: 0.0239
+      sMAPE: 0.0240
+      MASE: 2.8298
+      ND: 0.0240
+      CRPS: 0.0188
+  Completed: 1 series x 4 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Uncertainty_1M/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Uncertainty_1M/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=6, test_length=42, val_length=18
+  Dataset info:
+    - Frequency: M
+    - Num series: 1
+    - Target dim: 3
+    - Series length: min=780, max=780, avg=780.0
+    - Test split: 42 steps
+    - Prediction length: 6
+    - Windows: 7
+    - Season length: 12
+    Total instances: 21, Series during experiment: 3, Windows: 7
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Uncertainty_1M/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Uncertainty_1M/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Uncertainty_1M/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0086
+      MAE: 0.0766
+      RMSE: 0.0815
+      MAPE: 0.0975
+      sMAPE: 0.0925
+      MASE: 0.9972
+      ND: 0.0974
+      CRPS: 0.0748
+  Completed: 1 series x 7 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Housing_Inventory/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Housing_Inventory/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=36, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 1
+    - Target dim: 4
+    - Series length: min=114, max=114, avg=114.0
+    - Test split: 36 steps
+    - Prediction length: 12
+    - Windows: 3
+    - Season length: 12
+    Total instances: 12, Series during experiment: 4, Windows: 3
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (1220387.29) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Housing_Inventory/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Housing_Inventory/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Housing_Inventory/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 8643511320.4555
+      MAE: 43057.1978
+      RMSE: 47357.1247
+      MAPE: 0.0856
+      sMAPE: 0.0958
+      MASE: 0.6924
+      ND: 0.0848
+      CRPS: 0.0657
+  Completed: 1 series x 3 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: JOLTS/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: JOLTS/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=297, max=297, avg=297.0
+    - Test split: 60 steps
+    - Prediction length: 12
+    - Windows: 5
+    - Season length: 12
+    Total instances: 30, Series during experiment: 6, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/JOLTS/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/JOLTS/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/JOLTS/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1163327.9207
+      MAE: 584.1220
+      RMSE: 710.2955
+      MAPE: 0.1245
+      sMAPE: 0.1249
+      MASE: 1.6663
+      ND: 0.1244
+      CRPS: 0.1006
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: US_Labor/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: US_Labor/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 1
+    - Target dim: 14
+    - Series length: min=380, max=380, avg=380.0
+    - Test split: 60 steps
+    - Prediction length: 12
+    - Windows: 5
+    - Season length: 12
+    Total instances: 70, Series during experiment: 14, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 14 flat series -> 1 series x 14 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (171922.38) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/US_Labor/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/US_Labor/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/US_Labor/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 4277919.5813
+      MAE: 870.1233
+      RMSE: 953.7588
+      MAPE: 0.1308
+      sMAPE: 0.1189
+      MASE: 1.7669
+      ND: 0.1279
+      CRPS: 0.1100
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Vehicle_Supply/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Vehicle_Supply/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=391, max=391, avg=391.0
+    - Test split: 60 steps
+    - Prediction length: 12
+    - Windows: 5
+    - Season length: 12
+    Total instances: 30, Series during experiment: 6, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Vehicle_Supply/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Vehicle_Supply/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Vehicle_Supply/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5552.7694
+      MAE: 32.8886
+      RMSE: 37.7520
+      MAPE: 0.4382
+      sMAPE: 0.3133
+      MASE: 1.1104
+      ND: 0.4120
+      CRPS: 0.3480
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Auto_Production_SF/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Auto_Production_SF/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 1
+    - Target dim: 1
+    - Series length: min=367, max=367, avg=367.0
+    - Test split: 60 steps
+    - Prediction length: 12
+    - Windows: 5
+    - Season length: 12
+    Total instances: 5, Series during experiment: 1, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Auto_Production_SF/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Auto_Production_SF/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Auto_Production_SF/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 27.8034
+      MAE: 3.9531
+      RMSE: 4.9220
+      MAPE: 0.0407
+      sMAPE: 0.0406
+      MASE: 0.9993
+      ND: 0.0396
+      CRPS: 0.0315
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Commodity_Production/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Commodity_Production/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 32
+    - Target dim: 1
+    - Series length: min=120, max=648, avg=325.1
+    - Test split: 60 steps
+    - Prediction length: 12
+    - Windows: 5
+    - Season length: 12
+    Total instances: 160, Series during experiment: 32, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Commodity_Production/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Commodity_Production/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Commodity_Production/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 82948.9018
+      MAE: 86.8260
+      RMSE: 98.7547
+      MAPE: 0.2710
+      sMAPE: 0.2175
+      MASE: 1.2241
+      ND: 0.2134
+      CRPS: 0.1745
+  Completed: 32 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Commodity_Import/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Commodity_Import/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 8
+    - Target dim: 1
+    - Series length: min=254, max=1240, avg=697.2
+    - Test split: 60 steps
+    - Prediction length: 12
+    - Windows: 5
+    - Season length: 12
+    Total instances: 40, Series during experiment: 8, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Commodity_Import/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Commodity_Import/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Commodity_Import/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2050855.7174
+      MAE: 616.1438
+      RMSE: 734.7692
+      MAPE: 0.3745
+      sMAPE: 0.2675
+      MASE: 1.8440
+      ND: 0.3217
+      CRPS: 0.3327
+  Completed: 8 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: WUI_Global/Q
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: WUI_Global/Q
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=4, test_length=20, val_length=20
+  Dataset info:
+    - Frequency: Q
+    - Num series: 1
+    - Target dim: 15
+    - Series length: min=294, max=294, avg=294.0
+    - Test split: 20 steps
+    - Prediction length: 4
+    - Windows: 5
+    - Season length: 4
+    Total instances: 75, Series during experiment: 15, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 1 series x 15 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/WUI_Global/Q/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/WUI_Global/Q/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/WUI_Global/Q/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0757
+      MAE: 0.1960
+      RMSE: 0.2328
+      MAPE: 0.9065
+      sMAPE: 0.8277
+      MASE: 1.2884
+      ND: 0.9995
+      CRPS: 0.7797
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Global_Price/Q
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Global_Price/Q
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=4, test_length=20, val_length=8
+  Dataset info:
+    - Frequency: Q
+    - Num series: 1
+    - Target dim: 60
+    - Series length: min=142, max=142, avg=142.0
+    - Test split: 20 steps
+    - Prediction length: 4
+    - Windows: 5
+    - Season length: 4
+    Total instances: 300, Series during experiment: 60, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 1 series x 60 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Global_Price/Q/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Global_Price/Q/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Global_Price/Q/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2686870.2134
+      MAE: 373.3084
+      RMSE: 419.8279
+      MAPE: 0.2207
+      sMAPE: 0.2259
+      MASE: 1.8708
+      ND: 0.2202
+      CRPS: 0.1825
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Vehicle_Sales/M
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Vehicle_Sales/M
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+  Dataset info:
+    - Frequency: M
+    - Num series: 1
+    - Target dim: 10
+    - Series length: min=596, max=596, avg=596.0
+    - Test split: 60 steps
+    - Prediction length: 12
+    - Windows: 5
+    - Season length: 12
+    Total instances: 50, Series during experiment: 10, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Vehicle_Sales/M/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Vehicle_Sales/M/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Vehicle_Sales/M/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 4523.1328
+      MAE: 16.2196
+      RMSE: 19.9181
+      MAPE: 0.1352
+      sMAPE: 0.1350
+      MASE: 1.3294
+      ND: 0.1362
+      CRPS: 0.1127
+  Completed: 1 series x 5 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Online_Retail_2_UCI/D
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Online_Retail_2_UCI/D
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=180, val_length=90
+  Dataset info:
+    - Frequency: D
+    - Num series: 1
+    - Target dim: 1
+    - Series length: min=739, max=739, avg=739.0
+    - Test split: 180 steps
+    - Prediction length: 30
+    - Windows: 6
+    - Season length: 1
+    Total instances: 6, Series during experiment: 1, Windows: 6
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    ⚠️  Predictions max value (227947.41) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Online_Retail_2_UCI/D/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Online_Retail_2_UCI/D/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Online_Retail_2_UCI/D/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1498306849.2116
+      MAE: 30125.5805
+      RMSE: 35049.1514
+      MAPE: 0.9664
+      sMAPE: 0.8864
+      MASE: 1.8301
+      ND: 0.9844
+      CRPS: 0.8895
+  Completed: 1 series x 6 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Supply_Chain_Customer/D
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Supply_Chain_Customer/D
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=365, val_length=90
+  Dataset info:
+    - Frequency: D
+    - Num series: 1
+    - Target dim: 36
+    - Series length: min=2007, max=2007, avg=2007.0
+    - Test split: 365 steps
+    - Prediction length: 30
+    - Windows: 12
+    - Season length: 1
+    Total instances: 432, Series during experiment: 36, Windows: 12
+    Collecting ground truth and context...
+    Detected to_univariate case: 36 flat series -> 1 series x 36 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (484642.56) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Supply_Chain_Customer/D/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Supply_Chain_Customer/D/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Supply_Chain_Customer/D/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 220336673.1837
+      MAE: 5202.6208
+      RMSE: 6177.5107
+      MAPE: 1.7096
+      sMAPE: 0.9768
+      MASE: 1.7150
+      ND: 1.0091
+      CRPS: 1.0753
+  Completed: 1 series x 12 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Supply_Chain_Location/D
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Supply_Chain_Location/D
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=365, val_length=90
+  Dataset info:
+    - Frequency: D
+    - Num series: 1
+    - Target dim: 51
+    - Series length: min=2007, max=2007, avg=2007.0
+    - Test split: 365 steps
+    - Prediction length: 30
+    - Windows: 12
+    - Season length: 1
+    Total instances: 612, Series during experiment: 51, Windows: 12
+    Collecting ground truth and context...
+    Detected to_univariate case: 51 flat series -> 1 series x 51 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (241383.70) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Supply_Chain_Location/D/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Supply_Chain_Location/D/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Supply_Chain_Location/D/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 82390486.7440
+      MAE: 3885.7307
+      RMSE: 4695.8109
+      MAPE: 1.6361
+      sMAPE: 0.9667
+      MASE: 1.5907
+      ND: 0.9476
+      CRPS: 1.0627
+  Completed: 1 series x 12 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: azure2019_D/5T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: azure2019_D/5T
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=288, test_length=864, val_length=864
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 989
+    - Target dim: 3
+    - Series length: min=8073, max=8639, avg=8627.0
+    - Test split: 864 steps
+    - Prediction length: 288
+    - Windows: 3
+    - Season length: 288
+    Total instances: 8901, Series during experiment: 2967, Windows: 3
+    Collecting ground truth and context...
+    Detected to_univariate case: 2967 flat series -> 989 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_D/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_D/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_D/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 108.0491
+      MAE: 3.8929
+      RMSE: 5.2877
+      MAPE: 0.3996
+      sMAPE: 0.2664
+      MASE: 1.0911
+      ND: 0.3017
+      CRPS: 0.2934
+  Completed: 989 series x 3 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: azure2019_I/5T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: azure2019_I/5T
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=288, test_length=864, val_length=864
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 492
+    - Target dim: 3
+    - Series length: min=8250, max=8639, avg=8630.4
+    - Test split: 864 steps
+    - Prediction length: 288
+    - Windows: 3
+    - Season length: 288
+    Total instances: 4428, Series during experiment: 1476, Windows: 3
+    Collecting ground truth and context...
+    Detected to_univariate case: 1476 flat series -> 492 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_I/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_I/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_I/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 79.9319
+      MAE: 3.2329
+      RMSE: 4.5047
+      MAPE: 0.3763
+      sMAPE: 0.2272
+      MASE: 1.0146
+      ND: 0.2497
+      CRPS: 0.2282
+  Completed: 492 series x 3 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: azure2019_U/5T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: azure2019_U/5T
+Terms: ['short']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=48, test_length=288, val_length=96
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 78
+    - Target dim: 3
+    - Series length: min=882, max=2006, avg=1406.1
+    - Test split: 288 steps
+    - Prediction length: 48
+    - Windows: 6
+    - Season length: 288
+    Total instances: 1404, Series during experiment: 234, Windows: 6
+    Collecting ground truth and context...
+    Detected to_univariate case: 234 flat series -> 78 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_U/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_U/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/azure2019_U/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 139.0279
+      MAE: 4.1309
+      RMSE: 5.3110
+      MAPE: 0.7514
+      sMAPE: 0.3477
+      MASE: 1.1526
+      ND: 0.4550
+      CRPS: 0.5829
+  Completed: 78 series x 6 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: Smart_Manufacturing/H
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: Smart_Manufacturing/H
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=336, val_length=336
+  Dataset info:
+    - Frequency: H
+    - Num series: 34
+    - Target dim: 5
+    - Series length: min=1661, max=1667, avg=1665.9
+    - Test split: 336 steps
+    - Prediction length: 24
+    - Windows: 14
+    - Season length: 24
+    Total instances: 2380, Series during experiment: 170, Windows: 14
+    Collecting ground truth and context...
+    Detected to_univariate case: 170 flat series -> 34 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 159.5596
+      MAE: 8.1600
+      RMSE: 10.0377
+      MAPE: 0.4265
+      sMAPE: 0.3178
+      MASE: 1.0072
+      ND: 0.3052
+      CRPS: 0.2352
+  Completed: 34 series x 14 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=168, test_length=336, val_length=336
+  Dataset info:
+    - Frequency: H
+    - Num series: 34
+    - Target dim: 5
+    - Series length: min=1661, max=1667, avg=1665.9
+    - Test split: 336 steps
+    - Prediction length: 168
+    - Windows: 2
+    - Season length: 24
+    Total instances: 340, Series during experiment: 170, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 170 flat series -> 34 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 169.2171
+      MAE: 8.3965
+      RMSE: 10.4514
+      MAPE: 0.4427
+      sMAPE: 0.3302
+      MASE: 1.0410
+      ND: 0.3142
+      CRPS: 0.2738
+  Completed: 34 series x 2 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=336, test_length=336, val_length=336
+  Dataset info:
+    - Frequency: H
+    - Num series: 34
+    - Target dim: 5
+    - Series length: min=1661, max=1667, avg=1665.9
+    - Test split: 336 steps
+    - Prediction length: 336
+    - Windows: 1
+    - Season length: 24
+    Total instances: 170, Series during experiment: 170, Windows: 1
+    Collecting ground truth and context...
+    Detected to_univariate case: 170 flat series -> 34 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/Smart_Manufacturing/H/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 173.1358
+      MAE: 8.4875
+      RMSE: 10.5592
+      MAPE: 0.4430
+      sMAPE: 0.3297
+      MASE: 1.0447
+      ND: 0.3136
+      CRPS: 0.3169
+  Completed: 34 series x 1 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+
+############################################################
+# Dataset 1/1: MetroPT-3/5T
+############################################################
+Loading configuration...
+
+============================================================
+Model: Seasonal Naive
+Dataset: MetroPT-3/5T
+Terms: ['short', 'medium', 'long']
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=48, test_length=1728, val_length=1728
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=17809, max=17809, avg=17809.0
+    - Test split: 1728 steps
+    - Prediction length: 48
+    - Windows: 36
+    - Season length: 288
+    Total instances: 216, Series during experiment: 6, Windows: 36
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/short/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/short/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/short/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 6.0634
+      MAE: 1.5665
+      RMSE: 1.9887
+      MAPE: 12.6359
+      sMAPE: 0.5450
+      MASE: 0.8498
+      ND: 0.4511
+      CRPS: 0.3807
+  Completed: 1 series x 36 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=1728, val_length=1728
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=17809, max=17809, avg=17809.0
+    - Test split: 1728 steps
+    - Prediction length: 288
+    - Windows: 6
+    - Season length: 288
+    Total instances: 36, Series during experiment: 6, Windows: 6
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/medium/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/medium/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/medium/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.7420
+      MAE: 1.5153
+      RMSE: 1.9760
+      MAPE: 12.0295
+      sMAPE: 0.5466
+      MASE: 0.8290
+      ND: 0.4302
+      CRPS: 0.3669
+  Completed: 1 series x 6 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+--- Term: long ---
+  Config: prediction_length=576, test_length=1728, val_length=1728
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Series length: min=17809, max=17809, avg=17809.0
+    - Test split: 1728 steps
+    - Prediction length: 576
+    - Windows: 3
+    - Season length: 288
+    Total instances: 18, Series during experiment: 6, Windows: 3
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/long/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/long/metrics.npz
+    Saved config to /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive/MetroPT-3/5T/long/config.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.4701
+      MAE: 1.4809
+      RMSE: 1.9508
+      MAPE: 14.4679
+      sMAPE: 0.5114
+      MASE: 0.8584
+      ND: 0.4481
+      CRPS: 0.3882
+  Completed: 1 series x 3 windows
+  Output: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/seasonal_naive
+============================================================
+
+############################################################
+# All 1 dataset(s) completed!
+############################################################
+2026-09-01 00:47:36 | task model=seasonal_naive runner=run_seasonal_naive.sh environment=uv completed status=success
+2026-09-01 00:47:36 | stage evaluate completed status=success
+2026-09-01 00:47:36 | workflow foundation_models completed status=success exit_code=0
