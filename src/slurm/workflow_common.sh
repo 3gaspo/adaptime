@@ -5,6 +5,7 @@ set -euo pipefail
 TIME_ACTIVE_STAGE=""
 TIME_ACTIVE_TASK=""
 TIME_WORKFLOW_DONE=false
+TIME_LAUNCHED_AT=""
 
 time_timestamp() {
     date '+%Y-%m-%d %H:%M:%S'
@@ -25,6 +26,7 @@ time_write_status() {
         echo "state=$state"
         echo "stage=${TIME_ACTIVE_STAGE:-none}"
         echo "active_task=${TIME_ACTIVE_TASK:-none}"
+        echo "launched_at=$TIME_LAUNCHED_AT"
         echo "updated_at=$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
         echo "exit_code=$exit_code"
         echo "slurm_job_id=${SLURM_JOB_ID:-none}"
@@ -59,6 +61,7 @@ time_workflow_init() {
     status_name="${status_name//[^a-zA-Z0-9_.-]/_}"
     TIME_STATUS_ROOT="$TIME_LOGS/workflow_status/$TIME_WORKFLOW_NAME/$TIME_LAUNCH_ID"
     TIME_STATUS_FILE="$TIME_STATUS_ROOT/$status_name.status"
+    TIME_LAUNCHED_AT="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
     mkdir -p "$TIME_STATUS_ROOT"
     trap time_workflow_on_exit EXIT
     time_write_status running 0

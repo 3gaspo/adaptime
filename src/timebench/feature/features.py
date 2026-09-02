@@ -265,6 +265,163 @@ def preprocess_for_tsfeatures(
 
     return df_processed, stats_df
 
+
+HETEROGENEITY_COLUMNS = [
+    "temporal_location_heterogeneity",
+    "temporal_scale_heterogeneity",
+    "temporal_frequency_heterogeneity",
+    "temporal_heterogeneity",
+]
+
+
+def _filled_values(values: np.ndarray) -> np.ndarray:
+    """Return a finite one-dimensional series using linear interpolation."""
+    values = np.asarray(values, dtype=float).reshape(-1)
+    finite = np.isfinite(values)
+    if finite.all():
+        return values
+    if not finite.any():
+        return np.zeros_like(values)
+    positions = np.arange(len(values))
+    return np.interp(positions, positions[finite], values[finite])
+
+
+def _frequency_distribution(values: np.ndarray, bins: int = 32) -> np.ndarray:
+    """Return a normalized spectrum with a dedicated constant-signal bin."""
+    values = _filled_values(values)
+    centered = values - np.mean(values)
+    power = np.abs(np.fft.rfft(centered)) ** 2
+    if len(power):
+        power[0] = 0.0
+
+    distribution = np.zeros(bins + 1, dtype=float)
+    if power.sum() <= 1e-12:
+        distribution[0] = 1.0
+        return distribution
+
+    source_axis = np.linspace(0.0, 1.0, len(power))
+    target_axis = np.linspace(0.0, 1.0, bins)
+    distribution[1:] = np.interp(target_axis, source_axis, power)
+    distribution /= distribution.sum()
+    return distribution
+
+
+def _mean_jensen_shannon(distributions: list[np.ndarray]) -> float:
+    """Mean binary Jensen-Shannon distance from each distribution to their mean."""
+    if len(distributions) < 2:
+        return 0.0
+    matrix = np.asarray(distributions, dtype=float)
+    reference = matrix.mean(axis=0)
+    divergences = []
+    for distribution in matrix:
+        midpoint = 0.5 * (distribution + reference)
+        left = distribution > 0
+        right = reference > 0
+        divergence = 0.5 * np.sum(
+            distribution[left] * np.log(distribution[left] / midpoint[left])
+        )
+        divergence += 0.5 * np.sum(
+            reference[right] * np.log(reference[right] / midpoint[right])
+        )
+        divergences.append(divergence / np.log(2.0))
+    return float(np.clip(np.mean(divergences), 0.0, 1.0))
+
+
+def temporal_heterogeneity(values: np.ndarray, segments: int = 4) -> Dict[str, float]:
+    """Measure location, scale, and frequency changes across chronological blocks."""
+    values = _filled_values(values)
+    if len(values) < 16:
+        return {column: 0.0 for column in HETEROGENEITY_COLUMNS}
+
+    block_count = min(segments, max(2, len(values) // 8))
+    blocks = [block for block in np.array_split(values, block_count) if len(block)]
+    total_variance = float(np.var(values))
+    block_means = np.asarray([np.mean(block) for block in blocks])
+    between_location = float(np.var(block_means))
+    location = (
+        between_location / total_variance if total_variance > 1e-12 else 0.0
+    )
+
+    block_scales = np.asarray([np.std(block) for block in blocks])
+    positive_reference = max(float(np.std(values)), 1e-12)
+    log_scales = np.log((block_scales + 1e-12) / positive_reference)
+    scale = 1.0 - np.exp(-float(np.var(log_scales)))
+
+    frequency = _mean_jensen_shannon(
+        [_frequency_distribution(block) for block in blocks]
+    )
+    components = np.clip([location, scale, frequency], 0.0, 1.0)
+    return {
+        "temporal_location_heterogeneity": float(components[0]),
+        "temporal_scale_heterogeneity": float(components[1]),
+        "temporal_frequency_heterogeneity": float(components[2]),
+        "temporal_heterogeneity": float(np.mean(components)),
+    }
+
+
+def temporal_heterogeneity_frame(panel: pd.DataFrame) -> pd.DataFrame:
+    """Compute temporal heterogeneity for every variate in a panel."""
+    rows = []
+    for unique_id, group in panel.groupby("unique_id", sort=False):
+        row = {"unique_id": unique_id}
+        row.update(temporal_heterogeneity(group["y"].to_numpy()))
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def spatial_heterogeneity(panel: pd.DataFrame) -> Dict[str, float]:
+    """Measure location, scale, and frequency differences between panel variates."""
+    units = [
+        _filled_values(group["y"].to_numpy())
+        for _, group in panel.groupby("unique_id", sort=False)
+    ]
+    if len(units) < 2:
+        return {
+            "spatial_location_heterogeneity": 0.0,
+            "spatial_scale_heterogeneity": 0.0,
+            "spatial_frequency_heterogeneity": 0.0,
+            "spatial_heterogeneity": 0.0,
+        }
+
+    means = np.asarray([np.mean(unit) for unit in units])
+    variances = np.asarray([np.var(unit) for unit in units])
+    between_location = float(np.var(means))
+    within_location = float(np.mean(variances))
+    denominator = between_location + within_location
+    location = between_location / denominator if denominator > 1e-12 else 0.0
+
+    positive_reference = max(float(np.median(np.sqrt(variances))), 1e-12)
+    log_scales = np.log((np.sqrt(variances) + 1e-12) / positive_reference)
+    scale = 1.0 - np.exp(-float(np.var(log_scales)))
+    frequency = _mean_jensen_shannon(
+        [_frequency_distribution(unit) for unit in units]
+    )
+    components = np.clip([location, scale, frequency], 0.0, 1.0)
+    return {
+        "spatial_location_heterogeneity": float(components[0]),
+        "spatial_scale_heterogeneity": float(components[1]),
+        "spatial_frequency_heterogeneity": float(components[2]),
+        "spatial_heterogeneity": float(np.mean(components)),
+    }
+
+
+def dataset_feature_summary(
+    features: pd.DataFrame,
+    panel: pd.DataFrame,
+) -> pd.DataFrame:
+    """Aggregate per-variate features and spatial heterogeneity to one dataset row."""
+    summary = {
+        "dataset_id": features["dataset_id"].iloc[0],
+        "series_count": int(features["series_name"].nunique()),
+        "variate_count": int(len(features)),
+    }
+    for column in features.select_dtypes(include=[np.number]).columns:
+        values = features[column].to_numpy(dtype=float)
+        finite = values[np.isfinite(values)]
+        summary[column] = float(np.mean(finite)) if len(finite) else np.nan
+    summary.update(spatial_heterogeneity(panel))
+    return pd.DataFrame([summary])
+
 # ========================
 # Feature Definition
 # ========================

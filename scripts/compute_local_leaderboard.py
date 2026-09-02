@@ -4,7 +4,7 @@ Compute Overall Leaderboard from TIME evaluation results.
 
 This script:
 1. Downloads Seasonal Naive results from HuggingFace Hub (if not found locally)
-2. Loads your model results from TIME_OUTPUTS/results/{model_name}
+2. Selects completed run manifests from one TIME experiment root
 3. Computes Overall leaderboard metrics (normalized by Seasonal Naive)
 4. Prints the results in a formatted table
 
@@ -12,7 +12,7 @@ Usage:
     python scripts/compute_local_leaderboard.py
 
 The script uses default values:
-    - Results directory: TIME_OUTPUTS/results (or ./outputs/results locally)
+    - Results directory: TIME_OUTPUTS/results/expe_uni
     - Sorting metric: MASE
 
 Requirements:
@@ -36,8 +36,8 @@ from huggingface_hub import snapshot_download
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from timebench.paths import results_root as default_results_root
-from timebench.paths import weights_root
+from timebench.paths import foundation_experiment_root, weights_root
+from timebench.pipeline import parse_config_filters, select_completed_runs
 
 # HuggingFace repository for Seasonal Naive results
 HF_OUTPUT_REPO_ID = "Real-TSF/TIME-Output"
@@ -209,6 +209,57 @@ def get_all_datasets_results(results_root: Path) -> pd.DataFrame:
         return pd.DataFrame(rows)
     else:
         return pd.DataFrame(columns=["model", "dataset", "freq", "dataset_id", "horizon", "MASE", "CRPS", "MAE", "MSE"])
+
+
+def get_manifest_datasets_results(
+    results_root: Path,
+    *,
+    target_modes: set[str] | None = None,
+    launch_id: str | None = None,
+    config_filters: dict | None = None,
+    config_policy: str = "error",
+) -> pd.DataFrame:
+    """Load current TIME results through completed run manifests."""
+    rows = []
+    selected = select_completed_runs(
+        results_root,
+        target_modes=target_modes,
+        launch_id=launch_id,
+        config_filters=config_filters,
+        config_policy=config_policy,
+    )
+    for run_dir, manifest in selected:
+        identity = manifest["identity"]
+        with np.load(run_dir / "metrics.npz") as metrics:
+            rows.append(
+                {
+                    "model": identity["model"],
+                    "base_model": identity["model"],
+                    "target_mode": identity["target_mode"],
+                    "dataset": identity["dataset"],
+                    "freq": identity["frequency"],
+                    "dataset_id": f"{identity['dataset']}/{identity['frequency']}",
+                    "horizon": identity["term"],
+                    "MASE": np.nanmean(metrics.get("MASE", np.array([]))),
+                    "CRPS": np.nanmean(metrics.get("CRPS", np.array([]))),
+                    "MAE": np.nanmean(metrics.get("MAE", np.array([]))),
+                    "MSE": np.nanmean(metrics.get("MSE", np.array([]))),
+                }
+            )
+    columns = [
+        "model",
+        "base_model",
+        "target_mode",
+        "dataset",
+        "freq",
+        "dataset_id",
+        "horizon",
+        "MASE",
+        "CRPS",
+        "MAE",
+        "MSE",
+    ]
+    return pd.DataFrame(rows, columns=columns)
 
 
 def compute_ranks(df: pd.DataFrame, groupby_cols: list) -> pd.DataFrame:
@@ -397,8 +448,8 @@ def main():
     parser = argparse.ArgumentParser(description="Compute the local TIME leaderboard.")
     parser.add_argument(
         "--results-dir",
-        default=str(default_results_root()),
-        help="TIME results root (default: TIME_OUTPUTS/results)",
+        default=str(foundation_experiment_root("none")),
+        help="One manifest-based experiment root (default: results/expe_uni)",
     )
     parser.add_argument(
         "--metric",
@@ -411,11 +462,38 @@ def main():
         default=str(weights_root() / "huggingface"),
         help="Hugging Face cache used for the Seasonal Naive results",
     )
+    parser.add_argument(
+        "--target-mode",
+        nargs="+",
+        choices=("univariate", "multivariate"),
+        default=None,
+        help="Optional target-representation filter",
+    )
+    parser.add_argument("--launch-id", default=None)
+    parser.add_argument(
+        "--run-config",
+        action="append",
+        default=[],
+        help="Manifest filter FIELD=JSON",
+    )
+    parser.add_argument(
+        "--config-policy",
+        choices=("error", "latest"),
+        default="error",
+    )
     args = parser.parse_args()
 
     results_dir = args.results_dir
     metric = args.metric
     cache_dir = args.cache_dir
+    config_filters = parse_config_filters(args.run_config)
+    local_results = get_manifest_datasets_results(
+        Path(results_dir),
+        target_modes=None if args.target_mode is None else set(args.target_mode),
+        launch_id=args.launch_id,
+        config_filters=config_filters,
+        config_policy=args.config_policy,
+    )
 
     print("=" * 80)
     print("TIME Overall Leaderboard Calculator")
@@ -427,11 +505,13 @@ def main():
     print("Step 1: Checking for Seasonal Naive results...")
 
     # First check if seasonal_naive exists locally in the results directory
-    local_seasonal_naive = check_local_seasonal_naive(results_root)
+    local_seasonal_naive = not local_results[
+        local_results["model"] == SEASONAL_NAIVE_MODEL
+    ].empty
 
     if local_seasonal_naive:
-        print(f"✅ Found local Seasonal Naive results at {results_root / SEASONAL_NAIVE_MODEL}")
-        seasonal_naive_results_path = results_root
+        print(f"✅ Found selected local Seasonal Naive manifests below {results_root}")
+        seasonal_naive_results_path = None
     else:
         print(f"   Local Seasonal Naive results not found at {results_root / SEASONAL_NAIVE_MODEL}")
         print("   Downloading from HuggingFace Hub...")
@@ -450,7 +530,7 @@ def main():
         sys.exit(1)
 
     # Load user results
-    all_local_results = get_all_datasets_results(results_root)
+    all_local_results = local_results
 
     if all_local_results.empty:
         print(f"❌ No results found in {results_root}")
@@ -465,7 +545,11 @@ def main():
 
     # Step 3: Load Seasonal Naive results
     print(f"\nStep 3: Loading Seasonal Naive results...")
-    seasonal_naive_results = get_all_datasets_results(seasonal_naive_results_path)
+    seasonal_naive_results = (
+        all_local_results
+        if seasonal_naive_results_path is None
+        else get_all_datasets_results(seasonal_naive_results_path)
+    )
 
     # Filter to only seasonal_naive model
     seasonal_naive_results = seasonal_naive_results[

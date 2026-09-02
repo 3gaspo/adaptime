@@ -1,4 +1,4 @@
-"""Dependency-light maintenance checks for the Improved TIME layer."""
+"""Dependency-light maintenance checks for Adaptime's TIME layer."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 LOCAL_LINK = re.compile(r"(?<!!)\[[^]]+\]\(([^)]+)\)")
 
 
-class ImprovedMaintenanceContractTest(unittest.TestCase):
+class AdaptimeMaintenanceContractTest(unittest.TestCase):
     def test_python_sources_parse(self) -> None:
         roots = [PROJECT_ROOT / "src", PROJECT_ROOT / "experiments", PROJECT_ROOT / "scripts"]
         paths = sorted(path for root in roots for path in root.rglob("*.py"))
@@ -62,6 +62,73 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
         self.assertIn("offset=-self._test_length", source)
         self.assertIn("math.floor(self._test_length / self.prediction_length)", source)
         self.assertIn("math.floor(self._val_length / self.prediction_length)", source)
+
+    def test_foundation_runners_are_offline_and_fail_fast(self) -> None:
+        experiments = {
+            "chronos_bolt.py": ("local_files_only=True", "chronos-bolt-{model_size}"),
+            "chronos2.py": (
+                "BaseChronosPipeline.from_pretrained",
+                "local_files_only=True",
+                '"chronos2"',
+            ),
+            "ts_icl.py": ("allow_auto_download=False", '"tsicl/tsicl-v1.ckpt"'),
+            "tirex_model.py": (
+                'foundation_weight_path(',
+                '"tirex"',
+                "load_model(str(checkpoint_path)",
+            ),
+            "seasonal_naive.py": (),
+        }
+        for name, required in experiments.items():
+            source = (PROJECT_ROOT / "experiments" / name).read_text(encoding="utf-8")
+            self.assertNotIn("Failed to run experiment", source, name)
+            self.assertNotIn("except Exception", source, name)
+            for text in required:
+                self.assertIn(text, source, name)
+
+        runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("export HF_HUB_OFFLINE=1", runtime)
+        self.assertIn("export HF_DATASETS_OFFLINE=1", runtime)
+        self.assertIn("export TRANSFORMERS_OFFLINE=1", runtime)
+
+    def test_time_dataset_download_and_current_model_surface(self) -> None:
+        downloader = (PROJECT_ROOT / "scripts/download_time_dataset.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('DEFAULT_REPO_ID = "Real-TSF/TIME"', downloader)
+        self.assertIn('os.environ["HF_HUB_DISABLE_XET"] = "1"', downloader)
+        self.assertLess(
+            downloader.index('os.environ["HF_HUB_DISABLE_XET"] = "1"'),
+            downloader.index("from huggingface_hub import"),
+        )
+        self.assertIn("resolved_revision = info.sha", downloader)
+        self.assertIn('REVISION_FILE = ".time_snapshot_revision"', downloader)
+        self.assertIn("if destination_has_files and not resume", downloader)
+        self.assertIn("max_workers=max_workers", downloader)
+        self.assertIn('destination.rglob("state.json")', downloader)
+
+        self.assertTrue((PROJECT_ROOT / "experiments/tirex_model.py").is_file())
+        self.assertTrue((PROJECT_ROOT / "scripts/run_tirex.sh").is_file())
+        self.assertTrue(
+            (PROJECT_ROOT / "slurm/dgx/foundation_models/tirex.slurm").is_file()
+        )
+        self.assertTrue(
+            (PROJECT_ROOT / "slurm/selena/foundation_models/tirex_selena.slurm").is_file()
+        )
+        dependencies = tomllib.loads(
+            (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        )["project"]["dependencies"]
+        self.assertTrue(any("tirex" in dependency.lower() for dependency in dependencies))
+        registry = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
+            encoding="utf-8"
+        )
+        summary = (PROJECT_ROOT / "scripts/compute_foundation_summary.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("tirex", registry.lower())
+        self.assertIn('"tirex"', summary.lower())
 
 
 if __name__ == "__main__":

@@ -79,6 +79,14 @@ if [ -n "$job_id" ]; then
             "${err_log#"$project_root"/}"
         )
     done
+    for status_root in logs/workflow_status logs/selena/workflow_status; do
+        [ -d "$status_root" ] || continue
+        while IFS= read -r -d '' status_file; do
+            if grep -qxF "slurm_job_id=$job_id" "$status_file"; then
+                paths+=("$status_file")
+            fi
+        done < <(find "$status_root" -type f -name '*.status' -print0)
+    done
     [ -n "$message" ] || message="slurm: publish job $job_id"
 else
     [ -d logs ] || {
@@ -99,13 +107,19 @@ elif [ -d outputs ]; then
             find "$project_root/outputs" -type f \( \
                 -name foundation_model_summary.csv -o \
                 -name foundation_model_summary.md -o \
+                -name foundation_model_report_manifest.json -o \
+                -name manifest.json -o \
                 -name config.json -o \
+                -name metrics_summary.json -o \
                 -name metrics.npz \) -print0
         else
             find "$project_root/outputs" -type f \( \
                 -name foundation_model_summary.csv -o \
                 -name foundation_model_summary.md -o \
-                -name config.json \) -print0
+                -name foundation_model_report_manifest.json -o \
+                -name manifest.json -o \
+                -name config.json -o \
+                -name metrics_summary.json \) -print0
         fi
     )
 fi

@@ -49,11 +49,11 @@ else
 fi
 summary_job="$(
     sbatch --parsable \
-        --dependency="afterok:$dependency" \
+        --dependency="afterany:$dependency" \
         --export="ALL,TIME_LAUNCH_ID=$launch_id" \
         "$summary_front"
 )"
 summary_job="${summary_job%%;*}"
 
-echo "foundation summary submitted job_id=$summary_job dependency=afterok:$dependency"
+echo "foundation summary submitted job_id=$summary_job dependency=afterany:$dependency"
 echo "status: bash scripts/foundation_model_status.sh $cluster $launch_id"

@@ -30,6 +30,22 @@ def weights_root() -> Path:
     return _configured_path("TIME_WEIGHTS", PROJECT_ROOT / "weights")
 
 
+def foundation_weight_path(
+    relative: str | Path,
+    *,
+    explicit: str | Path | None = None,
+    directory: bool,
+) -> Path:
+    """Resolve one required local foundation-model checkpoint."""
+    path = Path(explicit).expanduser() if explicit else weights_root() / relative
+    path = path.resolve()
+    valid = path.is_dir() if directory else path.is_file()
+    if not valid:
+        expected = "directory" if directory else "file"
+        raise FileNotFoundError(f"Foundation-model weight {expected} not found: {path}")
+    return path
+
+
 def outputs_root() -> Path:
     """Generated predictions, metrics, features, and reports."""
     return _configured_path("TIME_OUTPUTS", PROJECT_ROOT / "outputs")
@@ -38,6 +54,37 @@ def outputs_root() -> Path:
 def results_root() -> Path:
     """Per-model TIME evaluation results."""
     return outputs_root() / "results"
+
+
+def foundation_experiment_name(covariate_mode: str = "none") -> str:
+    """Map the explicit covariate contract to its experiment family."""
+    experiments = {
+        "none": "expe_uni",
+        "future_included": "expe_covar",
+        "past_targets": "expe_covar",
+    }
+    try:
+        return experiments[covariate_mode]
+    except KeyError as error:
+        raise ValueError(f"Unknown covariate mode {covariate_mode!r}") from error
+
+
+def foundation_experiment_root(covariate_mode: str = "none") -> Path:
+    """Result root for one maintained foundation experiment."""
+    return results_root() / foundation_experiment_name(covariate_mode)
+
+
+def foundation_identity_root(
+    experiment_root: str | Path,
+    model: str,
+    target_mode: str,
+    dataset: str,
+    term: str,
+) -> Path:
+    """Identity directory whose non-path configurations live in ``run_n``."""
+    if target_mode not in {"univariate", "multivariate"}:
+        raise ValueError(f"Unknown target mode {target_mode!r}")
+    return Path(experiment_root) / model / target_mode / dataset / term
 
 
 def logs_root() -> Path:

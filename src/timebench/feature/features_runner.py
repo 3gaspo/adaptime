@@ -5,9 +5,9 @@ Usage:
     python -m timebench.feature.features_runner --dataset Water_Quality_Darwin/15T
     python -m timebench.feature.features_runner --all
 
-Input format:
-    Expects preprocessed CSV files from preprocess.py located at:
-    ${TIME_DATA_ROOT}/processed_csv/{dataset}/{freq}/*.csv
+Input formats:
+    Preprocessed CSV files below ${TIME_DATA_ROOT}/processed_csv, or TIME's
+    saved Arrow datasets below ${TIME_DATASET} with --input-format hf.
 
     Each CSV file has format:
     - First column: timestamp
@@ -21,14 +21,18 @@ import time
 from multiprocessing import Pool
 from pathlib import Path
 
+import datasets
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 from timebench.feature.features import (
+    dataset_feature_summary,
     extended_mstl_features,
     extended_stl_features,
     preprocess_for_tsfeatures,
     safe_parse_datetime,
+    temporal_heterogeneity_frame,
     tsfeatures_with_uid_freq_map,
 )
 
@@ -38,7 +42,7 @@ from timebench.evaluation.utils import (
     get_test_length,
     find_dataset_config,
 )
-from timebench.paths import data_root, outputs_root
+from timebench.paths import data_root, dataset_storage_root, outputs_root
 
 # Default config path relative to this module
 DEFAULT_CONFIG_PATH = Path(__file__).parent.parent / "config" / "datasets.yaml"
@@ -54,6 +58,11 @@ FEATURE_COLUMNS_ORDER = [
     # Meta features (from preprocess tags)
     "stationarity",
     "x_entropy",  # Entropy of raw series (predictability/signal-to-noise)
+    # Distribution changes across chronological blocks
+    "temporal_location_heterogeneity",
+    "temporal_scale_heterogeneity",
+    "temporal_frequency_heterogeneity",
+    "temporal_heterogeneity",
     # Trend features (from STL)
     "trend_strength",
     "trend_stability",
@@ -164,15 +173,75 @@ def convert_multi_csv_to_panel(
     return panel_df, uid_info_df
 
 
+def convert_hf_dataset_to_panel(
+    dataset_dir: str,
+    test_length: int | None = None,
+    mode: str = "test",
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Convert TIME's saved Arrow dataset directly to the feature panel format."""
+    hf_dataset = datasets.load_from_disk(dataset_dir)
+    all_records = []
+    uid_info_records = []
+
+    for item_index, item in enumerate(hf_dataset):
+        target = np.asarray(item["target"], dtype=float)
+        if target.ndim == 1:
+            target = target[np.newaxis, :]
+        if target.ndim != 2:
+            raise ValueError(
+                f"Expected one- or two-dimensional target, got shape {target.shape} "
+                f"in {dataset_dir}"
+            )
+        if mode == "test":
+            if test_length is None:
+                raise ValueError("test_length must be provided when mode='test'")
+            target = target[:, -test_length:]
+
+        series_name = str(item.get("item_id", f"item_{item_index}"))
+        variate_names = item.get("variate_names")
+        if variate_names is not None:
+            variate_names = list(variate_names)
+
+        for variate_index, values in enumerate(target):
+            if variate_names and variate_index < len(variate_names):
+                variate_name = str(variate_names[variate_index])
+            elif target.shape[0] == 1:
+                variate_name = "target"
+            else:
+                variate_name = f"dim_{variate_index}"
+            unique_id = f"{series_name}_{variate_name}"
+            all_records.append(
+                pd.DataFrame(
+                    {
+                        "unique_id": unique_id,
+                        "ds": np.arange(len(values)),
+                        "y": values,
+                    }
+                )
+            )
+            uid_info_records.append(
+                {
+                    "unique_id": unique_id,
+                    "series_name": series_name,
+                    "variate_name": variate_name,
+                }
+            )
+
+    if not all_records:
+        raise ValueError(f"No target series found in {dataset_dir}")
+    return pd.concat(all_records, ignore_index=True), pd.DataFrame(uid_info_records)
+
+
 def compute_dataset_features(
     dataset_name: str,
     freq: str,
-    csv_dir: str,
+    input_dir: str,
     output_dir: str | None = None,
     test_length: int | None = None,
     split_mode: str = "test",
     decomp_method: str = "stl",
-) -> None:
+    input_format: str = "processed_csv",
+) -> Path:
     """
     Compute and save the full set of time series features for a given dataset.
 
@@ -187,7 +256,7 @@ def compute_dataset_features(
     Args:
         dataset_name: The name of the dataset (e.g., "Water_Quality_Darwin", "ETTh1").
         freq: Frequency string (e.g., "H", "D", "15T").
-        csv_dir: Path to directory containing processed CSV files (*.csv).
+        input_dir: Processed CSV directory or saved Arrow dataset directory.
         output_dir: Base directory for output files.
         test_length: Number of timesteps for test portion (required if split_mode="test").
         split_mode: Which portion to compute features on:
@@ -196,9 +265,11 @@ def compute_dataset_features(
         decomp_method: Seasonal-trend decomposition method:
             - "stl": single-period STL using the strongest FFT period (default)
             - "mstl": multi-period MSTL using the top-3 FFT periods
+        input_format: "processed_csv" or "hf".
 
     Returns:
-        None. Saves features to {output_dir}/{decomp_method}_features/{dataset}/{freq}/{split_mode}.csv
+        Path to the dataset-level feature CSV saved below
+        {output_dir}/{decomp_method}_features/{dataset}/{freq}/.
     """
     start = time.time()
     if output_dir is None:
@@ -212,20 +283,33 @@ def compute_dataset_features(
     os.makedirs(feature_dir, exist_ok=True)
 
     output_csv_path = os.path.join(feature_dir, f'{split_mode}.csv')
+    dataset_csv_path = os.path.join(feature_dir, f'{split_mode}_dataset.csv')
 
     # Skip if already computed
-    if os.path.exists(output_csv_path):
-        print(f"[Skip] Features for {dataset_name}/{freq} ({split_mode}) already exist at {output_csv_path}")
-        return
+    if os.path.exists(output_csv_path) and os.path.exists(dataset_csv_path):
+        print(
+            f"[Skip] Features for {dataset_name}/{freq} ({split_mode}) "
+            f"already exist at {output_csv_path} and {dataset_csv_path}"
+        )
+        return Path(dataset_csv_path)
 
-    print(f"[Start] Processing {dataset_name}/{freq} ({split_mode}) from {csv_dir}")
+    print(f"[Start] Processing {dataset_name}/{freq} ({split_mode}) from {input_dir}")
     if split_mode == "test":
         print(f"        test_length={test_length}")
 
     # Generate panel from CSV directory with appropriate filtering
     print("Loading CSV files and converting to panel format...")
-    panel, uid_info_df = convert_multi_csv_to_panel(csv_dir, test_length=test_length, mode=split_mode)
+    if input_format == "hf":
+        panel, uid_info_df = convert_hf_dataset_to_panel(
+            input_dir, test_length=test_length, mode=split_mode
+        )
+    else:
+        panel, uid_info_df = convert_multi_csv_to_panel(
+            input_dir, test_length=test_length, mode=split_mode
+        )
     print(f"Loaded panel: {len(panel)} rows, {panel['unique_id'].nunique()} unique_ids")
+
+    temporal_df = temporal_heterogeneity_frame(panel)
 
     # Interpolate, Scale, Freq_analysis
     print("Running preprocessing...")
@@ -271,6 +355,7 @@ def compute_dataset_features(
 
     # Merge all features
     features_df = features_df.merge(stats_df, on='unique_id', how='left')
+    features_df = features_df.merge(temporal_df, on='unique_id', how='left')
 
     # Add identifier columns (dataset_id, series_name, variate_name)
     features_df = features_df.merge(uid_info_df, on='unique_id', how='left')
@@ -304,7 +389,33 @@ def compute_dataset_features(
 
     # Save all features
     features_df.to_csv(output_csv_path, index=False)
-    print(f"[Done] {dataset_name}/{freq} ({split_mode}): Saved {len(features_df)} features to {output_csv_path} (elapsed {time.time() - start:.2f}s)")
+    dataset_feature_summary(features_df, panel).to_csv(dataset_csv_path, index=False)
+    print(
+        f"[Done] {dataset_name}/{freq} ({split_mode}): Saved {len(features_df)} "
+        f"per-variate rows to {output_csv_path} and one dataset row to "
+        f"{dataset_csv_path} (elapsed {time.time() - start:.2f}s)"
+    )
+    return Path(dataset_csv_path)
+
+
+def write_dataset_feature_index(paths: list[Path], output_path: Path) -> None:
+    """Combine dataset summaries and add descending heterogeneity ranks."""
+    rows = []
+    for path in paths:
+        row = pd.read_csv(path)
+        row["feature_split"] = path.stem.removesuffix("_dataset")
+        rows.append(row)
+    if not rows:
+        return
+    index = pd.concat(rows, ignore_index=True)
+    for feature in ("temporal_heterogeneity", "spatial_heterogeneity"):
+        index[f"{feature}_rank"] = index[feature].rank(
+            method="min", ascending=False
+        ).astype("Int64")
+    index = index.sort_values("dataset_id")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    index.to_csv(output_path, index=False)
+    print(f"[Done] Dataset feature index: {output_path}")
 
 
 def main():
@@ -325,6 +436,9 @@ Examples:
 
     # Use multi-period MSTL decomposition instead of the default single-period STL
     python -m timebench.feature.features_runner --dataset Water_Quality_Darwin/15T --decomp mstl
+
+    # Read the downloaded TIME Arrow datasets directly
+    python -m timebench.feature.features_runner --all --input-format hf --split full
         """
     )
     parser.add_argument(
@@ -365,6 +479,18 @@ Examples:
         help="Base directory for processed CSV files"
     )
     parser.add_argument(
+        "--dataset_dir",
+        type=str,
+        default=str(dataset_storage_root()),
+        help="Base directory for saved Arrow datasets"
+    )
+    parser.add_argument(
+        "--input-format",
+        choices=["processed_csv", "hf"],
+        default="processed_csv",
+        help="Read preprocessed CSV files or TIME's saved Arrow datasets"
+    )
+    parser.add_argument(
         "--output_dir",
         type=str,
         default=str(outputs_root()),
@@ -382,14 +508,15 @@ Examples:
 
     if args.all:
         # Process all datasets in config
+        dataset_summary_paths = []
 
         for dataset_key in tqdm(datasets_config.keys(), desc="Processing datasets", unit="dataset"):
             dataset_name, freq = parse_dataset_key(dataset_key)
-            # Path: TIME_DATA_ROOT/processed_csv/{dataset_name}/{freq}/
-            dataset_csv_dir = os.path.join(args.csv_dir, dataset_name, freq)
+            input_root = args.dataset_dir if args.input_format == "hf" else args.csv_dir
+            dataset_input_dir = os.path.join(input_root, dataset_name, freq)
 
-            if not os.path.isdir(dataset_csv_dir):
-                print(f"[Warning] Directory not found: {dataset_csv_dir}, skipping {dataset_key}")
+            if not os.path.isdir(dataset_input_dir):
+                print(f"[Warning] Directory not found: {dataset_input_dir}, skipping {dataset_key}")
                 continue
 
             # Get test_length from config
@@ -407,15 +534,23 @@ Examples:
                 print(f"[Info] test_length={test_length} < 500 for {dataset_key}, using full series instead")
                 effective_split_mode = "full"
 
-            compute_dataset_features(
+            dataset_summary_paths.append(compute_dataset_features(
                 dataset_name=dataset_name,
                 freq=freq,
-                csv_dir=dataset_csv_dir,
+                input_dir=dataset_input_dir,
                 output_dir=args.output_dir,
                 test_length=test_length,
                 split_mode=effective_split_mode,
                 decomp_method=args.decomp,
-            )
+                input_format=args.input_format,
+            ))
+
+        write_dataset_feature_index(
+            dataset_summary_paths,
+            Path(args.output_dir)
+            / f"{args.decomp}_features"
+            / f"dataset_features_{args.split}.csv",
+        )
 
 
     elif args.dataset:
@@ -423,14 +558,18 @@ Examples:
         dataset_key, freq, dataset_cfg = find_dataset_config(datasets_config, args.dataset)
         dataset_name, _ = parse_dataset_key(dataset_key)
 
-        # Path: TIME_DATA_ROOT/processed_csv/{dataset_name}/{freq}/
-        dataset_csv_dir = os.path.join(args.csv_dir, dataset_name, freq)
+        input_root = args.dataset_dir if args.input_format == "hf" else args.csv_dir
+        dataset_input_dir = os.path.join(input_root, dataset_name, freq)
 
-        if not os.path.isdir(dataset_csv_dir):
+        if not os.path.isdir(dataset_input_dir):
+            expected = (
+                "saved Arrow dataset"
+                if args.input_format == "hf"
+                else "processed CSV files (*.csv)"
+            )
             raise FileNotFoundError(
-                f"Dataset directory not found: {dataset_csv_dir}\n"
-                f"Expected preprocessed CSV files at: {dataset_csv_dir}/*.csv\n"
-                f"Run preprocess.py first to generate the data."
+                f"Dataset directory not found: {dataset_input_dir}\n"
+                f"Expected {expected} below the selected input root."
             )
 
         # Get test_length from config
@@ -452,11 +591,12 @@ Examples:
         compute_dataset_features(
             dataset_name=dataset_name,
             freq=freq,
-            csv_dir=dataset_csv_dir,
+            input_dir=dataset_input_dir,
             output_dir=args.output_dir,
             test_length=test_length,
             split_mode=effective_split_mode,
             decomp_method=args.decomp,
+            input_format=args.input_format,
         )
     else:
         parser.print_help()

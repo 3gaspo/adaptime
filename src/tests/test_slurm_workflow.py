@@ -31,6 +31,30 @@ def main() -> None:
         f"{model}_selena.slurm" for model in sorted(MODELS)
     ]
 
+    comparison_modes = ("covariate", "multivariate", "univariate")
+    dgx_comparison = dgx / "chronos2_comparison"
+    selena_comparison = selena / "chronos2_comparison"
+    assert sorted(path.name for path in dgx_comparison.glob("*.slurm")) == [
+        f"{mode}.slurm" for mode in comparison_modes
+    ]
+    assert sorted(path.name for path in selena_comparison.glob("*.slurm")) == [
+        f"{mode}_selena.slurm" for mode in comparison_modes
+    ]
+    for mode in comparison_modes:
+        dgx_front = (dgx_comparison / f"{mode}.slurm").read_text(encoding="utf-8")
+        selena_front = (
+            selena_comparison / f"{mode}_selena.slurm"
+        ).read_text(encoding="utf-8")
+        assert f"export TIME_COMPARISON={mode}" in dgx_front
+        assert f"export TIME_COMPARISON={mode}" in selena_front
+        assert "#SBATCH --partition=h100" in dgx_front
+        assert "#SBATCH --partition=an" in selena_front
+        assert "#SBATCH --qos=an_preemptable" in selena_front
+        assert "#SBATCH --exclusive" in selena_front
+        assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_front
+        for front in (dgx_front, selena_front):
+            assert 'source "$PROJECT_ROOT/src/slurm/run_chronos2_comparison.sh"' in front
+
     for model in MODELS:
         dgx_front = (dgx_models / f"{model}.slurm").read_text(encoding="utf-8")
         selena_front = (selena_models / f"{model}_selena.slurm").read_text(
@@ -118,6 +142,18 @@ def main() -> None:
     )
     assert 'runner_command=(uv run --no-sync bash "$run_path")' in slurm_runner
     assert 'srun --ntasks=1 "${runner_command[@]}"' in slurm_runner
+    assert 'if [ ! -d "$TIME_DATASET" ]' in slurm_runner
+    assert 'TIME dataset directory not found: $TIME_DATASET' in slurm_runner
+
+    comparison_workflow = (
+        PROJECT_ROOT / "src/slurm/run_chronos2_comparison.sh"
+    ).read_text(encoding="utf-8")
+    assert "TIME_COVARIATE_MODE=past_targets" in comparison_workflow
+    assert "TIME_TARGET_MODE=multivariate" in comparison_workflow
+    assert "TIME_TARGET_MODE=univariate" in comparison_workflow
+    assert "all_multivariate_datasets" in (
+        PROJECT_ROOT / "scripts/run_chronos2_comparison.sh"
+    ).read_text(encoding="utf-8")
 
     summary = (
         PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"
@@ -141,6 +177,17 @@ def main() -> None:
     assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}}"' in runtime
     assert "module load python/3.12_pypsa" in runtime
     assert "export UV_PYTHON_DOWNLOADS=never" in runtime
+    assert "export HF_HUB_OFFLINE=1" in runtime
+    assert "export HF_DATASETS_OFFLINE=1" in runtime
+    assert "export TRANSFORMERS_OFFLINE=1" in runtime
+    assert runtime.index('source "$PROJECT_ROOT/.env"') < runtime.index(
+        'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$selena_nni}"'
+    )
+    assert 'if [[ -v "$runtime_path_variable" ]]' in runtime
+    assert (
+        'runtime_path_overrides["$runtime_path_variable"]="${!runtime_path_variable}"'
+        in runtime
+    )
 
     submit = (PROJECT_ROOT / "scripts/submit_foundation_models.sh").read_text(
         encoding="utf-8"
@@ -148,8 +195,16 @@ def main() -> None:
     assert "dgx|selena" in submit
     assert 'for model in "${FOUNDATION_MODELS[@]}"' in submit
     assert 'dependency="$(IFS=:; echo "${model_jobs[*]}")"' in submit
-    assert '--dependency="afterok:$dependency"' in submit
+    assert '--dependency="afterany:$dependency"' in submit
     assert 'TIME_LAUNCH_ID=$launch_id' in submit
+
+    channels_submit = (
+        PROJECT_ROOT / "scripts/channels_comparison.sh"
+    ).read_text(encoding="utf-8")
+    assert "dgx|selena" in channels_submit
+    assert "comparisons=(multivariate univariate covariate)" in channels_submit
+    assert 'TIME_LAUNCH_ID=$launch_id' in channels_submit
+    assert "chronos2_comparison" in channels_submit
 
     code_sync = (PROJECT_ROOT / "sync_code_to_selena.sh").read_text(encoding="utf-8")
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
@@ -234,6 +289,18 @@ def main() -> None:
     for runner in foundation_runners:
         runner_text = (PROJECT_ROOT / "scripts" / runner).read_text(encoding="utf-8")
         assert "set -euo pipefail" in runner_text
+    for experiment in (
+        "chronos_bolt.py",
+        "chronos2.py",
+        "tirex_model.py",
+        "ts_icl.py",
+        "seasonal_naive.py",
+    ):
+        experiment_text = (PROJECT_ROOT / "experiments" / experiment).read_text(
+            encoding="utf-8"
+        )
+        assert "Failed to run experiment" not in experiment_text
+        assert "except Exception" not in experiment_text
     print("TIME Slurm and DGX/Selena synchronization contract passed.")
 
 

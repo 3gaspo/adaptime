@@ -1,8 +1,38 @@
 #!/bin/bash
 
 PROJECT_ROOT="${PROJECT_ROOT:?PROJECT_ROOT must be set by the Slurm front}"
+
+# Preserve submission-time overrides while loading project-local path defaults.
+# The Selena code sync deliberately keeps .env on the cluster.
+runtime_path_variables=(
+    TIME_STORAGE_ROOT TIME_SCRATCH_ROOT TIME_DATA_ROOT TIME_DATASET TIME_WEIGHTS
+    OUTPUTS_ROOT LOGS_ROOT TIME_OUTPUTS TIME_LOGS
+    HF_HOME HUGGINGFACE_HUB_CACHE HF_DATASETS_CACHE TRANSFORMERS_CACHE TORCH_HOME
+)
+declare -A runtime_path_overrides=()
+for runtime_path_variable in "${runtime_path_variables[@]}"; do
+    if [[ -v "$runtime_path_variable" ]]; then
+        runtime_path_overrides["$runtime_path_variable"]="${!runtime_path_variable}"
+    fi
+done
+if [ -f "$PROJECT_ROOT/.env" ]; then
+    runtime_allexport=false
+    [[ "$-" == *a* ]] && runtime_allexport=true
+    set -a
+    source "$PROJECT_ROOT/.env"
+    [ "$runtime_allexport" = true ] || set +a
+fi
+for runtime_path_variable in "${!runtime_path_overrides[@]}"; do
+    printf -v "$runtime_path_variable" '%s' "${runtime_path_overrides[$runtime_path_variable]}"
+    export "$runtime_path_variable"
+done
+unset runtime_path_variable runtime_path_variables runtime_path_overrides runtime_allexport
+
 module load python/3.12_pypsa || exit 1
 export UV_PYTHON_DOWNLOADS=never
+export HF_HUB_OFFLINE=1
+export HF_DATASETS_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
 NNI_FILE="${TIME_NNI_FILE:-$HOME/codes/.secrets/nni}"
 if [ ! -f "$NNI_FILE" ]; then
     echo "missing Selena NNI file: $NNI_FILE" >&2

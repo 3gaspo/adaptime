@@ -120,13 +120,19 @@ def compute_per_window_metrics_from_quantiles(
                 with np.errstate(divide="ignore", invalid="ignore"):
                     mape_vals = abs_error / np.abs(gt)
                     mape_vals = np.where(np.isfinite(mape_vals), mape_vals, np.nan)
-                    mape[s, w, v] = np.nanmean(mape_vals)
+                    finite_mape = mape_vals[np.isfinite(mape_vals)]
+                    mape[s, w, v] = (
+                        np.mean(finite_mape) if finite_mape.size else np.nan
+                    )
 
                 # sMAPE (using median forecast, range [0, 2])
                 with np.errstate(divide="ignore", invalid="ignore"):
                     smape_vals = 2 * abs_error / (np.abs(gt) + np.abs(median_pred))
                     smape_vals = np.where(np.isfinite(smape_vals), smape_vals, np.nan)
-                    smape[s, w, v] = np.nanmean(smape_vals)
+                    finite_smape = smape_vals[np.isfinite(smape_vals)]
+                    smape[s, w, v] = (
+                        np.mean(finite_smape) if finite_smape.size else np.nan
+                    )
 
                 # MASE (Mean Absolute Scaled Error, using median forecast)
                 if len(ctx) > seasonality:

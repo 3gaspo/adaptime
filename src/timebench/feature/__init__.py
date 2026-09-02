@@ -13,6 +13,10 @@ from timebench.feature.features import (
     tsfeatures_with_uid_freq_map,
     extended_stl_features,
     fast_acf_features,
+    temporal_heterogeneity,
+    temporal_heterogeneity_frame,
+    spatial_heterogeneity,
+    dataset_feature_summary,
 )
 
 __all__ = [
@@ -23,6 +27,10 @@ __all__ = [
     # Feature extractors
     "extended_stl_features",
     "fast_acf_features",
+    "temporal_heterogeneity",
+    "temporal_heterogeneity_frame",
+    "spatial_heterogeneity",
+    "dataset_feature_summary",
 ]
 
 # Optional: import features_evaluator if available
@@ -37,4 +45,3 @@ try:
     ])
 except ImportError:
     pass
-
