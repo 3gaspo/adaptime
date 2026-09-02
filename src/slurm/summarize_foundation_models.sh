@@ -17,9 +17,19 @@ time_workflow_init
 time_stage_start summarize
 time_task_start "foundation_model_summary outputs=$TIME_OUTPUTS"
 
+case "${TIME_COVARIATE_MODE:-none}" in
+    none) experiment=expe_uni ;;
+    future_included) experiment=expe_covar ;;
+    *)
+        echo "Unknown TIME_COVARIATE_MODE=${TIME_COVARIATE_MODE:-}" >&2
+        exit 2
+        ;;
+esac
+
 summary_command=(
     uv run --no-sync python
     "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
+    --results-dir "$TIME_OUTPUTS/results/$experiment"
     --models "${FOUNDATION_MODELS[@]}"
     --launch-id "$TIME_LAUNCH_ID"
     --status-dir "$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"

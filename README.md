@@ -96,17 +96,19 @@ TIME_LOGS=./logs
 We provide the code and scripts required to reproduce the maintained four-model
 benchmark.
 
-For each model, use the corresponding script in the `scripts/` directory from
-the synchronized uv environment.
+The standard cluster launch surface contains two commands. The first submits
+the four maintained foundation models plus their dependent summary. The second
+submits Chronos-2 on the native multivariate, independent univariate, and
+past-target-covariate channel representations:
 
+```bash
+bash scripts/submit_foundation_models.sh dgx
+bash scripts/channels_comparison.sh dgx
 ```
-# Example: Running the evaluation for Chronos2
-uv run --no-sync bash scripts/run_chronos2.sh
 
-# We recommand using nohup to run the scripts in the background
-nohup uv run --no-sync \
-  bash scripts/run_chronos2.sh > run_chronos2.txt 2>&1 &
-```
+Use `selena` instead of `dgx` to submit the matched Selena fronts. The
+individual `scripts/run_*.sh` files remain direct reproduction and debugging
+entry points; normal cluster execution uses the two submission helpers above.
 
 To run every included foundation-model reproduction runner sequentially and
 write a joint performance/timing table after all runs complete:
@@ -124,27 +126,55 @@ Each execution host writes to its standard `outputs/` and `logs/` roots;
 artifact synchronization may namespace a source host below subdirectories on
 the receiving host, but does not rename the source runtime directories.
 
-For each task, window-level predictions (quantiles) and metrics are saved in
-`${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`. Each task's
-`config.json` records its launch ID and `inference_seconds`: accelerator-
-synchronized wall time for the complete test forecasting loop. The compact
-`metrics_summary.json` beside it records each metric's finite mean and coverage
-counts; raw per-window arrays remain in `metrics.npz`. Model loading, dataset
-construction, metric computation, and result saving are excluded from timing.
+Maintained runs use two experiment roots: `expe_uni` for target-only inputs and
+`expe_covar` for known covariates over the complete context and forecast
+horizon. Their task layout is:
+
+```text
+${TIME_OUTPUTS}/results/{experiment}/{model}/{target_mode}/{dataset}/{freq}/{term}/run_n/
+```
+
+`target_mode` is the representation actually passed to the model:
+`univariate` or `multivariate`. `auto` selects native multivariate evaluation
+only for Chronos-2 when a dataset has multiple target channels. TS-ICL,
+Chronos-Bolt, and Seasonal Naive expand target channels into independent
+univariate examples and reject an explicit multivariate request. TS-ICL can
+still mix a target with explicitly supplied covariates.
+
+`--covariate-mode future_included` selects `expe_covar` and requires external
+known covariates over the complete context and forecast horizon (`L+H`);
+Chronos-2 and TS-ICL consume them. Chronos-2 additionally supports
+`--covariate-mode past_targets`: each target channel is forecast separately
+from its `L` observed values while the other target histories are passed as
+past-only covariates. Unsupported model/mode combinations raise rather than
+silently ignoring covariates.
+
+Every `run_n` contains `manifest.json`, `config.json`, predictions, raw metrics,
+and compact aggregate metrics. The manifest records the plain model, pipeline,
+runtime, experiment, dataset, and launch configuration without hashing code,
+data, or checkpoints. Different invocations receive different run directories,
+so a configuration is never overwritten silently. Model loading, dataset
+construction, metric computation, and result saving remain excluded from
+`inference_seconds`.
 
 ### Foundation-model performance and timing
 
-After all four model jobs terminate, even if one failed, the summary job writes
-`${TIME_OUTPUTS}/foundation_model_summary.csv` and a Markdown rendering beside
-it. Cluster summaries select only artifacts stamped with the current launch ID
-and include terminal model states, so partial results cannot be mistaken for a
-complete launch or mixed with stale tasks. By default, manual summaries include
-only the four maintained canonical result directories. They can be regenerated
-from synchronized lightweight task summaries:
+After the model jobs terminate, the summary job writes CSV, Markdown, and a
+report manifest inside the selected experiment root. Cluster summaries select
+only completed run manifests from the current launch and include terminal model
+states, so partial results cannot be mistaken for complete results or mixed
+with stale tasks. Manual summaries default to `expe_uni`:
 
 ```bash
 python scripts/compute_foundation_summary.py
 ```
+
+Exact repeated configurations select the latest `run_n`. If different
+scientific configurations match one task, aggregation fails instead of mixing
+them. Select explicitly with `--run-config FIELD=JSON`, or deliberately request
+the most recent run for every matching task with `--config-policy latest`.
+`--target-mode` can restrict an aggregate to one target representation. The generated
+`foundation_model_report_manifest.json` lists every selected input manifest.
 
 For each model, the reported MASE first averages short, medium, and long terms
 equally within each dataset/frequency and then averages those dataset/frequency
@@ -153,12 +183,17 @@ terms therefore do not receive extra weight. Inference seconds are summed over
 the same test tasks and are left blank unless every reported task has timing
 metadata; the task-coverage columns make partial runs explicit.
 
+The latest analyzed complete benchmark and its dataset/task-level analysis are
+recorded in [Foundation-model results](docs/FOUNDATION_RESULTS.md); that launch
+predates the current manifested channel contract and is not reused by current
+result readers.
+
 ### Compute Overall Metrics
 
 Once the evaluations are complete, use the following script to aggregate the raw outputs into the overall metrics in leaderboard. This process automatically fetches the Seasonal Naive results from Hugging Face and computes the aggregated metrics across all tasks.
 
 ```bash
-# Compute Overall Leaderboard based on `TIME_OUTPUTS/results` (sorted by MASE)
+# Compute Overall Leaderboard from `TIME_OUTPUTS/results/expe_uni`
 python scripts/compute_local_leaderboard.py
 
 ```
@@ -221,7 +256,11 @@ To add a new model, follow these steps:
    )
    ```
 
-   This function automatically computes per-window metrics and saves predictions, metrics, and configuration files to `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/`.
+   Called directly, this function preserves upstream TIME's flat
+   `${TIME_OUTPUTS}/results/{model_name}/{dataset}/{freq}/{term}/` output. The
+   maintained runners additionally allocate the manifest-based experiment and
+   `run_n` structure described above and pass its exact leaf through
+   `task_output_dir`.
 
 2. **Create a run script in `scripts/`**
 

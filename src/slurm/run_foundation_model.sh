@@ -28,7 +28,7 @@ source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 
 time_workflow_init
 time_stage_start evaluate
-time_task_start "model=$model runner=$runner environment=uv"
+time_task_start "model=$model runner=$runner environment=uv covariate_mode=${TIME_COVARIATE_MODE:-none} target_mode=${TIME_TARGET_MODE:-auto}"
 TIME_RUN_SCRIPT="$runner" source "$PROJECT_ROOT/src/slurm/run_time_script.sh"
 time_task_complete
 time_stage_complete

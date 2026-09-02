@@ -50,8 +50,10 @@ OUTPUT_FILTERS=()
 if [ "$SYNC_SIZE" = lightweight ]; then
     OUTPUT_FILTERS=(
         '--include=*/'
-        '--include=/foundation_model_summary.csv'
-        '--include=/foundation_model_summary.md'
+        '--include=foundation_model_summary.csv'
+        '--include=foundation_model_summary.md'
+        '--include=foundation_model_report_manifest.json'
+        '--include=manifest.json'
         '--include=config.json'
         '--include=metrics_summary.json'
         '--exclude=*'
@@ -59,8 +61,10 @@ if [ "$SYNC_SIZE" = lightweight ]; then
 elif [ "$SYNC_SIZE" = detailed ]; then
     OUTPUT_FILTERS=(
         '--include=*/'
-        '--include=/foundation_model_summary.csv'
-        '--include=/foundation_model_summary.md'
+        '--include=foundation_model_summary.csv'
+        '--include=foundation_model_summary.md'
+        '--include=foundation_model_report_manifest.json'
+        '--include=manifest.json'
         '--include=config.json'
         '--include=metrics_summary.json'
         '--include=metrics.npz'
@@ -80,9 +84,33 @@ if [ -n "$JOB_ID" ]; then
         '--include=*/' \
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \
         "--include=*_${JOB_ID}.out" "--include=*_${JOB_ID}.err" \
-        '--include=/workflow_status/***' '--exclude=*' \
+        '--exclude=/workflow_status/***' '--exclude=*' \
         "$SOURCE_ROOT/logs/" \
         "$DGX_LOG_ROOT/"
+
+    status_file_list="$(mktemp)"
+    trap 'rm -f -- "$status_file_list"' EXIT
+    if [[ "$SOURCE_ROOT" == *:* ]]; then
+        source_host="${SOURCE_ROOT%%:*}"
+        source_path="${SOURCE_ROOT#*:}"
+        ssh "$source_host" \
+            "find '$source_path/logs/workflow_status' -type f -name '*.status' -exec grep -qxF 'slurm_job_id=$JOB_ID' {} \; -printf 'workflow_status/%P\0'" \
+            > "$status_file_list"
+    else
+        find "$SOURCE_ROOT/logs/workflow_status" \
+            -type f -name '*.status' \
+            -exec grep -qxF "slurm_job_id=$JOB_ID" {} \; \
+            -printf 'workflow_status/%P\0' \
+            > "$status_file_list"
+    fi
+    if [ -s "$status_file_list" ]; then
+        rsync -rlptz --partial --prune-empty-dirs --from0 \
+            --files-from="$status_file_list" \
+            "$SOURCE_ROOT/logs/" \
+            "$DGX_LOG_ROOT/"
+    else
+        echo "WARNING: no workflow status matched Selena job $JOB_ID" >&2
+    fi
 else
     echo "Pulling all Selena logs and workflow status..."
     rsync -rlptz --partial --info=progress2 \

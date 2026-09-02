@@ -28,15 +28,24 @@ from chronos import BaseChronosPipeline
 from timebench.evaluation.saver import save_window_predictions
 from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
+from timebench.evaluation.covariates import COVARIATE_MODES, validate_covariate_mode
 from timebench.evaluation.data import (
     Dataset,
     get_dataset_settings,
     load_dataset_config,
 )
-from timebench.paths import foundation_weight_path, results_root
+from timebench.paths import (
+    foundation_experiment_name,
+    foundation_experiment_root,
+    foundation_identity_root,
+    foundation_weight_path,
+)
+from timebench.pipeline import allocate_run, resolve_target_mode
 
 # Load environment variables
 load_dotenv()
+
+SUPPORTS_COVARIATES = False
 
 
 def run_chronos_bolt_experiment(
@@ -49,7 +58,12 @@ def run_chronos_bolt_experiment(
     config_path: Path | None = None,
     quantile_levels: list[float] | None = None,
     model_path: str | Path | None = None,
+    covariate_mode: str = "none",
+    target_mode: str = "auto",
 ):
+    covariate_mode = validate_covariate_mode(
+        "chronos_bolt", covariate_mode, supports_covariates=SUPPORTS_COVARIATES
+    )
     print("Loading configuration...")
     config = load_dataset_config(config_path)
 
@@ -63,9 +77,10 @@ def run_chronos_bolt_experiment(
         quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     if output_dir is None:
-        output_dir = str(results_root() / "chronos_bolt")
+        output_dir = str(foundation_experiment_root(covariate_mode))
 
     os.makedirs(output_dir, exist_ok=True)
+    experiment = foundation_experiment_name(covariate_mode)
 
     print(f"\n{'='*60}")
     print(f"Dataset: {dataset_name}")
@@ -97,16 +112,28 @@ def run_chronos_bolt_experiment(
 
         print(f"  Config: prediction_length={prediction_length}, test_length={test_length}, val_length={val_length}")
 
-        # Chronos-Bolt only supports univariate forecasting
-        to_univariate = False if Dataset(name=dataset_name, term=term,to_univariate=False).target_dim == 1 else True
         dataset = Dataset(
             name=dataset_name,
             term=term,
-            to_univariate=to_univariate,
+            to_univariate=False,
             prediction_length=prediction_length,
             test_length=test_length,
             val_length=val_length,
         )
+        resolved_target_mode = resolve_target_mode(
+            target_mode,
+            target_dim=dataset.target_dim,
+            supports_multivariate=False,
+        )
+        if dataset.target_dim > 1:
+            dataset = Dataset(
+                name=dataset_name,
+                term=term,
+                to_univariate=True,
+                prediction_length=prediction_length,
+                test_length=test_length,
+                val_length=val_length,
+            )
 
         # Determine split
         data_length = test_length
@@ -118,6 +145,7 @@ def run_chronos_bolt_experiment(
         print(f"    - Frequency: {dataset.freq}")
         print(f"    - Num series: {len(dataset.hf_dataset)}")
         print(f"    - Target dim: {dataset.target_dim}")
+        print(f"    - Target mode: {resolved_target_mode}")
         print(f"    - Series length: min={dataset._min_series_length}, max={dataset._max_series_length}, avg={dataset._avg_series_length:.1f}")
         print(f"    - {split_name}: {data_length} steps")
         print(f"    - Prediction length: {dataset.prediction_length}")
@@ -197,19 +225,65 @@ def run_chronos_bolt_experiment(
             "model": "chronos_bolt",
             "context_length": context_length,
             "quantile_levels": quantile_levels,
+            "covariate_mode": covariate_mode,
+            "covariate_channels": 0,
+            "experiment": experiment,
+            "target_mode": resolved_target_mode,
         }
 
-        metadata = save_window_predictions(
-            dataset=dataset,
-            fc_quantiles=fc_quantiles,
-            ds_config=ds_config,
-            output_base_dir=output_dir,
-            seasonality=season_length,
-            model_hyperparams=model_hyperparams,
-            quantile_levels=quantile_levels,
-            inference_seconds=inference_seconds,
+        identity_root = foundation_identity_root(
+            output_dir, "chronos_bolt", resolved_target_mode, dataset_name, term
         )
-        print(f"  Output: {metadata.get('output_dir', output_dir)}")
+        with allocate_run(
+            identity_root,
+            experiment=experiment,
+            identity={
+                "model": "chronos_bolt",
+                "target_mode": resolved_target_mode,
+                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
+                "frequency": dataset.freq,
+                "term": term,
+            },
+            model_config={
+                "model_size": model_size,
+                "context_length": context_length,
+                "quantile_levels": quantile_levels,
+            },
+            pipeline_config={
+                "prediction_length": prediction_length,
+                "test_length": test_length,
+                "val_length": val_length,
+                "windows": dataset.windows,
+                "seasonality": season_length,
+            },
+            runtime_config={
+                "batch_size": batch_size,
+                "device": device_map,
+                "checkpoint_path": str(checkpoint_path),
+            },
+            experiment_config={
+                "covariate_mode": covariate_mode,
+                "covariate_channels": 0,
+            },
+            provenance={
+                "dataset_config_path": None if config_path is None else str(config_path),
+            },
+        ) as run:
+            metadata = save_window_predictions(
+                dataset=dataset,
+                fc_quantiles=fc_quantiles,
+                ds_config=ds_config,
+                output_base_dir=output_dir,
+                seasonality=season_length,
+                model_hyperparams=model_hyperparams,
+                quantile_levels=quantile_levels,
+                inference_seconds=inference_seconds,
+                task_output_dir=str(run.run_dir),
+            )
+            run.complete(
+                ["predictions.npz", "metrics.npz", "config.json", "metrics_summary.json"]
+            )
+        print(f"  Output: {run.run_dir}")
 
     print(f"\n{'='*60}")
     print("All experiments completed!")
@@ -228,7 +302,7 @@ def main():
                         choices=["tiny", "mini", "small", "base"],
                         help="Chronos-Bolt model size")
     parser.add_argument("--output-dir", type=str, default=None,
-                        help="Output directory for results")
+                        help="Experiment result root; defaults to expe_uni or expe_covar")
     parser.add_argument("--batch-size", type=int, default=16,
                         help="Batch size for prediction")
     parser.add_argument(
@@ -244,6 +318,18 @@ def main():
                         help="Path to datasets.yaml config file")
     parser.add_argument("--model-path", type=str, default=None,
                         help="Local Chronos-Bolt checkpoint directory")
+    parser.add_argument(
+        "--covariate-mode",
+        choices=COVARIATE_MODES,
+        default=os.environ.get("TIME_COVARIATE_MODE", "none"),
+        help="Chronos-Bolt accepts only none and rejects known covariates",
+    )
+    parser.add_argument(
+        "--target-mode",
+        choices=("auto", "univariate", "multivariate"),
+        default=os.environ.get("TIME_TARGET_MODE", "auto"),
+        help="Target representation; Chronos-Bolt rejects multivariate",
+    )
 
     args = parser.parse_args()
 
@@ -269,6 +355,8 @@ def main():
             config_path=config_path,
             quantile_levels=args.quantiles,
             model_path=args.model_path,
+            covariate_mode=args.covariate_mode,
+            target_mode=args.target_mode,
         )
 
     print(f"\n{'#'*60}")

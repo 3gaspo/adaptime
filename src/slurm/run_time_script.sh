@@ -27,6 +27,8 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] TIME runner: $TIME_RUN_SCRIPT"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] datasets: $TIME_DATASET"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] weights: $TIME_WEIGHTS"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] outputs: $TIME_OUTPUTS"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] covariate mode: ${TIME_COVARIATE_MODE:-none}"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] target mode: ${TIME_TARGET_MODE:-auto}"
 
 if [ ! -d "$TIME_DATASET" ]; then
     echo "TIME dataset directory not found: $TIME_DATASET" >&2

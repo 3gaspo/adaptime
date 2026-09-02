@@ -29,6 +29,7 @@ def save_window_predictions(
     model_hyperparams: dict = None,
     quantile_levels: list[float] = None,
     inference_seconds: float | None = None,
+    task_output_dir: str | None = None,
 ) -> dict:
     """
     Save predictions and metrics for each test window.
@@ -53,6 +54,8 @@ def save_window_predictions(
         inference_seconds: Accelerator-synchronized wall time for the complete
             test forecasting loop. Model loading, dataset construction, metric
             computation, and result saving must be excluded.
+        task_output_dir: Optional exact task leaf. When omitted, preserve the
+            upstream TIME ``output_base_dir/ds_config`` behavior.
 
     Output files:
         predictions.npz:
@@ -79,7 +82,7 @@ def save_window_predictions(
     num_quantiles = len(quantile_levels_list)
 
     # Create output directory for this dataset config
-    ds_output_dir = os.path.join(output_base_dir, ds_config)
+    ds_output_dir = task_output_dir or os.path.join(output_base_dir, ds_config)
     os.makedirs(ds_output_dir, exist_ok=True)
 
     test_data = dataset.test_data
@@ -241,6 +244,7 @@ def save_window_predictions(
         "num_series": num_series,
         "num_windows": num_windows,
         "num_variates": num_variates,
+        "num_model_inputs": num_total_instances,
         "prediction_length": prediction_length,
         "num_quantiles": num_quantiles,
         "quantile_levels": quantile_levels_list,

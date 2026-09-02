@@ -110,7 +110,7 @@ def get_dataset_settings(
 def prepare_data_entry(data_entry: DataEntry) -> DataEntry:
     """Convert TIME's numeric Arrow fields without the datasets NumPy formatter."""
     data_entry = data_entry.copy()
-    for field in ("target", "past_feat_dynamic_real"):
+    for field in ("target", "feat_dynamic_real", "past_feat_dynamic_real"):
         if field in data_entry:
             data_entry[field] = np.asarray(data_entry[field])
 
@@ -135,6 +135,31 @@ class MultivariateToUnivariate(Transformation):
                 univariate_entry["item_id"] = item_id + "_dim" + str(id)
                 yield univariate_entry
 
+
+class MultivariateToUnivariateWithPastTargets(Transformation):
+    """Forecast each variate separately with the other target histories as covariates."""
+
+    def __call__(
+        self, data_it: Iterable[DataEntry], is_train: bool = False
+    ) -> Iterator:
+        for data_entry in data_it:
+            target = np.asarray(data_entry["target"])
+            if target.ndim != 2 or target.shape[0] < 2:
+                raise ValueError(
+                    "past_targets requires a multivariate target with at least two variates"
+                )
+            for target_index in range(target.shape[0]):
+                univariate_entry = data_entry.copy()
+                univariate_entry["target"] = target[target_index]
+                univariate_entry.pop("feat_dynamic_real", None)
+                univariate_entry["past_feat_dynamic_real"] = np.delete(
+                    target, target_index, axis=0
+                )
+                univariate_entry["item_id"] = (
+                    f"{data_entry['item_id']}_dim{target_index}"
+                )
+                yield univariate_entry
+
 class Dataset:
     def __init__(
         self,
@@ -146,6 +171,7 @@ class Dataset:
         val_length: int = 0,
         storage_env_var: str = "TIME_DATASET",
         storage_path: Optional[str | Path] = None,
+        other_variates_as_covariates: bool = False,
     ):
         """
         Initialize a TimeBench Dataset.
@@ -172,6 +198,9 @@ class Dataset:
             be explicitly defined.
         storage_path : str or Path, optional
             Direct path to dataset storage. If provided, overrides storage_env_var.
+        other_variates_as_covariates : bool
+            Emit one univariate target per original variate and attach every
+            other variate over the observed history as past dynamic covariates.
         """
         # Use direct storage_path if provided, otherwise fall back to environment/default path.
         if storage_path is not None:
@@ -204,6 +233,16 @@ class Dataset:
         self._custom_prediction_length = prediction_length
         self._test_length = test_length
         self._val_length = val_length
+        self.other_variates_as_covariates = bool(other_variates_as_covariates)
+
+        if self.other_variates_as_covariates and to_univariate:
+            raise ValueError(
+                "other_variates_as_covariates already produces univariate targets"
+            )
+        if self.other_variates_as_covariates and self.target_dim < 2:
+            raise ValueError(
+                "other_variates_as_covariates requires at least two target variates"
+            )
 
         process = ProcessDataEntry(
             self.freq,
@@ -211,7 +250,11 @@ class Dataset:
         )
 
         self.gluonts_dataset = Map(compose(process, prepare_data_entry), self.hf_dataset)
-        if to_univariate:
+        if self.other_variates_as_covariates:
+            self.gluonts_dataset = MultivariateToUnivariateWithPastTargets().apply(
+                self.gluonts_dataset
+            )
+        elif to_univariate:
             self.gluonts_dataset = MultivariateToUnivariate("target").apply(
                 self.gluonts_dataset
             )
@@ -244,6 +287,27 @@ class Dataset:
             return 0
         feat = np.asarray(self.hf_dataset[0]["past_feat_dynamic_real"])
         return feat.shape[0] if len(feat.shape) > 1 else 1
+
+    @cached_property
+    def covariate_dim(self) -> int:
+        """Number of optional known-covariate channels in each dataset item."""
+        if self.other_variates_as_covariates:
+            return self.target_dim - 1
+        first = self.hf_dataset[0]
+        fields = [
+            field
+            for field in ("feat_dynamic_real", "past_feat_dynamic_real")
+            if field in first
+        ]
+        if len(fields) > 1:
+            raise ValueError(
+                "Dataset defines both feat_dynamic_real and "
+                "past_feat_dynamic_real; use exactly one covariate field"
+            )
+        if not fields:
+            return 0
+        values = np.asarray(first[fields[0]])
+        return int(values.shape[0]) if values.ndim > 1 else 1
 
     @cached_property
     def _variate_names(self) -> Optional[List[str]]:

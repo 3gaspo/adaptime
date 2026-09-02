@@ -107,6 +107,8 @@ elif [ -d outputs ]; then
             find "$project_root/outputs" -type f \( \
                 -name foundation_model_summary.csv -o \
                 -name foundation_model_summary.md -o \
+                -name foundation_model_report_manifest.json -o \
+                -name manifest.json -o \
                 -name config.json -o \
                 -name metrics_summary.json -o \
                 -name metrics.npz \) -print0
@@ -114,6 +116,8 @@ elif [ -d outputs ]; then
             find "$project_root/outputs" -type f \( \
                 -name foundation_model_summary.csv -o \
                 -name foundation_model_summary.md -o \
+                -name foundation_model_report_manifest.json -o \
+                -name manifest.json -o \
                 -name config.json -o \
                 -name metrics_summary.json \) -print0
         fi

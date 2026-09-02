@@ -13,8 +13,11 @@ deliberately.
   the official `Real-TSF/TIME` saved-Arrow tree, with ordinary HTTP transfer,
   revision-pinned interrupted-download recovery, and post-download format
   validation.
-- Routed every retained model runner's default results below
-  `TIME_OUTPUTS/results` using its canonical model alias.
+- Routed maintained runs into explicit `expe_uni` and `expe_covar` experiment
+  roots, followed by canonical model alias, actual univariate/multivariate
+  target mode, task identity, and monotonic `run_n`. Each run owns a plain
+  schema-1 configuration manifest; no code, data, checkpoint, path, or launch
+  hashes participate in identity.
 - Narrowed the maintained benchmark surface to `chronos_bolt`, `chronos2`,
   `ts_icl`, and `seasonal_naive`. Removed every other model adapter and runner,
   including Toto, TiRex, and TimesFM 2, plus the unused non-seasonal Naive
@@ -55,6 +58,12 @@ deliberately.
   finite aggregate metrics and coverage counts. Lightweight result transfer
   and publication include these files, while detailed transfer retains raw
   per-window `metrics.npz` arrays.
+- Made foundation summaries, the local TIME leaderboard, and feature-versus-
+  performance analysis select completed manifests. Exact repeats choose the
+  latest run, differing scientific configurations fail closed unless filtered
+  or explicitly selected as latest, and aggregate report manifests list their
+  exact run inputs. Lightweight transfer and publication include both run and
+  aggregate manifests.
 - Added matching DGX and Selena Slurm fronts for each retained model plus a
   separate dependent summary front. One submission helper creates four
   independently schedulable model jobs and starts the summary after all four
@@ -64,6 +73,10 @@ deliberately.
   and horizon-term loops remain sequential inside each model allocation. Both
   clusters emit explicit task/workflow completion records and durable status
   files below the configured log root.
+- Added one channel-comparison submission helper that launches Chronos-2 on
+  every multivariate dataset in native multivariate, independent univariate,
+  and past-target-covariate modes under one shared launch ID. Each mode remains
+  an independently schedulable DGX or Selena job with its own aggregate.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
   Selena writes to the standard `outputs/` and `logs/` trees below its scratch
   project root; DGX pulls them into distinct local `outputs/selena/` and
@@ -106,6 +119,15 @@ deliberately.
 - Normalized both TS-ICL forecast return forms: one tensor for stackable
   contexts and a list of tensors for variable-length contexts. Both now enter
   TIME evaluation as `(batch, quantile, variate, horizon)` arrays.
+- Declared TS-ICL's target-channel behavior accurately: upstream moves multiple
+  targets into its batch dimension, so target-only evaluation is univariate
+  and parallelized rather than native multivariate. Explicit covariates still
+  enter TS-ICL's channel mixer; unsupported multivariate requests fail.
+- Added explicit foundation covariate capability checks. Chronos-2 and TS-ICL
+  accept known `L+H` dataset covariates; Chronos-2 also forecasts each target
+  separately from its `L` history with every other target history as past-only
+  covariates. Unsupported models and missing/invalid covariates fail instead of
+  being ignored.
 - Suppressed only the known pandas frequency-alias deprecation messages that
   Seasonal Naive amplified once per forecast window, while retaining unrelated
   warnings. Undefined all-zero MAPE/sMAPE cells now remain NaN without emitting
@@ -121,9 +143,11 @@ deliberately.
   host process.
 - Removed the accidental default `Oil_Price/B` selection so the feature runner
   now requires `--dataset` or `--all` as its control flow and help text claim.
-- Documented the actual STL/MSTL output directories, frequency-domain columns,
-  per-variate scope, and absence of feature binarization or cross-variate
-  heterogeneity.
+- Added saved-Arrow feature input, per-dataset summaries, temporal and spatial
+  location/scale/frequency heterogeneity, dataset ranks, and top-correlated
+  feature-versus-MASE SVG/CSV analysis. Documented the actual STL/MSTL output
+  directories, frequency-domain columns, per-variate scope, and absence of
+  feature binarization.
 
 ## Packaging and documentation repairs
 

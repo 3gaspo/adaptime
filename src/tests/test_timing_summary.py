@@ -55,8 +55,32 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory() as temporary:
         result_root = Path(temporary) / "results"
-        task_dir = result_root / "model_a/dataset_1/H/short"
+        task_dir = result_root / "expe_uni/model_a/univariate/dataset_1/H/short/run_0"
         task_dir.mkdir(parents=True)
+        (task_dir / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "project": "improved",
+                    "experiment": "expe_uni",
+                    "identity": {
+                        "model": "model_a",
+                        "target_mode": "univariate",
+                        "dataset": "dataset_1",
+                        "frequency": "H",
+                        "term": "short",
+                    },
+                    "model_config": {},
+                    "pipeline_config": {},
+                    "runtime_config": {},
+                    "experiment_config": {"covariate_mode": "none"},
+                    "launch": {"launch_id": "launch_1", "slurm_job_id": None},
+                    "status": "completed",
+                    "required_artifacts": ["config.json", "metrics_summary.json"],
+                }
+            ),
+            encoding="utf-8",
+        )
         (task_dir / "config.json").write_text(
             json.dumps({"launch_id": "launch_1", "inference_seconds": 1.25}),
             encoding="utf-8",
@@ -66,17 +90,19 @@ def main() -> None:
             encoding="utf-8",
         )
         cells = summary.load_result_cells(
-            result_root,
+            result_root / "expe_uni",
             {"model_a"},
             launch_id="launch_1",
         )
         assert cells == [
             {
                 "model": "model_a",
+                "target_mode": "univariate",
                 "dataset_id": "dataset_1/H",
                 "horizon": "short",
                 "MASE": 2.5,
                 "inference_seconds": 1.25,
+                "manifest_path": str(task_dir / "manifest.json"),
             }
         ]
 
@@ -106,6 +132,7 @@ def main() -> None:
         [
             {
                 "model": "model_a",
+                "target_mode": "univariate",
                 "dataset_id": "dataset_1/H",
                 "horizon": "short",
                 "MASE": 1.0,
@@ -113,6 +140,7 @@ def main() -> None:
             },
             {
                 "model": "model_a",
+                "target_mode": "multivariate",
                 "dataset_id": "dataset_1/H",
                 "horizon": "long",
                 "MASE": 3.0,
@@ -120,6 +148,7 @@ def main() -> None:
             },
             {
                 "model": "model_a",
+                "target_mode": "univariate",
                 "dataset_id": "dataset_2/D",
                 "horizon": "short",
                 "MASE": 6.0,
@@ -127,6 +156,7 @@ def main() -> None:
             },
             {
                 "model": "model_b",
+                "target_mode": "univariate",
                 "dataset_id": "dataset_1/H",
                 "horizon": "short",
                 "MASE": 5.0,
