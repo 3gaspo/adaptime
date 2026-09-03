@@ -72,11 +72,6 @@ class AdaptimeMaintenanceContractTest(unittest.TestCase):
                 '"chronos2"',
             ),
             "ts_icl.py": ("allow_auto_download=False", '"tsicl/tsicl-v1.ckpt"'),
-            "tirex_model.py": (
-                'foundation_weight_path(',
-                '"tirex"',
-                "load_model(str(checkpoint_path)",
-            ),
             "seasonal_naive.py": (),
         }
         for name, required in experiments.items():
@@ -109,26 +104,26 @@ class AdaptimeMaintenanceContractTest(unittest.TestCase):
         self.assertIn("max_workers=max_workers", downloader)
         self.assertIn('destination.rglob("state.json")', downloader)
 
-        self.assertTrue((PROJECT_ROOT / "experiments/tirex_model.py").is_file())
-        self.assertTrue((PROJECT_ROOT / "scripts/run_tirex.sh").is_file())
-        self.assertTrue(
-            (PROJECT_ROOT / "slurm/dgx/foundation_models/tirex.slurm").is_file()
+        self.assertFalse((PROJECT_ROOT / "experiments/tirex_model.py").exists())
+        self.assertFalse((PROJECT_ROOT / "scripts/run_tirex.sh").exists())
+        self.assertFalse(
+            (PROJECT_ROOT / "slurm/dgx/foundation_models/tirex.slurm").exists()
         )
-        self.assertTrue(
-            (PROJECT_ROOT / "slurm/selena/foundation_models/tirex_selena.slurm").is_file()
+        self.assertFalse(
+            (PROJECT_ROOT / "slurm/selena/foundation_models/tirex_selena.slurm").exists()
         )
         dependencies = tomllib.loads(
             (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
         )["project"]["dependencies"]
-        self.assertTrue(any("tirex" in dependency.lower() for dependency in dependencies))
+        self.assertFalse(any("tirex" in dependency.lower() for dependency in dependencies))
         registry = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
             encoding="utf-8"
         )
         summary = (PROJECT_ROOT / "scripts/compute_foundation_summary.py").read_text(
             encoding="utf-8"
         )
-        self.assertIn("tirex", registry.lower())
-        self.assertIn('"tirex"', summary.lower())
+        self.assertNotIn("tirex", registry.lower())
+        self.assertNotIn('"tirex"', summary.lower())
 
 
 if __name__ == "__main__":

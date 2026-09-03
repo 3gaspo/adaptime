@@ -1,27 +1,75 @@
 \documentclass[10pt]{article}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{5pt}
+\setlength{\parskip}{3pt}
 \title{Adaptime: Method Overview}
 \author{Thesis project}
-\date{Working formulation}
+\date{Current protocol}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-This note will own the standalone Adaptime problem formulation and proposed
-method, independently of implementation and cluster operations. The scientific
-design is still being developed, so no precise formulation or pipeline is
-asserted in this initial document.
+Adaptime studies whether a small fitted adaptor can combine a time-series
+foundation model with fixed, calendar-aligned retrieval while preserving the
+official TIME test protocol. This note defines the current univariate
+\texttt{full\_ridge\_shared} formulation; it reports no empirical result.
 \end{abstract}
 
-\section{Status}
+\section{Chronological protocol}
 
-The forecasting task, information available at each query, retrieval datastore,
-alignment constraints, adaptor objective, foundation-model interface, and
-evaluation protocol remain to be finalized. They will be specified here only
-after the corresponding scientific choices are made.
+Each dataset and forecast term is divided into a fixed datastore, adaptation
+training, adaptation validation, and the untouched official TIME test interval.
+The first three regions end strictly before the test. Ridge candidates are fit
+once on adaptation training, $K$ and $\alpha$ are selected on adaptation
+validation, and the selected coefficients are frozen for test. There is no
+train-plus-validation refit.
+
+For a query time $t$, let $d_{\max}$ be the fixed datastore endpoint and $P$
+the dataset period. The latest eligible neighbor date is
+\begin{equation}
+  d_t = \min(t-H,d_{\max})
+        - \bigl(\min(t-H,d_{\max})-t\bigr) \bmod P.
+\end{equation}
+Earlier candidates walk backward from $d_t$ by a datastore stride that is a
+multiple of $P$. This keeps the datastore fixed while aligning its phase to the
+query.
+
+\section{Full shared ridge}
+
+For each query, $V$ is the vanilla foundation forecast and $C$ is the forecast
+obtained when the $K$ retrieved neighbor trajectories are supplied as
+covariates. For neighbor $i$, $Y_i$ is its observed horizon and $N_i$ is the
+foundation model's vanilla forecast from that neighbor's own history. The full
+design is
+\begin{equation}
+  X = [V,C,Y_1,\ldots,Y_K,N_1,\ldots,N_K].
+\end{equation}
+The paired $Y_i$ and $N_i$ terms expose neighbor residual information. After
+normalizing each window and channel by its query-context standard deviation,
+one no-intercept ridge vector is shared across all forecast horizons:
+\begin{align}
+  \hat\beta_\alpha
+    &= \arg\min_\beta \| (Y-V)-X\beta \|_2^2
+       + \alpha\|\beta\|_2^2, \\
+  V' &= V + X\hat\beta_\alpha.
+\end{align}
+
+The primary setting is $K=10$, $\alpha=10^{-2}$. Validation searches
+$K\in\{1,5,10,15\}$ and
+$\alpha\in\{10^{-3},10^{-2},10^{-1}\}$. Delta, convex, per-horizon, and
+multivariate Adaptime variants are outside the current protocol.
+
+\section{Evaluation}
+
+The official test compares vanilla $V$, retrieval-context $C$ at the selected
+$K$, and frozen Adaptime $V'$. It retains per-window and per-user MSE, MAE,
+normalized MSE, and normalized MAE, then reports equal-window and equal-user
+means and population standard deviations. The TIME-wide view averages
+equal-user task metrics over terms within each dataset/frequency and then gives
+each dataset/frequency equal weight. Conclusions require completed and
+inspected cluster artifacts.
 
 \end{document}

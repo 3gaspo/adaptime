@@ -1,28 +1,40 @@
 # Experiment catalog
 
-This document owns Adaptime's public experiment families and the scientific
-question answered by each one.
+This catalog distinguishes inherited TIME controls from the Adaptime proposal.
 
-## Executable inherited controls
+## Inherited controls
 
-The inherited foundation benchmark runs `chronos_bolt`, `chronos2`, `tirex`,
-`ts_icl`, and `seasonal_naive` through
-`scripts/submit_foundation_models.sh`. Its scientific question is the
-target-only TIME baseline under matched official test tasks.
+`scripts/submit_foundation_models.sh` evaluates `chronos_bolt`, `chronos2`,
+`ts_icl`, and `seasonal_naive` on the official target-only TIME tasks.
 
-`scripts/channels_comparison.sh` runs Chronos-2 on multivariate datasets in
-three matched representations: native multivariate targets, independent
-univariate targets, and one target with the other target histories supplied as
-past-only covariates. These controls are inherited benchmark diagnostics, not
-the Adaptime proposal.
+`scripts/channels_comparison.sh` evaluates Chronos-2 with native multivariate
+targets, independent univariate targets, and one univariate target with the
+other target histories as past covariates. These are representation controls,
+not Adaptime results.
 
-## Adaptime experiments under design
+## Adaptime `full_ridge_shared`
 
-No Adaptime experiment family is finalized yet. In particular, the
-training/validation/retrieval partition, datastore alignment policy, adaptor
-training sweep, model controls, and executable entry points remain under
-design.
+`scripts/submit_adaptime_comparison.sh` answers whether a ridge fitted once on
+pre-test adaptation data improves a foundation model's TIME forecasts when it
+combines vanilla prediction, retrieval-context prediction, neighbor horizons,
+and neighbor residual information.
 
-Once fixed, each catalog entry will state its question, varying factors,
-controls, datasets and split profile, entry point, and expected artifact
-location without duplicating obtained results.
+- Controls: vanilla `V` and retrieval-context forecast `C`.
+- Proposal: frozen `V + X beta`, with
+  `X=[V,C,Y_1..Y_K,N_1..N_K]` and one coefficient vector shared by all
+  horizon positions.
+- Data: fixed datastore, adaptation training, adaptation validation, and
+  unchanged official TIME test intervals.
+- Retrieval: exact instance-normalized Euclidean search across all series;
+  fixed datastore dates align to each query modulo the dataset period.
+- Selection: fit on adaptation training and choose
+  `K in {1,5,10,15}` and `alpha in {1e-3,1e-2,1e-1}` on adaptation
+  validation; do not refit before test.
+- Primary configuration: `K=10`, `alpha=1e-2`.
+- Artifacts: `outputs/adaptime/{prepared,extraction,training,comparison}/`.
+- TIME aggregate: equal users within each task, equal terms within each
+  dataset/frequency, then equal dataset/frequency weight.
+
+No delta, convex, per-horizon, or native-multivariate Adaptime ablation belongs
+to this experiment family. No result is claimed until cluster outputs are
+complete and inspected.

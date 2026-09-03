@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=tirex
+#SBATCH --job-name=adaptime
 #SBATCH --gres=gpu:1
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
@@ -14,6 +14,5 @@ PROJECT_ROOT="${SLURM_SUBMIT_DIR:-$(pwd)}"
 cd "$PROJECT_ROOT"
 export PROJECT_ROOT
 export TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"
-export TIME_MODEL=tirex
-export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-dgx_${SLURM_JOB_ID}}"
-source "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"
+export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-dgx_adaptime_${SLURM_JOB_ID}}"
+source "$PROJECT_ROOT/src/slurm/run_adaptime_comparison.sh"

@@ -7,7 +7,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MODELS = (
     "chronos_bolt",
     "chronos2",
-    "tirex",
     "ts_icl",
     "seasonal_naive",
 )
@@ -19,9 +18,13 @@ def main() -> None:
     dgx_models = dgx / "foundation_models"
     selena_models = selena / "foundation_models"
     assert sorted(path.name for path in dgx.glob("*.slurm")) == [
+        "adaptime_comparison.slurm",
+        "dataset_diagnostics.slurm",
         "foundation_summary.slurm",
     ]
     assert sorted(path.name for path in selena.glob("*.slurm")) == [
+        "adaptime_comparison_selena.slurm",
+        "dataset_diagnostics_selena.slurm",
         "foundation_summary_selena.slurm",
     ]
     assert sorted(path.name for path in dgx_models.glob("*.slurm")) == [
@@ -77,6 +80,80 @@ def main() -> None:
         assert 'source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"' in selena_front
         assert 'TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"' in selena_front
 
+    adaptime_fronts = (
+        (dgx / "adaptime_comparison.slurm").read_text(encoding="utf-8"),
+        (selena / "adaptime_comparison_selena.slurm").read_text(encoding="utf-8"),
+    )
+    for front in adaptime_fronts:
+        assert "#SBATCH --array" not in front
+        assert 'source "$PROJECT_ROOT/src/slurm/run_adaptime_comparison.sh"' in front
+    assert "#SBATCH --partition=h100" in adaptime_fronts[0]
+    assert "#SBATCH --partition=an" in adaptime_fronts[1]
+    assert "#SBATCH --qos=an_preemptable" in adaptime_fronts[1]
+    assert "#SBATCH --exclusive" in adaptime_fronts[1]
+    assert "#SBATCH --wckey=P12CU:DATASCIENCE" in adaptime_fronts[1]
+
+    adaptime_workflow = (
+        PROJECT_ROOT / "src/slurm/run_adaptime_comparison.sh"
+    ).read_text(encoding="utf-8")
+    assert "for stage in extract train test" in adaptime_workflow
+    assert "uv run --no-sync python -m timebench.scripts.run_adaptation_stage" in adaptime_workflow
+    assert "ADAPTIME_K_VALUES:-1 5 10 15" in adaptime_workflow
+    assert "ADAPTIME_ALPHA_VALUES:-0.001 0.01 0.1" in adaptime_workflow
+    assert adaptime_workflow.index("extract train test") < adaptime_workflow.index(
+        'adaptime_stage "$stage"'
+    )
+
+    adaptime_submit = (
+        PROJECT_ROOT / "scripts/submit_adaptime_comparison.sh"
+    ).read_text(encoding="utf-8")
+    assert "dgx|selena" in adaptime_submit
+    assert "adaptime_comparison.slurm" in adaptime_submit
+    assert "adaptime_comparison_selena.slurm" in adaptime_submit
+
+    diagnostic_fronts = (
+        (dgx / "dataset_diagnostics.slurm").read_text(encoding="utf-8"),
+        (selena / "dataset_diagnostics_selena.slurm").read_text(encoding="utf-8"),
+    )
+    for front in diagnostic_fronts:
+        assert "#SBATCH --array" not in front
+        assert 'source "$PROJECT_ROOT/src/slurm/run_dataset_diagnostics.sh"' in front
+    diagnostic_workflow = (
+        PROJECT_ROOT / "src/slurm/run_dataset_diagnostics.sh"
+    ).read_text(encoding="utf-8")
+    assert "scripts/audit_time_windows.py" in diagnostic_workflow
+    assert "--input-format hf" in diagnostic_workflow
+    assert "--split full" in diagnostic_workflow
+    assert "--force" in diagnostic_workflow
+    diagnostic_submit = (
+        PROJECT_ROOT / "scripts/dataset_diagnostics.sh"
+    ).read_text(encoding="utf-8")
+    assert "dgx|selena" in diagnostic_submit
+    assert "dataset diagnostics submitted" in diagnostic_submit
+
+    result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
+        encoding="utf-8"
+    )
+    publisher = (PROJECT_ROOT / "publish_job.sh").read_text(encoding="utf-8")
+    for compact_artifact in (
+        "model_manifest.json",
+        "result_manifest.json",
+        "selection.json",
+        "comparison_summary.json",
+        "time_summary_manifest.json",
+        "time_summary.json",
+        "time_tasks.csv",
+    ):
+        assert compact_artifact in result_sync
+        assert compact_artifact in publisher
+
+    workflow_source = (
+        PROJECT_ROOT / "src/timebench/pipeline/adaptime_workflow.py"
+    ).read_text(encoding="utf-8")
+    assert "equal_user_then_equal_term_then_equal_dataset" in workflow_source
+    assert 'if stage == "test":' in workflow_source
+    assert "aggregate_time_comparison(" in workflow_source
+
     dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
     selena_summary = (selena / "foundation_summary_selena.slurm").read_text(
         encoding="utf-8"
@@ -92,14 +169,13 @@ def main() -> None:
     mapping = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
         encoding="utf-8"
     )
-    assert mapping.count("    run_") == 5
+    assert mapping.count("    run_") == 4
     assert "FOUNDATION_MODEL_COUNT" in mapping
     for model in MODELS:
         assert f"    {model}\n" in mapping
     foundation_runners = (
         "run_chronos_bolt.sh",
         "run_chronos2.sh",
-        "run_tirex.sh",
         "run_tsicl.sh",
         "run_seasonal_naive.sh",
     )
@@ -262,6 +338,7 @@ def main() -> None:
         "run_timesfm3.sh",
         "run_toto.sh",
         "run_visiontspp.sh",
+        "run_tirex.sh",
     )
     removed_experiments = (
         "kairos_model.py",
@@ -276,6 +353,7 @@ def main() -> None:
         "timesfm3.py",
         "toto_model.py",
         "visiontspp.py",
+        "tirex_model.py",
     )
     for runner in removed_runners:
         assert not (PROJECT_ROOT / "scripts" / runner).exists()
@@ -292,7 +370,6 @@ def main() -> None:
     for experiment in (
         "chronos_bolt.py",
         "chronos2.py",
-        "tirex_model.py",
         "ts_icl.py",
         "seasonal_naive.py",
     ):

@@ -54,8 +54,20 @@ if [ "$SYNC_SIZE" = lightweight ]; then
         '--include=foundation_model_summary.md'
         '--include=foundation_model_report_manifest.json'
         '--include=manifest.json'
+        '--include=model_manifest.json'
+        '--include=result_manifest.json'
+        '--include=selection.json'
+        '--include=comparison_summary.json'
+        '--include=time_summary_manifest.json'
+        '--include=time_summary.json'
+        '--include=time_tasks.csv'
+        '--include=audit_manifest.json'
         '--include=config.json'
         '--include=metrics_summary.json'
+        '--include=task_summary.csv'
+        '--include=dataset_summary.csv'
+        '--include=full_dataset.csv'
+        '--include=dataset_features_full.csv'
         '--exclude=*'
     )
 elif [ "$SYNC_SIZE" = detailed ]; then
@@ -65,9 +77,24 @@ elif [ "$SYNC_SIZE" = detailed ]; then
         '--include=foundation_model_summary.md'
         '--include=foundation_model_report_manifest.json'
         '--include=manifest.json'
+        '--include=model_manifest.json'
+        '--include=result_manifest.json'
+        '--include=selection.json'
+        '--include=comparison_summary.json'
+        '--include=time_summary_manifest.json'
+        '--include=time_summary.json'
+        '--include=time_tasks.csv'
+        '--include=audit_manifest.json'
         '--include=config.json'
         '--include=metrics_summary.json'
         '--include=metrics.npz'
+        '--include=task_summary.csv'
+        '--include=dataset_summary.csv'
+        '--include=window_events.csv'
+        '--include=nonfinite_positions.csv'
+        '--include=full.csv'
+        '--include=full_dataset.csv'
+        '--include=dataset_features_full.csv'
         '--exclude=*'
     )
 fi
@@ -79,7 +106,7 @@ rsync -rlptz --partial --prune-empty-dirs --info=progress2 \
     "$DGX_OUTPUT_ROOT/"
 
 if [ -n "$JOB_ID" ]; then
-    echo "Pulling Selena logs for foundation workflow $JOB_ID..."
+    echo "Pulling Selena logs for job $JOB_ID..."
     rsync -rlptz --partial --prune-empty-dirs --info=progress2 \
         '--include=*/' \
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \
