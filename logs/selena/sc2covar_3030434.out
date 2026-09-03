@@ -1,0 +1,347 @@
+2026-09-02 20:33:24 | workflow chronos2_comparison started launch_id=selena_channels_20260902T183320Z_29592 task=covariate
+2026-09-02 20:33:24 | stage evaluate started
+2026-09-02 20:33:24 | task chronos2 comparison=covariate covariate_mode=past_targets target_mode=univariate started
+[2026-09-02 20:33:24] TIME runner: run_chronos2_comparison.sh
+[2026-09-02 20:33:24] datasets: /scratch/users/h61084/datasets/hf_dataset
+[2026-09-02 20:33:24] weights: /scratch/users/h61084/weights
+[2026-09-02 20:33:24] outputs: /scratch/users/h61084/codes/improved/outputs
+[2026-09-02 20:33:24] covariate mode: past_targets
+[2026-09-02 20:33:24] target mode: univariate
+Running all 38 datasets from config:
+  - Water_Quality_Darwin/15T
+  - current_velocity/5T
+  - current_velocity/10T
+  - current_velocity/15T
+  - current_velocity/20T
+  - current_velocity/H
+  - Coastal_T_S/5T
+  - Coastal_T_S/15T
+  - Coastal_T_S/20T
+  - Coastal_T_S/H
+  - SG_Weather/D
+  - SG_PM25/H
+  - NE_China_Wind/H
+  - Australia_Solar/H
+  - OpenElectricity_NEM/5T
+  - EWELD_Load/15T
+  - Port_Activity/D
+  - Port_Activity/W
+  - Global_Influenza/W
+  - Crypto/D
+  - US_Term_Structure/B
+  - Oil_Price/B
+  - Job_Claims/W
+  - Uncertainty_1M/M
+  - Housing_Inventory/M
+  - JOLTS/M
+  - US_Labor/M
+  - Vehicle_Supply/M
+  - WUI_Global/Q
+  - Global_Price/Q
+  - Vehicle_Sales/M
+  - Supply_Chain_Customer/D
+  - Supply_Chain_Location/D
+  - azure2019_D/5T
+  - azure2019_I/5T
+  - azure2019_U/5T
+  - Smart_Manufacturing/H
+  - MetroPT-3/5T
+
+############################################################
+# Dataset 1/38: Water_Quality_Darwin/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Water_Quality_Darwin/15T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: past_targets
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=1440, val_length=1440
+  Initializing Chronos pipeline (/fslarge/scratch/users/h61084/weights/chronos2)...
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Target mode: univariate
+    - Covariate channels: 5
+    - Series length: min=8662, max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 16
+    - Windows: 90
+    Processed 160/3780...
+    Processed 320/3780...
+    Processed 480/3780...
+    Processed 640/3780...
+    Processed 800/3780...
+    Processed 960/3780...
+    Processed 1120/3780...
+    Processed 1280/3780...
+    Processed 1440/3780...
+    Processed 1600/3780...
+    Processed 1760/3780...
+    Processed 1920/3780...
+    Processed 2080/3780...
+    Processed 2240/3780...
+    Processed 2400/3780...
+    Processed 2560/3780...
+    Processed 2720/3780...
+    Processed 2880/3780...
+    Processed 3040/3780...
+    Processed 3200/3780...
+    Processed 3360/3780...
+    Processed 3520/3780...
+    Processed 3680/3780...
+    Total instances: 3780, Series during experiment: 42, Windows: 90
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2.0380
+      MAE: 0.4176
+      RMSE: 0.4995
+      MAPE: 0.0522
+      sMAPE: 0.0493
+      MASE: 0.6095
+      ND: 0.0503
+      CRPS: 0.0398
+  Completed: 7 series × 90 windows
+  Output: /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+  Initializing Chronos pipeline (/fslarge/scratch/users/h61084/weights/chronos2)...
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Target mode: univariate
+    - Covariate channels: 5
+    - Series length: min=8662, max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 96
+    - Windows: 15
+    Processed 160/630...
+    Processed 320/630...
+    Processed 480/630...
+    Processed 630/630...
+    Total instances: 630, Series during experiment: 42, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.2557
+      MAE: 0.5578
+      RMSE: 0.7192
+      MAPE: 0.0681
+      sMAPE: 0.0638
+      MASE: 0.8598
+      ND: 0.0632
+      CRPS: 0.0506
+  Completed: 7 series × 15 windows
+  Output: /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+  Initializing Chronos pipeline (/fslarge/scratch/users/h61084/weights/chronos2)...
+  Dataset info:
+    - Frequency: 15T
+    - Num series: 7
+    - Target dim: 6
+    - Target mode: univariate
+    - Covariate channels: 5
+    - Series length: min=8662, max=18985, avg=15229.4
+    - Test split: 1440 steps
+    - Prediction length: 288
+    - Windows: 5
+    Processed 160/210...
+    Total instances: 210, Series during experiment: 42, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 7.7741
+      MAE: 0.8808
+      RMSE: 1.1263
+      MAPE: 0.0994
+      sMAPE: 0.0930
+      MASE: 1.3439
+      ND: 0.0893
+      CRPS: 0.0721
+  Completed: 7 series × 5 windows
+  Output: /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/Water_Quality_Darwin/15T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/expe_covar
+============================================================
+
+############################################################
+# Dataset 2/38: current_velocity/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: past_targets
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=36, test_length=4320, val_length=4320
+  Initializing Chronos pipeline (/fslarge/scratch/users/h61084/weights/chronos2)...
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Target mode: univariate
+    - Covariate channels: 5
+    - Series length: min=26486, max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 36
+    - Windows: 120
+    Processed 160/720...
+    Processed 320/720...
+    Processed 480/720...
+    Processed 640/720...
+    Total instances: 720, Series during experiment: 6, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.0685
+      MAE: 0.5618
+      RMSE: 0.6694
+      MAPE: 0.4378
+      sMAPE: 0.3418
+      MASE: 0.3707
+      ND: 0.2948
+      CRPS: 0.2316
+  Completed: 1 series × 120 windows
+  Output: /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=4320, val_length=4320
+  Initializing Chronos pipeline (/fslarge/scratch/users/h61084/weights/chronos2)...
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Target mode: univariate
+    - Covariate channels: 5
+    - Series length: min=26486, max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 288
+    - Windows: 15
+    Total instances: 90, Series during experiment: 6, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.7780
+      MAE: 0.8236
+      RMSE: 1.0186
+      MAPE: 0.6862
+      sMAPE: 0.4074
+      MASE: 0.5888
+      ND: 0.3592
+      CRPS: 0.2829
+  Completed: 1 series × 15 windows
+  Output: /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=864, test_length=4320, val_length=4320
+  Initializing Chronos pipeline (/fslarge/scratch/users/h61084/weights/chronos2)...
+  Dataset info:
+    - Frequency: 5T
+    - Num series: 1
+    - Target dim: 6
+    - Target mode: univariate
+    - Covariate channels: 5
+    - Series length: min=26486, max=26486, avg=26486.0
+    - Test split: 4320 steps
+    - Prediction length: 864
+    - Windows: 5
+    Total instances: 30, Series during experiment: 6, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 6.6002
+      MAE: 0.9700
+      RMSE: 1.1716
+      MAPE: 0.8365
+      sMAPE: 0.4826
+      MASE: 0.8498
+      ND: 0.4323
+      CRPS: 0.3429
+  Completed: 1 series × 5 windows
+  Output: /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_covar/chronos2/univariate/current_velocity/5T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/results/expe_covar
+============================================================
+
+############################################################
+# Dataset 3/38: current_velocity/10T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/10T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: past_targets
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=18, test_length=2160, val_length=2160
+  Initializing Chronos pipeline (/fslarge/scratch/users/h61084/weights/chronos2)...
+  Dataset info:
+    - Frequency: 10T
+    - Num series: 10
+    - Target dim: 6
+    - Target mode: univariate
+    - Covariate channels: 5
+    - Series length: min=7481, max=31957, avg=20668.5
+    - Test split: 2160 steps
+    - Prediction length: 18
+    - Windows: 120

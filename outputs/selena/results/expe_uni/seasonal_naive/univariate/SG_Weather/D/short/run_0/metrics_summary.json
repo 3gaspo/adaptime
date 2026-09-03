@@ -1,0 +1,49 @@
+{
+  "dataset_config": "SG_Weather/D/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 3685.3239228535213,
+      "finite_values": 2862,
+      "total_values": 2928
+    },
+    "MAE": {
+      "mean": 22.581472757777476,
+      "finite_values": 2862,
+      "total_values": 2928
+    },
+    "RMSE": {
+      "mean": 25.898648407207073,
+      "finite_values": 2862,
+      "total_values": 2928
+    },
+    "MAPE": {
+      "mean": 0.5277068930792055,
+      "finite_values": 2862,
+      "total_values": 2928
+    },
+    "sMAPE": {
+      "mean": 0.2875244622633026,
+      "finite_values": 2862,
+      "total_values": 2928
+    },
+    "MASE": {
+      "mean": 1.0920996423955254,
+      "finite_values": 2862,
+      "total_values": 2928
+    },
+    "ND": {
+      "mean": 0.32430974413870023,
+      "finite_values": 2862,
+      "total_values": 2928
+    },
+    "CRPS": {
+      "mean": 0.2964834275010055,
+      "finite_values": 2862,
+      "total_values": 2928
+    }
+  },
+  "launch_id": "selena_20260902T183319Z_29483",
+  "model": "seasonal_naive",
+  "inference_seconds": 11.108178727095947
+}

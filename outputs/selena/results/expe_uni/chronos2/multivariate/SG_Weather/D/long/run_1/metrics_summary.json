@@ -1,0 +1,49 @@
+{
+  "dataset_config": "SG_Weather/D/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 2302.8735126464235,
+      "finite_values": 622,
+      "total_values": 624
+    },
+    "MAE": {
+      "mean": 17.297334220672226,
+      "finite_values": 622,
+      "total_values": 624
+    },
+    "RMSE": {
+      "mean": 22.937067671198967,
+      "finite_values": 622,
+      "total_values": 624
+    },
+    "MAPE": {
+      "mean": 0.3422125693507668,
+      "finite_values": 622,
+      "total_values": 624
+    },
+    "sMAPE": {
+      "mean": 0.22542049966506805,
+      "finite_values": 622,
+      "total_values": 624
+    },
+    "MASE": {
+      "mean": 0.8958720654874422,
+      "finite_values": 622,
+      "total_values": 624
+    },
+    "ND": {
+      "mean": 0.21325556846477087,
+      "finite_values": 622,
+      "total_values": 624
+    },
+    "CRPS": {
+      "mean": 0.16885639867319968,
+      "finite_values": 622,
+      "total_values": 624
+    }
+  },
+  "launch_id": "selena_20260902T183319Z_29483",
+  "model": "chronos2",
+  "inference_seconds": 1.053076544078067
+}

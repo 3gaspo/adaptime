@@ -1,0 +1,92 @@
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:   8%|▊         | 13/170 [00:00<00:01, 123.45it/s]Loading weights:  23%|██▎       | 39/170 [00:00<00:00, 184.65it/s]Loading weights:  41%|████      | 70/170 [00:00<00:00, 236.70it/s]Loading weights:  56%|█████▌    | 95/170 [00:00<00:00, 241.14it/s]Loading weights:  76%|███████▋  | 130/170 [00:00<00:00, 266.84it/s]Loading weights:  97%|█████████▋| 165/170 [00:00<00:00, 289.60it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 261.89it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  return pd.Period(val, freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 991.20it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.65it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 986.05it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 985.48it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1006.74it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 996.46it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 996.15it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 990.96it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 989.39it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 985.36it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 994.51it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.61it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 998.68it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 989.37it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1003.24it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 993.96it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 993.95it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.97it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1000.86it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 991.01it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 993.46it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.94it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 991.10it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 994.27it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 985.62it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.20it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1008.24it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 996.80it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1007.57it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 996.97it/s] 
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  return pd.Period(val, freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 987.80it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 989.12it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1002.28it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 993.06it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1008.36it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 995.40it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 986.41it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.30it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 986.34it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 990.48it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 983.31it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 989.01it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 989.04it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 985.65it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 992.97it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 986.29it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 989.27it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 990.34it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 998.12it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.66it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1001.59it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 991.40it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 994.84it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.31it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1006.40it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 994.31it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1003.18it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 994.94it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 993.01it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.40it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 990.80it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 983.66it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 998.10it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 993.16it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 987.46it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 986.02it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 982.80it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.58it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 994.11it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 989.81it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 999.62it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 991.89it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1002.27it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 991.67it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 996.91it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.59it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 998.46it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 994.38it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 983.72it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.65it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 987.89it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.09it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 994.48it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 993.15it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 994.97it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 986.87it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 989.60it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 986.59it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1005.79it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 997.09it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 988.99it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 983.52it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 997.75it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.24it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1001.03it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 991.12it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 992.60it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 992.41it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 995.78it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.83it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 983.14it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.58it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 987.24it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.72it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: Period with BDay freq is deprecated and will be removed in a future version. Use a DatetimeIndex with BDay freq instead.
+  return pd.Period(val, freq)
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/dataset/split.py:181: FutureWarning: Period with BDay freq is deprecated and will be removed in a future version. Use a DatetimeIndex with BDay freq instead.
+  sliced_entry[FieldName.START] += offset
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  31%|███       | 52/170 [00:00<00:00, 507.24it/s]Loading weights:  89%|████████▉ | 151/170 [00:00<00:00, 786.50it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 771.84it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1005.19it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 994.14it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 998.67it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 990.54it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1005.26it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 992.53it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 101/170 [00:00<00:00, 1008.10it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 993.79it/s] 
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 985.12it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.17it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 996.01it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 987.69it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 994.51it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 986.77it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 990.41it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 991.46it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 994.67it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.79it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 996.28it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 985.53it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 986.76it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 984.24it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 988.71it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 983.66it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  23%|██▎       | 39/170 [00:00<00:00, 379.44it/s]Loading weights:  45%|████▌     | 77/170 [00:00<00:00, 365.64it/s]Loading weights:  74%|███████▎  | 125/170 [00:00<00:00, 413.67it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 420.01it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  22%|██▏       | 38/170 [00:00<00:00, 353.71it/s]Loading weights:  61%|██████    | 103/170 [00:00<00:00, 514.78it/s]Loading weights:  91%|█████████ | 155/170 [00:00<00:00, 492.45it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 508.83it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 98/170 [00:00<00:00, 976.73it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 975.70it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 98/170 [00:00<00:00, 974.71it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 972.39it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 997.45it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 989.22it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 984.05it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 975.22it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 982.92it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 977.52it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  56%|█████▋    | 96/170 [00:00<00:00, 959.77it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 973.51it/s]

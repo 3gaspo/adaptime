@@ -1,0 +1,49 @@
+{
+  "dataset_config": "MetroPT-3/5T/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 5.840119781204699,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "MAE": {
+      "mean": 1.5387264443397621,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "RMSE": {
+      "mean": 1.9892092408460182,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "MAPE": {
+      "mean": 12.37918784645213,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "sMAPE": {
+      "mean": 0.5267466104571419,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "MASE": {
+      "mean": 0.8390464392993278,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "ND": {
+      "mean": 0.4381280575240494,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "CRPS": {
+      "mean": 0.3675863312342866,
+      "finite_values": 36,
+      "total_values": 36
+    }
+  },
+  "launch_id": "selena_20260902T183319Z_29483",
+  "model": "seasonal_naive",
+  "inference_seconds": 2.5443988339975476
+}

@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Water_Quality_Darwin/15T/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 2.0430038441463676,
+      "finite_values": 3780,
+      "total_values": 3780
+    },
+    "MAE": {
+      "mean": 0.41988444199037467,
+      "finite_values": 3780,
+      "total_values": 3780
+    },
+    "RMSE": {
+      "mean": 0.5028248509482135,
+      "finite_values": 3780,
+      "total_values": 3780
+    },
+    "MAPE": {
+      "mean": 0.05267299552992511,
+      "finite_values": 3780,
+      "total_values": 3780
+    },
+    "sMAPE": {
+      "mean": 0.04972066747816129,
+      "finite_values": 3780,
+      "total_values": 3780
+    },
+    "MASE": {
+      "mean": 0.6095422375964246,
+      "finite_values": 3780,
+      "total_values": 3780
+    },
+    "ND": {
+      "mean": 0.05058788598759229,
+      "finite_values": 3780,
+      "total_values": 3780
+    },
+    "CRPS": {
+      "mean": 0.03993465568234648,
+      "finite_values": 3780,
+      "total_values": 3780
+    }
+  },
+  "launch_id": "selena_channels_20260902T183320Z_29592",
+  "model": "chronos2",
+  "inference_seconds": 20.54551798198372
+}

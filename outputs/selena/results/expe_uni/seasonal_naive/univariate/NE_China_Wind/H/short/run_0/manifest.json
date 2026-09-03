@@ -1,0 +1,57 @@
+{
+  "completed_at": "2026-09-02T18:49:55.842658+00:00",
+  "experiment": "expe_uni",
+  "experiment_config": {
+    "covariate_channels": 0,
+    "covariate_mode": "none"
+  },
+  "identity": {
+    "dataset": "NE_China_Wind",
+    "frequency": "H",
+    "model": "seasonal_naive",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "launch_id": "selena_20260902T183319Z_29483",
+    "slurm_job_id": "3030430"
+  },
+  "model_config": {
+    "num_samples": 100,
+    "quantile_levels": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ]
+  },
+  "pipeline_config": {
+    "prediction_length": 24,
+    "seasonality": 24,
+    "test_length": 720,
+    "val_length": 720,
+    "windows": 30
+  },
+  "project": "improved",
+  "provenance": {
+    "dataset_config_path": null
+  },
+  "required_artifacts": [
+    "predictions.npz",
+    "metrics.npz",
+    "config.json",
+    "metrics_summary.json"
+  ],
+  "runtime_config": {
+    "device": "cpu"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-02T18:49:55.816913+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-02T18:49:55.842658+00:00"
+}

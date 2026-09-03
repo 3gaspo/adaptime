@@ -1,0 +1,43 @@
+{
+  "dataset_config": "CPHL/30T/medium",
+  "num_series": 2,
+  "num_windows": 30,
+  "num_variates": 1,
+  "num_model_inputs": 60,
+  "prediction_length": 48,
+  "num_quantiles": 9,
+  "quantile_levels": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "freq": "30T",
+  "seasonality": 48,
+  "context_length": 17518,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_20260902T183319Z_29483",
+  "inference_seconds": 0.8945833970792592,
+  "model": "seasonal_naive",
+  "season_length": 48,
+  "covariate_mode": "none",
+  "covariate_channels": 0,
+  "experiment": "expe_uni",
+  "target_mode": "univariate"
+}

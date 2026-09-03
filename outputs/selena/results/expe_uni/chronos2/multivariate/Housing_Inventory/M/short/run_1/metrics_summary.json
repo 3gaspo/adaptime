@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Housing_Inventory/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 5223247912.103345,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "MAE": {
+      "mean": 33986.019684023326,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "RMSE": {
+      "mean": 37384.33966479991,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "MAPE": {
+      "mean": 0.06891985208206033,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "sMAPE": {
+      "mean": 0.06925662442810825,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "MASE": {
+      "mean": 0.5298324093950973,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "ND": {
+      "mean": 0.06953371864803824,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "CRPS": {
+      "mean": 0.052680613517232494,
+      "finite_values": 12,
+      "total_values": 12
+    }
+  },
+  "launch_id": "selena_20260902T183319Z_29483",
+  "model": "chronos2",
+  "inference_seconds": 0.19842403195798397
+}

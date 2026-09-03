@@ -1,0 +1,49 @@
+{
+  "dataset_config": "EWELD_Load/15T/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 2315.5210934487213,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MAE": {
+      "mean": 19.85264085499286,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "RMSE": {
+      "mean": 26.589790209358096,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MAPE": {
+      "mean": 0.728150412728774,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "sMAPE": {
+      "mean": 0.4521683937093515,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MASE": {
+      "mean": 0.9619606451392132,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "ND": {
+      "mean": 0.35106526047385467,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "CRPS": {
+      "mean": 0.3219642142126242,
+      "finite_values": 140,
+      "total_values": 140
+    }
+  },
+  "launch_id": "selena_20260902T183319Z_29483",
+  "model": "seasonal_naive",
+  "inference_seconds": 3.654212915105745
+}

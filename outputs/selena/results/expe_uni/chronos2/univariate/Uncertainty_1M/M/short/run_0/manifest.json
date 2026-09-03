@@ -1,0 +1,62 @@
+{
+  "completed_at": "2026-09-02T18:39:29.633392+00:00",
+  "experiment": "expe_uni",
+  "experiment_config": {
+    "covariate_channels": 0,
+    "covariate_mode": "none",
+    "covariate_source": "none",
+    "covariate_time_span": "none"
+  },
+  "identity": {
+    "dataset": "Uncertainty_1M",
+    "frequency": "M",
+    "model": "chronos2",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "launch_id": "selena_channels_20260902T183320Z_29592",
+    "slurm_job_id": "3030433"
+  },
+  "model_config": {
+    "context_length": 8192,
+    "model_size": "chronos2",
+    "quantile_levels": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ]
+  },
+  "pipeline_config": {
+    "prediction_length": 6,
+    "seasonality": 12,
+    "test_length": 42,
+    "val_length": 18,
+    "windows": 7
+  },
+  "project": "improved",
+  "provenance": {
+    "dataset_config_path": null
+  },
+  "required_artifacts": [
+    "predictions.npz",
+    "metrics.npz",
+    "config.json",
+    "metrics_summary.json"
+  ],
+  "runtime_config": {
+    "batch_size": 16,
+    "checkpoint_path": "/fslarge/scratch/users/h61084/weights/chronos2",
+    "device": "cuda"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-02T18:39:29.623973+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-02T18:39:29.633392+00:00"
+}

@@ -1,0 +1,42 @@
+{
+  "dataset_config": "Coastal_T_S/20T/medium",
+  "num_series": 1,
+  "num_windows": 15,
+  "num_variates": 3,
+  "num_model_inputs": 45,
+  "prediction_length": 72,
+  "num_quantiles": 9,
+  "quantile_levels": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "freq": "20T",
+  "seasonality": 72,
+  "context_length": 2048,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_20260902T183319Z_29483",
+  "inference_seconds": 0.4682395802810788,
+  "model": "chronos_bolt",
+  "covariate_mode": "none",
+  "covariate_channels": 0,
+  "experiment": "expe_uni",
+  "target_mode": "univariate"
+}

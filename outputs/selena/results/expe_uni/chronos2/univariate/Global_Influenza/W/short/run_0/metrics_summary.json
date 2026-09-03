@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Global_Influenza/W/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 2518067.125624654,
+      "finite_values": 237,
+      "total_values": 240
+    },
+    "MAE": {
+      "mean": 440.60132558076344,
+      "finite_values": 237,
+      "total_values": 240
+    },
+    "RMSE": {
+      "mean": 557.94408877659,
+      "finite_values": 237,
+      "total_values": 240
+    },
+    "MAPE": {
+      "mean": 0.6219174313667335,
+      "finite_values": 237,
+      "total_values": 240
+    },
+    "sMAPE": {
+      "mean": 0.4610399650599585,
+      "finite_values": 237,
+      "total_values": 240
+    },
+    "MASE": {
+      "mean": 2.716495998591464,
+      "finite_values": 237,
+      "total_values": 240
+    },
+    "ND": {
+      "mean": 0.4611752357097218,
+      "finite_values": 237,
+      "total_values": 240
+    },
+    "CRPS": {
+      "mean": 0.3702139899964986,
+      "finite_values": 237,
+      "total_values": 240
+    }
+  },
+  "launch_id": "selena_channels_20260902T183320Z_29592",
+  "model": "chronos2",
+  "inference_seconds": 0.2411439586430788
+}

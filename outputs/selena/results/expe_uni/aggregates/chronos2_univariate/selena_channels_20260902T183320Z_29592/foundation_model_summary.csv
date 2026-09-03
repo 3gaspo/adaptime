@@ -1,0 +1,2 @@
+launch_id,model,target_modes,state,exit_code,MASE_macro,inference_seconds,datasets,tasks,timed_tasks
+selena_channels_20260902T183320Z_29592,chronos2,univariate,,,1.1119941239649387,351.32203639205545,38,74,74
