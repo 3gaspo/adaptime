@@ -18,9 +18,11 @@ def main() -> None:
     dgx_models = dgx / "foundation_models"
     selena_models = selena / "foundation_models"
     assert sorted(path.name for path in dgx.glob("*.slurm")) == [
+        "dataset_diagnostics.slurm",
         "foundation_summary.slurm",
     ]
     assert sorted(path.name for path in selena.glob("*.slurm")) == [
+        "dataset_diagnostics_selena.slurm",
         "foundation_summary_selena.slurm",
     ]
     assert sorted(path.name for path in dgx_models.glob("*.slurm")) == [
@@ -152,6 +154,26 @@ def main() -> None:
     assert "all_multivariate_datasets" in (
         PROJECT_ROOT / "scripts/run_chronos2_comparison.sh"
     ).read_text(encoding="utf-8")
+
+    diagnostic_fronts = (
+        (dgx / "dataset_diagnostics.slurm").read_text(encoding="utf-8"),
+        (selena / "dataset_diagnostics_selena.slurm").read_text(encoding="utf-8"),
+    )
+    for front in diagnostic_fronts:
+        assert "#SBATCH --array" not in front
+        assert 'source "$PROJECT_ROOT/src/slurm/run_dataset_diagnostics.sh"' in front
+    diagnostic_workflow = (
+        PROJECT_ROOT / "src/slurm/run_dataset_diagnostics.sh"
+    ).read_text(encoding="utf-8")
+    assert "scripts/audit_time_windows.py" in diagnostic_workflow
+    assert "--input-format hf" in diagnostic_workflow
+    assert "--split full" in diagnostic_workflow
+    assert "--force" in diagnostic_workflow
+    diagnostic_submit = (
+        PROJECT_ROOT / "scripts/dataset_diagnostics.sh"
+    ).read_text(encoding="utf-8")
+    assert "dgx|selena" in diagnostic_submit
+    assert "dataset diagnostics submitted" in diagnostic_submit
 
     summary = (
         PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"

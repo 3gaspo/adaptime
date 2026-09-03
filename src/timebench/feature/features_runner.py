@@ -241,6 +241,7 @@ def compute_dataset_features(
     split_mode: str = "test",
     decomp_method: str = "stl",
     input_format: str = "processed_csv",
+    force: bool = False,
 ) -> Path:
     """
     Compute and save the full set of time series features for a given dataset.
@@ -266,6 +267,7 @@ def compute_dataset_features(
             - "stl": single-period STL using the strongest FFT period (default)
             - "mstl": multi-period MSTL using the top-3 FFT periods
         input_format: "processed_csv" or "hf".
+        force: Recompute the feature files even when both outputs already exist.
 
     Returns:
         Path to the dataset-level feature CSV saved below
@@ -286,7 +288,7 @@ def compute_dataset_features(
     dataset_csv_path = os.path.join(feature_dir, f'{split_mode}_dataset.csv')
 
     # Skip if already computed
-    if os.path.exists(output_csv_path) and os.path.exists(dataset_csv_path):
+    if not force and os.path.exists(output_csv_path) and os.path.exists(dataset_csv_path):
         print(
             f"[Skip] Features for {dataset_name}/{freq} ({split_mode}) "
             f"already exist at {output_csv_path} and {dataset_csv_path}"
@@ -496,6 +498,11 @@ Examples:
         default=str(outputs_root()),
         help="Base directory for output files"
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Recompute and replace existing feature artifacts",
+    )
 
     args = parser.parse_args()
 
@@ -543,6 +550,7 @@ Examples:
                 split_mode=effective_split_mode,
                 decomp_method=args.decomp,
                 input_format=args.input_format,
+                force=args.force,
             ))
 
         write_dataset_feature_index(
@@ -597,6 +605,7 @@ Examples:
             split_mode=effective_split_mode,
             decomp_method=args.decomp,
             input_format=args.input_format,
+            force=args.force,
         )
     else:
         parser.print_help()

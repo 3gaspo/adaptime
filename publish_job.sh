@@ -109,17 +109,30 @@ elif [ -d outputs ]; then
                 -name foundation_model_summary.md -o \
                 -name foundation_model_report_manifest.json -o \
                 -name manifest.json -o \
+                -name audit_manifest.json -o \
                 -name config.json -o \
                 -name metrics_summary.json -o \
-                -name metrics.npz \) -print0
+                -name metrics.npz -o \
+                -name task_summary.csv -o \
+                -name dataset_summary.csv -o \
+                -name window_events.csv -o \
+                -name nonfinite_positions.csv -o \
+                -name full.csv -o \
+                -name full_dataset.csv -o \
+                -name dataset_features_full.csv \) -print0
         else
             find "$project_root/outputs" -type f \( \
                 -name foundation_model_summary.csv -o \
                 -name foundation_model_summary.md -o \
                 -name foundation_model_report_manifest.json -o \
                 -name manifest.json -o \
+                -name audit_manifest.json -o \
                 -name config.json -o \
-                -name metrics_summary.json \) -print0
+                -name metrics_summary.json -o \
+                -name task_summary.csv -o \
+                -name dataset_summary.csv -o \
+                -name full_dataset.csv -o \
+                -name dataset_features_full.csv \) -print0
         fi
     )
 fi
