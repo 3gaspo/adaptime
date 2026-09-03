@@ -54,13 +54,8 @@ if [ "$SYNC_SIZE" = lightweight ]; then
         '--include=foundation_model_summary.md'
         '--include=foundation_model_report_manifest.json'
         '--include=manifest.json'
-        '--include=audit_manifest.json'
         '--include=config.json'
         '--include=metrics_summary.json'
-        '--include=task_summary.csv'
-        '--include=dataset_summary.csv'
-        '--include=full_dataset.csv'
-        '--include=dataset_features_full.csv'
         '--exclude=*'
     )
 elif [ "$SYNC_SIZE" = detailed ]; then
@@ -70,17 +65,9 @@ elif [ "$SYNC_SIZE" = detailed ]; then
         '--include=foundation_model_summary.md'
         '--include=foundation_model_report_manifest.json'
         '--include=manifest.json'
-        '--include=audit_manifest.json'
         '--include=config.json'
         '--include=metrics_summary.json'
         '--include=metrics.npz'
-        '--include=task_summary.csv'
-        '--include=dataset_summary.csv'
-        '--include=window_events.csv'
-        '--include=nonfinite_positions.csv'
-        '--include=full.csv'
-        '--include=full_dataset.csv'
-        '--include=dataset_features_full.csv'
         '--exclude=*'
     )
 fi
@@ -97,6 +84,7 @@ if [ -n "$JOB_ID" ]; then
         '--include=*/' \
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \
         "--include=*_${JOB_ID}.out" "--include=*_${JOB_ID}.err" \
+        "--include=/dataset_metadata/$JOB_ID/***" \
         '--exclude=/workflow_status/***' '--exclude=*' \
         "$SOURCE_ROOT/logs/" \
         "$DGX_LOG_ROOT/"
@@ -131,4 +119,4 @@ else
         "$DGX_LOG_ROOT/"
 fi
 
-echo "SUCCESS: $SYNC_SIZE TIME outputs and requested logs were pulled from Selena to DGX."
+echo "SUCCESS: $SYNC_SIZE TIME outputs, requested logs, and metadata aggregates were pulled from Selena to DGX."

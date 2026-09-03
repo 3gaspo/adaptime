@@ -25,6 +25,11 @@ def dataset_storage_root() -> Path:
     return _configured_path("TIME_DATASET", data_root() / "hf_dataset")
 
 
+def dataset_metadata_root() -> Path:
+    """Shared dataset-derived quality reports and feature artifacts."""
+    return _configured_path("TIME_METADATA", data_root() / "time_metadata")
+
+
 def weights_root() -> Path:
     """Model checkpoints and package caches."""
     return _configured_path("TIME_WEIGHTS", PROJECT_ROOT / "weights")
@@ -47,7 +52,7 @@ def foundation_weight_path(
 
 
 def outputs_root() -> Path:
-    """Generated predictions, metrics, features, and reports."""
+    """Generated predictions, metrics, and experiment reports."""
     return _configured_path("TIME_OUTPUTS", PROJECT_ROOT / "outputs")
 
 

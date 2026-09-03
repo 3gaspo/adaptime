@@ -19,7 +19,7 @@ if [ ! -d "$TIME_DATASET" ]; then
 fi
 
 export PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
-diagnostics_root="$TIME_OUTPUTS/dataset_diagnostics/$TIME_LAUNCH_ID"
+diagnostics_root="$TIME_METADATA/window_audit"
 config_path="$PROJECT_ROOT/src/timebench/config/datasets.yaml"
 
 time_stage_start window_audit
@@ -33,6 +33,7 @@ audit_command=(
 srun --ntasks=1 "${audit_command[@]}"
 time_task_complete
 time_stage_complete
+source "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh"
 
 time_stage_start dataset_features
 time_task_start "recompute full-series TIME statistics and STL features"
@@ -43,10 +44,10 @@ feature_command=(
     --input-format hf
     --split full
     --dataset_dir "$TIME_DATASET"
-    --output_dir "$TIME_OUTPUTS"
-    --force
+    --output_dir "$TIME_METADATA"
 )
 srun --ntasks=1 "${feature_command[@]}"
 time_task_complete
 time_stage_complete
+source "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh"
 time_workflow_complete

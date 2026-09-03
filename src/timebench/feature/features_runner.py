@@ -42,7 +42,7 @@ from timebench.evaluation.utils import (
     get_test_length,
     find_dataset_config,
 )
-from timebench.paths import data_root, dataset_storage_root, outputs_root
+from timebench.paths import data_root, dataset_metadata_root, dataset_storage_root
 
 # Default config path relative to this module
 DEFAULT_CONFIG_PATH = Path(__file__).parent.parent / "config" / "datasets.yaml"
@@ -275,7 +275,7 @@ def compute_dataset_features(
     """
     start = time.time()
     if output_dir is None:
-        output_dir = str(outputs_root())
+        output_dir = str(dataset_metadata_root())
 
     # dataset_id for joining with results (format: "{dataset_name}/{freq}")
     dataset_id = f"{dataset_name}/{freq}"
@@ -495,7 +495,7 @@ Examples:
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=str(outputs_root()),
+        default=str(dataset_metadata_root()),
         help="Base directory for output files"
     )
     parser.add_argument(

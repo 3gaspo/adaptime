@@ -1,4 +1,4 @@
-"""Audit the exact TIME evaluation queries and model context windows."""
+"""Audit shared TIME source series and configured evaluation windows."""
 
 from __future__ import annotations
 
@@ -21,24 +21,18 @@ from timebench.evaluation.data import (
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms
-from timebench.paths import outputs_root
+from timebench.paths import dataset_metadata_root
 
 
 DEFAULT_CONTEXT_PROFILES = {
     "full": None,
+    "seasonal_naive": None,
     "chronos2": 8192,
     "ts_icl": 4096,
     "chronos_bolt": 2048,
 }
 
-SUMMARY_FIELDS = (
-    "dataset",
-    "frequency",
-    "term",
-    "scope",
-    "context_profile",
-    "context_limit",
-    "prediction_length",
+COUNT_FIELDS = (
     "generated_queries",
     "channel_windows",
     "values",
@@ -52,6 +46,17 @@ SUMMARY_FIELDS = (
     "all_nonfinite_channel_windows",
 )
 
+SUMMARY_FIELDS = (
+    "dataset",
+    "frequency",
+    "term",
+    "scope",
+    "window_config",
+    "context_limit",
+    "prediction_length",
+    *COUNT_FIELDS,
+)
+
 EVENT_FIELDS = (
     "dataset",
     "frequency",
@@ -59,7 +64,7 @@ EVENT_FIELDS = (
     "item_id",
     "window_index",
     "scope",
-    "context_profile",
+    "window_config",
     "context_limit",
     "raw_context_length",
     "window_length",
@@ -84,18 +89,19 @@ EVENT_FIELDS = (
 POSITION_FIELDS = (
     "dataset",
     "frequency",
-    "term",
     "item_id",
-    "window_index",
-    "scope",
-    "context_profile",
     "field",
     "channel_index",
     "channel_name",
-    "window_position",
     "source_position",
     "timestamp",
     "value_kind",
+)
+
+MODEL_CONTEXT_FIELDS = (
+    "profile_name",
+    "context_limit",
+    "window_config_prefix",
 )
 
 
@@ -107,6 +113,13 @@ def _write_json(path: Path, payload: dict) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     temporary.replace(path)
+
+
+def _write_csv(path: Path, fieldnames: tuple[str, ...], rows: list[dict]) -> None:
+    with path.open("w", newline="", encoding="utf-8") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def _parse_context_profiles(values: Iterable[str] | None) -> dict[str, int | None]:
@@ -162,55 +175,90 @@ def _timestamp(start, frequency: str, source_position: int) -> str:
 
 
 def _empty_counts() -> dict[str, int]:
-    return {
-        "generated_queries": 0,
-        "channel_windows": 0,
-        "values": 0,
-        "finite_values": 0,
-        "nan_values": 0,
-        "positive_infinity_values": 0,
-        "negative_infinity_values": 0,
-        "nonfinite_values": 0,
-        "nonfinite_channel_windows": 0,
-        "constant_channel_windows": 0,
-        "all_nonfinite_channel_windows": 0,
-    }
+    return {field: 0 for field in COUNT_FIELDS}
 
 
 def _add_counts(target: dict[str, int], source: dict[str, int]) -> None:
-    for field in target:
-        target[field] += source[field]
+    for field in COUNT_FIELDS:
+        target[field] += int(source[field])
 
 
-def _inspect_channel(values: np.ndarray) -> tuple[dict[str, int], np.ndarray, bool, bool, float | None]:
-    nan_mask = np.isnan(values)
-    positive_infinity_mask = np.isposinf(values)
-    negative_infinity_mask = np.isneginf(values)
-    nonfinite_mask = ~np.isfinite(values)
-    finite_values = values[~nonfinite_mask]
-    constant = bool(
-        values.size > 0
-        and finite_values.size == values.size
-        and np.all(finite_values == finite_values[0])
+def _prefix(mask: np.ndarray) -> np.ndarray:
+    return np.concatenate(([0], np.cumsum(mask, dtype=np.int64)))
+
+
+def _channel_state(values: np.ndarray) -> dict[str, np.ndarray]:
+    nan = np.isnan(values)
+    positive_infinity = np.isposinf(values)
+    negative_infinity = np.isneginf(values)
+    finite = np.isfinite(values)
+    breaks = np.zeros(len(values), dtype=bool)
+    if len(values) > 1:
+        breaks[1:] = (~finite[:-1]) | (~finite[1:]) | (values[:-1] != values[1:])
+    return {
+        "values": values,
+        "nan": _prefix(nan),
+        "positive_infinity": _prefix(positive_infinity),
+        "negative_infinity": _prefix(negative_infinity),
+        "breaks": _prefix(breaks),
+    }
+
+
+def _interval_counts(
+    state: dict[str, np.ndarray], start: int, end: int
+) -> tuple[dict[str, int], bool, bool, float | None]:
+    length = end - start
+    nan_values = int(state["nan"][end] - state["nan"][start])
+    positive_infinity_values = int(
+        state["positive_infinity"][end] - state["positive_infinity"][start]
     )
-    all_nonfinite = bool(values.size > 0 and finite_values.size == 0)
+    negative_infinity_values = int(
+        state["negative_infinity"][end] - state["negative_infinity"][start]
+    )
+    nonfinite_values = nan_values + positive_infinity_values + negative_infinity_values
+    finite_values = length - nonfinite_values
+    transitions = (
+        int(state["breaks"][end] - state["breaks"][start + 1])
+        if length > 1
+        else 0
+    )
+    constant = bool(length > 0 and nonfinite_values == 0 and transitions == 0)
+    all_nonfinite = bool(length > 0 and finite_values == 0)
     counts = _empty_counts()
     counts.update(
         {
             "channel_windows": 1,
-            "values": int(values.size),
-            "finite_values": int(finite_values.size),
-            "nan_values": int(nan_mask.sum()),
-            "positive_infinity_values": int(positive_infinity_mask.sum()),
-            "negative_infinity_values": int(negative_infinity_mask.sum()),
-            "nonfinite_values": int(nonfinite_mask.sum()),
-            "nonfinite_channel_windows": int(nonfinite_mask.any()),
+            "values": length,
+            "finite_values": finite_values,
+            "nan_values": nan_values,
+            "positive_infinity_values": positive_infinity_values,
+            "negative_infinity_values": negative_infinity_values,
+            "nonfinite_values": nonfinite_values,
+            "nonfinite_channel_windows": int(nonfinite_values > 0),
             "constant_channel_windows": int(constant),
             "all_nonfinite_channel_windows": int(all_nonfinite),
         }
     )
-    constant_value = float(finite_values[0]) if constant else None
-    return counts, nonfinite_mask, constant, all_nonfinite, constant_value
+    constant_value = float(state["values"][start]) if constant else None
+    return counts, constant, all_nonfinite, constant_value
+
+
+def _window_config(scope: str, context_limit: int | None, horizon: int) -> str:
+    if scope == "query":
+        return f"H={horizon}"
+    length = "full" if context_limit is None else str(context_limit)
+    return f"L={length},H={horizon}"
+
+
+def _model_context_rows(context_profiles: dict[str, int | None]) -> list[dict]:
+    return [
+        {
+            "profile_name": name,
+            "context_limit": "" if limit is None else limit,
+            "window_config_prefix": "L=full" if limit is None else f"L={limit}",
+        }
+        for name, limit in context_profiles.items()
+    ]
 
 
 def audit_time_windows(
@@ -220,12 +268,13 @@ def audit_time_windows(
     context_profiles: dict[str, int | None],
     selected_datasets: set[str] | None = None,
 ) -> dict:
-    """Audit targets from the same GluonTS queries consumed by TIME runners."""
+    """Audit each source once and each distinct ``(L, H)`` window once."""
     output_dir.mkdir(parents=True, exist_ok=True)
     events_path = output_dir / "window_events.csv"
     positions_path = output_dir / "nonfinite_positions.csv"
     task_summary_path = output_dir / "task_summary.csv"
     dataset_summary_path = output_dir / "dataset_summary.csv"
+    model_contexts_path = output_dir / "model_contexts.csv"
     manifest_path = output_dir / "audit_manifest.json"
 
     resolved_config_path = config_path or DEFAULT_CONFIG_PATH
@@ -239,6 +288,10 @@ def audit_time_windows(
         if missing:
             raise ValueError(f"Datasets are absent from the TIME config: {missing}")
 
+    distinct_context_limits = list(dict.fromkeys(context_profiles.values()))
+    model_context_rows = _model_context_rows(context_profiles)
+    _write_csv(model_contexts_path, MODEL_CONTEXT_FIELDS, model_context_rows)
+
     launch_id = os.environ.get("TIME_LAUNCH_ID")
     started_at = datetime.now(timezone.utc).isoformat()
     manifest = {
@@ -251,17 +304,20 @@ def audit_time_windows(
         "config_path": str(resolved_config_path.resolve()),
         "datasets": dataset_keys,
         "context_profiles": context_profiles,
+        "distinct_context_limits": distinct_context_limits,
         "definitions": {
-            "query": "The exact GluonTS label target for one configured test instance.",
-            "context": "The exact input target, truncated from the left to the profile limit.",
+            "query": "Configured TIME test window with source interval [context_end, context_end + H).",
+            "context": "Source interval [max(0, context_end - L), context_end), with full starting at zero.",
             "constant": "A non-empty channel window whose values are all finite and exactly equal.",
             "position": "Zero-based position in the original saved-Arrow target series.",
+            "deduplication": "Source positions occur once and model profiles sharing L reuse one L-H window row.",
         },
         "artifacts": [
             events_path.name,
             positions_path.name,
             task_summary_path.name,
             dataset_summary_path.name,
+            model_contexts_path.name,
         ],
     }
     _write_json(manifest_path, manifest)
@@ -280,160 +336,136 @@ def audit_time_windows(
 
             for dataset_number, dataset_key in enumerate(dataset_keys, start=1):
                 terms = get_available_terms(dataset_key, config)
-                _log(
-                    f"dataset {dataset_number}/{len(dataset_keys)} {dataset_key} terms={terms}"
+                first_settings = get_dataset_settings(dataset_key, terms[0], config)
+                dataset = Dataset(
+                    name=dataset_key,
+                    term=terms[0],
+                    to_univariate=False,
+                    prediction_length=int(first_settings["prediction_length"]),
+                    test_length=int(first_settings["test_length"]),
+                    val_length=int(first_settings["val_length"]),
                 )
+                _log(f"dataset {dataset_number}/{len(dataset_keys)} {dataset_key} terms={terms}")
+
+                term_settings = []
                 for term in terms:
                     settings = get_dataset_settings(dataset_key, term, config)
-                    prediction_length = int(settings["prediction_length"])
-                    dataset = Dataset(
-                        name=dataset_key,
-                        term=term,
-                        to_univariate=False,
-                        prediction_length=prediction_length,
-                        test_length=int(settings["test_length"]),
-                        val_length=int(settings["val_length"]),
-                    )
-                    item_window_indices: dict[str, int] = defaultdict(int)
+                    horizon = int(settings["prediction_length"])
+                    test_length = int(settings["test_length"])
+                    if horizon <= 0 or test_length < horizon:
+                        raise ValueError(
+                            f"Invalid H={horizon}, test_length={test_length} for {dataset_key}/{term}"
+                        )
+                    term_settings.append((term, horizon, test_length, test_length // horizon))
 
-                    for input_entry, label_entry in dataset.test_data:
-                        item_id = str(input_entry.get("item_id", "unknown"))
-                        window_index = item_window_indices[item_id]
-                        item_window_indices[item_id] += 1
-                        context = _channels(input_entry["target"])
-                        query = _channels(label_entry["target"])
-                        if context.shape[0] != query.shape[0]:
+                dataset_query_counts = {term: 0 for term in terms}
+                for item_index, entry in enumerate(dataset.hf_dataset):
+                    target = _channels(entry["target"])
+                    names = _channel_names(entry, target.shape[0])
+                    item_id = str(entry.get("item_id", f"item_{item_index}"))
+                    start = entry.get("start")
+                    frequency = str(entry.get("freq", dataset.freq))
+                    channel_states = [_channel_state(values) for values in target]
+
+                    for channel_index, values in enumerate(target):
+                        for source_position in np.flatnonzero(~np.isfinite(values)):
+                            value = values[source_position]
+                            value_kind = (
+                                "nan"
+                                if np.isnan(value)
+                                else "positive_infinity"
+                                if np.isposinf(value)
+                                else "negative_infinity"
+                            )
+                            position_writer.writerow(
+                                {
+                                    "dataset": dataset_key.rpartition("/")[0],
+                                    "frequency": frequency,
+                                    "item_id": item_id,
+                                    "field": "target",
+                                    "channel_index": channel_index,
+                                    "channel_name": names[channel_index],
+                                    "source_position": int(source_position),
+                                    "timestamp": _timestamp(start, frequency, int(source_position)),
+                                    "value_kind": value_kind,
+                                }
+                            )
+
+                    for term, horizon, test_length, windows in term_settings:
+                        if test_length > target.shape[-1]:
                             raise ValueError(
-                                f"Target channel count changes at the query boundary for "
-                                f"{dataset_key}/{term}/{item_id}"
+                                f"test_length={test_length} exceeds series length={target.shape[-1]} "
+                                f"for {dataset_key}/{term}/{item_id}"
                             )
-                        names = _channel_names(input_entry, context.shape[0])
-                        raw_context_length = int(context.shape[-1])
-                        start = input_entry.get("start")
-
-                        scopes = [
-                            (
-                                "query",
-                                "forecast_horizon",
-                                prediction_length,
-                                query,
-                                raw_context_length,
-                            )
-                        ]
-                        for profile, limit in context_profiles.items():
-                            source_start = (
-                                0 if limit is None else max(0, raw_context_length - limit)
-                            )
-                            scopes.append(
+                        test_start = target.shape[-1] - test_length
+                        for window_index in range(windows):
+                            context_end = test_start + window_index * horizon
+                            intervals = [("query", None, context_end, context_end + horizon)]
+                            intervals.extend(
                                 (
                                     "context",
-                                    profile,
                                     limit,
-                                    context[:, source_start:],
-                                    source_start,
+                                    0 if limit is None else max(0, context_end - limit),
+                                    context_end,
                                 )
+                                for limit in distinct_context_limits
                             )
 
-                        for scope, profile, limit, block, source_start in scopes:
-                            key = (dataset_key, term, scope, profile)
-                            if key not in summary_metadata:
-                                summary_metadata[key] = {
-                                    "dataset": dataset_key.rpartition("/")[0],
-                                    "frequency": dataset.freq,
-                                    "term": term,
-                                    "scope": scope,
-                                    "context_profile": profile,
-                                    "context_limit": "" if limit is None else limit,
-                                    "prediction_length": prediction_length,
-                                }
-                            summaries[key]["generated_queries"] += 1
-
-                            for channel_index, values in enumerate(block):
-                                counts, nonfinite_mask, constant, all_nonfinite, constant_value = (
-                                    _inspect_channel(values)
-                                )
-                                _add_counts(summaries[key], counts)
-                                if not nonfinite_mask.any() and not constant:
-                                    continue
-
-                                source_end = source_start + len(values) - 1
-                                event_writer.writerow(
-                                    {
-                                        **summary_metadata[key],
-                                        "item_id": item_id,
-                                        "window_index": window_index,
-                                        "raw_context_length": raw_context_length,
-                                        "window_length": len(values),
-                                        "field": "target",
-                                        "channel_index": channel_index,
-                                        "channel_name": names[channel_index],
-                                        "source_start_position": source_start,
-                                        "source_end_position": source_end,
-                                        "source_start_timestamp": _timestamp(
-                                            start, dataset.freq, source_start
-                                        ),
-                                        "source_end_timestamp": _timestamp(
-                                            start, dataset.freq, source_end
-                                        ),
-                                        "finite_values": counts["finite_values"],
-                                        "nan_values": counts["nan_values"],
-                                        "positive_infinity_values": counts[
-                                            "positive_infinity_values"
-                                        ],
-                                        "negative_infinity_values": counts[
-                                            "negative_infinity_values"
-                                        ],
-                                        "nonfinite_values": counts["nonfinite_values"],
-                                        "constant": str(constant).lower(),
-                                        "all_nonfinite": str(all_nonfinite).lower(),
-                                        "constant_value": (
-                                            "" if constant_value is None else constant_value
-                                        ),
+                            for scope, limit, source_start, source_end in intervals:
+                                window_config = _window_config(scope, limit, horizon)
+                                key = (dataset_key, term, scope, window_config)
+                                if key not in summary_metadata:
+                                    summary_metadata[key] = {
+                                        "dataset": dataset_key.rpartition("/")[0],
+                                        "frequency": frequency,
+                                        "term": term,
+                                        "scope": scope,
+                                        "window_config": window_config,
+                                        "context_limit": "" if limit is None else limit,
+                                        "prediction_length": horizon,
                                     }
-                                )
+                                summaries[key]["generated_queries"] += 1
 
-                                for window_position in np.flatnonzero(nonfinite_mask):
-                                    value = values[window_position]
-                                    if np.isnan(value):
-                                        value_kind = "nan"
-                                    elif np.isposinf(value):
-                                        value_kind = "positive_infinity"
-                                    else:
-                                        value_kind = "negative_infinity"
-                                    source_position = source_start + int(window_position)
-                                    position_writer.writerow(
+                                for channel_index, state in enumerate(channel_states):
+                                    counts, constant, all_nonfinite, constant_value = _interval_counts(
+                                        state, source_start, source_end
+                                    )
+                                    _add_counts(summaries[key], counts)
+                                    if counts["nonfinite_values"] == 0 and not constant:
+                                        continue
+                                    event_writer.writerow(
                                         {
-                                            "dataset": dataset_key.rpartition("/")[0],
-                                            "frequency": dataset.freq,
-                                            "term": term,
+                                            **summary_metadata[key],
                                             "item_id": item_id,
                                             "window_index": window_index,
-                                            "scope": scope,
-                                            "context_profile": profile,
+                                            "raw_context_length": context_end,
+                                            "window_length": source_end - source_start,
                                             "field": "target",
                                             "channel_index": channel_index,
                                             "channel_name": names[channel_index],
-                                            "window_position": int(window_position),
-                                            "source_position": source_position,
-                                            "timestamp": _timestamp(
-                                                start, dataset.freq, source_position
-                                            ),
-                                            "value_kind": value_kind,
+                                            "source_start_position": source_start,
+                                            "source_end_position": source_end - 1,
+                                            "source_start_timestamp": _timestamp(start, frequency, source_start),
+                                            "source_end_timestamp": _timestamp(start, frequency, source_end - 1),
+                                            "finite_values": counts["finite_values"],
+                                            "nan_values": counts["nan_values"],
+                                            "positive_infinity_values": counts["positive_infinity_values"],
+                                            "negative_infinity_values": counts["negative_infinity_values"],
+                                            "nonfinite_values": counts["nonfinite_values"],
+                                            "constant": str(constant).lower(),
+                                            "all_nonfinite": str(all_nonfinite).lower(),
+                                            "constant_value": "" if constant_value is None else constant_value,
                                         }
                                     )
+                            dataset_query_counts[term] += 1
 
-                    _log(
-                        f"task {dataset_key}/{term} audited queries="
-                        f"{sum(item_window_indices.values())}"
-                    )
+                for term in terms:
+                    _log(f"task {dataset_key}/{term} audited queries={dataset_query_counts[term]}")
 
-        task_rows = []
-        for key in sorted(summaries):
-            task_rows.append({**summary_metadata[key], **summaries[key]})
-        with task_summary_path.open("w", newline="", encoding="utf-8") as summary_file:
-            writer = csv.DictWriter(summary_file, fieldnames=SUMMARY_FIELDS)
-            writer.writeheader()
-            writer.writerows(task_rows)
+        task_rows = [
+            {**summary_metadata[key], **summaries[key]} for key in sorted(summaries)
+        ]
+        _write_csv(task_summary_path, SUMMARY_FIELDS, task_rows)
 
         dataset_counts: dict[tuple, dict[str, int]] = defaultdict(_empty_counts)
         dataset_metadata: dict[tuple, dict] = {}
@@ -442,26 +474,25 @@ def audit_time_windows(
                 row["dataset"],
                 row["frequency"],
                 row["scope"],
-                row["context_profile"],
+                row["window_config"],
+                row["context_limit"],
+                row["prediction_length"],
             )
             dataset_metadata[key] = {
                 "dataset": row["dataset"],
                 "frequency": row["frequency"],
                 "term": "all",
                 "scope": row["scope"],
-                "context_profile": row["context_profile"],
+                "window_config": row["window_config"],
                 "context_limit": row["context_limit"],
-                "prediction_length": "",
+                "prediction_length": row["prediction_length"],
             }
             _add_counts(dataset_counts[key], row)
         dataset_rows = [
             {**dataset_metadata[key], **dataset_counts[key]}
             for key in sorted(dataset_counts)
         ]
-        with dataset_summary_path.open("w", newline="", encoding="utf-8") as summary_file:
-            writer = csv.DictWriter(summary_file, fieldnames=SUMMARY_FIELDS)
-            writer.writeheader()
-            writer.writerows(dataset_rows)
+        _write_csv(dataset_summary_path, SUMMARY_FIELDS, dataset_rows)
 
         totals = _empty_counts()
         for row in task_rows:
@@ -474,7 +505,7 @@ def audit_time_windows(
                 "completed_at": completed_at,
                 "task_summary_rows": len(task_rows),
                 "dataset_summary_rows": len(dataset_rows),
-                "profile_expanded_totals": totals,
+                "window_configuration_totals": totals,
             }
         )
         _write_json(manifest_path, manifest)
@@ -499,13 +530,13 @@ def audit_time_windows(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Audit TIME test queries and model-effective target contexts."
+        description="Audit shared TIME source series and configured L-H windows."
     )
     parser.add_argument("--config", type=Path, default=None)
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=outputs_root() / "dataset_diagnostics" / "manual",
+        default=dataset_metadata_root() / "window_audit",
     )
     parser.add_argument(
         "--dataset",

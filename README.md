@@ -80,11 +80,14 @@ limits.
 3. Define paths in `.env` when overriding the local defaults. `TIME_DATASET`
 is the root containing the HF Arrow dataset directories used by
 [`Dataset`](src/timebench/evaluation/data.py); it defaults to
-`datasets/hf_dataset/`.
+`datasets/hf_dataset/`. `TIME_METADATA` stores dataset-derived quality and
+feature artifacts shared by experiments and defaults to
+`datasets/time_metadata/`.
 
 ```bash
 TIME_DATA_ROOT=./datasets
 TIME_DATASET=./datasets/hf_dataset
+TIME_METADATA=./datasets/time_metadata
 TIME_WEIGHTS=./weights
 TIME_OUTPUTS=./outputs
 TIME_LOGS=./logs
@@ -96,19 +99,30 @@ TIME_LOGS=./logs
 We provide the code and scripts required to reproduce the maintained four-model
 benchmark.
 
-The standard cluster launch surface contains two commands. The first submits
+The standard cluster launch surface contains three commands. The first submits
 the four maintained foundation models plus their dependent summary. The second
 submits Chronos-2 on the native multivariate, independent univariate, and
-past-target-covariate channel representations:
+past-target-covariate channel representations. The third scans the configured
+TIME source series and test windows for non-finite or constant values and
+computes reusable full-series features:
 
 ```bash
 bash scripts/submit_foundation_models.sh dgx
 bash scripts/channels_comparison.sh dgx
+bash scripts/dataset_diagnostics.sh dgx
 ```
 
 Use `selena` instead of `dgx` to submit the matched Selena fronts. The
 individual `scripts/run_*.sh` files remain direct reproduction and debugging
-entry points; normal cluster execution uses the two submission helpers above.
+entry points; normal cluster execution uses the three submission helpers above.
+
+Dataset diagnostics are keyed by the distinct context limit `L` and forecast
+horizon `H`, not duplicated per model. `model_contexts.csv` maps maintained
+model profiles to those shared rows. Exact source positions and per-window
+events remain below `${TIME_METADATA}/window_audit/`; compact summaries are
+copied to the job log tree for result synchronization. Feature extraction
+writes below `${TIME_METADATA}/stl_features/` and skips complete existing
+dataset artifacts.
 
 To run every included foundation-model reproduction runner sequentially and
 write a joint performance/timing table after all runs complete:

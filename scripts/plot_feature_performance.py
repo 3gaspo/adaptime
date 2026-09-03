@@ -10,7 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from timebench.feature.performance import analyze_feature_performance
-from timebench.paths import foundation_experiment_root, outputs_root
+from timebench.paths import dataset_metadata_root, foundation_experiment_root, outputs_root
 from timebench.pipeline import parse_config_filters
 
 
@@ -21,7 +21,7 @@ def main() -> None:
     parser.add_argument(
         "--features-root",
         type=Path,
-        default=outputs_root() / "stl_features",
+        default=dataset_metadata_root() / "stl_features",
         help="Root containing {dataset}/{freq}/{split}_dataset.csv summaries",
     )
     parser.add_argument(

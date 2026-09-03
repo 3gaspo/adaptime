@@ -9,6 +9,9 @@ deliberately.
 
 - Added one environment-variable path contract and local artifact
   placeholders for datasets, weights, outputs, and logs.
+- Added `TIME_METADATA` below the shared dataset root for reusable quality and
+  feature artifacts, keeping dataset-derived state independent of project
+  result directories while leaving the saved-Arrow tree immutable.
 - Added an explicit preparation-host downloader for an immutable revision of
   the official `Real-TSF/TIME` saved-Arrow tree, with ordinary HTTP transfer,
   revision-pinned interrupted-download recovery, and post-download format
@@ -100,6 +103,9 @@ deliberately.
   push only the selected artifact paths plus existing local commits.
 - Made job-specific transfer and publication retain structured workflow status
   records, not only scheduler stdout/stderr pairs.
+- Made job-specific transfer and publication retain compact dataset-metadata
+  aggregates exported below the project log root, without duplicating exact
+  positions or per-variate features in experiment outputs.
 - Added a shared storage-root override so DGX resolves datasets and weights
   below the user home outside `codes/`, while Selena resolves them beside
   `codes/` in user scratch. Project outputs and logs remain project-owned.
@@ -148,6 +154,11 @@ deliberately.
   feature-versus-MASE SVG/CSV analysis. Documented the actual STL/MSTL output
   directories, frequency-domain columns, per-variate scope, and absence of
   feature binarization.
+- Added a shared source/window audit that records non-finite source positions
+  once, evaluates each distinct context-limit/forecast-horizon pair once via
+  prefix counts, detects constant windows from adjacent-value transitions,
+  and maps model profiles to reusable window configurations. Full-series
+  feature extraction shares the same metadata root and reuses complete files.
 
 ## Packaging and documentation repairs
 
