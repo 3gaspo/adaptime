@@ -20,6 +20,9 @@ pattern-based evaluation.
   per-variate features and spatial heterogeneity.
 - `dataset_features_{split_mode}.csv` indexes all processed datasets and adds
   descending temporal- and spatial-heterogeneity ranks.
+- Existing per-variate files are reused only when their `unique_id` values
+  cover the current source. A partial file is repaired by computing the
+  missing variates and then rebuilding its dataset summary and global index.
 - `split_mode`: `test` (test split only) or `full` (entire variate)
 - All features are computed on the specified split
 
@@ -60,6 +63,12 @@ The module extracts these feature families:
    changes across chronological blocks of each variate, plus their mean.
 6. **Spatial heterogeneity**: Location, scale, and frequency-distribution
    differences across the dataset's variates, plus their mean.
+
+`seasonal_corr` is the mean pairwise Pearson correlation between complete,
+nonconstant cycles of the decomposed seasonal component. Constant or
+non-finite cycles are excluded. The value remains NaN when fewer than two
+usable cycles exist; this optional undefined value does not discard the other
+features for that variate.
 
 **Note**: Data is standardized and interpolated (if needed) internally during feature computation. Original CSV files are not modified.
 

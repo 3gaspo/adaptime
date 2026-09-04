@@ -121,8 +121,9 @@ horizon `H`, not duplicated per model. `model_contexts.csv` maps maintained
 model profiles to those shared rows. Exact source positions and per-window
 events remain below `${TIME_METADATA}/window_audit/`; compact summaries are
 copied to the job log tree for result synchronization. Feature extraction
-writes below `${TIME_METADATA}/stl_features/` and skips complete existing
-dataset artifacts.
+writes below `${TIME_METADATA}/stl_features/`, skips artifacts covering every
+source variate, and computes only missing variate rows when repairing a partial
+artifact.
 
 To run every included foundation-model reproduction runner sequentially and
 write a joint performance/timing table after all runs complete:
@@ -160,8 +161,10 @@ known covariates over the complete context and forecast horizon (`L+H`);
 Chronos-2 and TS-ICL consume them. Chronos-2 additionally supports
 `--covariate-mode past_targets`: each target channel is forecast separately
 from its `L` observed values while the other target histories are passed as
-past-only covariates. Unsupported model/mode combinations raise rather than
-silently ignoring covariates.
+past-only covariates. Non-finite covariate observations are represented as
+NaNs so the capable backbone can apply its ordinary missing-value mask.
+Unsupported model/mode combinations raise rather than silently ignoring
+covariates.
 
 Every `run_n` contains `manifest.json`, `config.json`, predictions, raw metrics,
 and compact aggregate metrics. The manifest records the plain model, pipeline,

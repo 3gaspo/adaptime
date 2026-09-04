@@ -232,6 +232,62 @@ def convert_hf_dataset_to_panel(
     return pd.concat(all_records, ignore_index=True), pd.DataFrame(uid_info_records)
 
 
+def source_uid_info(input_dir: str, input_format: str) -> pd.DataFrame:
+    """Read the expected variate identities without constructing a time panel."""
+    records = []
+    if input_format == "hf":
+        hf_dataset = datasets.load_from_disk(input_dir)
+        for item_index, item in enumerate(hf_dataset):
+            target = np.asarray(item["target"])
+            channel_count = 1 if target.ndim == 1 else target.shape[0]
+            series_name = str(item.get("item_id", f"item_{item_index}"))
+            variate_names = item.get("variate_names")
+            if variate_names is not None:
+                variate_names = list(variate_names)
+            for variate_index in range(channel_count):
+                if variate_names and variate_index < len(variate_names):
+                    variate_name = str(variate_names[variate_index])
+                elif channel_count == 1:
+                    variate_name = "target"
+                else:
+                    variate_name = f"dim_{variate_index}"
+                records.append(
+                    {
+                        "unique_id": f"{series_name}_{variate_name}",
+                        "series_name": series_name,
+                        "variate_name": variate_name,
+                    }
+                )
+    else:
+        csv_files = sorted(glob.glob(os.path.join(input_dir, "*.csv")))
+        if not csv_files:
+            raise ValueError(f"No *.csv files found in {input_dir}")
+        for csv_path in csv_files:
+            series_name = Path(csv_path).stem
+            for variate_name in pd.read_csv(csv_path, nrows=0).columns[1:]:
+                records.append(
+                    {
+                        "unique_id": f"{series_name}_{variate_name}",
+                        "series_name": series_name,
+                        "variate_name": variate_name,
+                    }
+                )
+    return pd.DataFrame(records)
+
+
+def missing_feature_ids(
+    expected_ids: set[str],
+    existing_features: pd.DataFrame,
+) -> set[str] | None:
+    """Return missing source IDs, or ``None`` when the artifact is incompatible."""
+    if "unique_id" not in existing_features:
+        return None
+    existing_ids = set(existing_features["unique_id"])
+    if len(existing_features) != len(existing_ids) or not existing_ids <= expected_ids:
+        return None
+    return expected_ids - existing_ids
+
+
 def compute_dataset_features(
     dataset_name: str,
     freq: str,
@@ -287,13 +343,34 @@ def compute_dataset_features(
     output_csv_path = os.path.join(feature_dir, f'{split_mode}.csv')
     dataset_csv_path = os.path.join(feature_dir, f'{split_mode}_dataset.csv')
 
-    # Skip if already computed
+    existing_features = None
+    repair_ids = None
+
+    # Reuse complete artifacts and repair only source variates missing from a
+    # partial artifact, such as rows previously removed for undefined optional
+    # features.
     if not force and os.path.exists(output_csv_path) and os.path.exists(dataset_csv_path):
-        print(
-            f"[Skip] Features for {dataset_name}/{freq} ({split_mode}) "
-            f"already exist at {output_csv_path} and {dataset_csv_path}"
-        )
-        return Path(dataset_csv_path)
+        expected_info = source_uid_info(input_dir, input_format)
+        expected_ids = set(expected_info["unique_id"])
+        existing_features = pd.read_csv(output_csv_path)
+        repair_ids = missing_feature_ids(expected_ids, existing_features)
+        if repair_ids == set():
+            print(
+                f"[Skip] Features for {dataset_name}/{freq} ({split_mode}) "
+                f"already cover all {len(expected_ids)} source variates"
+            )
+            return Path(dataset_csv_path)
+        if repair_ids is not None:
+            print(
+                f"[Repair] Features for {dataset_name}/{freq} ({split_mode}) are "
+                f"missing {len(repair_ids)} of {len(expected_ids)} source variates"
+            )
+        else:
+            print(
+                f"[Recompute] Features for {dataset_name}/{freq} ({split_mode}) "
+                "do not match the current source identities"
+            )
+            existing_features = None
 
     print(f"[Start] Processing {dataset_name}/{freq} ({split_mode}) from {input_dir}")
     if split_mode == "test":
@@ -311,11 +388,21 @@ def compute_dataset_features(
         )
     print(f"Loaded panel: {len(panel)} rows, {panel['unique_id'].nunique()} unique_ids")
 
-    temporal_df = temporal_heterogeneity_frame(panel)
+    feature_panel = (
+        panel[panel["unique_id"].isin(repair_ids)]
+        if repair_ids is not None
+        else panel
+    )
+    feature_uid_info = (
+        uid_info_df[uid_info_df["unique_id"].isin(repair_ids)]
+        if repair_ids is not None
+        else uid_info_df
+    )
+    temporal_df = temporal_heterogeneity_frame(feature_panel)
 
     # Interpolate, Scale, Freq_analysis
     print("Running preprocessing...")
-    series, stats_df = preprocess_for_tsfeatures(panel, freq=freq)
+    series, stats_df = preprocess_for_tsfeatures(feature_panel, freq=freq)
     assert series['y'].isna().sum() == 0, "There are still NaNs in preprocessed series!"
 
     # Compute seasonal-trend decomposition features (trend, seasonal, residual)
@@ -360,7 +447,7 @@ def compute_dataset_features(
     features_df = features_df.merge(temporal_df, on='unique_id', how='left')
 
     # Add identifier columns (dataset_id, series_name, variate_name)
-    features_df = features_df.merge(uid_info_df, on='unique_id', how='left')
+    features_df = features_df.merge(feature_uid_info, on='unique_id', how='left')
     features_df['dataset_id'] = dataset_id
 
     # Reorder columns according to FEATURE_COLUMNS_ORDER
@@ -369,9 +456,16 @@ def compute_dataset_features(
     remaining_cols = [col for col in features_df.columns if col not in ordered_cols]
     features_df = features_df[ordered_cols + remaining_cols]
 
-    # Check for NaN values and remove rows with NaN (protection against STL decomposition failures)
-    # Exclude period2/3 and p_strength2/3 which are legitimately NaN for some frequencies
-    exclude_cols = ['period2', 'period3', 'p_strength2', 'p_strength3']
+    # Check for NaN values and remove rows with failed required features.
+    # Some periods are unavailable at coarse frequencies, while seasonal
+    # correlation is undefined when fewer than two nonconstant cycles exist.
+    exclude_cols = [
+        'period2',
+        'period3',
+        'p_strength2',
+        'p_strength3',
+        'seasonal_corr',
+    ]
     check_cols = [c for c in features_df.columns if c not in exclude_cols and c != 'unique_id']
 
     nan_rows = features_df[check_cols].isna().any(axis=1)
@@ -388,6 +482,10 @@ def compute_dataset_features(
         print(f"[Warning] Removing {nan_rows.sum()} rows with NaN values: {nan_uids[:10]}{'...' if len(nan_uids) > 5 else ''}")
         print(f"          NaN features: {sorted(all_nan_features)}")
         features_df = features_df[~nan_rows]
+
+    if existing_features is not None:
+        features_df = pd.concat([existing_features, features_df], ignore_index=True)
+        features_df = features_df.sort_values("unique_id")
 
     # Save all features
     features_df.to_csv(output_csv_path, index=False)

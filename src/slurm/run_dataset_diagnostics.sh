@@ -36,7 +36,7 @@ time_stage_complete
 source "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh"
 
 time_stage_start dataset_features
-time_task_start "recompute full-series TIME statistics and STL features"
+time_task_start "reuse or compute full-series TIME statistics and STL features"
 feature_command=(
     uv run --no-sync python -m timebench.feature.features_runner
     --all

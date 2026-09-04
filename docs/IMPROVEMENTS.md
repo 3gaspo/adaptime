@@ -132,8 +132,11 @@ deliberately.
 - Added explicit foundation covariate capability checks. Chronos-2 and TS-ICL
   accept known `L+H` dataset covariates; Chronos-2 also forecasts each target
   separately from its `L` history with every other target history as past-only
-  covariates. Unsupported models and missing/invalid covariates fail instead of
-  being ignored.
+  covariates. Unsupported modes and absent or structurally invalid covariates
+  fail instead of being ignored.
+- Aligned capable-backbone covariates with target-context missingness: any
+  non-finite observation is represented as NaN for the backbone's ordinary
+  missing-value mask instead of aborting before inference.
 - Suppressed only the known pandas frequency-alias deprecation messages that
   Seasonal Naive amplified once per forecast window, while retaining unrelated
   warnings. Undefined all-zero MAPE/sMAPE cells now remain NaN without emitting
@@ -159,6 +162,11 @@ deliberately.
   prefix counts, detects constant windows from adjacent-value transitions,
   and maps model profiles to reusable window configurations. Full-series
   feature extraction shares the same metadata root and reuses complete files.
+- Repaired `seasonal_corr` by excluding unusable cycles, preserving variates
+  for which that optional correlation is undefined, and replacing quadratic
+  pair enumeration with an equivalent linear-time mean. Feature reuse now
+  validates source variate identities and computes only rows missing from a
+  partial artifact.
 
 ## Packaging and documentation repairs
 
