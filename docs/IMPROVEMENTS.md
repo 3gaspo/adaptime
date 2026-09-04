@@ -80,6 +80,10 @@ deliberately.
   every multivariate dataset in native multivariate, independent univariate,
   and past-target-covariate modes under one shared launch ID. Each mode remains
   an independently schedulable DGX or Selena job with its own aggregate.
+- Made each channel-comparison aggregate record the completed Chronos-2
+  evaluation state explicitly. Its workflow status file is keyed by comparison
+  mode rather than model alias and is not yet terminal while its in-job summary
+  is being generated, so the summary no longer reports a blank state.
 - Added DGX-to-Selena code synchronization and Selena-to-DGX result/log pulls.
   Selena writes to the standard `outputs/` and `logs/` trees below its scratch
   project root; DGX pulls them into distinct local `outputs/selena/` and
@@ -106,6 +110,9 @@ deliberately.
 - Made job-specific transfer and publication retain compact dataset-metadata
   aggregates exported below the project log root, without duplicating exact
   positions or per-variate features in experiment outputs.
+- Included the Slurm job and array identifiers in the first workflow log line
+  as well as the durable status file, making a copied stdout/stderr pair
+  self-identifying after it leaves the scheduler.
 - Added a shared storage-root override so DGX resolves datasets and weights
   below the user home outside `codes/`, while Selena resolves them beside
   `codes/` in user scratch. Project outputs and logs remain project-owned.

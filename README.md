@@ -180,7 +180,9 @@ After the model jobs terminate, the summary job writes CSV, Markdown, and a
 report manifest inside the selected experiment root. Cluster summaries select
 only completed run manifests from the current launch and include terminal model
 states, so partial results cannot be mistaken for complete results or mixed
-with stale tasks. Manual summaries default to `expe_uni`:
+with stale tasks. In-job channel summaries explicitly record the successful
+evaluation stage even though the enclosing workflow is not terminal until the
+summary itself finishes. Manual summaries default to `expe_uni`:
 
 ```bash
 python scripts/compute_foundation_summary.py
@@ -200,10 +202,8 @@ terms therefore do not receive extra weight. Inference seconds are summed over
 the same test tasks and are left blank unless every reported task has timing
 metadata; the task-coverage columns make partial runs explicit.
 
-The latest analyzed complete benchmark and its dataset/task-level analysis are
-recorded in [Foundation-model results](docs/FOUNDATION_RESULTS.md); that launch
-predates the current manifested channel contract and is not reused by current
-result readers.
+The latest analyzed complete benchmark, channel comparison, and dataset audit
+are recorded in [Foundation-model results](docs/FOUNDATION_RESULTS.md).
 
 ### Compute Overall Metrics
 

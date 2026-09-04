@@ -117,9 +117,10 @@ def main() -> None:
             encoding="utf-8",
         )
         statuses = summary.load_model_statuses(status_dir)
+        statuses.update(summary.parse_model_statuses(["model_c=completed,0"]))
         status_rows = summary.add_model_status(
             summary.summarize_cells(cells),
-            ["model_a", "model_b"],
+            ["model_a", "model_b", "model_c"],
             statuses,
             "launch_1",
         )
@@ -128,6 +129,8 @@ def main() -> None:
         assert by_status_model["model_a"]["tasks"] == 1
         assert by_status_model["model_b"]["state"] == "failed"
         assert by_status_model["model_b"]["tasks"] == 0
+        assert by_status_model["model_c"]["state"] == "completed"
+        assert by_status_model["model_c"]["exit_code"] == "0"
     rows = summary.summarize_cells(
         [
             {
@@ -194,6 +197,10 @@ def main() -> None:
         encoding="utf-8"
     )
     assert 'dependency="afterany:$dependency"' in submit
+    comparison = (PROJECT_ROOT / "src/slurm/run_chronos2_comparison.sh").read_text(
+        encoding="utf-8"
+    )
+    assert "--model-status chronos2=completed,0" in comparison
     publisher = (PROJECT_ROOT / "publish_job.sh").read_text(encoding="utf-8")
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
         encoding="utf-8"

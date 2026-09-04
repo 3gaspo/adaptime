@@ -126,6 +126,20 @@ def load_model_statuses(status_dir: Path | None) -> dict[str, dict[str, str]]:
     return statuses
 
 
+def parse_model_statuses(values: list[str]) -> dict[str, dict[str, str]]:
+    """Parse explicit MODEL=STATE,EXIT_CODE evaluation statuses."""
+    statuses = {}
+    for value in values:
+        model, separator, status = value.partition("=")
+        state, comma, exit_code = status.partition(",")
+        if not separator or not model or not comma or not state or not exit_code:
+            raise ValueError(
+                f"Invalid model status {value!r}; expected MODEL=STATE,EXIT_CODE"
+            )
+        statuses[model] = {"state": state, "exit_code": exit_code}
+    return statuses
+
+
 def add_model_status(
     metric_rows: list[dict],
     models: list[str] | tuple[str, ...],
@@ -303,6 +317,16 @@ def main() -> None:
         default=None,
         help="Per-model workflow status directory for the selected launch",
     )
+    parser.add_argument(
+        "--model-status",
+        action="append",
+        default=[],
+        metavar="MODEL=STATE,EXIT_CODE",
+        help=(
+            "Explicit evaluation status, used when the workflow status filename "
+            "is a comparison mode rather than a model alias"
+        ),
+    )
     args = parser.parse_args()
 
     args.csv = args.csv or args.results_dir / "foundation_model_summary.csv"
@@ -319,6 +343,7 @@ def main() -> None:
     )
     metric_rows = summarize_cells(cells)
     statuses = load_model_statuses(args.status_dir)
+    statuses.update(parse_model_statuses(args.model_status))
     rows = add_model_status(metric_rows, args.models, statuses, args.launch_id)
     if not rows:
         raise SystemExit(

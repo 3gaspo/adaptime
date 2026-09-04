@@ -54,6 +54,7 @@ summary_command=(
     "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
     --results-dir "$TIME_OUTPUTS/results/$experiment"
     --models chronos2
+    --model-status chronos2=completed,0
     --launch-id "$TIME_LAUNCH_ID"
     --target-mode "$TIME_TARGET_MODE"
     --csv "$aggregate_dir/foundation_model_summary.csv"

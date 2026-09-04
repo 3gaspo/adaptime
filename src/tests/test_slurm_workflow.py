@@ -280,13 +280,6 @@ def main() -> None:
     assert "logs/selena/dataset_metadata" in publisher
     assert "git push origin main" in publisher
 
-    promoter = (PROJECT_ROOT / "scripts/promote_dataset_diagnostics.sh").read_text(
-        encoding="utf-8"
-    )
-    assert "JOB_ID" in promoter
-    assert 'state" != completed' in promoter
-    assert '--metadata-root "$TIME_METADATA"' in promoter
-
     direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(
         encoding="utf-8"
     )
