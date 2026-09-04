@@ -1,0 +1,12 @@
+workflow=dataset_diagnostics
+launch_id=selena_dataset_diagnostics_20260903T105418Z_37671
+task=window_audit_and_features
+state=completed
+stage=none
+active_task=none
+launched_at=2026-09-03T10:54:20Z
+updated_at=2026-09-03T21:10:02Z
+exit_code=0
+slurm_job_id=3044883
+slurm_array_job_id=none
+slurm_array_task_id=none
