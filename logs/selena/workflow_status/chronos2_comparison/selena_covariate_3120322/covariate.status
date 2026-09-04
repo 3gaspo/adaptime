@@ -1,11 +1,11 @@
 workflow=chronos2_comparison
 launch_id=selena_covariate_3120322
 task=covariate
-state=running
-stage=evaluate
-active_task=chronos2 comparison=covariate covariate_mode=past_targets target_mode=univariate
+state=completed
+stage=none
+active_task=none
 launched_at=2026-09-04T15:56:20Z
-updated_at=2026-09-04T15:56:20Z
+updated_at=2026-09-04T16:31:16Z
 exit_code=0
 slurm_job_id=3120322
 slurm_array_job_id=none

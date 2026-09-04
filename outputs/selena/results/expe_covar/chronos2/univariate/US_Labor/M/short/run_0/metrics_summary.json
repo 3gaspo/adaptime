@@ -1,0 +1,49 @@
+{
+  "dataset_config": "US_Labor/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 829228.900381279,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MAE": {
+      "mean": 417.3601597675256,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "RMSE": {
+      "mean": 460.83319541201456,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MAPE": {
+      "mean": 0.0802109833027338,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "sMAPE": {
+      "mean": 0.0699032708167577,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MASE": {
+      "mean": 1.0014782225781211,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "ND": {
+      "mean": 0.07843267099804675,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "CRPS": {
+      "mean": 0.05752749675666883,
+      "finite_values": 70,
+      "total_values": 70
+    }
+  },
+  "launch_id": "selena_covariate_3120322",
+  "model": "chronos2",
+  "inference_seconds": 0.22078770608641207
+}
