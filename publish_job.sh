@@ -87,6 +87,11 @@ if [ -n "$job_id" ]; then
             fi
         done < <(find "$status_root" -type f -name '*.status' -print0)
     done
+    for metadata_root in logs/dataset_metadata logs/selena/dataset_metadata; do
+        if [ -d "$metadata_root/$job_id" ]; then
+            paths+=("$metadata_root/$job_id")
+        fi
+    done
     [ -n "$message" ] || message="slurm: publish job $job_id"
 else
     [ -d logs ] || {

@@ -34,10 +34,12 @@ commands. `src/slurm` owns shared DGX/Selena workflow implementations, while
 `slurm` contains concise submit-ready fronts.
 
 The inherited `evaluation/window_audit.py` diagnostics inspect the exact TIME
-test queries and model-effective context limits. Their cluster workflow also
-uses `feature/features_runner.py --force` to refresh full-series statistics;
-compact and detailed diagnostics are routed through the standard result-sync
-and publication scopes.
+test queries once per distinct model-effective `(L,H)` configuration. Exact
+source positions, window events, and full-series features live below shared
+`TIME_METADATA`; `feature/features_runner.py` reuses complete artifacts and
+repairs only missing source-variate rows. The workflow exports compact
+aggregates to its job log tree for standard result synchronization and
+publication.
 
 The extraction boundary is deliberate. Large values remain in Arrow or `.npy`
 memory maps; distance matrices are bounded by query and datastore blocks;

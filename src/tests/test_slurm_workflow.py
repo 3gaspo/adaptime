@@ -111,26 +111,6 @@ def main() -> None:
     assert "adaptime_comparison.slurm" in adaptime_submit
     assert "adaptime_comparison_selena.slurm" in adaptime_submit
 
-    diagnostic_fronts = (
-        (dgx / "dataset_diagnostics.slurm").read_text(encoding="utf-8"),
-        (selena / "dataset_diagnostics_selena.slurm").read_text(encoding="utf-8"),
-    )
-    for front in diagnostic_fronts:
-        assert "#SBATCH --array" not in front
-        assert 'source "$PROJECT_ROOT/src/slurm/run_dataset_diagnostics.sh"' in front
-    diagnostic_workflow = (
-        PROJECT_ROOT / "src/slurm/run_dataset_diagnostics.sh"
-    ).read_text(encoding="utf-8")
-    assert "scripts/audit_time_windows.py" in diagnostic_workflow
-    assert "--input-format hf" in diagnostic_workflow
-    assert "--split full" in diagnostic_workflow
-    assert "--force" in diagnostic_workflow
-    diagnostic_submit = (
-        PROJECT_ROOT / "scripts/dataset_diagnostics.sh"
-    ).read_text(encoding="utf-8")
-    assert "dgx|selena" in diagnostic_submit
-    assert "dataset diagnostics submitted" in diagnostic_submit
-
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
         encoding="utf-8"
     )
@@ -231,6 +211,38 @@ def main() -> None:
         PROJECT_ROOT / "scripts/run_chronos2_comparison.sh"
     ).read_text(encoding="utf-8")
 
+    diagnostic_fronts = (
+        (dgx / "dataset_diagnostics.slurm").read_text(encoding="utf-8"),
+        (selena / "dataset_diagnostics_selena.slurm").read_text(encoding="utf-8"),
+    )
+    for front in diagnostic_fronts:
+        assert "#SBATCH --array" not in front
+        assert 'source "$PROJECT_ROOT/src/slurm/run_dataset_diagnostics.sh"' in front
+    diagnostic_workflow = (
+        PROJECT_ROOT / "src/slurm/run_dataset_diagnostics.sh"
+    ).read_text(encoding="utf-8")
+    assert "scripts/audit_time_windows.py" in diagnostic_workflow
+    assert "--input-format hf" in diagnostic_workflow
+    assert "--split full" in diagnostic_workflow
+    assert "--force" not in diagnostic_workflow
+    assert 'diagnostics_root="$TIME_METADATA/window_audit"' in diagnostic_workflow
+    assert '--output_dir "$TIME_METADATA"' in diagnostic_workflow
+    assert diagnostic_workflow.count("export_dataset_metadata.sh") == 2
+    diagnostic_submit = (
+        PROJECT_ROOT / "scripts/dataset_diagnostics.sh"
+    ).read_text(encoding="utf-8")
+    assert "dgx|selena" in diagnostic_submit
+    assert "dataset diagnostics submitted" in diagnostic_submit
+
+    window_audit = (
+        PROJECT_ROOT / "src/timebench/evaluation/window_audit.py"
+    ).read_text(encoding="utf-8")
+    assert '"seasonal_naive": None' in window_audit
+    assert "distinct_context_limits = list(dict.fromkeys(context_profiles.values()))" in window_audit
+    assert "for source_position in np.flatnonzero(~np.isfinite(values))" in window_audit
+    assert "_interval_counts(" in window_audit
+    assert "dataset.test_data" not in window_audit
+
     summary = (
         PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"
     ).read_text(encoding="utf-8")
@@ -247,10 +259,12 @@ def main() -> None:
     )
     assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$runtime_project_root/outputs}}"' in common_runtime
     assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$runtime_project_root/logs}}"' in common_runtime
+    assert 'TIME_METADATA="${TIME_METADATA:-$TIME_DATA_ROOT/time_metadata}"' in common_runtime
     assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$selena_nni}"' in runtime
     assert 'TIME_SCRATCH_ROOT="${TIME_SCRATCH_ROOT:-$TIME_STORAGE_ROOT/codes/$PROJECT_NAME}"' in runtime
     assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}}"' in runtime
     assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}}"' in runtime
+    assert 'TIME_METADATA="${TIME_METADATA:-$TIME_DATA_ROOT/time_metadata}"' in runtime
     assert "module load python/3.12_pypsa" in runtime
     assert "export UV_PYTHON_DOWNLOADS=never" in runtime
     assert "export HF_HUB_OFFLINE=1" in runtime
@@ -312,12 +326,14 @@ def main() -> None:
     assert '"$SOURCE_ROOT/logs/"' in result_sync
     assert '"$PROJECT_ROOT/outputs/selena"' in result_sync
     assert '"$PROJECT_ROOT/logs/selena"' in result_sync
+    assert '"--include=/dataset_metadata/$JOB_ID/***"' in result_sync
 
     assert "lightweight|detailed|full" in publisher
     assert '. "$proxy_script"' in publisher
     assert "git pull --ff-only origin main" in publisher
     assert '"$project_root"/logs/selena/' in publisher
     assert 'find "$project_root/outputs"' in publisher
+    assert "logs/selena/dataset_metadata" in publisher
     assert "git push origin main" in publisher
 
     direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(

@@ -11,7 +11,7 @@ COVARIATE_FIELDS = ("feat_dynamic_real", "past_feat_dynamic_real")
 
 @dataclass(frozen=True)
 class CovariateWindow:
-    """One finite known-covariate block split at the forecast boundary."""
+    """One known-covariate block split at the forecast boundary."""
 
     full: np.ndarray
     past: np.ndarray
@@ -79,12 +79,13 @@ def extract_covariate_window(
     prediction_length: int,
     require_future: bool = True,
 ) -> CovariateWindow:
-    """Extract a finite ``L+H`` known-covariate window or an ``L`` past window.
+    """Extract an ``L+H`` known-covariate window or an ``L`` past window.
 
     GluonTS may retain a known dynamic feature as one complete block in the
     input entry or split it between the input and label entries. Both forms
     describe the same contract and are normalized here before context
-    truncation.
+    truncation. Non-finite observations become NaNs so capable backbones can
+    apply the same missing-value mask used for target contexts.
     """
     field = _covariate_field(input_entry)
     if field is None:
@@ -135,8 +136,9 @@ def extract_covariate_window(
         )
 
     if not np.isfinite(complete).all():
-        span = "L+H" if require_future else "L"
-        raise ValueError(f"Covariates must be finite over the complete {span} window")
+        complete = np.where(np.isfinite(complete), complete, np.nan).astype(
+            np.float32, copy=False
+        )
 
     effective_context = min(raw_context_length, int(context_length))
     past = complete[:, :raw_context_length][:, -effective_context:]

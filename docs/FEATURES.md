@@ -12,14 +12,17 @@ pattern-based evaluation.
   selected with `--input-format hf`.
 
 **Output**:
-- `${TIME_OUTPUTS}/stl_features/{dataset}/{freq}/{split_mode}.csv`, or
-- `${TIME_OUTPUTS}/mstl_features/{dataset}/{freq}/{split_mode}.csv` when
+- `${TIME_METADATA}/stl_features/{dataset}/{freq}/{split_mode}.csv`, or
+- `${TIME_METADATA}/mstl_features/{dataset}/{freq}/{split_mode}.csv` when
   `--decomp mstl` is selected.
 - `{split_mode}.csv` contains one row per variate of one series.
 - `{split_mode}_dataset.csv` contains one dataset/frequency row with averaged
   per-variate features and spatial heterogeneity.
 - `dataset_features_{split_mode}.csv` indexes all processed datasets and adds
   descending temporal- and spatial-heterogeneity ranks.
+- Existing per-variate files are reused only when their `unique_id` values
+  cover the current source. A partial file is repaired by computing the
+  missing variates and then rebuilding its dataset summary and global index.
 - `split_mode`: `test` (test split only) or `full` (entire variate)
 - All features are computed on the specified split
 
@@ -61,6 +64,12 @@ The module extracts these feature families:
 6. **Spatial heterogeneity**: Location, scale, and frequency-distribution
    differences across the dataset's variates, plus their mean.
 
+`seasonal_corr` is the mean pairwise Pearson correlation between complete,
+nonconstant cycles of the decomposed seasonal component. Constant or
+non-finite cycles are excluded. The value remains NaN when fewer than two
+usable cycles exist; this optional undefined value does not discard the other
+features for that variate.
+
 **Note**: Data is standardized and interpolated (if needed) internally during feature computation. Original CSV files are not modified.
 
 The feature pipeline performs no feature "binarization". `stationarity` is the
@@ -73,7 +82,7 @@ the largest mean absolute within-model Spearman correlation:
 
 ```bash
 python scripts/plot_feature_performance.py \
-  --features-root outputs/stl_features \
+  --features-root "$TIME_METADATA/stl_features" \
   --results-dir outputs/results/expe_uni \
   --top 5
 ```

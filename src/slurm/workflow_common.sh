@@ -65,7 +65,7 @@ time_workflow_init() {
     mkdir -p "$TIME_STATUS_ROOT"
     trap time_workflow_on_exit EXIT
     time_write_status running 0
-    time_log "workflow $TIME_WORKFLOW_NAME started launch_id=$TIME_LAUNCH_ID task=$TIME_TASK_NAME"
+    time_log "workflow $TIME_WORKFLOW_NAME started launch_id=$TIME_LAUNCH_ID task=$TIME_TASK_NAME slurm_job_id=${SLURM_JOB_ID:-none} slurm_array_job_id=${SLURM_ARRAY_JOB_ID:-none} slurm_array_task_id=${SLURM_ARRAY_TASK_ID:-none}"
 }
 
 time_stage_start() {

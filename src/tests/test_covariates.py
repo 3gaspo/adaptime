@@ -68,6 +68,21 @@ def main() -> None:
     assert past_window.full.shape == (2, 4)
     assert past_window.future.shape == (2, 0)
 
+    nonfinite_values = values.copy()
+    nonfinite_values[0, 2] = np.inf
+    nonfinite_values[1, 6] = np.nan
+    masked_window = covariates.extract_covariate_window(
+        {
+            "target": np.arange(5, dtype=np.float32),
+            "feat_dynamic_real": nonfinite_values,
+        },
+        {},
+        context_length=5,
+        prediction_length=3,
+    )
+    assert np.isnan(masked_window.past[0, 2])
+    assert np.isnan(masked_window.future[1, 1])
+
     assert (
         covariates.validate_covariate_mode(
             "chronos2", "future_included", supports_covariates=True

@@ -115,6 +115,9 @@ term, and a maximum context length of 2048. Submission-time overrides include
 lengths, retrieval settings, block sizes, and the K/alpha grids. The exact
 proposal requires a model adapter that supports retrieval covariates; Chronos-2
 and TS-ICL declare that capability, while unsupported models fail explicitly.
+Non-finite observations in capable-backbone covariates are represented as NaN,
+so the backbone applies its ordinary missing-value mask instead of rejecting
+the complete query.
 
 The final `comparison_summary.json` and raw memory-mapped arrays compare:
 
@@ -164,16 +167,19 @@ under `outputs/results/`; Adaptime artifacts remain isolated under
 `outputs/adaptime/{prepared,extraction,training,comparison}/`.
 
 The inherited diagnostic workflow audits the exact official TIME queries and
-model-effective context limits, then forcibly refreshes full-series feature
-artifacts for the same saved-Arrow inputs:
+each distinct model-effective `(L,H)` configuration. It stores exact source
+positions and window events once below shared `TIME_METADATA`, reuses complete
+full-series feature artifacts, and computes only missing variate rows when
+repairing a partial artifact:
 
 ```bash
 bash scripts/dataset_diagnostics.sh dgx
 bash scripts/dataset_diagnostics.sh selena
 ```
 
-Compact audit summaries participate in lightweight result synchronization and
-publication; detailed anomaly positions remain in the detailed scope.
+Compact audit and feature summaries are exported to the job log tree for
+lightweight result synchronization and publication; detailed anomaly positions
+remain in shared metadata and the detailed scope.
 
 ## Source tree
 

@@ -533,6 +533,39 @@ def fast_acf_features(x: np.ndarray, freq: int = 1) -> Dict[str, float]:
     }
 
 
+def mean_seasonal_cycle_correlation(
+    seasonal: np.ndarray,
+    period: int,
+) -> float:
+    """Mean pairwise correlation between usable complete seasonal cycles.
+
+    Constant or non-finite cycles have undefined Pearson correlation and are
+    excluded. The sum-vector identity preserves the all-pairs mean without
+    constructing every pair, reducing the calculation from quadratic to
+    linear work in the number of cycles.
+    """
+    complete_length = len(seasonal) // period * period
+    if complete_length < 2 * period:
+        return np.nan
+
+    cycles = np.asarray(seasonal[:complete_length], dtype=float).reshape(-1, period)
+    centered = cycles - np.mean(cycles, axis=1, keepdims=True)
+    norms = np.linalg.norm(centered, axis=1)
+    usable = np.isfinite(centered).all(axis=1) & np.isfinite(norms) & (norms > 1e-12)
+    centered = centered[usable]
+    norms = norms[usable]
+    cycle_count = len(centered)
+    if cycle_count < 2:
+        return np.nan
+
+    normalized = centered / norms[:, np.newaxis]
+    normalized_sum = np.sum(normalized, axis=0)
+    mean_correlation = (
+        np.dot(normalized_sum, normalized_sum) - cycle_count
+    ) / (cycle_count * (cycle_count - 1))
+    return float(np.clip(mean_correlation, -1.0, 1.0))
+
+
 def extended_stl_features(x: np.array, freq: int = 1) -> Dict[str, float]:
     """
     Calculates extended seasonal trend features, including entropy, stability,
@@ -631,14 +664,7 @@ def extended_stl_features(x: np.array, freq: int = 1) -> Dict[str, float]:
     # --- Seasonality properties ---
     seasonal_corr = np.nan
     if m > 1:
-        try:
-            S = seasonal[:len(seasonal) // m * m]
-            segments = S.reshape(-1, m)
-            corrs = [np.corrcoef(segments[i], segments[j])[0, 1]
-                     for i in range(len(segments)) for j in range(i + 1, len(segments))]
-            seasonal_corr = np.mean(corrs) if corrs else np.nan
-        except:
-            seasonal_corr = np.nan
+        seasonal_corr = mean_seasonal_cycle_correlation(seasonal, m)
 
     seasonal_lumpiness = lumpiness(seasonal, m)['lumpiness']
     seasonal_entropy = entropy(seasonal, m)['entropy']
@@ -816,14 +842,7 @@ def extended_mstl_features(x: np.array, freq: int = 1, periods: Optional[List[in
     # ── Seasonal properties (computed on total seasonal, block = m) ──
     seasonal_corr = np.nan
     if has_seasonality:
-        try:
-            S = total_seasonal[:len(total_seasonal) // m * m]
-            segments = S.reshape(-1, m)
-            corrs = [np.corrcoef(segments[i], segments[j])[0, 1]
-                     for i in range(len(segments)) for j in range(i + 1, len(segments))]
-            seasonal_corr = np.mean(corrs) if corrs else np.nan
-        except Exception:
-            seasonal_corr = np.nan
+        seasonal_corr = mean_seasonal_cycle_correlation(total_seasonal, m)
 
     seasonal_lumpiness = lumpiness(total_seasonal, m)['lumpiness']
     seasonal_entropy_val = entropy(total_seasonal, m)['entropy']

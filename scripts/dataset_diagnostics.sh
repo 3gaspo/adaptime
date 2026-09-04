@@ -37,5 +37,5 @@ job_id="$(
 job_id="${job_id%%;*}"
 
 echo "dataset diagnostics submitted job_id=$job_id launch_id=$launch_id"
-echo "artifacts: $TIME_OUTPUTS/dataset_diagnostics/$launch_id"
-echo "use --size detailed when synchronizing or publishing exact anomaly positions"
+echo "shared metadata: $TIME_METADATA"
+echo "aggregate log export: $TIME_LOGS/dataset_metadata/$job_id"

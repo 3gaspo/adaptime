@@ -111,6 +111,7 @@ if [ -n "$JOB_ID" ]; then
         '--include=*/' \
         "--include=*_${JOB_ID}_*.out" "--include=*_${JOB_ID}_*.err" \
         "--include=*_${JOB_ID}.out" "--include=*_${JOB_ID}.err" \
+        "--include=/dataset_metadata/$JOB_ID/***" \
         '--exclude=/workflow_status/***' '--exclude=*' \
         "$SOURCE_ROOT/logs/" \
         "$DGX_LOG_ROOT/"
@@ -145,4 +146,4 @@ else
         "$DGX_LOG_ROOT/"
 fi
 
-echo "SUCCESS: $SYNC_SIZE TIME outputs and requested logs were pulled from Selena to DGX."
+echo "SUCCESS: $SYNC_SIZE TIME outputs, requested logs, and metadata aggregates were pulled from Selena to DGX."
