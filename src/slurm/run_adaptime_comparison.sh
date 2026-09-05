@@ -16,7 +16,7 @@ TIME_TASK_NAME="${ADAPTIME_MODEL:-chronos2}_${ADAPTIME_TARGET_MODE:-univariate}"
 TIME_STATUS_NAME="$TIME_TASK_NAME"
 TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-${SLURM_JOB_ID:-manual_$(date -u '+%Y%m%dT%H%M%SZ')_$$}}"
 ADAPTIME_OUTPUT_ROOT_VALUE="${ADAPTIME_OUTPUT_ROOT:-$TIME_OUTPUTS/adaptime}"
-TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE/results/${ADAPTIME_MODEL:-chronos2}/${ADAPTIME_TARGET_MODE:-univariate}"
+TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE/tasks/${ADAPTIME_MODEL:-chronos2}/${ADAPTIME_TARGET_MODE:-univariate}"
 export TIME_WORKFLOW_NAME TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID TIME_RESULT_SCOPE
 source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 
@@ -38,6 +38,7 @@ run_adaptime() {
         --representation "${ADAPTIME_REPRESENTATION:-instance}"
         --distance-metric "${ADAPTIME_DISTANCE_METRIC:-euclidean}"
         --retrieval-scope "${ADAPTIME_RETRIEVAL_SCOPE:-all}"
+        --minimum-overlap-fraction "${ADAPTIME_MINIMUM_OVERLAP_FRACTION:-0.8}"
         --max-k "${ADAPTIME_MAX_K:-15}"
         --k "${k_values[@]}"
         --alpha "${alpha_values[@]}"

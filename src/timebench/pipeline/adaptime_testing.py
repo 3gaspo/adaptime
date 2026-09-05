@@ -7,6 +7,7 @@ import json
 import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from time import perf_counter
 
 import numpy as np
 
@@ -92,6 +93,65 @@ def _metric_values(
     }
 
 
+def _inference_timing(
+    extraction: dict[str, object],
+    selected_k: int,
+    windows: int,
+    ridge_seconds: float,
+) -> dict[str, object]:
+    measured = dict(extraction["timing_seconds"])
+    representation = float(measured["test.representation_seconds"])
+    retrieval = float(measured["test.retrieval_seconds"])
+    context_construction = float(
+        measured[f"test.context_construction_k{selected_k}_seconds"]
+    )
+    vanilla_forecast = float(measured["test.vanilla_forecast_seconds"])
+    covariate_forecast = float(
+        measured[f"test.context_forecast_k{selected_k}_seconds"]
+    )
+    shared_retrieval = representation + retrieval + context_construction
+    totals = {
+        "vanilla": vanilla_forecast,
+        "covariate": shared_retrieval + covariate_forecast,
+        "adaptime": (
+            shared_retrieval
+            + vanilla_forecast
+            + covariate_forecast
+            + float(ridge_seconds)
+        ),
+    }
+    return {
+        "unit": "seconds",
+        "test_windows": int(windows),
+        "methods": {
+            method: {
+                "total_seconds": seconds,
+                "seconds_per_window": seconds / int(windows),
+            }
+            for method, seconds in totals.items()
+        },
+        "components": {
+            "query_representation_seconds": representation,
+            "retrieval_seconds": retrieval,
+            "context_construction_seconds": context_construction,
+            "vanilla_model_forecast_seconds": vanilla_forecast,
+            "covariate_model_forecast_seconds": covariate_forecast,
+            "ridge_design_and_adjustment_seconds": float(ridge_seconds),
+        },
+        "precomputed_extraction": {
+            "datastore_representation_seconds": float(
+                measured["datastore.representation_seconds"]
+            ),
+            "neighbor_forecast_seconds": float(
+                measured["offline.neighbor_forecast_seconds"]
+            ),
+            "complete_extraction_seconds": float(
+                measured["extraction_total_seconds"]
+            ),
+        },
+    }
+
+
 def evaluate_frozen_adaptation(
     prepared_path: str | Path,
     extraction_path: str | Path,
@@ -112,6 +172,7 @@ def evaluate_frozen_adaptation(
 
     identity = {
         "schema_version": ADAPTATION_RESULT_SCHEMA,
+        "timing_contract": "test_method_seconds_per_window",
         "prepared_signature": prepared.signature,
         "extraction_signature": extraction_manifest["signature"],
         "model_signature": model_manifest["signature"],
@@ -158,9 +219,11 @@ def evaluate_frozen_adaptation(
         for method in METHODS
         for metric in METRICS
     }
+    ridge_seconds = 0.0
 
     for start in range(0, len(target), config.chunk_size):
         stop = min(start + config.chunk_size, len(target))
+        ridge_started = perf_counter()
         selected = np.asarray(neighbor_ids[start:stop, :selected_k])
         design, _ = full_ridge_design(
             vanilla[start:stop],
@@ -169,10 +232,12 @@ def evaluate_frozen_adaptation(
             arrays.neighbor_forecast(selected),
             target[start:stop],
         )
+        adapted = full_ridge_predict(vanilla[start:stop], design, coefficients)
+        ridge_seconds += perf_counter() - ridge_started
         predictions = {
             "vanilla": np.asarray(vanilla[start:stop]),
             "covariate": np.asarray(context[start:stop]),
-            "adaptime": full_ridge_predict(vanilla[start:stop], design, coefficients),
+            "adaptime": adapted,
         }
         for method, values in predictions.items():
             prediction_stores[method][start:stop] = values
@@ -200,12 +265,19 @@ def evaluate_frozen_adaptation(
         )
         for method in ("covariate", "adaptime")
     }
+    timing = _inference_timing(
+        extraction_manifest,
+        selected_k,
+        len(target),
+        ridge_seconds,
+    )
     _atomic_json(
         root / "comparison_summary.json",
         {
             "methods": summaries,
             "mse_win_rate_vs_vanilla": wins,
             "selected": model_manifest["selected"],
+            "timing": timing,
         },
     )
 
@@ -217,6 +289,7 @@ def evaluate_frozen_adaptation(
         "protocol": "frozen_model_evaluate_untouched_official_time_test",
         "testing_config": asdict(config),
         "selected": model_manifest["selected"],
+        "timing": timing,
         "feature_names": model_manifest["feature_names"],
         "files": {
             "predictions": {

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 
 
@@ -15,26 +17,72 @@ def context_representation(context: np.ndarray, mode: str) -> np.ndarray:
     values = np.asarray(context, dtype=np.float32)
     if values.ndim != 3:
         raise ValueError("contexts must have shape (batch, channels, lookback)")
+    if np.isinf(values).any():
+        raise ValueError("retrieval contexts must not contain infinite values")
     if mode == "raw":
         return np.ascontiguousarray(values.reshape(len(values), -1))
     if mode != "instance":
         raise ValueError("representation mode must be raw or instance")
-    mean = values.mean(axis=-1, keepdims=True)
-    scale = np.maximum(values.std(axis=-1, keepdims=True), 1e-8)
-    return np.ascontiguousarray(((values - mean) / scale).reshape(len(values), -1))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        mean = np.nanmean(values, axis=-1, keepdims=True)
+        scale = np.maximum(np.nanstd(values, axis=-1, keepdims=True), 1e-8)
+    invalid_statistics = (~np.isfinite(mean) | ~np.isfinite(scale)).any(axis=(1, 2))
+    normalized = ((values - mean) / scale).reshape(len(values), -1)
+    normalized[invalid_statistics] = np.nan
+    return np.ascontiguousarray(normalized)
 
 
-def _distance(query: np.ndarray, datastore: np.ndarray, metric: str) -> np.ndarray:
+def _distance(
+    query: np.ndarray,
+    datastore: np.ndarray,
+    metric: str,
+    minimum_overlap_fraction: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    if np.isinf(query).any() or np.isinf(datastore).any():
+        raise ValueError("retrieval representations must not contain infinite values")
+    query_valid = np.isfinite(query)
+    datastore_valid = np.isfinite(datastore)
+    query_values = np.where(query_valid, query, 0.0)
+    datastore_values = np.where(datastore_valid, datastore, 0.0)
+    overlap = query_valid.astype(np.float32) @ datastore_valid.T.astype(np.float32)
+    required = max(1, int(np.ceil(query.shape[1] * minimum_overlap_fraction)))
+    sufficient = overlap >= required
+    dot = query_values @ datastore_values.T
     if metric == "euclidean":
-        query_norm = np.einsum("ij,ij->i", query, query)[:, None]
-        datastore_norm = np.einsum("ij,ij->i", datastore, datastore)[None, :]
-        squared = query_norm + datastore_norm - 2.0 * (query @ datastore.T)
-        return np.maximum(squared, 0.0)
+        query_square = query_values * query_values
+        datastore_square = datastore_values * datastore_values
+        squared = (
+            query_square @ datastore_valid.T.astype(np.float32)
+            + query_valid.astype(np.float32) @ datastore_square.T
+            - 2.0 * dot
+        )
+        squared = np.maximum(squared, 0.0)
+        squared *= np.divide(
+            query.shape[1],
+            overlap,
+            out=np.zeros_like(overlap),
+            where=overlap > 0,
+        )
+        valid = sufficient & np.isfinite(squared)
+        squared[~valid] = np.inf
+        return squared, valid
     if metric == "cosine":
-        query_scale = np.maximum(np.linalg.norm(query, axis=1), 1e-8)
-        datastore_scale = np.maximum(np.linalg.norm(datastore, axis=1), 1e-8)
-        similarity = (query @ datastore.T) / query_scale[:, None] / datastore_scale[None, :]
-        return 1.0 - np.clip(similarity, -1.0, 1.0)
+        query_square = query_values * query_values
+        datastore_square = datastore_values * datastore_values
+        query_scale = np.sqrt(query_square @ datastore_valid.T.astype(np.float32))
+        datastore_scale = np.sqrt(query_valid.astype(np.float32) @ datastore_square.T)
+        denominator = query_scale * datastore_scale
+        valid = sufficient & (denominator > 1e-8)
+        similarity = np.divide(
+            dot,
+            denominator,
+            out=np.zeros_like(dot),
+            where=valid,
+        )
+        distance = 1.0 - np.clip(similarity, -1.0, 1.0)
+        distance[~valid] = np.inf
+        return distance, valid
     raise ValueError(f"unknown distance metric {metric!r}")
 
 
@@ -104,6 +152,7 @@ def blockwise_topk(
     horizon: int,
     scope: str = "all",
     metric: str = "euclidean",
+    minimum_overlap_fraction: float = 0.8,
     query_block_size: int = 256,
     datastore_block_size: int = 4096,
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -138,6 +187,8 @@ def blockwise_topk(
         raise ValueError(f"retrieval scope must be one of {RETRIEVAL_SCOPES}")
     if metric not in DISTANCE_METRICS:
         raise ValueError(f"distance metric must be one of {DISTANCE_METRICS}")
+    if not 0.0 < float(minimum_overlap_fraction) <= 1.0:
+        raise ValueError("minimum_overlap_fraction must be in (0, 1]")
 
     neighbor_ids = np.empty((len(query), int(k)), dtype=np.int64)
     neighbor_distances = np.empty((len(query), int(k)), dtype=np.float32)
@@ -147,11 +198,19 @@ def blockwise_topk(
         query_refs = query_references[query_start:query_stop]
         best_distance = np.full((len(query_block), int(k)), np.inf, dtype=np.float32)
         best_index = np.full((len(query_block), int(k)), -1, dtype=np.int64)
+        eligible_count = np.zeros(len(query_block), dtype=np.int64)
+        finite_overlap_count = np.zeros(len(query_block), dtype=np.int64)
 
         for datastore_start in range(0, len(datastore), int(datastore_block_size)):
             datastore_stop = min(datastore_start + int(datastore_block_size), len(datastore))
             candidate = datastore[datastore_start:datastore_stop]
-            distance = _distance(query_block, candidate, metric).astype(np.float32, copy=False)
+            distance, comparable = _distance(
+                query_block,
+                candidate,
+                metric,
+                float(minimum_overlap_fraction),
+            )
+            distance = distance.astype(np.float32, copy=False)
             allowed = _eligible(
                 query_refs,
                 datastore_references[datastore_start:datastore_stop],
@@ -171,6 +230,8 @@ def blockwise_topk(
                 stride=stride,
                 horizon=horizon,
             )
+            eligible_count += allowed.sum(axis=1)
+            finite_overlap_count += (allowed & comparable).sum(axis=1)
             distance[~allowed] = np.inf
             local_k = min(int(k), candidate.shape[0])
             local_position = np.argpartition(distance, local_k - 1, axis=1)[:, :local_k]
@@ -188,8 +249,14 @@ def blockwise_topk(
         best_index = np.take_along_axis(best_index, order, axis=1)
         missing = np.flatnonzero(~np.isfinite(best_distance[:, -1]))
         if len(missing):
-            first = int(query_start + missing[0])
-            raise ValueError(f"query row {first} has fewer than k={k} eligible neighbors")
+            local = int(missing[0])
+            first = int(query_start + local)
+            raise ValueError(
+                f"query row {first} has {eligible_count[local]} chronologically "
+                f"eligible candidates, {finite_overlap_count[local]} with at least "
+                f"{minimum_overlap_fraction:.0%} finite feature overlap and a finite "
+                f"distance, and needs k={k}"
+            )
         if metric == "euclidean":
             np.sqrt(best_distance, out=best_distance)
         neighbor_ids[query_start:query_stop] = best_index

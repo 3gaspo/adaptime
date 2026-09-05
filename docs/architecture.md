@@ -20,7 +20,7 @@ The Adaptime path is:
 TIME saved-Arrow dataset + dataset YAML
   -> pipeline/runs.py: allocate or reuse one dataset/frequency/term run_n
   -> evaluation/adaptation_data.py: fixed datastore and pre-test/test indices
-  -> pipeline/adaptime_extraction.py: V, C, neighbors, Y, N
+  -> pipeline/adaptime_extraction.py: V, C, neighbors, Y, N, timed components
   -> pipeline/adaptime_training.py: train statistics and validation selection
   -> pipeline/adaptime_testing.py: frozen V/C/Adaptime TIME comparison
   -> pipeline/adaptime_workflow.py: manifest-selected TIME aggregate
@@ -37,11 +37,11 @@ DGX/Selena workflow implementations, while `slurm` contains concise
 submit-ready fronts.
 
 One proposal task owns
-`outputs/adaptime/results/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
+`outputs/adaptime/tasks/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
 Preparation, extraction, training, and testing are children of that run. An
 interrupted task clears those children and restarts from preparation in the
 same `run_n`; completed tasks are selected and reused as units. Aggregate
-reports live below `outputs/adaptime/aggregates/` and record every selected run
+reports live below `outputs/adaptime/summary/` and record every selected run
 manifest. This boundary prevents a partially written extraction or ridge fit
 from being treated as a scientific checkpoint.
 
@@ -58,6 +58,11 @@ memory maps; distance matrices are bounded by query and datastore blocks;
 neighbor foundation forecasts are computed once per selected datastore row;
 and every K/alpha candidate reuses the same extraction. Ridge fitting streams
 float64 sufficient statistics, so it never materializes the flattened design.
+Extraction records test-query representation, retrieval, context construction,
+vanilla and covariate model calls, and fixed-datastore preprocessing separately.
+Testing adds the ridge design/adjustment cost and derives method-level total and
+per-window inference times without treating the fixed training procedure as
+online refitting.
 
 The current proposal path is univariate. Native multivariate evaluation remains
 an inherited Chronos-2 control and is not mixed into `full_ridge_shared`.

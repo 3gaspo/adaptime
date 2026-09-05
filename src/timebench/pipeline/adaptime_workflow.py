@@ -54,6 +54,7 @@ class AdaptimeWorkflowConfig:
     representation: str = "instance"
     distance_metric: str = "euclidean"
     retrieval_scope: str = "all"
+    minimum_overlap_fraction: float = 0.8
     max_k: int = 15
     k_values: tuple[int, ...] = (1, 5, 10, 15)
     alpha_values: tuple[float, ...] = (1e-3, 1e-2, 1e-1)
@@ -76,6 +77,8 @@ class AdaptimeWorkflowConfig:
             raise ValueError("datastore_stride_multiple must be positive")
         if max(self.k_values) > int(self.max_k):
             raise ValueError("max_k must cover every selected K")
+        if not 0.0 < float(self.minimum_overlap_fraction) <= 1.0:
+            raise ValueError("minimum_overlap_fraction must be in (0, 1]")
 
 
 @dataclass(frozen=True)
@@ -143,7 +146,7 @@ def _task(
     return AdaptimeTask(
         dataset=dataset,
         term=term,
-        identity_root=output_root / "results" / model_suffix,
+        identity_root=output_root / "tasks" / model_suffix,
     )
 
 
@@ -218,6 +221,9 @@ def aggregate_time_comparison(
                     row[f"{method}_{metric}_equal_window"] = float(
                         metric_summary["equal_window_mean"]
                     )
+                row[f"{method}_inference_seconds_per_window"] = float(
+                    summary["timing"]["methods"][method]["seconds_per_window"]
+                )
             for method in ("covariate", "adaptime"):
                 row[f"{method}_mse_win_rate_vs_vanilla"] = float(
                     summary["mse_win_rate_vs_vanilla"][method]
@@ -286,6 +292,20 @@ def aggregate_time_comparison(
                     "equal_dataset_mean": float(per_dataset.mean()),
                     "equal_dataset_std": float(per_dataset.std()),
                 }
+            timing_field = f"{method}_inference_seconds_per_window"
+            per_dataset_timing = np.asarray(
+                [
+                    np.mean(
+                        [float(row[timing_field]) for row in dataset_rows[dataset]]
+                    )
+                    for dataset in sorted(dataset_rows)
+                ],
+                dtype=np.float64,
+            )
+            metrics["inference_seconds_per_window"] = {
+                "equal_dataset_mean": float(per_dataset_timing.mean()),
+                "equal_dataset_std": float(per_dataset_timing.std()),
+            }
             methods[method] = metrics
         wins: dict[str, object] = {}
         for method in ("covariate", "adaptime"):
@@ -432,6 +452,7 @@ def _run_dataset_tasks(
                 "representation": workflow.representation,
                 "distance_metric": workflow.distance_metric,
                 "retrieval_scope": workflow.retrieval_scope,
+                "minimum_overlap_fraction": workflow.minimum_overlap_fraction,
                 "max_k": workflow.max_k,
                 "k_values": list(workflow.k_values),
                 "alpha_values": list(workflow.alpha_values),
@@ -502,6 +523,7 @@ def _run_dataset_tasks(
                     representation=workflow.representation,
                     distance_metric=workflow.distance_metric,
                     retrieval_scope=workflow.retrieval_scope,
+                    minimum_overlap_fraction=workflow.minimum_overlap_fraction,
                     max_k=workflow.max_k,
                     context_k=workflow.k_values,
                     model_batch_size=workflow.model_batch_size,
@@ -580,7 +602,7 @@ def run_adaptation_stage(
     aggregate = aggregate_time_comparison(
         tasks,
         artifact_root
-        / "aggregates"
+        / "summary"
         / workflow.model
         / workflow.target_mode
         / (launch_id or "manual"),

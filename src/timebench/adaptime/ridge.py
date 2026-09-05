@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 
 
@@ -167,4 +169,6 @@ def query_scale(context: np.ndarray) -> np.ndarray:
     context = np.asarray(context, dtype=np.float64)
     if context.ndim != 3:
         raise ValueError("context must have shape (batch, channels, lookback)")
-    return np.maximum(context.std(axis=-1), 1e-8)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        return np.maximum(np.nanstd(context, axis=-1), 1e-8)

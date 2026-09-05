@@ -47,7 +47,10 @@ Retrieval uses instance-normalized contexts and exact Euclidean top-K search by
 default. Distances are computed in bounded query/datastore blocks. For a query,
 the fixed datastore endpoint first shifts to the query's residue modulo the
 dataset period; earlier candidates then follow the datastore stride, one period
-by default.
+by default. Instance statistics ignore missing dates. A context with undefined
+channel statistics is unusable; otherwise distances use shared finite features,
+require at least 80% overlap by default, and treat insufficient overlap as
+infinite distance.
 
 Extraction writes memory-mapped arrays for representations, neighbors,
 distances, targets, `V`, requested `C` forecasts, and unique neighbor forecasts.
@@ -84,7 +87,7 @@ capable backbone can apply its ordinary missing-value mask.
 ### Task recovery and run selection
 
 Each task owns
-`outputs/adaptime/results/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
+`outputs/adaptime/tasks/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
 Its plain schema-1 manifest records scientific, runtime, dataset, and launch
 configuration without hashing code, data, or checkpoints.
 
@@ -107,10 +110,13 @@ mixed scientific configurations and uses the selected completed repeat;
 The final `comparison_summary.json` and raw arrays compare vanilla `V`, the
 retrieval-covariate forecast `C`, and frozen Adaptime `V'`. MSE, MAE, normalized
 MSE, and normalized MAE retain per-window/channel values and report equal-user
-and equal-window summaries plus MSE win rates against vanilla.
+and equal-window summaries plus MSE win rates against vanilla. It also records
+accelerator-synchronized model time and CPU retrieval/adaptor time, reporting
+end-to-end seconds per official test window for all three methods and retaining
+the underlying components plus fixed precomputed-extraction cost.
 
 After all selected tasks finish,
-`outputs/adaptime/aggregates/<model>/<target_mode>/<launch>/` records its input
+`outputs/adaptime/summary/<model>/<target_mode>/<launch>/` records its input
 manifests and averages repeats within exact configurations, then configurations
 when requested, terms within each dataset/frequency, and finally
 dataset/frequency units with equal weight.

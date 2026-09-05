@@ -5,8 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import warnings
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from time import perf_counter
 from typing import Protocol
 
 import numpy as np
@@ -14,6 +16,7 @@ import numpy as np
 from timebench.adaptime.retrieval import blockwise_topk, context_representation
 from timebench.adaptime.ridge import query_scale
 from timebench.evaluation.adaptation_data import PreparedDataset, QUERY_SPLITS
+from timebench.evaluation.timing import EvaluationTimer
 
 
 EXTRACTION_SCHEMA = 1
@@ -47,6 +50,7 @@ class ExtractionConfig:
     representation: str = "instance"
     distance_metric: str = "euclidean"
     retrieval_scope: str = "all"
+    minimum_overlap_fraction: float = 0.8
     max_k: int = 15
     context_k: tuple[int, ...] = (1, 5, 10, 15)
     model_batch_size: int = 64
@@ -61,6 +65,8 @@ class ExtractionConfig:
             raise ValueError("distance_metric must be euclidean or cosine")
         if self.retrieval_scope not in {"all", "same_series", "other_series"}:
             raise ValueError("unsupported retrieval_scope")
+        if not 0.0 < float(self.minimum_overlap_fraction) <= 1.0:
+            raise ValueError("minimum_overlap_fraction must be in (0, 1]")
         positive = {
             "max_k": self.max_k,
             "model_batch_size": self.model_batch_size,
@@ -111,6 +117,31 @@ def _forecast(
     return values
 
 
+def _record_seconds(timings: dict[str, float], name: str, seconds: float) -> None:
+    timings[name] = timings.get(name, 0.0) + float(seconds)
+
+
+def _timed_forecast(
+    forecaster: AdaptimeForecaster,
+    context: np.ndarray,
+    timings: dict[str, float],
+    name: str,
+    *,
+    horizon: int,
+    retrieval_context: np.ndarray | None = None,
+) -> np.ndarray:
+    timer = EvaluationTimer()
+    timer.start()
+    values = _forecast(
+        forecaster,
+        context,
+        horizon=horizon,
+        retrieval_context=retrieval_context,
+    )
+    _record_seconds(timings, name, timer.stop())
+    return values
+
+
 def _represent(
     forecaster: AdaptimeForecaster,
     context: np.ndarray,
@@ -124,6 +155,20 @@ def _represent(
     if values.ndim != 2 or values.shape[0] != context.shape[0]:
         raise ValueError("representations must have shape (batch, features)")
     return np.ascontiguousarray(values)
+
+
+def _timed_represent(
+    forecaster: AdaptimeForecaster,
+    context: np.ndarray,
+    mode: str,
+    timings: dict[str, float],
+    name: str,
+) -> np.ndarray:
+    timer = EvaluationTimer()
+    timer.start()
+    values = _represent(forecaster, context, mode)
+    _record_seconds(timings, name, timer.stop())
+    return values
 
 
 def _query_scaled_retrieval_context(
@@ -140,10 +185,14 @@ def _query_scaled_retrieval_context(
         raise ValueError("retrieved context and target axes must align")
     if query.shape[0] != neighbor_context.shape[0] or query.shape[1] != neighbor_context.shape[2]:
         raise ValueError("query and retrieved channel axes must align")
-    query_mean = query.mean(axis=-1, keepdims=True)[:, None]
-    query_std = np.maximum(query.std(axis=-1, keepdims=True), 1e-8)[:, None]
-    neighbor_mean = neighbor_context.mean(axis=-1, keepdims=True)
-    neighbor_std = np.maximum(neighbor_context.std(axis=-1, keepdims=True), 1e-8)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        query_mean = np.nanmean(query, axis=-1, keepdims=True)[:, None]
+        query_std = np.maximum(np.nanstd(query, axis=-1, keepdims=True), 1e-8)[:, None]
+        neighbor_mean = np.nanmean(neighbor_context, axis=-1, keepdims=True)
+        neighbor_std = np.maximum(
+            np.nanstd(neighbor_context, axis=-1, keepdims=True), 1e-8
+        )
     scaled_context = (neighbor_context - neighbor_mean) / neighbor_std * query_std + query_mean
     scaled_target = (neighbor_target - neighbor_mean) / neighbor_std * query_std + query_mean
     return np.concatenate((scaled_context, scaled_target), axis=-1)
@@ -156,6 +205,7 @@ def _materialize_source_rows(
     config: ExtractionConfig,
     root: Path,
     arrays: dict[str, str],
+    timings: dict[str, float],
     *,
     include_vanilla: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -163,7 +213,14 @@ def _materialize_source_rows(
     first_stop = min(len(references), config.model_batch_size)
     reader = prepared.reader(cache_items=config.arrow_cache_items)
     first = reader.read(references[:first_stop])
-    first_representation = _represent(forecaster, first.context, config.representation)
+    representation_key = f"{split}.representation_seconds"
+    first_representation = _timed_represent(
+        forecaster,
+        first.context,
+        config.representation,
+        timings,
+        representation_key,
+    )
     channels = int(first.context.shape[1])
     horizon = prepared.prediction_length
     target_path = root / split / "target.npy"
@@ -193,23 +250,31 @@ def _materialize_source_rows(
     representation[:first_stop] = first_representation
     scale[:first_stop] = query_scale(first.context)
     if vanilla is not None:
-        vanilla[:first_stop] = _forecast(
+        vanilla[:first_stop] = _timed_forecast(
             forecaster,
             first.context,
+            timings,
+            f"{split}.vanilla_forecast_seconds",
             horizon=horizon,
         )
     for start in range(first_stop, len(references), config.model_batch_size):
         stop = min(start + config.model_batch_size, len(references))
         batch = reader.read(references[start:stop])
         target[start:stop] = batch.target
-        representation[start:stop] = _represent(
-            forecaster, batch.context, config.representation
+        representation[start:stop] = _timed_represent(
+            forecaster,
+            batch.context,
+            config.representation,
+            timings,
+            representation_key,
         )
         scale[start:stop] = query_scale(batch.context)
         if vanilla is not None:
-            vanilla[start:stop] = _forecast(
+            vanilla[start:stop] = _timed_forecast(
                 forecaster,
                 batch.context,
+                timings,
+                f"{split}.vanilla_forecast_seconds",
                 horizon=horizon,
             )
     target.flush()
@@ -227,10 +292,12 @@ def _materialize_neighbors(
     config: ExtractionConfig,
     root: Path,
     arrays: dict[str, str],
+    timings: dict[str, float],
 ) -> tuple[np.ndarray, np.ndarray]:
     query_representation = np.load(
         root / arrays[f"{split}.representation"], mmap_mode="r"
     )
+    started = perf_counter()
     distances, ids = blockwise_topk(
         query_representation,
         datastore_representation,
@@ -245,9 +312,11 @@ def _materialize_neighbors(
         horizon=prepared.prediction_length,
         scope=config.retrieval_scope,
         metric=config.distance_metric,
+        minimum_overlap_fraction=config.minimum_overlap_fraction,
         query_block_size=config.query_block_size,
         datastore_block_size=config.datastore_block_size,
     )
+    _record_seconds(timings, f"{split}.retrieval_seconds", perf_counter() - started)
     distance_path = root / split / "neighbor_distance.npy"
     id_path = root / split / "neighbor_id.npy"
     distance_store = _memmap(distance_path, distances.shape, np.float32)
@@ -267,6 +336,7 @@ def _materialize_unique_neighbor_forecasts(
     config: ExtractionConfig,
     root: Path,
     arrays: dict[str, str],
+    timings: dict[str, float],
 ) -> tuple[np.ndarray, np.ndarray]:
     selected = np.empty(0, dtype=np.int64)
     for split in QUERY_SPLITS:
@@ -290,9 +360,11 @@ def _materialize_unique_neighbor_forecasts(
     for start in range(0, len(selected), config.model_batch_size):
         stop = min(start + config.model_batch_size, len(selected))
         batch = reader.read(datastore_refs[selected[start:stop]])
-        forecasts[start:stop] = _forecast(
+        forecasts[start:stop] = _timed_forecast(
             forecaster,
             batch.context,
+            timings,
+            "offline.neighbor_forecast_seconds",
             horizon=prepared.prediction_length,
         )
     forecasts.flush()
@@ -309,6 +381,7 @@ def _materialize_context_forecasts(
     config: ExtractionConfig,
     root: Path,
     arrays: dict[str, str],
+    timings: dict[str, float],
 ) -> None:
     query_refs = prepared.indices(split)
     datastore_refs = prepared.indices("datastore")
@@ -339,14 +412,22 @@ def _materialize_context_forecasts(
         )
         neighbor_target = np.asarray(datastore_target[selected_ids])
         for k in config.context_k:
+            started = perf_counter()
             retrieval_context = _query_scaled_retrieval_context(
                 query_batch.context,
                 neighbor_context[:, :k],
                 neighbor_target[:, :k],
             )
-            stores[k][start:stop] = _forecast(
+            _record_seconds(
+                timings,
+                f"{split}.context_construction_k{k}_seconds",
+                perf_counter() - started,
+            )
+            stores[k][start:stop] = _timed_forecast(
                 forecaster,
                 query_batch.context,
+                timings,
+                f"{split}.context_forecast_k{k}_seconds",
                 horizon=prepared.prediction_length,
                 retrieval_context=retrieval_context,
             )
@@ -372,6 +453,7 @@ def extract_adaptation_features(
         )
     identity = {
         "schema_version": EXTRACTION_SCHEMA,
+        "timing_contract": "component_seconds",
         "prepared_signature": prepared.signature,
         "model": forecaster.model_name,
         "weights_id": forecaster.weights_id,
@@ -394,7 +476,9 @@ def extract_adaptation_features(
         raise FileExistsError(f"extraction directory already contains a different run: {root}")
     root.mkdir(parents=True, exist_ok=True)
 
+    extraction_started = perf_counter()
     arrays: dict[str, str] = {}
+    timings: dict[str, float] = {}
     _, datastore_representation = _materialize_source_rows(
         prepared,
         "datastore",
@@ -402,6 +486,7 @@ def extract_adaptation_features(
         config,
         root,
         arrays,
+        timings,
     )
     for split in QUERY_SPLITS:
         _materialize_source_rows(
@@ -411,6 +496,7 @@ def extract_adaptation_features(
             config,
             root,
             arrays,
+            timings,
             include_vanilla=True,
         )
         _materialize_neighbors(
@@ -420,12 +506,16 @@ def extract_adaptation_features(
             config,
             root,
             arrays,
+            timings,
         )
     unique_forecast, _ = _materialize_unique_neighbor_forecasts(
-        prepared, forecaster, config, root, arrays
+        prepared, forecaster, config, root, arrays, timings
     )
     for split in QUERY_SPLITS:
-        _materialize_context_forecasts(prepared, split, forecaster, config, root, arrays)
+        _materialize_context_forecasts(
+            prepared, split, forecaster, config, root, arrays, timings
+        )
+    timings["extraction_total_seconds"] = perf_counter() - extraction_started
 
     manifest: dict[str, object] = {
         **identity,
@@ -438,6 +528,7 @@ def extract_adaptation_features(
         },
         "computed_neighbor_forecasts": int(len(unique_forecast)),
         "full_ridge_design": ["V", "C", "Y_1..Y_K", "N_1..N_K"],
+        "timing_seconds": timings,
     }
     _atomic_json(manifest_path, manifest)
     return manifest_path
