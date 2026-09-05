@@ -21,6 +21,15 @@ deliberately.
   target mode, task identity, and monotonic `run_n`. Each run owns a plain
   schema-1 configuration manifest; no code, data, checkpoint, path, or launch
   hashes participate in identity.
+- Added task-boundary recovery before foundation inference. The default exact
+  policy skips completed configurations, resumes interrupted configurations in
+  their existing `run_n`, records every launch/job/time attempt, and allocates
+  new directories only for different configurations or explicit repeats.
+  Failed model and comparison jobs mark their still-running task manifests
+  interrupted; recovery restarts the current task rather than checkpointing
+  inside inference. Resume records identify both the new and preceding jobs.
+  Reports expose selected, latest, distinct, and averaged repeat handling plus
+  error, distinct, latest, and averaged scientific-configuration handling.
 - Narrowed the maintained benchmark surface to `chronos_bolt`, `chronos2`,
   `ts_icl`, and `seasonal_naive`. Removed every other model adapter and runner,
   including Toto, TiRex, and TimesFM 2, plus the unused non-seasonal Naive
@@ -68,11 +77,13 @@ deliberately.
   and publication include these files, while detailed transfer retains raw
   per-window `metrics.npz` arrays.
 - Made foundation summaries, the local TIME leaderboard, and feature-versus-
-  performance analysis select completed manifests. Exact repeats choose the
-  latest run, differing scientific configurations fail closed unless filtered
-  or explicitly selected as latest, and aggregate report manifests list their
-  exact run inputs. Lightweight transfer and publication include both run and
-  aggregate manifests.
+  performance analysis select completed manifests. Exact repeats use an
+  automatically advanced or explicitly pinned selection by default; latest,
+  distinct, and hierarchical-average policies remain explicit alternatives.
+  Different scientific configurations fail closed unless filtered or handled
+  with distinct, latest, or hierarchical-average policy. Aggregate report
+  manifests list their exact run inputs. Lightweight transfer and publication
+  include run and aggregate manifests, repeat selections, and manifest history.
 - Added matching DGX and Selena Slurm fronts for each retained model plus a
   separate dependent summary front. One submission helper creates four
   independently schedulable model jobs and starts the summary after all four

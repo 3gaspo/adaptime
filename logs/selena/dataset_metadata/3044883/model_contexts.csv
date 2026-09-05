@@ -1,6 +1,0 @@
-profile_name,context_limit,window_config_prefix
-full,,L=full
-chronos2,8192,L=8192
-ts_icl,4096,L=4096
-chronos_bolt,2048,L=2048
-seasonal_naive,,L=full

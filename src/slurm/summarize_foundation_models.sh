@@ -33,6 +33,8 @@ summary_command=(
     --models "${FOUNDATION_MODELS[@]}"
     --launch-id "$TIME_LAUNCH_ID"
     --status-dir "$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"
+    --config-policy "${TIME_CONFIG_POLICY:-error}"
+    --repeat-policy "${TIME_REPEAT_POLICY:-selected}"
 )
 
 if [ -n "${SLURM_JOB_ID:-}" ]; then
@@ -74,6 +76,8 @@ plot_command=(
     --output "$analysis_root/mase_vs_features.svg"
     --models "${FOUNDATION_MODELS[@]}"
     --launch-id "$TIME_LAUNCH_ID"
+    --config-policy "${TIME_CONFIG_POLICY:-error}"
+    --repeat-policy "${TIME_REPEAT_POLICY:-selected}"
     --top 5
 )
 

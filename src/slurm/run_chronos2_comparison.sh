@@ -36,7 +36,8 @@ TIME_WORKFLOW_NAME=chronos2_comparison
 TIME_TASK_NAME="$comparison"
 TIME_STATUS_NAME="$comparison"
 TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-${SLURM_JOB_ID:-manual_$(date -u '+%Y%m%dT%H%M%SZ')_$$}}"
-export TIME_WORKFLOW_NAME TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID
+TIME_RESULT_SCOPE="$TIME_OUTPUTS/results/$experiment/chronos2/$TIME_TARGET_MODE"
+export TIME_WORKFLOW_NAME TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID TIME_RESULT_SCOPE
 source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 
 time_workflow_init
@@ -57,6 +58,8 @@ summary_command=(
     --model-status chronos2=completed,0
     --launch-id "$TIME_LAUNCH_ID"
     --target-mode "$TIME_TARGET_MODE"
+    --config-policy "${TIME_CONFIG_POLICY:-error}"
+    --repeat-policy "${TIME_REPEAT_POLICY:-selected}"
     --csv "$aggregate_dir/foundation_model_summary.csv"
     --markdown "$aggregate_dir/foundation_model_summary.md"
 )

@@ -23,6 +23,7 @@ Requirements:
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Optional
@@ -218,6 +219,7 @@ def get_manifest_datasets_results(
     launch_id: str | None = None,
     config_filters: dict | None = None,
     config_policy: str = "error",
+    repeat_policy: str = "selected",
 ) -> pd.DataFrame:
     """Load current Improved results through completed run manifests."""
     rows = []
@@ -227,13 +229,15 @@ def get_manifest_datasets_results(
         launch_id=launch_id,
         config_filters=config_filters,
         config_policy=config_policy,
+        repeat_policy=repeat_policy,
     )
     for run_dir, manifest in selected:
         identity = manifest["identity"]
+        selection = manifest.get("selection", {})
         with np.load(run_dir / "metrics.npz") as metrics:
             rows.append(
                 {
-                    "model": identity["model"],
+                    "model": selection.get("model_label", identity["model"]),
                     "base_model": identity["model"],
                     "target_mode": identity["target_mode"],
                     "dataset": identity["dataset"],
@@ -244,6 +248,17 @@ def get_manifest_datasets_results(
                     "CRPS": np.nanmean(metrics.get("CRPS", np.array([]))),
                     "MAE": np.nanmean(metrics.get("MAE", np.array([]))),
                     "MSE": np.nanmean(metrics.get("MSE", np.array([]))),
+                    "scientific_config": json.dumps(
+                        selection.get(
+                            "scientific_config",
+                            {
+                                "model_config": manifest.get("model_config", {}),
+                                "pipeline_config": manifest.get("pipeline_config", {}),
+                                "experiment_config": manifest.get("experiment_config", {}),
+                            },
+                        ),
+                        sort_keys=True,
+                    ),
                 }
             )
     columns = [
@@ -259,7 +274,23 @@ def get_manifest_datasets_results(
         "MAE",
         "MSE",
     ]
-    return pd.DataFrame(rows, columns=columns)
+    if not rows:
+        return pd.DataFrame(rows, columns=columns)
+    frame = pd.DataFrame(rows)
+    identity_columns = [
+        "model",
+        "base_model",
+        "target_mode",
+        "dataset",
+        "freq",
+        "dataset_id",
+        "horizon",
+    ]
+    metrics = ["MASE", "CRPS", "MAE", "MSE"]
+    per_config = frame.groupby(
+        [*identity_columns, "scientific_config"], as_index=False
+    )[metrics].mean()
+    return per_config.groupby(identity_columns, as_index=False)[metrics].mean()[columns]
 
 
 def compute_ranks(df: pd.DataFrame, groupby_cols: list) -> pd.DataFrame:
@@ -478,8 +509,13 @@ def main():
     )
     parser.add_argument(
         "--config-policy",
-        choices=("error", "latest"),
+        choices=("error", "distinct", "latest", "average"),
         default="error",
+    )
+    parser.add_argument(
+        "--repeat-policy",
+        choices=("selected", "latest", "distinct", "average"),
+        default="selected",
     )
     args = parser.parse_args()
 
@@ -493,6 +529,7 @@ def main():
         launch_id=args.launch_id,
         config_filters=config_filters,
         config_policy=args.config_policy,
+        repeat_policy=args.repeat_policy,
     )
 
     print("=" * 80)

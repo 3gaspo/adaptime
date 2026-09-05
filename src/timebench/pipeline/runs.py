@@ -5,17 +5,23 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-
 SCHEMA_VERSION = 1
 MANIFEST_NAME = "manifest.json"
 VALID_STATUSES = {"running", "interrupted", "completed"}
-CONFIG_POLICIES = ("error", "latest")
+CONFLICT_POLICIES = ("overwrite_exact", "overwrite_path", "new")
+CONFIG_POLICIES = ("error", "distinct", "latest", "average")
+REPEAT_POLICIES = ("selected", "latest", "distinct", "average")
 RUN_PATTERN = re.compile(r"run_(\d+)")
+SELECTION_NAME = "SELECTED_RUNS.json"
+PROJECT_NAME = os.environ.get(
+    "TIME_PROJECT_NAME", Path(__file__).resolve().parents[3].name
+)
 
 
 class ManifestError(ValueError):
@@ -27,10 +33,13 @@ def _now() -> str:
 
 
 def _write_manifest(path: Path, manifest: Mapping[str, Any]) -> None:
-    path.write_text(
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
         json.dumps(dict(manifest), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    temporary.replace(path)
 
 
 def _run_index(run_dir: Path) -> int:
@@ -63,12 +72,20 @@ class RunHandle:
 
     run_dir: Path
     manifest: dict[str, Any]
+    action: str
     _completed: bool = False
+
+    @property
+    def should_run(self) -> bool:
+        return self.action != "skip"
 
     def __enter__(self) -> "RunHandle":
         return self
 
     def complete(self, required_artifacts: Sequence[str]) -> None:
+        if self.action == "skip":
+            self._completed = True
+            return
         artifacts = [str(value) for value in required_artifacts]
         if not artifacts:
             raise ManifestError(f"Completed run has no required artifacts: {self.run_dir}")
@@ -88,8 +105,11 @@ class RunHandle:
         self.manifest["updated_at"] = self.manifest["completed_at"]
         _write_manifest(self.run_dir / MANIFEST_NAME, self.manifest)
         self._completed = True
+        _update_auto_selection(self.run_dir, self.manifest)
 
     def __exit__(self, error_type, error, traceback) -> bool:
+        if self.action == "skip":
+            return False
         if error_type is not None or not self._completed:
             self.manifest["status"] = "interrupted"
             self.manifest["updated_at"] = _now()
@@ -107,6 +127,174 @@ class RunHandle:
         return False
 
 
+def _bool_env(name: str, default: bool) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    lowered = value.casefold()
+    if lowered in {"1", "true", "yes", "on"}:
+        return True
+    if lowered in {"0", "false", "no", "off"}:
+        return False
+    raise ManifestError(f"{name} must be true or false, got {value!r}")
+
+
+def _run_dirs(root: Path) -> list[Path]:
+    if not root.exists():
+        return []
+    return sorted(
+        (
+            path
+            for path in root.iterdir()
+            if path.is_dir()
+            and RUN_PATTERN.fullmatch(path.name)
+            and (path / MANIFEST_NAME).is_file()
+        ),
+        key=_run_index,
+    )
+
+
+def _clear_run_artifacts(run_dir: Path) -> None:
+    for path in run_dir.iterdir():
+        if path.name in {MANIFEST_NAME, "manifest_history"}:
+            continue
+        if path.is_dir() and not path.is_symlink():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
+
+
+def _safe_name(value: object) -> str:
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", str(value or "unknown")).strip("_")
+
+
+def _archive_manifest(run_dir: Path, manifest: Mapping[str, Any]) -> None:
+    history = run_dir / "manifest_history"
+    history.mkdir(parents=True, exist_ok=True)
+    stamp = re.sub(r"[^0-9]", "", _now())[:20]
+    launch_id = _safe_name(manifest.get("launch", {}).get("launch_id"))
+    path = history / f"{stamp}_{launch_id}.json"
+    suffix = 1
+    while path.exists():
+        path = history / f"{stamp}_{launch_id}_{suffix}.json"
+        suffix += 1
+    _write_manifest(path, manifest)
+
+
+def _scientific_config_from_values(
+    model_config: Mapping[str, Any],
+    pipeline_config: Mapping[str, Any],
+    experiment_config: Mapping[str, Any],
+) -> dict[str, Any]:
+    return {
+        "model_config": dict(model_config),
+        "pipeline_config": dict(pipeline_config),
+        "experiment_config": dict(experiment_config),
+    }
+
+
+def _attempt(action: str, launched_at: str) -> dict[str, Any]:
+    return {
+        "action": action,
+        "launch_id": os.environ.get("TIME_LAUNCH_ID"),
+        "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+        "slurm_array_task_id": os.environ.get("SLURM_ARRAY_TASK_ID"),
+        "launched_at": launched_at,
+    }
+
+
+def _launch_matches(manifest: Mapping[str, Any], launch_id: str) -> bool:
+    launch = manifest.get("launch", {})
+    if launch.get("launch_id") == launch_id:
+        return True
+    return any(
+        attempt.get("launch_id") == launch_id
+        for attempt in launch.get("attempts", [])
+    )
+
+
+def interrupt_launch(root: str | Path, launch_id: str) -> list[Path]:
+    """Mark task manifests still owned by a failed launch as interrupted."""
+    base = Path(root).expanduser().resolve()
+    if not base.exists():
+        return []
+    changed = []
+    for manifest_path in sorted(base.rglob(MANIFEST_NAME)):
+        if "manifest_history" in manifest_path.relative_to(base).parts:
+            continue
+        manifest = load_manifest(manifest_path)
+        if (
+            manifest["status"] == "running"
+            and str(manifest.get("launch", {}).get("launch_id")) == str(launch_id)
+        ):
+            manifest["status"] = "interrupted"
+            manifest["updated_at"] = _now()
+            manifest["error"] = {
+                "type": "InterruptedLaunch",
+                "message": f"launch {launch_id} ended before task completion",
+            }
+            _write_manifest(manifest_path, manifest)
+            changed.append(manifest_path.parent)
+    return changed
+
+
+def _selection_entries(identity_root: Path) -> list[dict[str, Any]]:
+    path = identity_root / SELECTION_NAME
+    if not path.is_file():
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("schema_version") != SCHEMA_VERSION:
+        raise ManifestError(f"{path} uses an unsupported selection schema")
+    entries = list(payload.get("selections", []))
+    if any(entry.get("mode") not in {"auto", "pinned"} for entry in entries):
+        raise ManifestError(f"{path} contains an invalid selection mode")
+    return entries
+
+
+def _write_selection_entries(identity_root: Path, entries: Sequence[Mapping[str, Any]]) -> None:
+    _write_manifest(
+        identity_root / SELECTION_NAME,
+        {"schema_version": SCHEMA_VERSION, "selections": list(entries)},
+    )
+
+
+def _update_auto_selection(run_dir: Path, manifest: Mapping[str, Any]) -> None:
+    scientific = _scientific_config(manifest)
+    entries = _selection_entries(run_dir.parent)
+    for entry in entries:
+        if entry.get("scientific_config") == scientific:
+            if entry.get("mode") == "auto":
+                entry["run"] = run_dir.name
+            break
+    else:
+        entries.append(
+            {"scientific_config": scientific, "mode": "auto", "run": run_dir.name}
+        )
+    _write_selection_entries(run_dir.parent, entries)
+
+
+def set_selected_run(run_dir: str | Path, *, pinned: bool = True) -> None:
+    """Pin or automatically track one completed exact configuration repeat."""
+    selected_dir = Path(run_dir).expanduser().resolve()
+    manifest = load_manifest(selected_dir)
+    if manifest["status"] != "completed":
+        raise ManifestError(f"Cannot select an incomplete run: {selected_dir}")
+    scientific = _scientific_config(manifest)
+    entries = _selection_entries(selected_dir.parent)
+    replacement = {
+        "scientific_config": scientific,
+        "mode": "pinned" if pinned else "auto",
+        "run": selected_dir.name,
+    }
+    for index, entry in enumerate(entries):
+        if entry.get("scientific_config") == scientific:
+            entries[index] = replacement
+            break
+    else:
+        entries.append(replacement)
+    _write_selection_entries(selected_dir.parent, entries)
+
+
 def allocate_run(
     identity_root: str | Path,
     *,
@@ -117,21 +305,123 @@ def allocate_run(
     runtime_config: Mapping[str, Any],
     experiment_config: Mapping[str, Any],
     provenance: Mapping[str, Any] | None = None,
+    policy: str | None = None,
+    skip_completed: bool | None = None,
+    force: bool | None = None,
+    run_index: int | None = None,
 ) -> RunHandle:
-    """Allocate the next ``run_n`` and write its plain configuration."""
+    """Skip, resume, overwrite, or allocate one exact task configuration."""
+    policy = policy or os.environ.get("TIME_RUN_CONFLICT_POLICY", "overwrite_exact")
+    if policy not in CONFLICT_POLICIES:
+        raise ManifestError(f"Run conflict policy must be one of {CONFLICT_POLICIES}")
+    if skip_completed is None:
+        skip_completed = _bool_env("TIME_SKIP_COMPLETED", True)
+    if force is None:
+        force = _bool_env("TIME_FORCE_RERUN", False)
+    if run_index is None and os.environ.get("TIME_RUN_INDEX"):
+        run_index = int(os.environ["TIME_RUN_INDEX"])
+    if run_index is not None and run_index < 0:
+        raise ManifestError("run_index must be non-negative")
+
     root = Path(identity_root).expanduser().resolve()
     root.mkdir(parents=True, exist_ok=True)
-    indices = [
-        _run_index(path)
-        for path in root.iterdir()
-        if path.is_dir() and RUN_PATTERN.fullmatch(path.name)
+    run_dirs = _run_dirs(root)
+    scientific = _scientific_config_from_values(
+        model_config, pipeline_config, experiment_config
+    )
+    existing = [(path, load_manifest(path)) for path in run_dirs]
+    exact = [
+        (path, manifest)
+        for path, manifest in existing
+        if manifest.get("experiment") == str(experiment)
+        and manifest.get("identity") == dict(identity)
+        and _scientific_config(manifest) == scientific
     ]
-    run_dir = root / f"run_{0 if not indices else max(indices) + 1}"
-    run_dir.mkdir()
-    started_at = _now()
+    target = root / f"run_{run_index}" if run_index is not None else None
+    old_manifest = load_manifest(target) if target is not None and target.exists() else None
+    action = "new"
+
+    if target is not None and target.exists() and policy == "new":
+        raise ManifestError(f"Requested new run already exists: {target}")
+    if old_manifest is not None and policy == "overwrite_path":
+        action = "overwrite"
+    if target is None and policy == "new":
+        next_index = 0 if not run_dirs else max(map(_run_index, run_dirs)) + 1
+        target = root / f"run_{next_index}"
+    elif target is None and policy == "overwrite_path" and run_dirs:
+        target = run_dirs[-1]
+        old_manifest = load_manifest(target)
+        action = "overwrite"
+    elif target is None and exact:
+        target, old_manifest = max(exact, key=lambda item: _run_index(item[0]))
+    elif target is None:
+        next_index = 0 if not run_dirs else max(map(_run_index, run_dirs)) + 1
+        target = root / f"run_{next_index}"
+
+    if old_manifest is not None and action != "overwrite":
+        same = (
+            old_manifest.get("experiment") == str(experiment)
+            and old_manifest.get("identity") == dict(identity)
+            and _scientific_config(old_manifest) == scientific
+        )
+        if not same and policy != "overwrite_path":
+            raise ManifestError(
+                f"{target} contains a different configuration; use overwrite_path"
+            )
+        if same:
+            status = old_manifest["status"]
+            if status == "completed" and skip_completed and not force:
+                launched_at = _now()
+                attempt = _attempt("reuse", launched_at)
+                launch = dict(old_manifest.get("launch", {}))
+                launch["attempts"] = [*launch.get("attempts", []), attempt]
+                old_manifest["launch"] = launch
+                old_manifest["updated_at"] = launched_at
+                _write_manifest(target / MANIFEST_NAME, old_manifest)
+                print(
+                    "TIME run allocation "
+                    f"action=skip run={target} source_launch={launch.get('launch_id')} "
+                    f"launch_id={attempt['launch_id']} slurm_job_id={attempt['slurm_job_id']} "
+                    f"launched_at={launched_at}",
+                    flush=True,
+                )
+                return RunHandle(target, old_manifest, "skip", _completed=True)
+            if status == "running" and not force:
+                raise ManifestError(f"Matching run is already running: {target}")
+            action = "resume" if status == "interrupted" and not force else "overwrite"
+        else:
+            action = "overwrite"
+
+    assert target is not None
+    launched_at = _now()
+    previous_launch = dict((old_manifest or {}).get("launch", {}))
+    if old_manifest is not None:
+        if _scientific_config(old_manifest) != scientific:
+            entries = [
+                entry
+                for entry in _selection_entries(target.parent)
+                if entry.get("run") != target.name
+            ]
+            _write_selection_entries(target.parent, entries)
+        _archive_manifest(target, old_manifest)
+        _clear_run_artifacts(target)
+    else:
+        target.mkdir()
+    attempts = (
+        list(previous_launch.get("attempts", [])) if action == "resume" else []
+    )
+    attempt = _attempt(action, launched_at)
+    if action == "resume":
+        attempt["resumed_from"] = {
+            "launch_id": previous_launch.get("launch_id"),
+            "slurm_job_id": previous_launch.get("slurm_job_id"),
+            "launched_at": previous_launch.get("launched_at")
+            or old_manifest.get("started_at"),
+        }
+    attempts.append(attempt)
     manifest = {
         "schema_version": SCHEMA_VERSION,
-        "project": "improved",
+        "project": PROJECT_NAME,
         "experiment": str(experiment),
         "identity": dict(identity),
         "model_config": dict(model_config),
@@ -140,16 +430,32 @@ def allocate_run(
         "experiment_config": dict(experiment_config),
         "provenance": dict(provenance or {}),
         "launch": {
-            "launch_id": os.environ.get("TIME_LAUNCH_ID"),
-            "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+            "launch_id": attempt["launch_id"],
+            "slurm_job_id": attempt["slurm_job_id"],
+            "launched_at": launched_at,
+            "action": action,
+            "attempts": attempts,
         },
         "status": "running",
         "required_artifacts": [],
-        "started_at": started_at,
-        "updated_at": started_at,
+        "started_at": launched_at,
+        "updated_at": launched_at,
     }
-    _write_manifest(run_dir / MANIFEST_NAME, manifest)
-    return RunHandle(run_dir, manifest)
+    _write_manifest(target / MANIFEST_NAME, manifest)
+    print(
+        "TIME run allocation "
+        f"action={action} run={target} launch_id={attempt['launch_id']} "
+        f"slurm_job_id={attempt['slurm_job_id']} launched_at={launched_at}"
+        + (
+            " "
+            f"resumed_from_launch={previous_launch.get('launch_id')} "
+            f"resumed_from_job={previous_launch.get('slurm_job_id')}"
+            if action == "resume"
+            else ""
+        ),
+        flush=True,
+    )
+    return RunHandle(target, manifest, action)
 
 
 def _nested_value(manifest: Mapping[str, Any], dotted_key: str) -> Any:
@@ -217,6 +523,49 @@ def _same_config_groups(
     return groups
 
 
+def _latest_key(item: tuple[Path, Mapping[str, Any]]) -> tuple[str, int]:
+    manifest = item[1]
+    timestamp = str(
+        manifest.get("completed_at")
+        or manifest.get("updated_at")
+        or manifest.get("started_at")
+        or ""
+    )
+    return timestamp, _run_index(item[0])
+
+
+def _flatten_config(value: Mapping[str, Any], prefix: str = "") -> dict[str, Any]:
+    flattened: dict[str, Any] = {}
+    for key, item in value.items():
+        path = f"{prefix}.{key}" if prefix else str(key)
+        if isinstance(item, Mapping):
+            flattened.update(_flatten_config(item, path))
+        else:
+            flattened[path] = item
+    return flattened
+
+
+def _label_value(value: Any) -> str:
+    if isinstance(value, list):
+        value = "-".join(map(str, value))
+    return _safe_name(value)
+
+
+def _selected_repeat(
+    identity_root: Path,
+    scientific: Mapping[str, Any],
+    items: Sequence[tuple[Path, dict[str, Any]]],
+) -> tuple[Path, dict[str, Any]]:
+    for entry in _selection_entries(identity_root):
+        if entry.get("scientific_config") == dict(scientific):
+            run_name = entry.get("run")
+            for item in items:
+                if item[0].name == run_name:
+                    return item
+            raise ManifestError(f"{identity_root}/{run_name} is selected but unavailable")
+    return max(items, key=_latest_key)
+
+
 def select_completed_runs(
     root: str | Path,
     *,
@@ -225,10 +574,13 @@ def select_completed_runs(
     launch_id: str | None = None,
     config_filters: Mapping[str, Any] | None = None,
     config_policy: str = "error",
+    repeat_policy: str = "selected",
 ) -> list[tuple[Path, dict[str, Any]]]:
-    """Select one completed run per task identity without mixing configs."""
+    """Select completed task runs under explicit config and repeat policies."""
     if config_policy not in CONFIG_POLICIES:
         raise ManifestError(f"config_policy must be one of {CONFIG_POLICIES}")
+    if repeat_policy not in REPEAT_POLICIES:
+        raise ManifestError(f"repeat_policy must be one of {REPEAT_POLICIES}")
     filters = dict(config_filters or {})
     candidates: list[tuple[Path, dict[str, Any]]] = []
     root = Path(root).expanduser().resolve()
@@ -243,7 +595,7 @@ def select_completed_runs(
             continue
         if target_modes is not None and identity.get("target_mode") not in target_modes:
             continue
-        if launch_id is not None and manifest.get("launch", {}).get("launch_id") != launch_id:
+        if launch_id is not None and not _launch_matches(manifest, launch_id):
             continue
         if any(_nested_value(manifest, key) != value for key, value in filters.items()):
             continue
@@ -266,10 +618,60 @@ def select_completed_runs(
             identity = identity_group[0][1]["identity"]
             raise ManifestError(
                 "Multiple scientific run configurations match "
-                f"{identity}; use --run-config or --config-policy latest"
+                f"{identity}; use --run-config or an explicit distinct, latest, "
+                "or average config policy"
             )
-        pool = identity_group if config_policy == "latest" else config_groups[0]
-        selected.append(max(pool, key=lambda item: _run_index(item[0])))
+        if config_policy == "latest" and len(config_groups) > 1:
+            latest_group = max(
+                config_groups,
+                key=lambda group: _latest_key(max(group, key=_latest_key)),
+            )
+            config_groups = [latest_group]
+
+        flattened = [
+            _flatten_config(_scientific_config(group[0][1]))
+            for group in config_groups
+        ]
+        differing_keys = {
+            key
+            for key in set().union(*(values.keys() for values in flattened))
+            if len(
+                {
+                    json.dumps(values.get(key), sort_keys=True)
+                    for values in flattened
+                }
+            )
+            > 1
+        }
+        for group, flat_config in zip(config_groups, flattened):
+            group = sorted(group, key=_latest_key)
+            scientific = _scientific_config(group[0][1])
+            if repeat_policy == "latest":
+                chosen = [group[-1]]
+            elif repeat_policy == "selected":
+                chosen = [_selected_repeat(group[0][0].parent, scientific, group)]
+            else:
+                chosen = group
+
+            config_suffix = ""
+            if config_policy == "distinct" and differing_keys:
+                config_suffix = "__" + "__".join(
+                    f"{_safe_name(key)}-{_label_value(flat_config.get(key))}"
+                    for key in sorted(differing_keys)
+                )
+            for path, manifest in chosen:
+                selected_manifest = dict(manifest)
+                model_label = f"{manifest['identity']['model']}{config_suffix}"
+                if repeat_policy == "distinct" and len(group) > 1:
+                    model_label = f"{model_label}_{path.name}"
+                selected_manifest["selection"] = {
+                    "config_policy": config_policy,
+                    "repeat_policy": repeat_policy,
+                    "scientific_config": scientific,
+                    "model_label": model_label,
+                    "run": path.name,
+                }
+                selected.append((path, selected_manifest))
 
     experiments = {item[1].get("experiment") for item in selected}
     if len(experiments) > 1:

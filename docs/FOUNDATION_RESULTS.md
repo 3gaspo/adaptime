@@ -21,6 +21,13 @@ Dataset-diagnostics launch
 490 distinct query/context configurations plus 50 complete dataset-level
 feature rows.
 
+The synchronized project-local copies of these logs and result artifacts were
+intentionally removed on 2026-09-05 before a clean rerun under the current
+task-recovery and experiment-path contract. The values below remain the
+historical analysis of the named completed launches; they are not current
+selectable inputs in this checkout. Shared dataset data and computed metadata
+were not removed.
+
 The analysis uses MASE because it is scale-free and remains interpretable on
 the near-zero series for which MAPE becomes unstable. For each model or target
 mode, macro MASE first averages available horizons within a dataset/frequency

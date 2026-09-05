@@ -151,6 +151,43 @@ def run_seasonal_naive_experiment(
             )
 
         season_length = get_seasonality(dataset.freq)
+        quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+        identity_root = foundation_identity_root(
+            output_dir, "seasonal_naive", resolved_target_mode, dataset_name, term
+        )
+        run = allocate_run(
+            identity_root,
+            experiment=experiment,
+            identity={
+                "model": "seasonal_naive",
+                "target_mode": resolved_target_mode,
+                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
+                "frequency": dataset.freq,
+                "term": term,
+            },
+            model_config={
+                "num_samples": num_samples,
+                "quantile_levels": quantile_levels,
+            },
+            pipeline_config={
+                "prediction_length": prediction_length,
+                "test_length": test_length,
+                "val_length": val_length,
+                "windows": dataset.windows,
+                "seasonality": season_length,
+            },
+            runtime_config={"device": "cpu"},
+            experiment_config={
+                "covariate_mode": covariate_mode,
+                "covariate_channels": 0,
+            },
+            provenance={
+                "dataset_config_path": None if config_path is None else str(config_path),
+            },
+        )
+        if not run.should_run:
+            print(f"  Reused completed task: {run.run_dir}")
+            continue
         # Initialize Seasonal Naive predictor
         predictor = SeasonalNaivePredictor(
             prediction_length=dataset.prediction_length,
@@ -186,7 +223,6 @@ def run_seasonal_naive_experiment(
         fc_samples = np.concatenate(fc_samples, axis=0)  # (num_total_instances, num_samples, 1, prediction_length)
 
         # Convert samples to quantiles
-        quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
         quantile_levels_array = np.array(quantile_levels, dtype=float)
 
         fc_quantiles = np.quantile(fc_samples, quantile_levels_array, axis=1)
@@ -208,39 +244,7 @@ def run_seasonal_naive_experiment(
             "target_mode": resolved_target_mode,
         }
 
-        identity_root = foundation_identity_root(
-            output_dir, "seasonal_naive", resolved_target_mode, dataset_name, term
-        )
-        with allocate_run(
-            identity_root,
-            experiment=experiment,
-            identity={
-                "model": "seasonal_naive",
-                "target_mode": resolved_target_mode,
-                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
-                "frequency": dataset.freq,
-                "term": term,
-            },
-            model_config={
-                "num_samples": num_samples,
-                "quantile_levels": quantile_levels,
-            },
-            pipeline_config={
-                "prediction_length": prediction_length,
-                "test_length": test_length,
-                "val_length": val_length,
-                "windows": dataset.windows,
-                "seasonality": season_length,
-            },
-            runtime_config={"device": "cpu"},
-            experiment_config={
-                "covariate_mode": covariate_mode,
-                "covariate_channels": 0,
-            },
-            provenance={
-                "dataset_config_path": None if config_path is None else str(config_path),
-            },
-        ) as run:
+        with run:
             metadata = save_window_predictions(
                 dataset=dataset,
                 fc_quantiles=fc_quantiles,

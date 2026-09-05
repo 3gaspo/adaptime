@@ -171,9 +171,18 @@ covariates.
 Every `run_n` contains `manifest.json`, `config.json`, predictions, raw metrics,
 and compact aggregate metrics. The manifest records the plain model, pipeline,
 runtime, experiment, dataset, and launch configuration without hashing code,
-data, or checkpoints. Different invocations receive different run directories,
-so a configuration is never overwritten silently. Model loading, dataset
-construction, metric computation, and result saving remain excluded from
+data, or checkpoints. Before inference, the default `overwrite_exact` policy
+skips an exact completed scientific configuration, resumes an interrupted one
+in the same `run_n` by recomputing that task, and allocates a new `run_n` for a
+different configuration. Each attempt records its launch ID, Slurm job ID,
+array task ID, action, and UTC launch time; resume messages also identify the
+preceding launch and job. If a model or comparison job fails, its exit handler
+marks every still-running task owned by that job as interrupted. This recovery
+is deliberately task-level: partial predictions within the current task are
+discarded. `TIME_RUN_CONFLICT_POLICY=overwrite_path|new`,
+`TIME_SKIP_COMPLETED=false`, and `TIME_FORCE_RERUN=true` provide deliberate
+replacement and repetition controls. Model loading, dataset construction,
+metric computation, and result saving remain excluded from
 `inference_seconds`.
 
 ### Foundation-model performance and timing
@@ -194,12 +203,18 @@ default to `expe_uni`:
 python scripts/compute_foundation_summary.py
 ```
 
-Exact repeated configurations select the latest `run_n`. If different
-scientific configurations match one task, aggregation fails instead of mixing
-them. Select explicitly with `--run-config FIELD=JSON`, or deliberately request
-the most recent run for every matching task with `--config-policy latest`.
+Exact repeated configurations use the automatically selected latest completed
+repeat unless a completed `run_n` is pinned with
+`scripts/select_result_run.py`. `--repeat-policy selected|latest|distinct|average`
+controls exact repeats. If different scientific configurations match one task,
+the default `--config-policy error` fails instead of mixing them;
+`distinct|latest|average` are explicit alternatives. Averaging first combines
+exact repeats within a configuration and then combines configurations. Select
+a configuration directly with `--run-config FIELD=JSON`.
 `--target-mode` can restrict an aggregate to one target representation. The generated
 `foundation_model_report_manifest.json` lists every selected input manifest.
+Lightweight synchronization and publication retain task/report manifests,
+`SELECTED_RUNS.json`, and prior manifest states under `manifest_history/`.
 
 For each model, the reported MASE first averages short, medium, and long terms
 equally within each dataset/frequency and then averages those dataset/frequency
@@ -347,6 +362,23 @@ If you want to add a new dataset to TIME:
      - Add your dataset to TIME
      - Evaluate existing models on your new datasets
      - Update the leaderboard with new results
+
+## Source tree
+
+- `experiments/` contains the maintained foundation-model evaluation entry
+  points.
+- `src/timebench/evaluation/` owns dataset windows, covariate preparation,
+  metrics, timing, and result saving; `src/timebench/models/` owns the retained
+  model adapters and local checkpoint resolution.
+- `src/timebench/pipeline/` owns run manifests, task recovery, repeat selection,
+  and aggregate input resolution; `src/timebench/feature/` owns dataset-feature
+  computation and performance joins.
+- `src/timebench/config/` contains benchmark dataset configuration;
+  `src/slurm/`, `slurm/`, and `scripts/` contain reusable orchestration and
+  user-facing launch/report commands.
+- `src/tests/` contains the dependency-light local contract checks. Runtime
+  artifacts belong only in `outputs/` and `logs/`; shared prepared data and
+  metadata remain under the configured dataset root.
 
 ## 🤝 Acknowledgements
 

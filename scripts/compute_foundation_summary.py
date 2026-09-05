@@ -32,6 +32,7 @@ def load_result_cells(
     target_modes: set[str] | None = None,
     config_filters: dict | None = None,
     config_policy: str = "error",
+    repeat_policy: str = "selected",
 ) -> list[dict]:
     """Load one selected completed manifest per dataset/frequency/horizon cell."""
     cells = []
@@ -42,6 +43,7 @@ def load_result_cells(
         launch_id=launch_id,
         config_filters=config_filters,
         config_policy=config_policy,
+        repeat_policy=repeat_policy,
     )
     for run_dir, manifest in selected:
         identity = manifest["identity"]
@@ -56,16 +58,26 @@ def load_result_cells(
         inference_seconds = config.get("inference_seconds")
         if inference_seconds is not None:
             inference_seconds = float(inference_seconds)
+        selection = manifest.get("selection", {})
 
         cells.append(
             {
-                "model": identity["model"],
+                "model": selection.get("model_label", identity["model"]),
+                "base_model": identity["model"],
                 "target_mode": identity["target_mode"],
                 "dataset_id": f"{identity['dataset']}/{identity['frequency']}",
                 "horizon": identity["term"],
                 "MASE": mase,
                 "inference_seconds": inference_seconds,
                 "manifest_path": str(run_dir / "manifest.json"),
+                "scientific_config": selection.get(
+                    "scientific_config",
+                    {
+                        "model_config": manifest.get("model_config", {}),
+                        "pipeline_config": manifest.get("pipeline_config", {}),
+                        "experiment_config": manifest.get("experiment_config", {}),
+                    },
+                ),
             }
         )
     return cells
@@ -73,8 +85,70 @@ def load_result_cells(
 
 def summarize_cells(cells: list[dict]) -> list[dict]:
     """Macro-average H settings within datasets, then datasets within models."""
-    by_model = defaultdict(list)
+    by_exact_config = defaultdict(list)
     for cell in cells:
+        key = (
+            cell["model"],
+            cell.get("base_model", cell["model"]),
+            cell["target_mode"],
+            cell["dataset_id"],
+            cell["horizon"],
+            json.dumps(cell.get("scientific_config", {}), sort_keys=True),
+        )
+        by_exact_config[key].append(cell)
+
+    config_means = []
+    for key, repeats in by_exact_config.items():
+        timed = [
+            cell["inference_seconds"]
+            for cell in repeats
+            if cell["inference_seconds"] is not None
+            and np.isfinite(cell["inference_seconds"])
+        ]
+        config_means.append(
+            {
+                "model": key[0],
+                "base_model": key[1],
+                "target_mode": key[2],
+                "dataset_id": key[3],
+                "horizon": key[4],
+                "MASE": float(np.mean([cell["MASE"] for cell in repeats])),
+                "inference_seconds": (
+                    float(np.mean(timed)) if len(timed) == len(repeats) else None
+                ),
+            }
+        )
+
+    by_task = defaultdict(list)
+    for cell in config_means:
+        by_task[
+            (
+                cell["model"],
+                cell["base_model"],
+                cell["target_mode"],
+                cell["dataset_id"],
+                cell["horizon"],
+            )
+        ].append(cell)
+    effective_cells = []
+    for key, configs in by_task.items():
+        timed = [cell["inference_seconds"] for cell in configs if cell["inference_seconds"] is not None]
+        effective_cells.append(
+            {
+                "model": key[0],
+                "base_model": key[1],
+                "target_mode": key[2],
+                "dataset_id": key[3],
+                "horizon": key[4],
+                "MASE": float(np.mean([cell["MASE"] for cell in configs])),
+                "inference_seconds": (
+                    float(np.mean(timed)) if len(timed) == len(configs) else None
+                ),
+            }
+        )
+
+    by_model = defaultdict(list)
+    for cell in effective_cells:
         by_model[cell["model"]].append(cell)
 
     rows = []
@@ -96,6 +170,7 @@ def summarize_cells(cells: list[dict]) -> list[dict]:
         rows.append(
             {
                 "model": model,
+                "base_model": model_cells[0].get("base_model", model),
                 "target_modes": ",".join(
                     sorted({cell["target_mode"] for cell in model_cells})
                 ),
@@ -149,13 +224,14 @@ def add_model_status(
     """Attach launch status and retain failed models with no metric cells."""
     rows = [row.copy() for row in metric_rows]
     if statuses:
-        present = {row["model"] for row in rows}
+        present = {row.get("base_model", row["model"]) for row in rows}
         for model in models:
             if model in present:
                 continue
             rows.append(
                 {
                     "model": model,
+                    "base_model": model,
                     "target_modes": "",
                     "MASE_macro": None,
                     "inference_seconds": None,
@@ -165,7 +241,7 @@ def add_model_status(
                 }
             )
     for row in rows:
-        model = row["model"]
+        model = row.get("base_model", row["model"])
         status = statuses.get(model, {})
         row["launch_id"] = launch_id or status.get("launch_id", "")
         row["state"] = status.get("state", "")
@@ -186,6 +262,7 @@ def write_csv(rows: list[dict], path: Path) -> None:
     fieldnames = [
         "launch_id",
         "model",
+        "base_model",
         "target_modes",
         "state",
         "exit_code",
@@ -236,6 +313,7 @@ def write_report_manifest(
     launch_id: str | None,
     config_filters: dict,
     config_policy: str,
+    repeat_policy: str,
     artifacts: list[Path],
 ) -> None:
     """Record the exact run manifests selected for this aggregate."""
@@ -249,6 +327,7 @@ def write_report_manifest(
             "launch_id": launch_id,
             "config_filters": config_filters,
             "config_policy": config_policy,
+            "repeat_policy": repeat_policy,
         },
         "input_manifests": [
             Path(cell["manifest_path"]).resolve().relative_to(results_dir.resolve()).as_posix()
@@ -307,9 +386,15 @@ def main() -> None:
     )
     parser.add_argument(
         "--config-policy",
-        choices=("error", "latest"),
+        choices=("error", "distinct", "latest", "average"),
         default="error",
         help="How to handle different matching scientific configs",
+    )
+    parser.add_argument(
+        "--repeat-policy",
+        choices=("selected", "latest", "distinct", "average"),
+        default="selected",
+        help="How to select or aggregate exact repeated configurations",
     )
     parser.add_argument(
         "--status-dir",
@@ -340,6 +425,7 @@ def main() -> None:
         target_modes=None if args.target_mode is None else set(args.target_mode),
         config_filters=config_filters,
         config_policy=args.config_policy,
+        repeat_policy=args.repeat_policy,
     )
     metric_rows = summarize_cells(cells)
     statuses = load_model_statuses(args.status_dir)
@@ -361,6 +447,7 @@ def main() -> None:
         launch_id=args.launch_id,
         config_filters=config_filters,
         config_policy=args.config_policy,
+        repeat_policy=args.repeat_policy,
         artifacts=[args.csv, args.markdown],
     )
     print(f"Foundation-model summary written to {args.csv} and {args.markdown}")

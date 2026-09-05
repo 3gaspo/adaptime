@@ -171,6 +171,62 @@ def run_chronos2_experiment(
                 f"covariate_mode={covariate_mode!r}"
             )
 
+        season_length = get_seasonality(dataset.freq)
+        covariate_channels = dataset.covariate_dim if covariate_mode != "none" else 0
+        identity_root = foundation_identity_root(
+            output_dir, "chronos2", resolved_target_mode, dataset_name, term
+        )
+        run = allocate_run(
+            identity_root,
+            experiment=experiment,
+            identity={
+                "model": "chronos2",
+                "target_mode": resolved_target_mode,
+                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
+                "frequency": dataset.freq,
+                "term": term,
+            },
+            model_config={
+                "model_size": model_size,
+                "context_length": context_length,
+                "quantile_levels": quantile_levels,
+            },
+            pipeline_config={
+                "prediction_length": prediction_length,
+                "test_length": test_length,
+                "val_length": val_length,
+                "windows": dataset.windows,
+                "seasonality": season_length,
+            },
+            runtime_config={
+                "batch_size": batch_size,
+                "device": device_map,
+                "checkpoint_path": str(checkpoint_path),
+            },
+            experiment_config={
+                "covariate_mode": covariate_mode,
+                "covariate_channels": covariate_channels,
+                "covariate_source": (
+                    "other_target_variates"
+                    if covariate_mode == "past_targets"
+                    else "dataset_fields"
+                    if covariate_mode == "future_included"
+                    else "none"
+                ),
+                "covariate_time_span": (
+                    "L"
+                    if covariate_mode == "past_targets"
+                    else "L+H" if covariate_mode == "future_included" else "none"
+                ),
+            },
+            provenance={
+                "dataset_config_path": None if config_path is None else str(config_path),
+            },
+        )
+        if not run.should_run:
+            print(f"  Reused completed task: {run.run_dir}")
+            continue
+
         # Initialize Chronos only after the dataset capability check.
         print(f"  Initializing Chronos pipeline ({checkpoint_path})...")
         pipeline = BaseChronosPipeline.from_pretrained(
@@ -196,7 +252,6 @@ def run_chronos2_experiment(
         print(f"    - Prediction length: {dataset.prediction_length}")
         print(f"    - Windows: {num_windows}")
 
-        season_length = get_seasonality(dataset.freq)
         timer = EvaluationTimer()
         timer.start()
 
@@ -236,9 +291,6 @@ def run_chronos2_experiment(
         fc_quantiles_batches = []
         eval_items = list(eval_data)
         total_items = len(eval_items)
-        covariate_channels = None
-
-
         for start in range(0, total_items, batch_size):
             end = min(start + batch_size, total_items)
             batch_items = eval_items[start:end]
@@ -339,56 +391,7 @@ def run_chronos2_experiment(
             ),
         }
 
-        identity_root = foundation_identity_root(
-            output_dir, "chronos2", resolved_target_mode, dataset_name, term
-        )
-        with allocate_run(
-            identity_root,
-            experiment=experiment,
-            identity={
-                "model": "chronos2",
-                "target_mode": resolved_target_mode,
-                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
-                "frequency": dataset.freq,
-                "term": term,
-            },
-            model_config={
-                "model_size": model_size,
-                "context_length": context_length,
-                "quantile_levels": quantile_levels,
-            },
-            pipeline_config={
-                "prediction_length": prediction_length,
-                "test_length": test_length,
-                "val_length": val_length,
-                "windows": dataset.windows,
-                "seasonality": season_length,
-            },
-            runtime_config={
-                "batch_size": batch_size,
-                "device": device_map,
-                "checkpoint_path": str(checkpoint_path),
-            },
-            experiment_config={
-                "covariate_mode": covariate_mode,
-                "covariate_channels": covariate_channels or 0,
-                "covariate_source": (
-                    "other_target_variates"
-                    if covariate_mode == "past_targets"
-                    else "dataset_fields"
-                    if covariate_mode == "future_included"
-                    else "none"
-                ),
-                "covariate_time_span": (
-                    "L"
-                    if covariate_mode == "past_targets"
-                    else "L+H" if covariate_mode == "future_included" else "none"
-                ),
-            },
-            provenance={
-                "dataset_config_path": None if config_path is None else str(config_path),
-            },
-        ) as run:
+        with run:
             metadata = save_window_predictions(
                 dataset=dataset,
                 fc_quantiles=fc_quantiles,
