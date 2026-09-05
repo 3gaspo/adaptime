@@ -39,7 +39,9 @@ deliberately.
   download, and Selena exports the upstream offline-mode switches.
 - Made Selena load its preserved project `.env` before applying cluster path
   defaults while retaining submission-time environment overrides as highest
-  priority. Model jobs reject a missing `TIME_DATASET` before entering uv.
+  priority. Runtime setup creates writable roots without fabricating the
+  saved-Arrow leaf, so model and diagnostic jobs reject a missing
+  `TIME_DATASET` before entering uv.
 - Avoided Hugging Face `datasets` 2.x's NumPy formatter at the saved-Arrow
   boundary. TIME now keeps rows in their native representation and converts
   only numeric GluonTS fields with `np.asarray`, preserving values while
@@ -57,6 +59,10 @@ deliberately.
   macro-average weights H settings equally within dataset/frequency entries
   and then weights those entries equally; timing totals require complete task
   coverage.
+- Made the dependent foundation summary generate the launch-filtered
+  MASE-versus-feature SVG, joined data, and correlation table after confirming
+  that all four model jobs completed successfully. Transfer and publication
+  retain these compact analysis artifacts.
 - Added a compact `metrics_summary.json` beside every task result, containing
   finite aggregate metrics and coverage counts. Lightweight result transfer
   and publication include these files, while detailed transfer retains raw
@@ -110,6 +116,9 @@ deliberately.
 - Made job-specific transfer and publication retain compact dataset-metadata
   aggregates exported below the project log root, without duplicating exact
   positions or per-variate features in experiment outputs.
+- Made dataset-metadata exports stage-specific and atomic per file: successful
+  audits export only audit summaries, while the shared feature index enters the
+  same job export only after feature extraction succeeds.
 - Included the Slurm job and array identifiers in the first workflow log line
   as well as the durable status file, making a copied stdout/stderr pair
   self-identifying after it leaves the scheduler.

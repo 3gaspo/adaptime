@@ -119,11 +119,13 @@ entry points; normal cluster execution uses the three submission helpers above.
 Dataset diagnostics are keyed by the distinct context limit `L` and forecast
 horizon `H`, not duplicated per model. `model_contexts.csv` maps maintained
 model profiles to those shared rows. Exact source positions and per-window
-events remain below `${TIME_METADATA}/window_audit/`; compact summaries are
-copied to the job log tree for result synchronization. Feature extraction
+events remain below `${TIME_METADATA}/window_audit/`; compact audit summaries
+are copied to the job log tree after that stage succeeds, and the feature
+summary is added only after feature extraction succeeds. Feature extraction
 writes below `${TIME_METADATA}/stl_features/`, skips artifacts covering every
 source variate, and computes only missing variate rows when repairing a partial
-artifact.
+artifact. Cluster workflows require the prepared `TIME_DATASET` directory to
+exist before entering the model or diagnostic runner.
 
 To run every included foundation-model reproduction runner sequentially and
 write a joint performance/timing table after all runs complete:
@@ -180,9 +182,13 @@ After the model jobs terminate, the summary job writes CSV, Markdown, and a
 report manifest inside the selected experiment root. Cluster summaries select
 only completed run manifests from the current launch and include terminal model
 states, so partial results cannot be mistaken for complete results or mixed
-with stale tasks. In-job channel summaries explicitly record the successful
-evaluation stage even though the enclosing workflow is not terminal until the
-summary itself finishes. Manual summaries default to `expe_uni`:
+with stale tasks. When all four model jobs completed successfully, the same
+summary job also writes the launch-filtered MASE-versus-feature SVG, joined
+data, and feature correlations below
+`results/{experiment}/analysis/{launch_id}/`. In-job channel summaries
+explicitly record the successful evaluation stage even though the enclosing
+workflow is not terminal until the summary itself finishes. Manual summaries
+default to `expe_uni`:
 
 ```bash
 python scripts/compute_foundation_summary.py

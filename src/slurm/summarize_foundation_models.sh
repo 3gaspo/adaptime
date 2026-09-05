@@ -43,4 +43,46 @@ fi
 
 time_task_complete
 time_stage_complete
+
+status_root="$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"
+incomplete_models=()
+for model in "${FOUNDATION_MODELS[@]}"; do
+    status_file="$status_root/$model.status"
+    state=""
+    exit_code=""
+    if [ -f "$status_file" ]; then
+        state="$(sed -n 's/^state=//p' "$status_file")"
+        exit_code="$(sed -n 's/^exit_code=//p' "$status_file")"
+    fi
+    if [ "$state" != completed ] || [ "$exit_code" != 0 ]; then
+        incomplete_models+=("$model:${state:-missing}:${exit_code:-unknown}")
+    fi
+done
+if [ "${#incomplete_models[@]}" -gt 0 ]; then
+    echo "Feature plot requires four successful model jobs; incomplete: ${incomplete_models[*]}" >&2
+    exit 1
+fi
+
+time_stage_start feature_plot
+analysis_root="$TIME_OUTPUTS/results/$experiment/analysis/$TIME_LAUNCH_ID"
+time_task_start "mase_vs_features features=$TIME_METADATA/stl_features output=$analysis_root"
+plot_command=(
+    uv run --no-sync python
+    "$PROJECT_ROOT/scripts/plot_feature_performance.py"
+    --features-root "$TIME_METADATA/stl_features"
+    --results-dir "$TIME_OUTPUTS/results/$experiment"
+    --output "$analysis_root/mase_vs_features.svg"
+    --models "${FOUNDATION_MODELS[@]}"
+    --launch-id "$TIME_LAUNCH_ID"
+    --top 5
+)
+
+if [ -n "${SLURM_JOB_ID:-}" ]; then
+    srun --ntasks=1 "${plot_command[@]}"
+else
+    "${plot_command[@]}"
+fi
+
+time_task_complete
+time_stage_complete
 time_workflow_complete
