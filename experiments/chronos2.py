@@ -94,10 +94,10 @@ def run_chronos2_experiment(
         quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     if output_dir is None:
-        output_dir = str(foundation_experiment_root(covariate_mode))
+        output_dir = str(foundation_experiment_root())
 
     os.makedirs(output_dir, exist_ok=True)
-    experiment = foundation_experiment_name(covariate_mode)
+    experiment = foundation_experiment_name()
 
     if model_size != "chronos2":
         raise ValueError(f"Unsupported Chronos-2 model size: {model_size}")
@@ -434,7 +434,7 @@ def main():
     parser.add_argument("--model-size", type=str, default="chronos2",
                         help="Chronos model size (use 'chronos2' for amazon/chronos-2)")
     parser.add_argument("--output-dir", type=str, default=None,
-                        help="Experiment result root; defaults to expe_uni or expe_covar")
+                        help="Task root; defaults to the selected experiment's tasks directory")
     parser.add_argument("--batch-size", type=int, default=16,
                         help="Batch size for prediction")
     parser.add_argument(

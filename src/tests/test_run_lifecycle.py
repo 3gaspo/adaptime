@@ -19,10 +19,15 @@ from timebench.pipeline import (
 )
 
 
-def _allocate(root: Path, value: int = 1, **kwargs):
+def _allocate(
+    root: Path,
+    value: int = 1,
+    experiment: str = "foundation_models",
+    **kwargs,
+):
     return allocate_run(
         root,
-        experiment="expe_uni",
+        experiment=experiment,
         identity={
             "model": "model_a",
             "target_mode": "univariate",
@@ -47,7 +52,12 @@ def _complete(run) -> None:
 def main() -> None:
     previous = {
         name: os.environ.get(name)
-        for name in ("TIME_LAUNCH_ID", "SLURM_JOB_ID")
+        for name in (
+            "TIME_LAUNCH_ID",
+            "SLURM_JOB_ID",
+            "TIME_REUSE_FROM",
+            "TIME_REUSE_IF_AVAILABLE_FROM",
+        )
     }
     try:
         with tempfile.TemporaryDirectory() as temporary:
@@ -145,6 +155,34 @@ def main() -> None:
             assert (overwritten.run_dir / "manifest_history").is_dir()
             assert len(load_manifest(overwritten.run_dir)["launch"]["attempts"]) == 1
             assert load_manifest(overwritten.run_dir)["project"] == PROJECT_ROOT.name
+
+            source_root = Path(temporary) / "foundation_source"
+            source = _allocate(source_root)
+            with source:
+                (source.run_dir / "config.json").write_text("{}", encoding="utf-8")
+                (source.run_dir / "metrics_summary.json").write_text(
+                    "{}", encoding="utf-8"
+                )
+                source.complete(["config.json", "metrics_summary.json"])
+            imported_root = Path(temporary) / "channel_destination"
+            imported = _allocate(
+                imported_root,
+                experiment="channels_comparison",
+                reuse_from=source_root,
+            )
+            assert imported.action == "skip"
+            imported_manifest = load_manifest(imported.run_dir)
+            assert imported_manifest["experiment"] == "channels_comparison"
+            assert imported_manifest["provenance"]["reused_from_experiment"] == "foundation_models"
+            assert (imported.run_dir / "config.json").is_file()
+            assert (imported.run_dir / "metrics_summary.json").is_file()
+
+            fallback_root = Path(temporary) / "fallback_destination"
+            os.environ["TIME_REUSE_IF_AVAILABLE_FROM"] = str(
+                Path(temporary) / "missing_source"
+            )
+            fallback = _allocate(fallback_root, experiment="channels_comparison")
+            assert fallback.action == "new"
     finally:
         for name, value in previous.items():
             if value is None:

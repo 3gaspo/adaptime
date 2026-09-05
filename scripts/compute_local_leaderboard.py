@@ -50,7 +50,7 @@ def check_local_seasonal_naive(results_dir: Path) -> Optional[Path]:
     Check if Seasonal Naive results exist locally.
 
     Args:
-        results_dir: Path to results directory (e.g., outputs/results)
+        results_dir: Path to an experiment's task directory.
 
     Returns:
         Path to results directory if found, None otherwise
@@ -479,8 +479,8 @@ def main():
     parser = argparse.ArgumentParser(description="Compute the local TIME leaderboard.")
     parser.add_argument(
         "--results-dir",
-        default=str(foundation_experiment_root("none")),
-        help="One manifest-based experiment root (default: results/expe_uni)",
+        default=str(foundation_experiment_root()),
+        help="One experiment task root (default: outputs/foundation_models/tasks)",
     )
     parser.add_argument(
         "--metric",

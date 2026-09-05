@@ -56,27 +56,17 @@ def outputs_root() -> Path:
     return _configured_path("TIME_OUTPUTS", PROJECT_ROOT / "outputs")
 
 
-def results_root() -> Path:
-    """Per-model TIME evaluation results."""
-    return outputs_root() / "results"
+def foundation_experiment_name(experiment: str | None = None) -> str:
+    """Resolve the independently launched experiment owning foundation tasks."""
+    value = experiment or os.getenv("TIME_EXPERIMENT", "foundation_models")
+    if value not in {"foundation_models", "channels_comparison"}:
+        raise ValueError(f"Unknown foundation experiment {value!r}")
+    return value
 
 
-def foundation_experiment_name(covariate_mode: str = "none") -> str:
-    """Map the explicit covariate contract to its experiment family."""
-    experiments = {
-        "none": "expe_uni",
-        "future_included": "expe_covar",
-        "past_targets": "expe_covar",
-    }
-    try:
-        return experiments[covariate_mode]
-    except KeyError as error:
-        raise ValueError(f"Unknown covariate mode {covariate_mode!r}") from error
-
-
-def foundation_experiment_root(covariate_mode: str = "none") -> Path:
-    """Result root for one maintained foundation experiment."""
-    return results_root() / foundation_experiment_name(covariate_mode)
+def foundation_experiment_root(experiment: str | None = None) -> Path:
+    """Task root for one maintained foundation experiment."""
+    return outputs_root() / foundation_experiment_name(experiment) / "tasks"
 
 
 def foundation_identity_root(

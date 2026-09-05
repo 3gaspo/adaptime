@@ -145,12 +145,13 @@ bash scripts/channels_comparison.sh dgx
 bash scripts/dataset_diagnostics.sh dgx
 ```
 
-Use `selena` for matching Selena fronts. Baseline runs remain below
-`outputs/results/`; proposal runs remain below `outputs/adaptime/`. Shared
-diagnostic metadata lives below `TIME_METADATA`, outside these project-local
-runtime artifacts. After all four foundation jobs complete successfully, the
-dependent summary also creates a launch-filtered MASE-versus-feature plot,
-joined data, and feature correlations.
+Use `selena` for matching Selena fronts. Foundation tasks and summaries live
+below `outputs/foundation_models/`; all three channel cases share
+`outputs/channels_comparison/`. The multivariate channel case imports matching
+completed Chronos-2 foundation summaries when available and recomputes when
+they are absent, incomplete, or scientifically different. Proposal runs remain
+below `outputs/adaptime/`. Shared diagnostic metadata lives below
+`TIME_METADATA`, outside these project-local runtime artifacts.
 
 ## Source tree
 
