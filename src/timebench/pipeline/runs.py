@@ -220,7 +220,10 @@ def interrupt_launch(root: str | Path, launch_id: str) -> list[Path]:
         return []
     changed = []
     for manifest_path in sorted(base.rglob(MANIFEST_NAME)):
-        if "manifest_history" in manifest_path.relative_to(base).parts:
+        if (
+            "manifest_history" in manifest_path.relative_to(base).parts
+            or RUN_PATTERN.fullmatch(manifest_path.parent.name) is None
+        ):
             continue
         manifest = load_manifest(manifest_path)
         if (
@@ -587,6 +590,8 @@ def select_completed_runs(
     if not root.exists():
         return []
     for path in sorted(root.rglob(MANIFEST_NAME)):
+        if RUN_PATTERN.fullmatch(path.parent.name) is None:
+            continue
         manifest = load_manifest(path)
         if manifest["status"] != "completed":
             continue
