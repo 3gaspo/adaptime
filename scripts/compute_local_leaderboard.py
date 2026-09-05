@@ -12,7 +12,7 @@ Usage:
     python scripts/compute_local_leaderboard.py
 
 The script uses default values:
-    - Results directory: TIME_OUTPUTS/results/expe_uni
+    - Task directory: TIME_OUTPUTS/foundation_models/tasks
     - Sorting metric: MASE
 
 Requirements:

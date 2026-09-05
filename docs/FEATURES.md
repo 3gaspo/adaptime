@@ -83,7 +83,7 @@ the largest mean absolute within-model Spearman correlation:
 ```bash
 python scripts/plot_feature_performance.py \
   --features-root "$TIME_METADATA/stl_features" \
-  --results-dir outputs/results/expe_uni \
+  --results-dir outputs/foundation_models/tasks \
   --top 5
 ```
 
