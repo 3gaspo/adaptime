@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "covariate_channels": 4,
+          "covariate_mode": "past_targets",
+          "covariate_source": "other_target_variates",
+          "covariate_time_span": "L"
+        },
+        "model_config": {
+          "context_length": 8192,
+          "model_size": "chronos2",
+          "quantile_levels": [
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9
+          ]
+        },
+        "pipeline_config": {
+          "prediction_length": 336,
+          "seasonality": 24,
+          "test_length": 336,
+          "val_length": 336,
+          "windows": 1
+        }
+      }
+    }
+  ]
+}

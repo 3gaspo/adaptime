@@ -1,0 +1,49 @@
+{
+  "dataset_config": "ECDC_COVID/D/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 61287.899023869446,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "MAE": {
+      "mean": 146.14953722577954,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "RMSE": {
+      "mean": 165.77276823918982,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "MAPE": {
+      "mean": 0.9428785587829607,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "sMAPE": {
+      "mean": 0.36036793569357206,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "MASE": {
+      "mean": 3.56811863838881,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "ND": {
+      "mean": 0.6948333701948377,
+      "finite_values": 45,
+      "total_values": 45
+    },
+    "CRPS": {
+      "mean": 0.6704212405392198,
+      "finite_values": 45,
+      "total_values": 45
+    }
+  },
+  "launch_id": "selena_20260905T115114Z_25365",
+  "model": "seasonal_naive",
+  "inference_seconds": 0.44339501578360796
+}

@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Job_Claims/W/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 801192775.6340685,
+      "finite_values": 8,
+      "total_values": 8
+    },
+    "MAE": {
+      "mean": 18632.72430889423,
+      "finite_values": 8,
+      "total_values": 8
+    },
+    "RMSE": {
+      "mean": 22058.765224923372,
+      "finite_values": 8,
+      "total_values": 8
+    },
+    "MAPE": {
+      "mean": 0.023547217567454606,
+      "finite_values": 8,
+      "total_values": 8
+    },
+    "sMAPE": {
+      "mean": 0.0238054985417177,
+      "finite_values": 8,
+      "total_values": 8
+    },
+    "MASE": {
+      "mean": 3.1438350009057947,
+      "finite_values": 8,
+      "total_values": 8
+    },
+    "ND": {
+      "mean": 0.023751432444786093,
+      "finite_values": 8,
+      "total_values": 8
+    },
+    "CRPS": {
+      "mean": 0.01841939211529813,
+      "finite_values": 8,
+      "total_values": 8
+    }
+  },
+  "launch_id": "selena_channels_20260905T115122Z_26031",
+  "model": "chronos2",
+  "inference_seconds": 0.018661079928278923
+}

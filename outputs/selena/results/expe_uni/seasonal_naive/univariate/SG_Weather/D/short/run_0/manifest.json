@@ -1,0 +1,68 @@
+{
+  "completed_at": "2026-09-05T12:07:07.807628+00:00",
+  "experiment": "expe_uni",
+  "experiment_config": {
+    "covariate_channels": 0,
+    "covariate_mode": "none"
+  },
+  "identity": {
+    "dataset": "SG_Weather",
+    "frequency": "D",
+    "model": "seasonal_naive",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_20260905T115114Z_25365",
+        "launched_at": "2026-09-05T12:06:54.281510+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3152740"
+      }
+    ],
+    "launch_id": "selena_20260905T115114Z_25365",
+    "launched_at": "2026-09-05T12:06:54.281510+00:00",
+    "slurm_job_id": "3152740"
+  },
+  "model_config": {
+    "num_samples": 100,
+    "quantile_levels": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ]
+  },
+  "pipeline_config": {
+    "prediction_length": 3,
+    "seasonality": 1,
+    "test_length": 366,
+    "val_length": 366,
+    "windows": 122
+  },
+  "project": "improved",
+  "provenance": {
+    "dataset_config_path": null
+  },
+  "required_artifacts": [
+    "predictions.npz",
+    "metrics.npz",
+    "config.json",
+    "metrics_summary.json"
+  ],
+  "runtime_config": {
+    "device": "cpu"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-05T12:06:54.281510+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-05T12:07:07.807628+00:00"
+}

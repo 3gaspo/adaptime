@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Housing_Inventory/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 7766312740.489713,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "MAE": {
+      "mean": 41315.59370649453,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "RMSE": {
+      "mean": 46064.97802735963,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "MAPE": {
+      "mean": 0.09275579415167756,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "sMAPE": {
+      "mean": 0.10409415912277921,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "MASE": {
+      "mean": 0.7778781651885934,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "ND": {
+      "mean": 0.0916662189460878,
+      "finite_values": 12,
+      "total_values": 12
+    },
+    "CRPS": {
+      "mean": 0.06924430177010586,
+      "finite_values": 12,
+      "total_values": 12
+    }
+  },
+  "launch_id": "selena_20260905T115114Z_25365",
+  "model": "seasonal_naive",
+  "inference_seconds": 0.07348052877932787
+}

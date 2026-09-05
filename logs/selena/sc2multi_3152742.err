@@ -1,0 +1,20 @@
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Traceback (most recent call last):
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos2.py", line 519, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos2.py", line 500, in main
+    run_chronos2_experiment(
+  File "/fssmall/home/h61084/codes/improved/experiments/chronos2.py", line 179, in run_chronos2_experiment
+    run = allocate_run(
+          ^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/experiments/../src/timebench/pipeline/runs.py", line 393, in allocate_run
+    raise ManifestError(f"Matching run is already running: {target}")
+timebench.pipeline.runs.ManifestError: Matching run is already running: /fslarge/scratch/users/h61084/codes/improved/outputs/results/expe_uni/chronos2/multivariate/Water_Quality_Darwin/15T/short/run_0
+srun: error: sean0012: task 0: Exited with exit code 1
+2026-09-05 13:52:22 | task chronos2 comparison=multivariate covariate_mode=none target_mode=multivariate completed status=failed exit_code=1
+2026-09-05 13:52:22 | stage evaluate completed status=failed exit_code=1
+TIME interrupted-launch recovery launch_id=selena_channels_20260905T115122Z_26031 tasks=0 root=/scratch/users/h61084/codes/improved/outputs/results/expe_uni/chronos2/multivariate
+2026-09-05 13:52:22 | workflow chronos2_comparison completed status=failed exit_code=1

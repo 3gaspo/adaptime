@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Australia_Solar/H/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 26561679293.955547,
+      "finite_values": 312,
+      "total_values": 315
+    },
+    "MAE": {
+      "mean": 80553.00948045384,
+      "finite_values": 312,
+      "total_values": 315
+    },
+    "RMSE": {
+      "mean": 107351.29047719853,
+      "finite_values": 312,
+      "total_values": 315
+    },
+    "MAPE": {
+      "mean": 30.650671372050038,
+      "finite_values": 312,
+      "total_values": 315
+    },
+    "sMAPE": {
+      "mean": 0.5142614216149752,
+      "finite_values": 312,
+      "total_values": 315
+    },
+    "MASE": {
+      "mean": 0.5732793555281669,
+      "finite_values": 312,
+      "total_values": 315
+    },
+    "ND": {
+      "mean": 0.316942087773819,
+      "finite_values": 312,
+      "total_values": 315
+    },
+    "CRPS": {
+      "mean": 0.2507599440777846,
+      "finite_values": 312,
+      "total_values": 315
+    }
+  },
+  "launch_id": "selena_20260905T115114Z_25365",
+  "model": "ts_icl",
+  "inference_seconds": 7.619675572030246
+}

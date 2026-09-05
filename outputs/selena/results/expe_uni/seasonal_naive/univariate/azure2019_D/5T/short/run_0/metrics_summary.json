@@ -1,0 +1,49 @@
+{
+  "dataset_config": "azure2019_D/5T/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 107.97958238608543,
+      "finite_values": 8901,
+      "total_values": 8901
+    },
+    "MAE": {
+      "mean": 3.9009554300655944,
+      "finite_values": 8901,
+      "total_values": 8901
+    },
+    "RMSE": {
+      "mean": 5.291838740727019,
+      "finite_values": 8901,
+      "total_values": 8901
+    },
+    "MAPE": {
+      "mean": 0.4014387914435691,
+      "finite_values": 8901,
+      "total_values": 8901
+    },
+    "sMAPE": {
+      "mean": 0.2676532523325856,
+      "finite_values": 8901,
+      "total_values": 8901
+    },
+    "MASE": {
+      "mean": 1.0936834921712528,
+      "finite_values": 8901,
+      "total_values": 8901
+    },
+    "ND": {
+      "mean": 0.30338159445707324,
+      "finite_values": 8901,
+      "total_values": 8901
+    },
+    "CRPS": {
+      "mean": 0.29315143351333395,
+      "finite_values": 8901,
+      "total_values": 8901
+    }
+  },
+  "launch_id": "selena_20260905T115114Z_25365",
+  "model": "seasonal_naive",
+  "inference_seconds": 620.6893492303789
+}

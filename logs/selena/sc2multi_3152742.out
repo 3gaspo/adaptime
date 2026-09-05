@@ -1,0 +1,64 @@
+2026-09-05 13:51:25 | workflow chronos2_comparison started launch_id=selena_channels_20260905T115122Z_26031 task=multivariate slurm_job_id=3152742 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-05 13:51:25 | stage evaluate started
+2026-09-05 13:51:25 | task chronos2 comparison=multivariate covariate_mode=none target_mode=multivariate started
+[2026-09-05 13:51:25] TIME runner: run_chronos2_comparison.sh
+[2026-09-05 13:51:25] datasets: /scratch/users/h61084/datasets/hf_dataset
+[2026-09-05 13:51:25] weights: /scratch/users/h61084/weights
+[2026-09-05 13:51:25] outputs: /scratch/users/h61084/codes/improved/outputs
+[2026-09-05 13:51:25] covariate mode: none
+[2026-09-05 13:51:25] target mode: multivariate
+Running all 38 datasets from config:
+  - Water_Quality_Darwin/15T
+  - current_velocity/5T
+  - current_velocity/10T
+  - current_velocity/15T
+  - current_velocity/20T
+  - current_velocity/H
+  - Coastal_T_S/5T
+  - Coastal_T_S/15T
+  - Coastal_T_S/20T
+  - Coastal_T_S/H
+  - SG_Weather/D
+  - SG_PM25/H
+  - NE_China_Wind/H
+  - Australia_Solar/H
+  - OpenElectricity_NEM/5T
+  - EWELD_Load/15T
+  - Port_Activity/D
+  - Port_Activity/W
+  - Global_Influenza/W
+  - Crypto/D
+  - US_Term_Structure/B
+  - Oil_Price/B
+  - Job_Claims/W
+  - Uncertainty_1M/M
+  - Housing_Inventory/M
+  - JOLTS/M
+  - US_Labor/M
+  - Vehicle_Supply/M
+  - WUI_Global/Q
+  - Global_Price/Q
+  - Vehicle_Sales/M
+  - Supply_Chain_Customer/D
+  - Supply_Chain_Location/D
+  - azure2019_D/5T
+  - azure2019_I/5T
+  - azure2019_U/5T
+  - Smart_Manufacturing/H
+  - MetroPT-3/5T
+
+############################################################
+# Dataset 1/38: Water_Quality_Darwin/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Water_Quality_Darwin/15T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=1440, val_length=1440

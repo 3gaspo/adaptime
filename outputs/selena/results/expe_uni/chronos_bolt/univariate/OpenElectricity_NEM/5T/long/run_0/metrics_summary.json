@@ -1,0 +1,49 @@
+{
+  "dataset_config": "OpenElectricity_NEM/5T/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 83413.19052768075,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MAE": {
+      "mean": 147.8149923980683,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "RMSE": {
+      "mean": 189.01125501133856,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MAPE": {
+      "mean": 5.185987975434788,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "sMAPE": {
+      "mean": 0.30213684170586586,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MASE": {
+      "mean": 0.8973124209379337,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "ND": {
+      "mean": 0.2678993416427286,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "CRPS": {
+      "mean": 0.2163263583332056,
+      "finite_values": 140,
+      "total_values": 140
+    }
+  },
+  "launch_id": "selena_20260905T115114Z_25365",
+  "model": "chronos_bolt",
+  "inference_seconds": 5.172001736238599
+}

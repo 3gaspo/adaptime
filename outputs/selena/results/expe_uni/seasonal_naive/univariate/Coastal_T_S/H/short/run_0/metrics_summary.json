@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Coastal_T_S/H/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 28.006689279372114,
+      "finite_values": 2016,
+      "total_values": 2016
+    },
+    "MAE": {
+      "mean": 1.5748336467576327,
+      "finite_values": 2016,
+      "total_values": 2016
+    },
+    "RMSE": {
+      "mean": 1.9242996216753252,
+      "finite_values": 2016,
+      "total_values": 2016
+    },
+    "MAPE": {
+      "mean": 0.04099074061410025,
+      "finite_values": 2016,
+      "total_values": 2016
+    },
+    "sMAPE": {
+      "mean": 0.03946988549236944,
+      "finite_values": 2016,
+      "total_values": 2016
+    },
+    "MASE": {
+      "mean": 1.2417492726897976,
+      "finite_values": 2016,
+      "total_values": 2016
+    },
+    "ND": {
+      "mean": 0.03894912156878274,
+      "finite_values": 2016,
+      "total_values": 2016
+    },
+    "CRPS": {
+      "mean": 0.035733502977139245,
+      "finite_values": 2016,
+      "total_values": 2016
+    }
+  },
+  "launch_id": "selena_20260905T115114Z_25365",
+  "model": "seasonal_naive",
+  "inference_seconds": 17.56946395430714
+}

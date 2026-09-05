@@ -1,0 +1,20 @@
+2026-09-05 14:43:11 | workflow foundation_summary started launch_id=selena_20260905T115114Z_25365 task=macro_mase_and_timing slurm_job_id=3152741 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-05 14:43:11 | stage summarize started
+2026-09-05 14:43:11 | task foundation_model_summary outputs=/scratch/users/h61084/codes/improved/outputs started
+Foundation-model summary written to /scratch/users/h61084/codes/improved/outputs/results/expe_uni/foundation_model_summary.csv and /scratch/users/h61084/codes/improved/outputs/results/expe_uni/foundation_model_summary.md
+
+chronos2/multivariate,univariate state=completed  MASE=1.122040  inference=442.119s  coverage=98/98 timed tasks
+ts_icl/univariate            state=completed  MASE=1.167467  inference=2786.841s  coverage=98/98 timed tasks
+chronos_bolt/univariate      state=completed  MASE=1.238911  inference=943.949s  coverage=98/98 timed tasks
+seasonal_naive/univariate    state=completed  MASE=1.557194  inference=2299.613s  coverage=98/98 timed tasks
+2026-09-05 14:43:15 | task foundation_model_summary outputs=/scratch/users/h61084/codes/improved/outputs completed status=success
+2026-09-05 14:43:15 | stage summarize completed status=success
+2026-09-05 14:43:15 | stage feature_plot started
+2026-09-05 14:43:15 | task mase_vs_features features=/scratch/users/h61084/datasets/time_metadata/stl_features output=/scratch/users/h61084/codes/improved/outputs/results/expe_uni/analysis/selena_20260905T115114Z_25365 started
+Selected features: temporal_scale_heterogeneity, temporal_heterogeneity, temporal_location_heterogeneity, trend_hurst, stationarity
+Plot: /scratch/users/h61084/codes/improved/outputs/results/expe_uni/analysis/selena_20260905T115114Z_25365/mase_vs_features.svg
+Joined data: /scratch/users/h61084/codes/improved/outputs/results/expe_uni/analysis/selena_20260905T115114Z_25365/mase_vs_features_data.csv
+Correlations: /scratch/users/h61084/codes/improved/outputs/results/expe_uni/analysis/selena_20260905T115114Z_25365/mase_vs_features_correlations.csv
+2026-09-05 14:43:41 | task mase_vs_features features=/scratch/users/h61084/datasets/time_metadata/stl_features output=/scratch/users/h61084/codes/improved/outputs/results/expe_uni/analysis/selena_20260905T115114Z_25365 completed status=success
+2026-09-05 14:43:41 | stage feature_plot completed status=success
+2026-09-05 14:43:41 | workflow foundation_summary completed status=success exit_code=0

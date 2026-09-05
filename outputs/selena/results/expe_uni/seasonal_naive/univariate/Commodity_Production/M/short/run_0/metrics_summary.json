@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Commodity_Production/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 79255.97753748579,
+      "finite_values": 160,
+      "total_values": 160
+    },
+    "MAE": {
+      "mean": 85.11216956301747,
+      "finite_values": 160,
+      "total_values": 160
+    },
+    "RMSE": {
+      "mean": 97.54981662505345,
+      "finite_values": 160,
+      "total_values": 160
+    },
+    "MAPE": {
+      "mean": 0.2771849217668886,
+      "finite_values": 160,
+      "total_values": 160
+    },
+    "sMAPE": {
+      "mean": 0.2217775147578341,
+      "finite_values": 160,
+      "total_values": 160
+    },
+    "MASE": {
+      "mean": 1.245269764101906,
+      "finite_values": 160,
+      "total_values": 160
+    },
+    "ND": {
+      "mean": 0.22113833371569944,
+      "finite_values": 160,
+      "total_values": 160
+    },
+    "CRPS": {
+      "mean": 0.178980346180227,
+      "finite_values": 160,
+      "total_values": 160
+    }
+  },
+  "launch_id": "selena_20260905T115114Z_25365",
+  "model": "seasonal_naive",
+  "inference_seconds": 1.0789721542969346
+}

@@ -1,0 +1,73 @@
+{
+  "completed_at": "2026-09-05T12:02:08.610883+00:00",
+  "experiment": "expe_uni",
+  "experiment_config": {
+    "covariate_channels": 0,
+    "covariate_mode": "none",
+    "covariate_source": "none",
+    "covariate_time_span": "none"
+  },
+  "identity": {
+    "dataset": "Port_Activity",
+    "frequency": "D",
+    "model": "chronos2",
+    "target_mode": "multivariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_20260905T115114Z_25365",
+        "launched_at": "2026-09-05T12:02:04.533776+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3152738"
+      }
+    ],
+    "launch_id": "selena_20260905T115114Z_25365",
+    "launched_at": "2026-09-05T12:02:04.533776+00:00",
+    "slurm_job_id": "3152738"
+  },
+  "model_config": {
+    "context_length": 8192,
+    "model_size": "chronos2",
+    "quantile_levels": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ]
+  },
+  "pipeline_config": {
+    "prediction_length": 30,
+    "seasonality": 1,
+    "test_length": 365,
+    "val_length": 90,
+    "windows": 12
+  },
+  "project": "improved",
+  "provenance": {
+    "dataset_config_path": null
+  },
+  "required_artifacts": [
+    "predictions.npz",
+    "metrics.npz",
+    "config.json",
+    "metrics_summary.json"
+  ],
+  "runtime_config": {
+    "batch_size": 16,
+    "checkpoint_path": "/fslarge/scratch/users/h61084/weights/chronos2",
+    "device": "cuda"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-05T12:02:04.533776+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-05T12:02:08.610883+00:00"
+}
