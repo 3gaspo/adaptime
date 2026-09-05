@@ -345,8 +345,8 @@ def main() -> None:
     parser.add_argument(
         "--results-dir",
         type=Path,
-        default=foundation_experiment_root("none"),
-        help="One manifest-based experiment root (default: results/expe_uni)",
+        default=foundation_experiment_root(),
+        help="One experiment task root (default: outputs/foundation_models/tasks)",
     )
     parser.add_argument(
         "--csv",

@@ -143,12 +143,12 @@ Each execution host writes to its standard `outputs/` and `logs/` roots;
 artifact synchronization may namespace a source host below subdirectories on
 the receiving host, but does not rename the source runtime directories.
 
-Maintained runs use two experiment roots: `expe_uni` for target-only inputs and
-`expe_covar` for known covariates over the complete context and forecast
-horizon. Their task layout is:
+Maintained runs are owned by the independently launched experiment. The
+foundation-model benchmark and Chronos-2 channel comparison use:
 
 ```text
-${TIME_OUTPUTS}/results/{experiment}/{model}/{target_mode}/{dataset}/{freq}/{term}/run_n/
+${TIME_OUTPUTS}/foundation_models/tasks/{model}/{target_mode}/{dataset}/{freq}/{term}/run_n/
+${TIME_OUTPUTS}/channels_comparison/tasks/{case}/{model}/{target_mode}/{dataset}/{freq}/{term}/run_n/
 ```
 
 `target_mode` is the representation actually passed to the model:
@@ -158,9 +158,9 @@ Chronos-Bolt, and Seasonal Naive expand target channels into independent
 univariate examples and reject an explicit multivariate request. TS-ICL can
 still mix a target with explicitly supplied covariates.
 
-`--covariate-mode future_included` selects `expe_covar` and requires external
-known covariates over the complete context and forecast horizon (`L+H`);
-Chronos-2 and TS-ICL consume them. Chronos-2 additionally supports
+`--covariate-mode future_included` requires external known covariates over the
+complete context and forecast horizon (`L+H`); Chronos-2 and TS-ICL consume
+them. Chronos-2 additionally supports
 `--covariate-mode past_targets`: each target channel is forecast separately
 from its `L` observed values while the other target histories are passed as
 past-only covariates. Non-finite covariate observations are represented as
@@ -185,6 +185,14 @@ replacement and repetition controls. Model loading, dataset construction,
 metric computation, and result saving remain excluded from
 `inference_seconds`.
 
+The multivariate channel case first looks for an equivalent completed task
+below `foundation_models/tasks/chronos2/multivariate`. A match imports only
+`config.json` and `metrics_summary.json` into the channel experiment and
+records its source manifest; an absent, incomplete, or different source is
+recomputed normally. `TIME_REUSE_MULTIVARIATE_FROM` overrides that optional
+source. `TIME_REUSE_FROM` remains a strict explicit source for any runner and
+fails when it cannot provide one unambiguous equivalent completed result.
+
 ### Foundation-model performance and timing
 
 After the model jobs terminate, the summary job writes CSV, Markdown, and a
@@ -194,10 +202,12 @@ states, so partial results cannot be mistaken for complete results or mixed
 with stale tasks. When all four model jobs completed successfully, the same
 summary job also writes the launch-filtered MASE-versus-feature SVG, joined
 data, and feature correlations below
-`results/{experiment}/analysis/{launch_id}/`. In-job channel summaries
+`foundation_models/feature_analysis/{launch_id}/`. Foundation tables live
+below `foundation_models/summary/{launch_id}/`; channel tables live below
+`channels_comparison/summary/{launch_id}/{case}/`. In-job channel summaries
 explicitly record the successful evaluation stage even though the enclosing
 workflow is not terminal until the summary itself finishes. Manual summaries
-default to `expe_uni`:
+default to the foundation-model task root:
 
 ```bash
 python scripts/compute_foundation_summary.py
@@ -231,7 +241,7 @@ are recorded in [Foundation-model results](docs/FOUNDATION_RESULTS.md).
 Once the evaluations are complete, use the following script to aggregate the raw outputs into the overall metrics in leaderboard. This process automatically fetches the Seasonal Naive results from Hugging Face and computes the aggregated metrics across all tasks.
 
 ```bash
-# Compute Overall Leaderboard from `TIME_OUTPUTS/results/expe_uni`
+# Compute Overall Leaderboard from `TIME_OUTPUTS/foundation_models/tasks`
 python scripts/compute_local_leaderboard.py
 
 ```
@@ -288,7 +298,7 @@ To add a new model, follow these steps:
        dataset=dataset,
        fc_quantiles=fc_quantiles,
        ds_config=f"{dataset_name}/{freq}/{term}",
-       output_base_dir="outputs/results",
+       output_base_dir="outputs/my_experiment/tasks",
        seasonality=season_length,
        model_hyperparams={"model_name": "your_model"},
    )
@@ -319,7 +329,7 @@ To add a new model, follow these steps:
       model_name = "YOUR_MODEL_NAME"
 
       api.upload_folder(
-         folder_path=f"outputs/results/{model_name}",  # Or TIME_OUTPUTS/results/{model_name}
+         folder_path=f"outputs/my_experiment/tasks/{model_name}",
          path_in_repo=f"results/{model_name}",
          repo_id="Real-TSF/TIME-Output",
          repo_type="dataset",

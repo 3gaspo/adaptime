@@ -291,7 +291,7 @@ def main() -> None:
     assert "--exclude='datasets/'" not in code_sync
     assert "--exclude='weights/'" not in code_sync
     assert "--delete-delay" in code_sync
-    assert "$SCRATCH_PROJECT_ROOT/outputs/results" in code_sync
+    assert "$SCRATCH_PROJECT_ROOT/outputs" in code_sync
     assert "$SCRATCH_PROJECT_ROOT/logs" in code_sync
     assert "lightweight|detailed|full" in result_sync
     assert '"$SOURCE_ROOT/outputs/"' in result_sync
@@ -402,11 +402,12 @@ def main() -> None:
         PROJECT_ROOT / "src/slurm/run_chronos2_comparison.sh"
     ).read_text(encoding="utf-8")
     assert "interrupt_result_launch.py" in workflow_common
-    assert 'TIME_RESULT_SCOPE="$TIME_OUTPUTS/results/$experiment/$model"' in foundation_runner
+    assert 'TIME_RESULT_SCOPE="$TIME_OUTPUTS/foundation_models/tasks/$model"' in foundation_runner
     assert (
-        'TIME_RESULT_SCOPE="$TIME_OUTPUTS/results/$experiment/chronos2/$TIME_TARGET_MODE"'
+        'TIME_RESULT_SCOPE="$TIME_TASKS_ROOT/chronos2/$TIME_TARGET_MODE"'
         in comparison_runner
     )
+    assert "TIME_REUSE_IF_AVAILABLE_FROM" in comparison_runner
     print("TIME Slurm and DGX/Selena synchronization contract passed.")
 
 

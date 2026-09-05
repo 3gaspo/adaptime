@@ -16,11 +16,18 @@ deliberately.
   the official `Real-TSF/TIME` saved-Arrow tree, with ordinary HTTP transfer,
   revision-pinned interrupted-download recovery, and post-download format
   validation.
-- Routed maintained runs into explicit `expe_uni` and `expe_covar` experiment
-  roots, followed by canonical model alias, actual univariate/multivariate
-  target mode, task identity, and monotonic `run_n`. Each run owns a plain
-  schema-1 configuration manifest; no code, data, checkpoint, path, or launch
-  hashes participate in identity.
+- Routed maintained runs directly below their launched `foundation_models` or
+  `channels_comparison` experiment, with separate `tasks`, `summary`, and
+  `feature_analysis` responsibilities instead of generic `results`, `expe_*`,
+  `aggregates`, or `analysis` containers. Each task retains canonical model
+  alias, actual target mode, identity, monotonic `run_n`, and a plain schema-1
+  configuration manifest.
+- Added cross-experiment compact-result reuse. A strict explicit source fails
+  unless exactly one completed run matches the complete scientific identity;
+  an optional source falls back to normal computation. The multivariate
+  channel case opportunistically imports matching Chronos-2 `config.json` and
+  `metrics_summary.json` artifacts from the foundation-model experiment and
+  records their source manifest.
 - Added task-boundary recovery before foundation inference. The default exact
   policy skips completed configurations, resumes interrupted configurations in
   their existing `run_n`, records every launch/job/time attempt, and allocates

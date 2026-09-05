@@ -10,7 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from timebench.feature.performance import analyze_feature_performance
-from timebench.paths import dataset_metadata_root, foundation_experiment_root, outputs_root
+from timebench.paths import dataset_metadata_root, foundation_experiment_root
 from timebench.pipeline import parse_config_filters
 
 
@@ -27,13 +27,16 @@ def main() -> None:
     parser.add_argument(
         "--results-dir",
         type=Path,
-        default=foundation_experiment_root("none"),
+        default=foundation_experiment_root(),
         help="One manifest-based experiment root",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=outputs_root() / "analysis" / "mase_vs_features.svg",
+        default=foundation_experiment_root().parent
+        / "feature_analysis"
+        / "manual"
+        / "mase_vs_features.svg",
         help="SVG plot to write",
     )
     parser.add_argument("--split", choices=["full", "test"], default="full")

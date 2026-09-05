@@ -105,10 +105,10 @@ def run_seasonal_naive_experiment(
             raise ValueError(f"No terms defined for dataset '{dataset_name}' in config")
 
     if output_dir is None:
-        output_dir = str(foundation_experiment_root(covariate_mode))
+        output_dir = str(foundation_experiment_root())
 
     os.makedirs(output_dir, exist_ok=True)
-    experiment = foundation_experiment_name(covariate_mode)
+    experiment = foundation_experiment_name()
 
     print(f"\n{'='*60}")
     print(f"Model: Seasonal Naive")
@@ -275,7 +275,7 @@ def main():
                         choices=["short", "medium", "long"],
                         help="Terms to evaluate. If not specified, auto-detect from config.")
     parser.add_argument("--output-dir", type=str, default=None,
-                        help="Experiment result root; defaults to expe_uni or expe_covar")
+                        help="Task root; defaults to the selected experiment's tasks directory")
     parser.add_argument("--num-samples", type=int, default=100,
                         help="Number of samples for probabilistic forecasting (all identical for Seasonal Naive)")
     parser.add_argument("--config", type=str, default=None,

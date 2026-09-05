@@ -77,10 +77,10 @@ def run_chronos_bolt_experiment(
         quantile_levels = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     if output_dir is None:
-        output_dir = str(foundation_experiment_root(covariate_mode))
+        output_dir = str(foundation_experiment_root())
 
     os.makedirs(output_dir, exist_ok=True)
-    experiment = foundation_experiment_name(covariate_mode)
+    experiment = foundation_experiment_name()
 
     print(f"\n{'='*60}")
     print(f"Dataset: {dataset_name}")
@@ -306,7 +306,7 @@ def main():
                         choices=["tiny", "mini", "small", "base"],
                         help="Chronos-Bolt model size")
     parser.add_argument("--output-dir", type=str, default=None,
-                        help="Experiment result root; defaults to expe_uni or expe_covar")
+                        help="Task root; defaults to the selected experiment's tasks directory")
     parser.add_argument("--batch-size", type=int, default=16,
                         help="Batch size for prediction")
     parser.add_argument(

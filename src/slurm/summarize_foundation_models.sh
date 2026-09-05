@@ -7,34 +7,31 @@ source "$PROJECT_ROOT/src/slurm/runtime_paths.sh"
 source "$PROJECT_ROOT/src/slurm/foundation_model_runners.sh"
 
 TIME_WORKFLOW_NAME=foundation_summary
+TIME_EXPERIMENT=foundation_models
 TIME_TASK_NAME=macro_mase_and_timing
 TIME_STATUS_NAME=summary
 TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-${SLURM_JOB_ID:-manual_$(date -u '+%Y%m%dT%H%M%SZ')_$$}}"
-export TIME_WORKFLOW_NAME TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID
+export TIME_WORKFLOW_NAME TIME_EXPERIMENT TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID
 source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 
 time_workflow_init
 time_stage_start summarize
 time_task_start "foundation_model_summary outputs=$TIME_OUTPUTS"
 
-case "${TIME_COVARIATE_MODE:-none}" in
-    none) experiment=expe_uni ;;
-    future_included) experiment=expe_covar ;;
-    *)
-        echo "Unknown TIME_COVARIATE_MODE=${TIME_COVARIATE_MODE:-}" >&2
-        exit 2
-        ;;
-esac
+tasks_root="$TIME_OUTPUTS/foundation_models/tasks"
+summary_root="$TIME_OUTPUTS/foundation_models/summary/$TIME_LAUNCH_ID"
 
 summary_command=(
     uv run --no-sync python
     "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
-    --results-dir "$TIME_OUTPUTS/results/$experiment"
+    --results-dir "$tasks_root"
     --models "${FOUNDATION_MODELS[@]}"
     --launch-id "$TIME_LAUNCH_ID"
     --status-dir "$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"
     --config-policy "${TIME_CONFIG_POLICY:-error}"
     --repeat-policy "${TIME_REPEAT_POLICY:-selected}"
+    --csv "$summary_root/foundation_model_summary.csv"
+    --markdown "$summary_root/foundation_model_summary.md"
 )
 
 if [ -n "${SLURM_JOB_ID:-}" ]; then
@@ -66,13 +63,13 @@ if [ "${#incomplete_models[@]}" -gt 0 ]; then
 fi
 
 time_stage_start feature_plot
-analysis_root="$TIME_OUTPUTS/results/$experiment/analysis/$TIME_LAUNCH_ID"
+analysis_root="$TIME_OUTPUTS/foundation_models/feature_analysis/$TIME_LAUNCH_ID"
 time_task_start "mase_vs_features features=$TIME_METADATA/stl_features output=$analysis_root"
 plot_command=(
     uv run --no-sync python
     "$PROJECT_ROOT/scripts/plot_feature_performance.py"
     --features-root "$TIME_METADATA/stl_features"
-    --results-dir "$TIME_OUTPUTS/results/$experiment"
+    --results-dir "$tasks_root"
     --output "$analysis_root/mase_vs_features.svg"
     --models "${FOUNDATION_MODELS[@]}"
     --launch-id "$TIME_LAUNCH_ID"

@@ -276,6 +276,69 @@ def _update_auto_selection(run_dir: Path, manifest: Mapping[str, Any]) -> None:
     _write_selection_entries(run_dir.parent, entries)
 
 
+def _select_reuse_source(
+    source: str | Path,
+    identity: Mapping[str, Any],
+    scientific: Mapping[str, Any],
+) -> tuple[Path, dict[str, Any]]:
+    source_root = Path(source).expanduser().resolve()
+    if not source_root.exists():
+        raise ManifestError(f"Reuse source does not exist: {source_root}")
+    if source_root.is_file():
+        source_paths = [source_root]
+    elif RUN_PATTERN.fullmatch(source_root.name) and (source_root / MANIFEST_NAME).is_file():
+        source_paths = [source_root / MANIFEST_NAME]
+    else:
+        source_paths = [
+            path
+            for path in source_root.rglob(MANIFEST_NAME)
+            if "manifest_history" not in path.relative_to(source_root).parts
+            and RUN_PATTERN.fullmatch(path.parent.name)
+        ]
+    reusable = []
+    for source_path in source_paths:
+        source_manifest = load_manifest(source_path)
+        if (
+            source_manifest["status"] == "completed"
+            and source_manifest.get("identity") == dict(identity)
+            and _scientific_config(source_manifest) == dict(scientific)
+        ):
+            reusable.append((source_path.parent, source_manifest))
+    if not reusable:
+        raise ManifestError(
+            "No completed reuse source has the expected identity and scientific "
+            f"configuration below {source_root}"
+        )
+    if len(reusable) > 1:
+        selected = []
+        for source_dir, source_manifest in reusable:
+            for entry in _selection_entries(source_dir.parent):
+                if (
+                    entry.get("scientific_config") == dict(scientific)
+                    and entry.get("run") == source_dir.name
+                ):
+                    selected.append((source_dir, source_manifest))
+                    break
+        reusable = selected
+    if len(reusable) != 1:
+        raise ManifestError(
+            f"Reuse source is ambiguous for {dict(identity)}; select one completed run"
+        )
+    source_dir, source_manifest = reusable[0]
+    compact_artifacts = ("config.json", "metrics_summary.json")
+    missing = [
+        name
+        for name in compact_artifacts
+        if not (source_dir / name).is_file()
+        or (source_dir / name).stat().st_size == 0
+    ]
+    if missing:
+        raise ManifestError(
+            f"Reusable run lacks compact summary artifacts {missing}: {source_dir}"
+        )
+    return source_dir, source_manifest
+
+
 def set_selected_run(run_dir: str | Path, *, pinned: bool = True) -> None:
     """Pin or automatically track one completed exact configuration repeat."""
     selected_dir = Path(run_dir).expanduser().resolve()
@@ -312,6 +375,7 @@ def allocate_run(
     skip_completed: bool | None = None,
     force: bool | None = None,
     run_index: int | None = None,
+    reuse_from: str | Path | None = None,
 ) -> RunHandle:
     """Skip, resume, overwrite, or allocate one exact task configuration."""
     policy = policy or os.environ.get("TIME_RUN_CONFLICT_POLICY", "overwrite_exact")
@@ -340,6 +404,123 @@ def allocate_run(
         and manifest.get("identity") == dict(identity)
         and _scientific_config(manifest) == scientific
     ]
+    strict_reuse = reuse_from or os.environ.get("TIME_REUSE_FROM") or None
+    optional_reuse = (
+        None
+        if strict_reuse is not None
+        else os.environ.get("TIME_REUSE_IF_AVAILABLE_FROM") or None
+    )
+    selected_reuse = strict_reuse or optional_reuse
+    reusable = None
+    if selected_reuse is not None:
+        try:
+            reusable = _select_reuse_source(selected_reuse, identity, scientific)
+        except ManifestError as error:
+            if strict_reuse is not None:
+                raise
+            print(
+                "TIME run allocation "
+                f"action=recompute reuse_source={Path(selected_reuse).expanduser()} "
+                f"reason={error}",
+                flush=True,
+            )
+    if reusable is not None:
+        source_dir, source_manifest = reusable
+        compact_artifacts = ("config.json", "metrics_summary.json")
+        completed_local = [
+            (path, manifest)
+            for path, manifest in exact
+            if manifest["status"] == "completed"
+        ]
+        if completed_local and skip_completed and not force:
+            target, local_manifest = max(
+                completed_local, key=lambda item: _run_index(item[0])
+            )
+            reused_at = _now()
+            attempt = _attempt("reuse", reused_at)
+            launch = dict(local_manifest.get("launch", {}))
+            launch["attempts"] = [*launch.get("attempts", []), attempt]
+            local_manifest["launch"] = launch
+            local_manifest["updated_at"] = reused_at
+            _write_manifest(target / MANIFEST_NAME, local_manifest)
+            print(
+                "TIME run allocation "
+                f"action=skip run={target} source_launch={launch.get('launch_id')} "
+                f"launch_id={attempt['launch_id']} slurm_job_id={attempt['slurm_job_id']} "
+                f"launched_at={reused_at}",
+                flush=True,
+            )
+            return RunHandle(target, local_manifest, "skip", _completed=True)
+        running_local = [
+            path for path, manifest in exact if manifest["status"] == "running"
+        ]
+        if running_local and not force:
+            raise ManifestError(f"Matching run is already running: {running_local[-1]}")
+
+        if run_index is not None:
+            target = root / f"run_{run_index}"
+        elif exact:
+            target = max(exact, key=lambda item: _run_index(item[0]))[0]
+        else:
+            next_index = 0 if not run_dirs else max(map(_run_index, run_dirs)) + 1
+            target = root / f"run_{next_index}"
+        old_manifest = load_manifest(target) if target.exists() else None
+        if old_manifest is not None:
+            same = (
+                old_manifest.get("experiment") == str(experiment)
+                and old_manifest.get("identity") == dict(identity)
+                and _scientific_config(old_manifest) == scientific
+            )
+            if not same and policy != "overwrite_path":
+                raise ManifestError(
+                    f"{target} contains a different configuration; use overwrite_path"
+                )
+            _archive_manifest(target, old_manifest)
+            _clear_run_artifacts(target)
+        else:
+            target.mkdir()
+        for name in compact_artifacts:
+            shutil.copy2(source_dir / name, target / name)
+        reused_at = _now()
+        source_manifest_path = source_dir / MANIFEST_NAME
+        manifest = {
+            "schema_version": SCHEMA_VERSION,
+            "project": PROJECT_NAME,
+            "experiment": str(experiment),
+            "identity": dict(identity),
+            "model_config": dict(model_config),
+            "pipeline_config": dict(pipeline_config),
+            "runtime_config": dict(runtime_config),
+            "experiment_config": dict(experiment_config),
+            "provenance": {
+                **dict(provenance or {}),
+                "reused_from_manifest": str(source_manifest_path),
+                "reused_from_experiment": source_manifest.get("experiment"),
+            },
+            "launch": {
+                "launch_id": os.environ.get("TIME_LAUNCH_ID"),
+                "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+                "launched_at": reused_at,
+                "action": "reuse",
+                "attempts": [_attempt("reuse", reused_at)],
+            },
+            "status": "completed",
+            "required_artifacts": list(compact_artifacts),
+            "started_at": reused_at,
+            "completed_at": reused_at,
+            "updated_at": reused_at,
+        }
+        _write_manifest(target / MANIFEST_NAME, manifest)
+        _update_auto_selection(target, manifest)
+        print(
+            "TIME run allocation "
+            f"action=reuse run={target} source={source_manifest_path} "
+            f"launch_id={manifest['launch']['launch_id']} "
+            f"slurm_job_id={manifest['launch']['slurm_job_id']} reused_at={reused_at}",
+            flush=True,
+        )
+        return RunHandle(target, manifest, "skip", _completed=True)
+
     target = root / f"run_{run_index}" if run_index is not None else None
     old_manifest = load_manifest(target) if target is not None and target.exists() else None
     action = "new"

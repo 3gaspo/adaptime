@@ -91,9 +91,9 @@ def run_tsicl_experiment(
         quantile_levels = DEFAULT_QUANTILE_LEVELS
 
     if output_dir is None:
-        output_dir = str(foundation_experiment_root(covariate_mode))
+        output_dir = str(foundation_experiment_root())
     Path(output_dir).mkdir(exist_ok=True,parents=True)
-    experiment = foundation_experiment_name(covariate_mode)
+    experiment = foundation_experiment_name()
     checkpoint_path = foundation_weight_path(
         "tsicl/tsicl-v1.ckpt",
         explicit=model_path,
@@ -375,7 +375,7 @@ def main():
     parser.add_argument("--model-size", type=str, default="tsicl-v1",
                             choices=["tsicl-v1"], help="TS-ICL model size")
     parser.add_argument("--output-dir", type=str, default=None,
-                        help="Experiment result root; defaults to expe_uni or expe_covar")
+                        help="Task root; defaults to the selected experiment's tasks directory")
     parser.add_argument("--batch-size", type=int, default=16,
                         help="Batch size for prediction")
     parser.add_argument(
