@@ -40,6 +40,7 @@ def load_dataset_mase(
     target_modes: set[str] | None = None,
     config_filters: dict | None = None,
     config_policy: str = "error",
+    repeat_policy: str = "selected",
 ) -> pd.DataFrame:
     """Macro-average task MASE equally over available horizons per dataset."""
     rows = []
@@ -50,6 +51,7 @@ def load_dataset_mase(
         launch_id=launch_id,
         config_filters=config_filters,
         config_policy=config_policy,
+        repeat_policy=repeat_policy,
     )
     for run_dir, manifest in selected:
         identity = manifest["identity"]
@@ -58,20 +60,36 @@ def load_dataset_mase(
         metrics = summary.get("metrics", {})
         mase = metrics.get("MASE", {}).get("mean")
         if mase is not None and np.isfinite(float(mase)):
+            selection = manifest.get("selection", {})
             rows.append(
                 {
-                    "model": identity["model"],
+                    "model": selection.get("model_label", identity["model"]),
+                    "base_model": identity["model"],
                     "dataset_id": f"{identity['dataset']}/{identity['frequency']}",
                     "MASE": float(mase),
+                    "scientific_config": json.dumps(
+                        selection.get(
+                            "scientific_config",
+                            {
+                                "model_config": manifest.get("model_config", {}),
+                                "pipeline_config": manifest.get("pipeline_config", {}),
+                                "experiment_config": manifest.get("experiment_config", {}),
+                            },
+                        ),
+                        sort_keys=True,
+                    ),
                 }
             )
     if not rows:
         raise FileNotFoundError(f"No finite task MASE summaries found below {results_root}")
-    return (
-        pd.DataFrame(rows)
-        .groupby(["model", "dataset_id"], as_index=False)["MASE"]
-        .mean()
-    )
+    frame = pd.DataFrame(rows)
+    per_config = frame.groupby(
+        ["model", "base_model", "dataset_id", "scientific_config"],
+        as_index=False,
+    )["MASE"].mean()
+    return per_config.groupby(
+        ["model", "base_model", "dataset_id"], as_index=False
+    )["MASE"].mean()
 
 
 def join_features_and_mase(
@@ -83,6 +101,7 @@ def join_features_and_mase(
     target_modes: set[str] | None = None,
     config_filters: dict | None = None,
     config_policy: str = "error",
+    repeat_policy: str = "selected",
 ) -> pd.DataFrame:
     """Join dataset-level feature summaries to model/dataset MASE."""
     features = load_dataset_features(features_root, split=split)
@@ -93,6 +112,7 @@ def join_features_and_mase(
         target_modes=target_modes,
         config_filters=config_filters,
         config_policy=config_policy,
+        repeat_policy=repeat_policy,
     )
     joined = mase.merge(features, on="dataset_id", how="inner", validate="many_to_one")
     if joined.empty:
@@ -254,6 +274,7 @@ def analyze_feature_performance(
     target_modes: set[str] | None = None,
     config_filters: dict | None = None,
     config_policy: str = "error",
+    repeat_policy: str = "selected",
     features: list[str] | None = None,
     top: int = 5,
 ) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
@@ -267,6 +288,7 @@ def analyze_feature_performance(
         target_modes,
         config_filters,
         config_policy,
+        repeat_policy,
     )
     correlations = feature_correlations(joined, features=features)
     scores = correlations[correlations["model"] == "mean_absolute"].dropna(

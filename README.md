@@ -5,8 +5,8 @@ models on the public [TIME benchmark](https://github.com/zqiao11/TIME). It
 preserves TIME's official test windows and adds a pre-test extraction,
 adaptation-training, validation-selection, and frozen-testing workflow.
 
-No Adaptime result is claimed until the cluster artifacts have been completed
-and inspected.
+No Adaptime result is claimed until the cluster artifacts have completed and
+been inspected.
 
 ## `full_ridge_shared`
 
@@ -15,26 +15,18 @@ The current proposal is the fixed-training, fixed-datastore
 univariate query it extracts:
 
 - `V`: the foundation model's vanilla forecast;
-- `C`: its context-aware forecast using the retrieved neighbors as past and
-  future covariates;
+- `C`: its context-aware forecast using retrieved neighbors as past and future
+  covariates;
 - `Y_1..Y_K`: the retrieved neighbors' ground-truth horizons;
-- `N_1..N_K`: vanilla foundation forecasts made from those neighbors' own
-  histories.
+- `N_1..N_K`: vanilla foundation forecasts from those neighbors' own histories.
 
-The paired `Y_i` and `N_i` columns expose each neighbor's residual information
-while preserving the exact full formulation. With
-`X = [V, C, Y_1..Y_K, N_1..N_K]`, training fits the normalized residual
-`Y - V` and testing predicts
-
-```text
-V' = V + X beta.
-```
-
-There is no intercept and one coefficient vector is shared across every
-forecast step. The primary configuration is `K=10`, `alpha=1e-2`; validation
-selects from `K in {1, 5, 10, 15}` and
-`alpha in {1e-3, 1e-2, 1e-1}`. Delta, convex, and per-horizon formulations are
-not part of the current contract.
+With `X = [V, C, Y_1..Y_K, N_1..N_K]`, training fits the normalized residual
+`Y - V` and testing predicts `V' = V + X beta`. There is no intercept and one
+coefficient vector is shared across every forecast step. Validation selects
+from `K in {1, 5, 10, 15}` and
+`alpha in {1e-3, 1e-2, 1e-1}`; the primary configuration is `K=10`,
+`alpha=1e-2`. Delta, convex, and per-horizon formulations are outside the
+current contract.
 
 ## Chronology and retrieval
 
@@ -45,104 +37,94 @@ Each dataset/term task uses four strictly chronological regions:
 3. adaptation validation, used only to select `K` and `alpha`;
 4. TIME's unchanged, horizon-spaced official test interval.
 
-The training and validation regions each default to the dataset's existing
-TIME `val_length`. The datastore uses all earlier eligible history by default.
-The workflow caps the requested context length only when necessary to retain
-enough datastore candidates for the `K` grid; every realized value is recorded
-in the preparation manifest.
+The training and validation regions each default to the dataset's TIME
+`val_length`. The datastore uses all earlier eligible history by default. The
+requested context is capped only when necessary to retain enough datastore
+candidates for the K grid; the realized value is recorded in the task
+manifest.
 
 Retrieval uses instance-normalized contexts and exact Euclidean top-K search by
 default. Distances are computed in bounded query/datastore blocks. For a query,
 the fixed datastore endpoint first shifts to the query's residue modulo the
-dataset period; earlier candidates then follow the datastore stride, which is
-one period by default. This reproduces the query-aligned fixed datastore
-without materializing a separate datastore for every query.
+dataset period; earlier candidates then follow the datastore stride, one period
+by default.
 
 Extraction writes memory-mapped arrays for representations, neighbors,
-distances, targets, `V`, every requested `C`, and only the unique neighbor
-forecasts actually selected. The ridge grid is then fitted from streaming
-float64 sufficient statistics. Training never opens the TIME test values, and
-testing loads only the frozen selected coefficients.
+distances, targets, `V`, requested `C` forecasts, and unique neighbor forecasts.
+The ridge grid is fitted from streaming float64 sufficient statistics. Training
+never opens TIME test values, and testing loads only frozen selected
+coefficients.
 
 ## Running Adaptime
 
-Prepare TIME's saved-Arrow datasets and local weights as described below, then
-run one task with the four explicit commands:
+Prepare TIME's saved-Arrow datasets and local weights, then run the complete
+workflow locally with:
 
 ```bash
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.prepare_adaptation_data \
-  --dataset 'SG_Weather/D' --terms short --context-length 512 \
-  --target-mode univariate
-
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.extract_adaptation \
-  --prepared outputs/adaptime/prepared/univariate/SG_Weather/D/short \
-  --model chronos2 \
-  --output-dir outputs/adaptime/extraction/chronos2/univariate/SG_Weather/D/short
-
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.train_adaptation \
-  --prepared outputs/adaptime/prepared/univariate/SG_Weather/D/short \
-  --extraction outputs/adaptime/extraction/chronos2/univariate/SG_Weather/D/short \
-  --output-dir outputs/adaptime/training/chronos2/univariate/SG_Weather/D/short
-
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.test_adaptation \
-  --prepared outputs/adaptime/prepared/univariate/SG_Weather/D/short \
-  --extraction outputs/adaptime/extraction/chronos2/univariate/SG_Weather/D/short \
-  --model outputs/adaptime/training/chronos2/univariate/SG_Weather/D/short \
-  --output-dir outputs/adaptime/comparison/chronos2/univariate/SG_Weather/D/short
+PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage \
+  --stage run --datasets 'SG_Weather/D' --terms short --max-context-length 512
 ```
 
-The TIME-wide runner exposes the same resumable stages:
-
-```bash
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage --stage extract
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage --stage train
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage --stage test
-```
-
-The Slurm front runs those stages sequentially in one allocation so the GPU
-model remains cached across dataset/term extraction tasks and every downstream
-stage reuses the same artifacts:
+The same complete-task workflow is the sole Slurm path:
 
 ```bash
 bash scripts/submit_adaptime_comparison.sh dgx
 bash scripts/submit_adaptime_comparison.sh selena
 ```
 
-It defaults to Chronos-2, univariate targets, every configured TIME dataset and
+It defaults to Chronos-2, univariate targets, every configured dataset and
 term, and a maximum context length of 2048. Submission-time overrides include
 `ADAPTIME_DATASETS` and `ADAPTIME_TERMS` as comma-separated selections,
 `ADAPTIME_MODEL`, `ADAPTIME_MODEL_PATH`, `ADAPTIME_MAX_CONTEXT_LENGTH`, split
-lengths, retrieval settings, block sizes, and the K/alpha grids. The exact
-proposal requires a model adapter that supports retrieval covariates; Chronos-2
-and TS-ICL declare that capability, while unsupported models fail explicitly.
-Non-finite observations in capable-backbone covariates are represented as NaN,
-so the backbone applies its ordinary missing-value mask instead of rejecting
-the complete query.
+lengths, retrieval settings, block sizes, and the K/alpha grids. The proposal
+requires a model adapter with retrieval-covariate support; unsupported models
+fail explicitly. Non-finite covariate observations are passed as NaNs so a
+capable backbone can apply its ordinary missing-value mask.
 
-The final `comparison_summary.json` and raw memory-mapped arrays compare:
+### Task recovery and run selection
 
-- `vanilla`: `V`;
-- `covariate`: retrieval-context prediction `C` at the selected K;
-- `adaptime`: the frozen `full_ridge_shared` prediction `V'`.
+Each task owns
+`outputs/adaptime/results/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
+Its plain schema-1 manifest records scientific, runtime, dataset, and launch
+configuration without hashing code, data, or checkpoints.
 
-MSE, MAE, normalized MSE, and normalized MAE retain per-window/channel values
-and report equal-window and equal-user means and population standard
-deviations, plus MSE win rates against vanilla. After every selected task
-finishes, `comparison/.../aggregate/time_summary.json` averages equal-user task
-metrics across terms within each dataset/frequency and then gives each TIME
-dataset/frequency equal weight.
+The default `overwrite_exact` policy reuses an exact completed configuration,
+resumes an exact interrupted configuration in the same `run_n`, and allocates
+the next `run_n` for a different scientific configuration. Resume discards all
+partial files for that task and restarts preparation, extraction, fitting, and
+testing; there is no mid-task checkpoint reuse. Allocation logs record the
+current launch ID, Slurm job ID, and UTC launch time. A resume also records the
+preceding launch and job. A failed wrapper marks any still-running task owned by
+that launch as interrupted.
+
+`TIME_RUN_CONFLICT_POLICY=overwrite_exact|overwrite_path|new`,
+`TIME_FORCE_RERUN`, and `TIME_SKIP_COMPLETED` control deliberate reruns.
+Readers use `ADAPTIME_CONFIG_POLICY=error|distinct|latest|average` and
+`ADAPTIME_REPEAT_POLICY=selected|latest|distinct|average`. The default rejects
+mixed scientific configurations and uses the selected completed repeat;
+`scripts/select_result_run.py` can pin a different completed repeat.
+
+The final `comparison_summary.json` and raw arrays compare vanilla `V`, the
+retrieval-covariate forecast `C`, and frozen Adaptime `V'`. MSE, MAE, normalized
+MSE, and normalized MAE retain per-window/channel values and report equal-user
+and equal-window summaries plus MSE win rates against vanilla.
+
+After all selected tasks finish,
+`outputs/adaptime/aggregates/<model>/<target_mode>/<launch>/` records its input
+manifests and averages repeats within exact configurations, then configurations
+when requested, terms within each dataset/frequency, and finally
+dataset/frequency units with equal weight.
 
 ## Inherited foundation-model benchmark
 
 The maintained baseline evaluates `chronos_bolt`, `chronos2`, `ts_icl`, and
-`seasonal_naive`. Learned-model jobs require prepared local checkpoints and
-fail on missing weights; they never install packages or download weights at
-runtime.
-
-Prepare the saved-Arrow dataset on an internet-connected host:
+`seasonal_naive`. Learned-model jobs require local checkpoints and never
+download weights at runtime. Prepare the saved-Arrow dataset on an
+internet-connected host:
 
 ```bash
-PYTHONPATH=src uv run --no-sync python scripts/download_time_dataset.py --destination "$HOME/datasets/hf_dataset"
+PYTHONPATH=src uv run --no-sync python scripts/download_time_dataset.py \
+  --destination "$HOME/datasets/hf_dataset"
 ```
 
 Optional `.env` roots default to `datasets/`, `datasets/hf_dataset/`,
@@ -154,44 +136,29 @@ weights/chronos-bolt-base/
 weights/tsicl/tsicl-v1.ckpt
 ```
 
-Submit the four baselines and their summary, or the inherited Chronos-2 channel
-comparisons, with:
+Submit the four baselines and dependent summary, the Chronos-2 channel
+comparison, and dataset diagnostics with:
 
 ```bash
 bash scripts/submit_foundation_models.sh dgx
 bash scripts/channels_comparison.sh dgx
-```
-
-Use `selena` for the matching Selena fronts. Baseline `run_n` outputs remain
-under `outputs/results/`; Adaptime artifacts remain isolated under
-`outputs/adaptime/{prepared,extraction,training,comparison}/`. After all four
-foundation jobs complete successfully, their dependent summary also creates a
-launch-filtered MASE-versus-feature plot, joined data, and feature correlations.
-
-The inherited diagnostic workflow audits the exact official TIME queries and
-each distinct model-effective `(L,H)` configuration. It stores exact source
-positions and window events once below shared `TIME_METADATA`, reuses complete
-full-series feature artifacts, and computes only missing variate rows when
-repairing a partial artifact:
-
-```bash
 bash scripts/dataset_diagnostics.sh dgx
-bash scripts/dataset_diagnostics.sh selena
 ```
 
-Audit summaries are exported only after the audit succeeds, and the feature
-summary is added only after feature extraction succeeds. Compact outputs are
-copied to the job log tree for lightweight synchronization and publication;
-detailed anomaly positions remain in shared metadata. Cluster workflows reject
-a missing prepared `TIME_DATASET` directory instead of creating an empty one.
+Use `selena` for matching Selena fronts. Baseline runs remain below
+`outputs/results/`; proposal runs remain below `outputs/adaptime/`. Shared
+diagnostic metadata lives below `TIME_METADATA`, outside these project-local
+runtime artifacts. After all four foundation jobs complete successfully, the
+dependent summary also creates a launch-filtered MASE-versus-feature plot,
+joined data, and feature correlations.
 
 ## Source tree
 
 ```text
 src/timebench/evaluation/adaptation_data.py  Arrow-backed split/window preparation
-src/timebench/adaptime/                     retrieval and full shared ridge math
+src/timebench/adaptime/                     retrieval and shared-ridge math
 src/timebench/model_loading/                foundation construction and adapters
-src/timebench/pipeline/                     extraction, fitting, testing, orchestration
+src/timebench/pipeline/                     manifests, recovery, extraction, fitting, testing
 src/timebench/scripts/                      Python command entry points
 src/slurm/                                  shared cluster workflow implementations
 slurm/{dgx,selena}/                          concise scheduler fronts

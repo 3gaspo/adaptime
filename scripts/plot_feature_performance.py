@@ -52,8 +52,13 @@ def main() -> None:
     parser.add_argument("--run-config", action="append", default=[])
     parser.add_argument(
         "--config-policy",
-        choices=("error", "latest"),
+        choices=("error", "distinct", "latest", "average"),
         default="error",
+    )
+    parser.add_argument(
+        "--repeat-policy",
+        choices=("selected", "latest", "distinct", "average"),
+        default="selected",
     )
     parser.add_argument(
         "--features",
@@ -74,6 +79,7 @@ def main() -> None:
         target_modes=None if args.target_mode is None else set(args.target_mode),
         config_filters=parse_config_filters(args.run_config),
         config_policy=args.config_policy,
+        repeat_policy=args.repeat_policy,
         features=args.features,
         top=args.top,
     )

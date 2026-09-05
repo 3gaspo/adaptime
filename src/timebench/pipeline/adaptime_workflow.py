@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import json
 import math
 import os
@@ -38,6 +37,7 @@ from timebench.pipeline.adaptime_testing import (
     evaluate_frozen_adaptation,
 )
 from timebench.pipeline.adaptime_training import RidgeTrainingConfig, fit_full_ridge
+from timebench.pipeline.runs import allocate_run, select_completed_runs
 
 
 @dataclass(frozen=True)
@@ -82,15 +82,7 @@ class AdaptimeWorkflowConfig:
 class AdaptimeTask:
     dataset: str
     term: str
-    prepared: Path
-    extraction: Path
-    model: Path
-    comparison: Path
-
-
-def _canonical_hash(value: dict[str, object]) -> str:
-    raw = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    return hashlib.sha256(raw).hexdigest()
+    identity_root: Path
 
 
 def _atomic_json(path: Path, value: dict[str, object]) -> None:
@@ -151,10 +143,7 @@ def _task(
     return AdaptimeTask(
         dataset=dataset,
         term=term,
-        prepared=output_root / "prepared" / suffix,
-        extraction=output_root / "extraction" / model_suffix,
-        model=output_root / "training" / model_suffix,
-        comparison=output_root / "comparison" / model_suffix,
+        identity_root=output_root / "results" / model_suffix,
     )
 
 
@@ -175,74 +164,132 @@ def workflow_tasks(
 def aggregate_time_comparison(
     tasks: list[AdaptimeTask],
     output_dir: Path,
+    *,
+    launch_id: str | None = None,
+    config_policy: str = "error",
+    repeat_policy: str = "selected",
 ) -> Path:
-    """Aggregate equal-user task metrics, then terms, then TIME datasets."""
+    """Select run manifests, then aggregate repeats, configs, terms, and datasets."""
 
     rows: list[dict[str, object]] = []
-    result_signatures: list[str] = []
+    input_manifests: list[str] = []
     for task in tasks:
-        manifest_path = task.comparison / "result_manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if manifest.get("status") != "completed":
-            raise ValueError(f"incomplete Adaptime result: {manifest_path}")
-        summary = json.loads(
-            (task.comparison / manifest["files"]["comparison_summary"]).read_text(
-                encoding="utf-8"
-            )
+        selected_runs = select_completed_runs(
+            task.identity_root,
+            launch_id=launch_id,
+            config_policy=config_policy,
+            repeat_policy=repeat_policy,
         )
-        selected = dict(manifest["selected"])
-        row: dict[str, object] = {
-            "dataset": task.dataset,
-            "term": task.term,
-            "selected_k": int(selected["k"]),
-            "selected_alpha": float(selected["alpha"]),
-            "validation_nmse": float(selected["validation_nmse"]),
-        }
-        for method in METHODS:
-            method_summary = dict(summary["methods"][method])
-            for metric in METRICS:
-                metric_summary = dict(method_summary[metric])
-                row[f"{method}_{metric}_equal_user"] = float(
-                    metric_summary["equal_user_mean"]
-                )
-                row[f"{method}_{metric}_equal_window"] = float(
-                    metric_summary["equal_window_mean"]
-                )
-        for method in ("covariate", "adaptime"):
-            row[f"{method}_mse_win_rate_vs_vanilla"] = float(
-                summary["mse_win_rate_vs_vanilla"][method]
+        if not selected_runs:
+            raise ValueError(
+                f"no completed Adaptime run matches {task.dataset}/{task.term}"
             )
-        rows.append(row)
-        result_signatures.append(str(manifest["signature"]))
+        for run_dir, run_manifest in selected_runs:
+            result_path = run_dir / "comparison" / "result_manifest.json"
+            result = json.loads(result_path.read_text(encoding="utf-8"))
+            if result.get("status") != "completed":
+                raise ValueError(f"incomplete Adaptime result: {result_path}")
+            summary = json.loads(
+                (run_dir / "comparison" / result["files"]["comparison_summary"]).read_text(
+                    encoding="utf-8"
+                )
+            )
+            selected = dict(result["selected"])
+            selection = dict(run_manifest.get("selection", {}))
+            row: dict[str, object] = {
+                "variant": selection.get("model_label", run_manifest["identity"]["model"]),
+                "dataset": task.dataset,
+                "term": task.term,
+                "run": run_dir.name,
+                "scientific_config": json.dumps(
+                    selection.get("scientific_config", {}), sort_keys=True
+                ),
+                "selected_k": int(selected["k"]),
+                "selected_alpha": float(selected["alpha"]),
+                "validation_nmse": float(selected["validation_nmse"]),
+            }
+            for method in METHODS:
+                method_summary = dict(summary["methods"][method])
+                for metric in METRICS:
+                    metric_summary = dict(method_summary[metric])
+                    row[f"{method}_{metric}_equal_user"] = float(
+                        metric_summary["equal_user_mean"]
+                    )
+                    row[f"{method}_{metric}_equal_window"] = float(
+                        metric_summary["equal_window_mean"]
+                    )
+            for method in ("covariate", "adaptime"):
+                row[f"{method}_mse_win_rate_vs_vanilla"] = float(
+                    summary["mse_win_rate_vs_vanilla"][method]
+                )
+            rows.append(row)
+            input_manifests.append(str(run_dir / "manifest.json"))
 
-    identity = {
-        "schema_version": 1,
-        "format": "adaptime_time_aggregate",
-        "protocol": "equal_user_then_equal_term_then_equal_dataset",
-        "result_signatures": result_signatures,
-    }
-    signature = _canonical_hash(identity)
-    root = output_dir.expanduser().resolve()
-    manifest_path = root / "time_summary_manifest.json"
-    if manifest_path.is_file():
-        existing = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if (
-            existing.get("signature") == signature
-            and existing.get("status") == "completed"
-            and (root / existing["files"]["summary"]).is_file()
-            and (root / existing["files"]["tasks"]).is_file()
-        ):
-            return manifest_path
-        raise FileExistsError(f"aggregate directory contains a different run: {root}")
+    numeric_fields = [
+        key
+        for key in rows[0]
+        if key
+        not in {"variant", "dataset", "term", "run", "scientific_config"}
+    ]
 
-    dataset_rows: dict[str, list[dict[str, object]]] = {}
+    def averaged(
+        groups: dict[tuple[str, ...], list[dict[str, object]]],
+        keys: tuple[str, ...],
+    ) -> list[dict[str, object]]:
+        output: list[dict[str, object]] = []
+        for values in groups.values():
+            row = {key: values[0][key] for key in keys}
+            row.update(
+                {
+                    field: float(np.mean([float(value[field]) for value in values]))
+                    for field in numeric_fields
+                }
+            )
+            output.append(row)
+        return output
+
+    exact_groups: dict[tuple[str, ...], list[dict[str, object]]] = {}
     for row in rows:
-        dataset_rows.setdefault(str(row["dataset"]), []).append(row)
-    methods: dict[str, object] = {}
-    for method in METHODS:
-        metrics: dict[str, object] = {}
-        for metric in METRICS:
-            field = f"{method}_{metric}_equal_user"
+        key = tuple(
+            str(row[field])
+            for field in ("variant", "dataset", "term", "scientific_config")
+        )
+        exact_groups.setdefault(key, []).append(row)
+    per_config = averaged(
+        exact_groups, ("variant", "dataset", "term", "scientific_config")
+    )
+    task_groups: dict[tuple[str, ...], list[dict[str, object]]] = {}
+    for row in per_config:
+        key = tuple(str(row[field]) for field in ("variant", "dataset", "term"))
+        task_groups.setdefault(key, []).append(row)
+    effective_rows = averaged(task_groups, ("variant", "dataset", "term"))
+
+    variants: dict[str, object] = {}
+    for variant in sorted({str(row["variant"]) for row in effective_rows}):
+        variant_rows = [row for row in effective_rows if row["variant"] == variant]
+        dataset_rows: dict[str, list[dict[str, object]]] = {}
+        for row in variant_rows:
+            dataset_rows.setdefault(str(row["dataset"]), []).append(row)
+        methods: dict[str, object] = {}
+        for method in METHODS:
+            metrics: dict[str, object] = {}
+            for metric in METRICS:
+                field = f"{method}_{metric}_equal_user"
+                per_dataset = np.asarray(
+                    [
+                        np.mean([float(row[field]) for row in dataset_rows[dataset]])
+                        for dataset in sorted(dataset_rows)
+                    ],
+                    dtype=np.float64,
+                )
+                metrics[metric] = {
+                    "equal_dataset_mean": float(per_dataset.mean()),
+                    "equal_dataset_std": float(per_dataset.std()),
+                }
+            methods[method] = metrics
+        wins: dict[str, object] = {}
+        for method in ("covariate", "adaptime"):
+            field = f"{method}_mse_win_rate_vs_vanilla"
             per_dataset = np.asarray(
                 [
                     np.mean([float(row[field]) for row in dataset_rows[dataset]])
@@ -250,42 +297,37 @@ def aggregate_time_comparison(
                 ],
                 dtype=np.float64,
             )
-            metrics[metric] = {
+            wins[method] = {
                 "equal_dataset_mean": float(per_dataset.mean()),
                 "equal_dataset_std": float(per_dataset.std()),
             }
-        methods[method] = metrics
-    wins: dict[str, object] = {}
-    for method in ("covariate", "adaptime"):
-        field = f"{method}_mse_win_rate_vs_vanilla"
-        per_dataset = np.asarray(
-            [
-                np.mean([float(row[field]) for row in dataset_rows[dataset]])
-                for dataset in sorted(dataset_rows)
-            ],
-            dtype=np.float64,
-        )
-        wins[method] = {
-            "equal_dataset_mean": float(per_dataset.mean()),
-            "equal_dataset_std": float(per_dataset.std()),
+        variants[variant] = {
+            "datasets": len(dataset_rows),
+            "tasks": len(variant_rows),
+            "methods": methods,
+            "mse_win_rate_vs_vanilla": wins,
         }
 
+    root = output_dir.expanduser().resolve()
+    manifest_path = root / "time_summary_manifest.json"
     _atomic_csv(root / "time_tasks.csv", rows)
     _atomic_json(
         root / "time_summary.json",
-        {
-            "datasets": len(dataset_rows),
-            "tasks": len(rows),
-            "methods": methods,
-            "mse_win_rate_vs_vanilla": wins,
-        },
+        {"variants": variants},
     )
     _atomic_json(
         manifest_path,
         {
-            **identity,
-            "signature": signature,
+            "schema_version": 1,
+            "format": "adaptime_time_aggregate",
+            "protocol": "repeat_then_config_then_term_then_dataset",
             "status": "completed",
+            "selection": {
+                "launch_id": launch_id,
+                "config_policy": config_policy,
+                "repeat_policy": repeat_policy,
+            },
+            "input_manifests": input_manifests,
             "files": {"summary": "time_summary.json", "tasks": "time_tasks.csv"},
         },
     )
@@ -303,11 +345,12 @@ def _positive_interval_length(
     return int(value)
 
 
-def _prepare_and_extract_dataset(
+def _run_dataset_tasks(
     dataset_name: str,
     tasks: list[AdaptimeTask],
     dataset_config: dict[str, object],
     workflow: AdaptimeWorkflowConfig,
+    dataset_config_path: Path | None,
 ) -> None:
     source_path = dataset_storage_root() / dataset_name
     hf_dataset = datasets.load_from_disk(str(source_path))
@@ -359,50 +402,143 @@ def _prepare_and_extract_dataset(
             raise ValueError(
                 f"{dataset_name}/{task.term} has no room for a datastore window before adaptation"
             )
-        prepared_manifest = prepare_adaptation_dataset(
-            hf_dataset,
-            PreparationConfig(
-                dataset=dataset_name,
-                term=task.term,
-                context_length=context_length,
-                prediction_length=horizon,
-                test_length=int(settings["test_length"]),
-                adaptation_train_length=train_length,
-                adaptation_validation_length=validation_length,
-                target_mode=workflow.target_mode,
-                adaptation_stride=workflow.adaptation_stride,
-                retrieval_period=period,
-                datastore_stride=datastore_stride,
-                datastore_length=workflow.datastore_length,
-            ),
-            task.prepared,
-            source_path=source_path,
+        preparation = PreparationConfig(
+            dataset=dataset_name,
+            term=task.term,
+            context_length=context_length,
+            prediction_length=horizon,
+            test_length=int(settings["test_length"]),
+            adaptation_train_length=train_length,
+            adaptation_validation_length=validation_length,
+            target_mode=workflow.target_mode,
+            adaptation_stride=workflow.adaptation_stride,
+            retrieval_period=period,
+            datastore_stride=datastore_stride,
+            datastore_length=workflow.datastore_length,
         )
-        forecaster = load_adaptime_forecaster(
-            workflow.model,
-            horizon=horizon,
-            period=period,
-            model_path=workflow.model_path,
-            weights_id=workflow.weights_id,
-            device=workflow.device,
+        run = allocate_run(
+            task.identity_root,
+            experiment="adaptime",
+            identity={
+                "model": workflow.model,
+                "target_mode": workflow.target_mode,
+                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
+                "frequency": freq,
+                "term": task.term,
+            },
+            model_config={
+                "method": "full_ridge_shared",
+                "weights_id": workflow.weights_id,
+                "representation": workflow.representation,
+                "distance_metric": workflow.distance_metric,
+                "retrieval_scope": workflow.retrieval_scope,
+                "max_k": workflow.max_k,
+                "k_values": list(workflow.k_values),
+                "alpha_values": list(workflow.alpha_values),
+                "seed": workflow.seed,
+            },
+            pipeline_config={
+                "context_length": context_length,
+                "prediction_length": horizon,
+                "test_length": int(settings["test_length"]),
+                "adaptation_train_length": train_length,
+                "adaptation_validation_length": validation_length,
+                "adaptation_stride": preparation.query_stride,
+                "retrieval_period": period,
+                "datastore_stride": datastore_stride,
+                "datastore_length": workflow.datastore_length,
+            },
+            runtime_config={
+                "model_batch_size": workflow.model_batch_size,
+                "query_block_size": workflow.query_block_size,
+                "datastore_block_size": workflow.datastore_block_size,
+                "arrow_cache_items": workflow.arrow_cache_items,
+                "ridge_chunk_size": workflow.ridge_chunk_size,
+                "device": workflow.device,
+                "model_path": (
+                    str(workflow.model_path) if workflow.model_path is not None else None
+                ),
+            },
+            experiment_config={
+                "target_mode": workflow.target_mode,
+                "methods": list(METHODS),
+                "formulation": "full_ridge_shared",
+            },
+            provenance={
+                "dataset_source": str(source_path),
+                "dataset_config": (
+                    str(dataset_config_path.expanduser().resolve())
+                    if dataset_config_path is not None
+                    else "timebench.config.datasets"
+                ),
+            },
         )
-        extraction_manifest = extract_adaptation_features(
-            prepared_manifest,
-            forecaster,
-            ExtractionConfig(
-                representation=workflow.representation,
-                distance_metric=workflow.distance_metric,
-                retrieval_scope=workflow.retrieval_scope,
-                max_k=workflow.max_k,
-                context_k=workflow.k_values,
-                model_batch_size=workflow.model_batch_size,
-                query_block_size=workflow.query_block_size,
-                datastore_block_size=workflow.datastore_block_size,
-                arrow_cache_items=workflow.arrow_cache_items,
-            ),
-            task.extraction,
-        )
-        print(extraction_manifest, flush=True)
+        if not run.should_run:
+            continue
+
+        prepared_dir = run.run_dir / "prepared"
+        extraction_dir = run.run_dir / "extraction"
+        training_dir = run.run_dir / "training"
+        comparison_dir = run.run_dir / "comparison"
+        with run:
+            prepared_manifest = prepare_adaptation_dataset(
+                hf_dataset,
+                preparation,
+                prepared_dir,
+                source_path=source_path,
+            )
+            forecaster = load_adaptime_forecaster(
+                workflow.model,
+                horizon=horizon,
+                period=period,
+                model_path=workflow.model_path,
+                weights_id=workflow.weights_id,
+                device=workflow.device,
+            )
+            extraction_manifest = extract_adaptation_features(
+                prepared_manifest,
+                forecaster,
+                ExtractionConfig(
+                    representation=workflow.representation,
+                    distance_metric=workflow.distance_metric,
+                    retrieval_scope=workflow.retrieval_scope,
+                    max_k=workflow.max_k,
+                    context_k=workflow.k_values,
+                    model_batch_size=workflow.model_batch_size,
+                    query_block_size=workflow.query_block_size,
+                    datastore_block_size=workflow.datastore_block_size,
+                    arrow_cache_items=workflow.arrow_cache_items,
+                ),
+                extraction_dir,
+            )
+            model_manifest = fit_full_ridge(
+                prepared_manifest,
+                extraction_manifest,
+                RidgeTrainingConfig(
+                    k_values=workflow.k_values,
+                    alpha_values=workflow.alpha_values,
+                    chunk_size=workflow.ridge_chunk_size,
+                    seed=workflow.seed,
+                ),
+                training_dir,
+            )
+            result_manifest = evaluate_frozen_adaptation(
+                prepared_manifest,
+                extraction_manifest,
+                model_manifest,
+                AdaptimeTestingConfig(chunk_size=workflow.ridge_chunk_size),
+                comparison_dir,
+            )
+            run.complete(
+                [
+                    "prepared/manifest.json",
+                    "extraction/manifest.json",
+                    "training/model_manifest.json",
+                    "comparison/result_manifest.json",
+                    "comparison/comparison_summary.json",
+                ]
+            )
+        print(result_manifest, flush=True)
 
 
 def run_adaptation_stage(
@@ -413,12 +549,14 @@ def run_adaptation_stage(
     datasets_selected: Iterable[str] = ("all_datasets",),
     terms_selected: Iterable[str] | None = None,
     output_root: Path | None = None,
+    config_policy: str = "error",
+    repeat_policy: str = "selected",
 ) -> None:
-    """Run one resumable stage over the selected TIME dataset/term tasks."""
+    """Run each TIME dataset/term task atomically, then aggregate selected runs."""
 
     workflow.validate()
-    if stage not in {"extract", "train", "test"}:
-        raise ValueError("stage must be extract, train, or test")
+    if stage != "run":
+        raise ValueError("stage must be run")
     dataset_config = load_dataset_config(dataset_config_path)
     artifact_root = (output_root or outputs_root() / "adaptime").expanduser().resolve()
     tasks = workflow_tasks(
@@ -428,43 +566,26 @@ def run_adaptation_stage(
         artifact_root,
         workflow,
     )
-    if stage == "extract":
-        for dataset_name in _selected_datasets(dataset_config, datasets_selected):
-            selected_tasks = [task for task in tasks if task.dataset == dataset_name]
-            _prepare_and_extract_dataset(
-                dataset_name, selected_tasks, dataset_config, workflow
-            )
-        return
-
-    for task in tasks:
-        if stage == "train":
-            manifest = fit_full_ridge(
-                task.prepared,
-                task.extraction,
-                RidgeTrainingConfig(
-                    k_values=workflow.k_values,
-                    alpha_values=workflow.alpha_values,
-                    chunk_size=workflow.ridge_chunk_size,
-                    seed=workflow.seed,
-                ),
-                task.model,
-            )
-        else:
-            manifest = evaluate_frozen_adaptation(
-                task.prepared,
-                task.extraction,
-                task.model,
-                AdaptimeTestingConfig(chunk_size=workflow.ridge_chunk_size),
-                task.comparison,
-            )
-        print(manifest, flush=True)
-    if stage == "test":
-        aggregate = aggregate_time_comparison(
-            tasks,
-            artifact_root
-            / "comparison"
-            / workflow.model
-            / workflow.target_mode
-            / "aggregate",
+    for dataset_name in _selected_datasets(dataset_config, datasets_selected):
+        selected_tasks = [task for task in tasks if task.dataset == dataset_name]
+        _run_dataset_tasks(
+            dataset_name,
+            selected_tasks,
+            dataset_config,
+            workflow,
+            dataset_config_path,
         )
-        print(aggregate, flush=True)
+
+    launch_id = os.environ.get("TIME_LAUNCH_ID")
+    aggregate = aggregate_time_comparison(
+        tasks,
+        artifact_root
+        / "aggregates"
+        / workflow.model
+        / workflow.target_mode
+        / (launch_id or "manual"),
+        launch_id=launch_id,
+        config_policy=config_policy,
+        repeat_policy=repeat_policy,
+    )
+    print(aggregate, flush=True)

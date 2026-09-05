@@ -47,6 +47,13 @@ time_workflow_on_exit() {
             time_log "stage $TIME_ACTIVE_STAGE completed status=failed exit_code=$status" >&2
         fi
         time_write_status failed "$status"
+        if [ -n "${TIME_RESULT_SCOPE:-}" ]; then
+            PYTHONPATH="$PROJECT_ROOT/src" python \
+                "$PROJECT_ROOT/scripts/interrupt_result_launch.py" \
+                "$TIME_RESULT_SCOPE" \
+                --launch-id "$TIME_LAUNCH_ID" >&2 || \
+                time_log "warning: could not mark unfinished task manifests interrupted" >&2
+        fi
         time_log "workflow $TIME_WORKFLOW_NAME completed status=failed exit_code=$status" >&2
     fi
     exit "$status"

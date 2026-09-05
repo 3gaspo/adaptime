@@ -23,7 +23,12 @@ TIME_WORKFLOW_NAME=foundation_models
 TIME_TASK_NAME="$model"
 TIME_STATUS_NAME="$model"
 TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-${SLURM_JOB_ID:-manual_$(date -u '+%Y%m%dT%H%M%SZ')_$$}}"
-export TIME_WORKFLOW_NAME TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID
+case "${TIME_COVARIATE_MODE:-none}" in
+    none) experiment=expe_uni ;;
+    *) experiment=expe_covar ;;
+esac
+TIME_RESULT_SCOPE="$TIME_OUTPUTS/results/$experiment/$model"
+export TIME_WORKFLOW_NAME TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID TIME_RESULT_SCOPE
 source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 
 time_workflow_init

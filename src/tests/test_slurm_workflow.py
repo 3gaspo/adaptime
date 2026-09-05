@@ -96,13 +96,13 @@ def main() -> None:
     adaptime_workflow = (
         PROJECT_ROOT / "src/slurm/run_adaptime_comparison.sh"
     ).read_text(encoding="utf-8")
-    assert "for stage in extract train test" in adaptime_workflow
+    assert "for stage in extract train test" not in adaptime_workflow
     assert "uv run --no-sync python -m timebench.scripts.run_adaptation_stage" in adaptime_workflow
     assert "ADAPTIME_K_VALUES:-1 5 10 15" in adaptime_workflow
     assert "ADAPTIME_ALPHA_VALUES:-0.001 0.01 0.1" in adaptime_workflow
-    assert adaptime_workflow.index("extract train test") < adaptime_workflow.index(
-        'adaptime_stage "$stage"'
-    )
+    assert "--stage run" in adaptime_workflow
+    assert 'TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE/results/' in adaptime_workflow
+    assert 'time_stage_start run' in adaptime_workflow
 
     adaptime_submit = (
         PROJECT_ROOT / "scripts/submit_adaptime_comparison.sh"
@@ -130,8 +130,11 @@ def main() -> None:
     workflow_source = (
         PROJECT_ROOT / "src/timebench/pipeline/adaptime_workflow.py"
     ).read_text(encoding="utf-8")
-    assert "equal_user_then_equal_term_then_equal_dataset" in workflow_source
-    assert 'if stage == "test":' in workflow_source
+    assert "repeat_then_config_then_term_then_dataset" in workflow_source
+    assert 'if stage != "run":' in workflow_source
+    assert "allocate_run(" in workflow_source
+    assert "if not run.should_run:" in workflow_source
+    assert "with run:" in workflow_source
     assert "aggregate_time_comparison(" in workflow_source
 
     dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
@@ -358,6 +361,8 @@ def main() -> None:
     assert "--include=mase_vs_features.svg" in result_sync
     assert "--include=mase_vs_features_data.csv" in result_sync
     assert "--include=mase_vs_features_correlations.csv" in result_sync
+    assert "--include=SELECTED_RUNS.json" in result_sync
+    assert "--include=*/manifest_history/*.json" in result_sync
 
     assert "lightweight|detailed|full" in publisher
     assert '. "$proxy_script"' in publisher
@@ -368,6 +373,8 @@ def main() -> None:
     assert "-name mase_vs_features.svg" in publisher
     assert "-name mase_vs_features_data.csv" in publisher
     assert "-name mase_vs_features_correlations.csv" in publisher
+    assert "-name SELECTED_RUNS.json" in publisher
+    assert "-path '*/manifest_history/*.json'" in publisher
     assert "git push origin main" in publisher
 
     direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(
@@ -428,6 +435,37 @@ def main() -> None:
         )
         assert "Failed to run experiment" not in experiment_text
         assert "except Exception" not in experiment_text
+        assert experiment_text.index("run = allocate_run(") < experiment_text.index(
+            "timer.start()"
+        )
+        assert "if not run.should_run:" in experiment_text
+
+    lifecycle = (PROJECT_ROOT / "src/timebench/pipeline/runs.py").read_text(
+        encoding="utf-8"
+    )
+    assert 'CONFLICT_POLICIES = ("overwrite_exact", "overwrite_path", "new")' in lifecycle
+    assert 'CONFIG_POLICIES = ("error", "distinct", "latest", "average")' in lifecycle
+    assert 'REPEAT_POLICIES = ("selected", "latest", "distinct", "average")' in lifecycle
+    assert '"slurm_job_id": os.environ.get("SLURM_JOB_ID")' in lifecycle
+    assert '"launched_at": launched_at' in lifecycle
+    assert (PROJECT_ROOT / "scripts/select_result_run.py").is_file()
+    assert (PROJECT_ROOT / "scripts/interrupt_result_launch.py").is_file()
+
+    workflow_common = (PROJECT_ROOT / "src/slurm/workflow_common.sh").read_text(
+        encoding="utf-8"
+    )
+    foundation_runner = (
+        PROJECT_ROOT / "src/slurm/run_foundation_model.sh"
+    ).read_text(encoding="utf-8")
+    comparison_runner = (
+        PROJECT_ROOT / "src/slurm/run_chronos2_comparison.sh"
+    ).read_text(encoding="utf-8")
+    assert "interrupt_result_launch.py" in workflow_common
+    assert 'TIME_RESULT_SCOPE="$TIME_OUTPUTS/results/$experiment/$model"' in foundation_runner
+    assert (
+        'TIME_RESULT_SCOPE="$TIME_OUTPUTS/results/$experiment/chronos2/$TIME_TARGET_MODE"'
+        in comparison_runner
+    )
     print("TIME Slurm and DGX/Selena synchronization contract passed.")
 
 

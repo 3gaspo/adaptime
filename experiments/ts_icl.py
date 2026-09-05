@@ -147,6 +147,52 @@ def run_tsicl_experiment(
                 "covariate_mode='future_included'"
             )
 
+        season_length = get_seasonality(dataset.freq)
+        covariate_channels = (
+            dataset.covariate_dim if covariate_mode == "future_included" else 0
+        )
+        identity_root = foundation_identity_root(
+            output_dir, "ts_icl", resolved_target_mode, dataset_name, term
+        )
+        run = allocate_run(
+            identity_root,
+            experiment=experiment,
+            identity={
+                "model": "ts_icl",
+                "target_mode": resolved_target_mode,
+                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
+                "frequency": dataset.freq,
+                "term": term,
+            },
+            model_config={
+                "model_size": model_size,
+                "context_length": context_length,
+                "quantile_levels": quantile_levels,
+            },
+            pipeline_config={
+                "prediction_length": prediction_length,
+                "test_length": test_length,
+                "val_length": val_length,
+                "windows": dataset.windows,
+                "seasonality": season_length,
+            },
+            runtime_config={
+                "batch_size": batch_size,
+                "device": device_map,
+                "checkpoint_path": str(checkpoint_path),
+            },
+            experiment_config={
+                "covariate_mode": covariate_mode,
+                "covariate_channels": covariate_channels,
+            },
+            provenance={
+                "dataset_config_path": None if config_path is None else str(config_path),
+            },
+        )
+        if not run.should_run:
+            print(f"  Reused completed task: {run.run_dir}")
+            continue
+
         print(f"  Initializing model pipeline...")
         model = TSICL(
             model_path=str(checkpoint_path),
@@ -171,8 +217,6 @@ def run_tsicl_experiment(
         print(f"    - Prediction length: {dataset.prediction_length}")
         print(f"    - Windows: {num_windows}")
 
-        season_length = get_seasonality(dataset.freq)
-
         # Helper function to prepare a single context
         def _prepare_context(d):
             target = np.asarray(d["target"])
@@ -193,8 +237,6 @@ def run_tsicl_experiment(
         timer.start()
         eval_items = list(eval_data)
         total_items = len(eval_items)
-        covariate_channels = None
-
         for start in range(0, total_items, batch_size):
             end = min(start + batch_size, total_items)
             batch_items = eval_items[start:end]
@@ -296,44 +338,7 @@ def run_tsicl_experiment(
             "target_mode": resolved_target_mode,
         }
 
-        identity_root = foundation_identity_root(
-            output_dir, "ts_icl", resolved_target_mode, dataset_name, term
-        )
-        with allocate_run(
-            identity_root,
-            experiment=experiment,
-            identity={
-                "model": "ts_icl",
-                "target_mode": resolved_target_mode,
-                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
-                "frequency": dataset.freq,
-                "term": term,
-            },
-            model_config={
-                "model_size": model_size,
-                "context_length": context_length,
-                "quantile_levels": quantile_levels,
-            },
-            pipeline_config={
-                "prediction_length": prediction_length,
-                "test_length": test_length,
-                "val_length": val_length,
-                "windows": dataset.windows,
-                "seasonality": season_length,
-            },
-            runtime_config={
-                "batch_size": batch_size,
-                "device": device_map,
-                "checkpoint_path": str(checkpoint_path),
-            },
-            experiment_config={
-                "covariate_mode": covariate_mode,
-                "covariate_channels": covariate_channels or 0,
-            },
-            provenance={
-                "dataset_config_path": None if config_path is None else str(config_path),
-            },
-        ) as run:
+        with run:
             metadata = save_window_predictions(
                 dataset           = dataset,
                 fc_quantiles      = fc_quantiles,

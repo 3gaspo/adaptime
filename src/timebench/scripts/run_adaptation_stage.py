@@ -1,4 +1,4 @@
-"""Run one TIME-wide Adaptime stage from local or Slurm orchestration."""
+"""Run the TIME-wide Adaptime task workflow from local or Slurm orchestration."""
 
 from __future__ import annotations
 
@@ -20,8 +20,8 @@ def _csv(value: str) -> tuple[str, ...]:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run one Adaptime workflow stage over TIME")
-    parser.add_argument("--stage", choices=("extract", "train", "test"), required=True)
+    parser = argparse.ArgumentParser(description="Run Adaptime tasks over TIME")
+    parser.add_argument("--stage", choices=("run",), default="run")
     parser.add_argument("--datasets", type=_csv, default=("all_datasets",))
     parser.add_argument("--terms", type=_csv)
     parser.add_argument("--config", type=Path)
@@ -50,6 +50,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--arrow-cache-items", type=int, default=2)
     parser.add_argument("--ridge-chunk-size", type=int, default=1024)
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument(
+        "--config-policy",
+        choices=("error", "distinct", "latest", "average"),
+        default="error",
+    )
+    parser.add_argument(
+        "--repeat-policy",
+        choices=("selected", "latest", "distinct", "average"),
+        default="selected",
+    )
     return parser.parse_args()
 
 
@@ -87,6 +97,8 @@ def main() -> None:
         datasets_selected=args.datasets,
         terms_selected=args.terms,
         output_root=args.output_root,
+        config_policy=args.config_policy,
+        repeat_policy=args.repeat_policy,
     )
 
 

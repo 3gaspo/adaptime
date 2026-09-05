@@ -31,9 +31,17 @@ and neighbor residual information.
   `K in {1,5,10,15}` and `alpha in {1e-3,1e-2,1e-1}` on adaptation
   validation; do not refit before test.
 - Primary configuration: `K=10`, `alpha=1e-2`.
-- Artifacts: `outputs/adaptime/{prepared,extraction,training,comparison}/`.
-- TIME aggregate: equal users within each task, equal terms within each
-  dataset/frequency, then equal dataset/frequency weight.
+- Task artifacts:
+  `outputs/adaptime/results/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
+- Recovery: exact completed tasks are reused; exact interrupted tasks restart
+  from preparation in the same `run_n`; different scientific configurations
+  receive a new `run_n`. Partial stages are never reused.
+- Selection: configuration policy is `error`, `distinct`, `latest`, or
+  `average`; repeat policy is `selected`, `latest`, `distinct`, or `average`.
+- TIME aggregate: repeated runs are averaged within exact configurations,
+  configurations are then separated or averaged as requested, terms receive
+  equal weight within each dataset/frequency, and dataset/frequency units
+  receive equal weight.
 
 No delta, convex, per-horizon, or native-multivariate Adaptime ablation belongs
 to this experiment family. No result is claimed until cluster outputs are

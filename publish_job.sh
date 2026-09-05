@@ -116,6 +116,8 @@ elif [ -d outputs ]; then
                 -name mase_vs_features.svg -o \
                 -name mase_vs_features_data.csv -o \
                 -name mase_vs_features_correlations.csv -o \
+                -name SELECTED_RUNS.json -o \
+                -path '*/manifest_history/*.json' -o \
                 -name manifest.json -o \
                 -name model_manifest.json -o \
                 -name result_manifest.json -o \
@@ -143,6 +145,8 @@ elif [ -d outputs ]; then
                 -name mase_vs_features.svg -o \
                 -name mase_vs_features_data.csv -o \
                 -name mase_vs_features_correlations.csv -o \
+                -name SELECTED_RUNS.json -o \
+                -path '*/manifest_history/*.json' -o \
                 -name manifest.json -o \
                 -name model_manifest.json -o \
                 -name result_manifest.json -o \

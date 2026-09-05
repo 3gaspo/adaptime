@@ -67,9 +67,10 @@ multivariate Adaptime variants are outside the current protocol.
 The official test compares vanilla $V$, retrieval-context $C$ at the selected
 $K$, and frozen Adaptime $V'$. It retains per-window and per-user MSE, MAE,
 normalized MSE, and normalized MAE, then reports equal-window and equal-user
-means and population standard deviations. The TIME-wide view averages
-equal-user task metrics over terms within each dataset/frequency and then gives
-each dataset/frequency equal weight. Conclusions require completed and
-inspected cluster artifacts.
+means and population standard deviations. The TIME-wide view selects only
+completed task manifests, averages exact repeats before optionally averaging
+distinct scientific configurations, averages terms within each
+dataset/frequency, and then gives each dataset/frequency equal weight.
+Conclusions require completed and inspected cluster artifacts.
 
 \end{document}
