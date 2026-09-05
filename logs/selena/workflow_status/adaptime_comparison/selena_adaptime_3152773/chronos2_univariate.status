@@ -1,0 +1,12 @@
+workflow=adaptime_comparison
+launch_id=selena_adaptime_3152773
+task=chronos2_univariate
+state=failed
+stage=run
+active_task=TIME-wide Adaptime model=chronos2 target_mode=univariate
+launched_at=2026-09-05T11:56:18Z
+updated_at=2026-09-05T11:58:34Z
+exit_code=1
+slurm_job_id=3152773
+slurm_array_job_id=none
+slurm_array_task_id=none

@@ -1,0 +1,88 @@
+{
+  "error": {
+    "message": "query row 0 has fewer than k=15 eligible neighbors",
+    "type": "ValueError"
+  },
+  "experiment": "adaptime",
+  "experiment_config": {
+    "formulation": "full_ridge_shared",
+    "methods": [
+      "vanilla",
+      "covariate",
+      "adaptime"
+    ],
+    "target_mode": "univariate"
+  },
+  "identity": {
+    "dataset": "SG_Weather",
+    "frequency": "D",
+    "model": "chronos2",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3152773",
+        "launched_at": "2026-09-05T11:56:24.762130+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3152773"
+      }
+    ],
+    "launch_id": "selena_adaptime_3152773",
+    "launched_at": "2026-09-05T11:56:24.762130+00:00",
+    "slurm_job_id": "3152773"
+  },
+  "model_config": {
+    "alpha_values": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "distance_metric": "euclidean",
+    "k_values": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "max_k": 15,
+    "method": "full_ridge_shared",
+    "representation": "instance",
+    "retrieval_scope": "all",
+    "seed": 1,
+    "weights_id": null
+  },
+  "pipeline_config": {
+    "adaptation_stride": 3,
+    "adaptation_train_length": 366,
+    "adaptation_validation_length": 366,
+    "context_length": 512,
+    "datastore_length": null,
+    "datastore_stride": 1,
+    "prediction_length": 3,
+    "retrieval_period": 1,
+    "test_length": 366
+  },
+  "project": "adaptime",
+  "provenance": {
+    "dataset_config": "/fssmall/home/h61084/codes/adaptime/src/timebench/config/datasets.yaml",
+    "dataset_source": "/scratch/users/h61084/datasets/hf_dataset/SG_Weather/D"
+  },
+  "required_artifacts": [],
+  "runtime_config": {
+    "arrow_cache_items": 2,
+    "datastore_block_size": 4096,
+    "device": "cuda",
+    "model_batch_size": 64,
+    "model_path": null,
+    "query_block_size": 256,
+    "ridge_chunk_size": 1024
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-05T11:56:24.762130+00:00",
+  "status": "interrupted",
+  "updated_at": "2026-09-05T11:58:23.177090+00:00"
+}
