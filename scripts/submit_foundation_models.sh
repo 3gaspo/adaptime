@@ -55,5 +55,5 @@ summary_job="$(
 )"
 summary_job="${summary_job%%;*}"
 
-echo "foundation summary submitted job_id=$summary_job dependency=afterany:$dependency"
+echo "foundation summary and feature plot submitted job_id=$summary_job dependency=afterany:$dependency"
 echo "status: bash scripts/foundation_model_status.sh $cluster $launch_id"

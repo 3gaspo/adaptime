@@ -228,6 +228,24 @@ def main() -> None:
     assert 'diagnostics_root="$TIME_METADATA/window_audit"' in diagnostic_workflow
     assert '--output_dir "$TIME_METADATA"' in diagnostic_workflow
     assert diagnostic_workflow.count("export_dataset_metadata.sh") == 2
+    assert diagnostic_workflow.index("export_dataset_metadata.sh\" audit") < (
+        diagnostic_workflow.index("time_stage_start dataset_features")
+    )
+    assert diagnostic_workflow.index("export_dataset_metadata.sh\" features") > (
+        diagnostic_workflow.index('srun --ntasks=1 "${feature_command[@]}"')
+    )
+    metadata_export = (
+        PROJECT_ROOT / "src/slurm/export_dataset_metadata.sh"
+    ).read_text(encoding="utf-8")
+    audit_export = metadata_export.partition("    audit)\n")[2].partition(
+        "        ;;\n"
+    )[0]
+    feature_export = metadata_export.partition("    features)\n")[2].partition(
+        "        ;;\n"
+    )[0]
+    assert 'copy_artifact "$feature_root/dataset_features_full.csv"' not in audit_export
+    assert 'rm -f "$export_root/dataset_features_full.csv"' in audit_export
+    assert "dataset_features_full.csv" in feature_export
     diagnostic_submit = (
         PROJECT_ROOT / "scripts/dataset_diagnostics.sh"
     ).read_text(encoding="utf-8")
@@ -248,6 +266,12 @@ def main() -> None:
     ).read_text(encoding="utf-8")
     assert "uv run --no-sync python" in summary
     assert '--models "${FOUNDATION_MODELS[@]}"' in summary
+    assert 'status_root="$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"' in summary
+    assert 'time_stage_start feature_plot' in summary
+    assert 'scripts/plot_feature_performance.py' in summary
+    assert '--features-root "$TIME_METADATA/stl_features"' in summary
+    assert '--output "$analysis_root/mase_vs_features.svg"' in summary
+    assert '--launch-id "$TIME_LAUNCH_ID"' in summary
     assert "reports_root" not in summary
     assert "conda" not in summary
 
@@ -260,6 +284,10 @@ def main() -> None:
     assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$runtime_project_root/outputs}}"' in common_runtime
     assert 'LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$runtime_project_root/logs}}"' in common_runtime
     assert 'TIME_METADATA="${TIME_METADATA:-$TIME_DATA_ROOT/time_metadata}"' in common_runtime
+    runtime_mkdir = next(
+        line for line in common_runtime.splitlines() if line.startswith("mkdir -p ")
+    )
+    assert '"$TIME_DATASET"' not in runtime_mkdir
     assert 'TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$selena_nni}"' in runtime
     assert 'TIME_SCRATCH_ROOT="${TIME_SCRATCH_ROOT:-$TIME_STORAGE_ROOT/codes/$PROJECT_NAME}"' in runtime
     assert 'OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}}"' in runtime
@@ -327,6 +355,9 @@ def main() -> None:
     assert '"$PROJECT_ROOT/outputs/selena"' in result_sync
     assert '"$PROJECT_ROOT/logs/selena"' in result_sync
     assert '"--include=/dataset_metadata/$JOB_ID/***"' in result_sync
+    assert "--include=mase_vs_features.svg" in result_sync
+    assert "--include=mase_vs_features_data.csv" in result_sync
+    assert "--include=mase_vs_features_correlations.csv" in result_sync
 
     assert "lightweight|detailed|full" in publisher
     assert '. "$proxy_script"' in publisher
@@ -334,6 +365,9 @@ def main() -> None:
     assert '"$project_root"/logs/selena/' in publisher
     assert 'find "$project_root/outputs"' in publisher
     assert "logs/selena/dataset_metadata" in publisher
+    assert "-name mase_vs_features.svg" in publisher
+    assert "-name mase_vs_features_data.csv" in publisher
+    assert "-name mase_vs_features_correlations.csv" in publisher
     assert "git push origin main" in publisher
 
     direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(

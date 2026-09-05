@@ -113,6 +113,9 @@ elif [ -d outputs ]; then
                 -name foundation_model_summary.csv -o \
                 -name foundation_model_summary.md -o \
                 -name foundation_model_report_manifest.json -o \
+                -name mase_vs_features.svg -o \
+                -name mase_vs_features_data.csv -o \
+                -name mase_vs_features_correlations.csv -o \
                 -name manifest.json -o \
                 -name model_manifest.json -o \
                 -name result_manifest.json -o \
@@ -137,6 +140,9 @@ elif [ -d outputs ]; then
                 -name foundation_model_summary.csv -o \
                 -name foundation_model_summary.md -o \
                 -name foundation_model_report_manifest.json -o \
+                -name mase_vs_features.svg -o \
+                -name mase_vs_features_data.csv -o \
+                -name mase_vs_features_correlations.csv -o \
                 -name manifest.json -o \
                 -name model_manifest.json -o \
                 -name result_manifest.json -o \

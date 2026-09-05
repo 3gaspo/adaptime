@@ -33,7 +33,7 @@ audit_command=(
 srun --ntasks=1 "${audit_command[@]}"
 time_task_complete
 time_stage_complete
-source "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh"
+bash "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh" audit
 
 time_stage_start dataset_features
 time_task_start "reuse or compute full-series TIME statistics and STL features"
@@ -49,5 +49,5 @@ feature_command=(
 srun --ntasks=1 "${feature_command[@]}"
 time_task_complete
 time_stage_complete
-source "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh"
+bash "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh" features
 time_workflow_complete

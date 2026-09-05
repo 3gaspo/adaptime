@@ -164,7 +164,9 @@ bash scripts/channels_comparison.sh dgx
 
 Use `selena` for the matching Selena fronts. Baseline `run_n` outputs remain
 under `outputs/results/`; Adaptime artifacts remain isolated under
-`outputs/adaptime/{prepared,extraction,training,comparison}/`.
+`outputs/adaptime/{prepared,extraction,training,comparison}/`. After all four
+foundation jobs complete successfully, their dependent summary also creates a
+launch-filtered MASE-versus-feature plot, joined data, and feature correlations.
 
 The inherited diagnostic workflow audits the exact official TIME queries and
 each distinct model-effective `(L,H)` configuration. It stores exact source
@@ -177,9 +179,11 @@ bash scripts/dataset_diagnostics.sh dgx
 bash scripts/dataset_diagnostics.sh selena
 ```
 
-Compact audit and feature summaries are exported to the job log tree for
-lightweight result synchronization and publication; detailed anomaly positions
-remain in shared metadata and the detailed scope.
+Audit summaries are exported only after the audit succeeds, and the feature
+summary is added only after feature extraction succeeds. Compact outputs are
+copied to the job log tree for lightweight synchronization and publication;
+detailed anomaly positions remain in shared metadata. Cluster workflows reject
+a missing prepared `TIME_DATASET` directory instead of creating an empty one.
 
 ## Source tree
 
