@@ -28,6 +28,8 @@ deliberately.
   Failed model and comparison jobs mark their still-running task manifests
   interrupted; recovery restarts the current task rather than checkpointing
   inside inference. Resume records identify both the new and preceding jobs.
+  Run discovery recognizes only manifests directly below `run_n`, so nested
+  component manifests cannot be mistaken for task lifecycle state.
   Reports expose selected, latest, distinct, and averaged repeat handling plus
   error, distinct, latest, and averaged scientific-configuration handling.
 - Narrowed the maintained benchmark surface to `chronos_bolt`, `chronos2`,

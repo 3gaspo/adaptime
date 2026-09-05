@@ -57,6 +57,12 @@ def main() -> None:
             first = _allocate(root)
             assert first.action == "new" and first.run_dir.name == "run_0"
             _complete(first)
+            component_manifest = first.run_dir / "prepared" / "manifest.json"
+            component_manifest.parent.mkdir()
+            component_manifest.write_text(
+                '{"format": "component", "status": "completed"}',
+                encoding="utf-8",
+            )
 
             os.environ["TIME_LAUNCH_ID"] = "launch_2"
             os.environ["SLURM_JOB_ID"] = "202"
@@ -68,6 +74,7 @@ def main() -> None:
             assert manifest["launch"]["attempts"][-1]["slurm_job_id"] == "202"
             assert manifest["launch"]["attempts"][-1]["launched_at"]
             assert select_completed_runs(root.parent, launch_id="launch_2")[0][0] == first.run_dir
+            assert interrupt_launch(root.parent, "launch_2") == []
 
             os.environ["TIME_LAUNCH_ID"] = "launch_3"
             interrupted = _allocate(root, force=True)
