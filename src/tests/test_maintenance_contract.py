@@ -88,6 +88,19 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
         self.assertIn("export HF_DATASETS_OFFLINE=1", runtime)
         self.assertIn("export TRANSFORMERS_OFFLINE=1", runtime)
 
+    def test_seasonal_naive_uses_direct_deterministic_quantiles(self) -> None:
+        experiment = (PROJECT_ROOT / "experiments/seasonal_naive.py").read_text(
+            encoding="utf-8"
+        )
+        predictor = (
+            PROJECT_ROOT / "src/timebench/models/statsforecast_predictor.py"
+        ).read_text(encoding="utf-8")
+        for source in (experiment, predictor):
+            self.assertNotIn("num_samples", source)
+            self.assertNotIn("np.random", source)
+        self.assertIn("forecast.quantiles", experiment)
+        self.assertIn("self._quantiles = np.stack", predictor)
+
     def test_time_dataset_download_and_current_model_surface(self) -> None:
         downloader = (PROJECT_ROOT / "scripts/download_time_dataset.py").read_text(
             encoding="utf-8"

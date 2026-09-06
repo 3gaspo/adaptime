@@ -177,6 +177,9 @@ deliberately.
   Seasonal Naive amplified once per forecast window, while retaining unrelated
   warnings. Undefined all-zero MAPE/sMAPE cells now remain NaN without emitting
   NumPy empty-mean warnings.
+- Removed stochastic inverse-CDF resampling from Seasonal Naive. Its
+  StatsForecast quantiles now enter TIME evaluation directly, making repeated
+  runs deterministic without inventing a second random-number stream.
 - Removed duplicate Seasonal Naive rows from local leaderboard aggregation and
   made result/cache paths configurable.
 

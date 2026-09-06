@@ -2,18 +2,19 @@
 
 ## Evidence scope
 
-Selena launch `selena_20260902T183319Z_29483` completed the maintained
-four-model TIME benchmark on 2026-09-02. Chronos2, TS-ICL, Chronos-Bolt, and
-Seasonal Naive each completed the same 98 horizon tasks spanning 50
-dataset/frequency entries. The four model jobs and dependent summary exited
-zero. All 392 selected task manifests use schema 1 and report `completed`.
+Selena launch `selena_20260905T202540Z_30178` completed the maintained
+four-model TIME benchmark under the current experiment-owned artifact contract
+on 2026-09-05. Chronos2, TS-ICL, Chronos-Bolt, and Seasonal Naive each
+completed the same 98 horizon tasks spanning 50 dataset/frequency entries.
+Jobs `3157891`--`3157895`, including the dependent summary, exited zero. All
+392 task manifests use schema 1 and report `completed`, and every task has
+timing metadata.
 
-Channel launch `selena_channels_20260902T183320Z_29592` separately evaluated
+Channel launch `selena_channels_20260905T202615Z_34874` separately evaluated
 Chronos2 on the 74 tasks from the 38 multivariate dataset/frequency entries.
-Its native-multivariate and independent-univariate jobs both completed all 74
-tasks. After the missing-covariate repair, launch
-`selena_covariate_3120322` reran the complete 74-task past-target branch on
-2026-09-04 and completed with exit code zero.
+Its native-multivariate, independent-univariate, and past-target-covariate jobs
+`3157896`--`3157898` each completed all 74 tasks with exit code zero. All 222
+channel manifests report `completed` with complete timing coverage.
 
 Dataset-diagnostics launch
 `selena_dataset_diagnostics_20260904T155618Z_29769` also completed on
@@ -21,12 +22,17 @@ Dataset-diagnostics launch
 490 distinct query/context configurations plus 50 complete dataset-level
 feature rows.
 
-The synchronized project-local copies of these logs and result artifacts were
-intentionally removed on 2026-09-05 before a clean rerun under the current
-task-recovery and experiment-path contract. The values below remain the
-historical analysis of the named completed launches; they are not current
-selectable inputs in this checkout. Shared dataset data and computed metadata
-were not removed.
+The current logs and lightweight results were synchronized through commit
+`6c22322`. The dataset-diagnostics launch was not rerun or republished with
+these jobs; the feature analysis reused the complete shared metadata produced
+by the 2026-09-04 launch.
+
+The jobs succeeded operationally, but the Seasonal Naive probabilistic wrapper
+has a reproducibility defect: it draws inverse-CDF samples from NumPy's global
+random generator without setting or accepting a run seed. Its values and any
+four-model ranking or feature plot that includes them are therefore
+provisional. Chronos2, TS-ICL, and Chronos-Bolt reproduced every task-level
+MASE value exactly across the two synchronized runs.
 
 The analysis uses MASE because it is scale-free and remains interpretable on
 the near-zero series for which MAPE becomes unstable. For each model or target
@@ -39,17 +45,19 @@ construction, metric computation, and artifact saving.
 
 | Model | Macro MASE ↓ | Inference seconds ↓ | Best of 98 tasks | Best of 50 datasets |
 |---|---:|---:|---:|---:|
-| Chronos2 | **1.122040** | **431.509** | **74** | **38** |
-| TS-ICL | 1.167467 | 2835.570 | 17 | 9 |
-| Chronos-Bolt | 1.238911 | 948.589 | 6 | 2 |
-| Seasonal Naive | 1.553036 | 2316.931 | 1 | 1 |
+| Chronos2 | **1.122040** | **429.442** | **73** | **37** |
+| TS-ICL | 1.167467 | 2822.646 | 17 | 9 |
+| Chronos-Bolt | 1.238911 | 942.774 | 6 | 2 |
+| Seasonal Naive | 1.555939 | 2313.715 | 2 | 2 |
 
 Chronos2 is the clear default for this benchmark: it has both the lowest macro
 MASE and the lowest measured forecast-loop time, so it dominates the other
 three models on the observed accuracy/runtime plane. It beats TS-ICL on 78 of
-98 tasks, Chronos-Bolt on 88, and Seasonal Naive on 97. Relative to Seasonal
-Naive, its median dataset-level MASE ratio is 0.664, corresponding to a 33.6%
-median reduction, and it improves on the baseline on 49 of 50 datasets.
+98 tasks, Chronos-Bolt on 88, and the current Seasonal Naive realization on 96.
+Relative to that realization, its median dataset-level MASE ratio is 0.663,
+corresponding to a 33.7% median reduction, and it improves on the baseline on
+48 of 50 datasets. Comparisons involving Seasonal Naive must be regenerated
+after its randomness is made seed-controlled.
 
 TS-ICL provides the second-best macro MASE and wins 17 tasks and 9 datasets,
 but its measured inference total is 6.57 times Chronos2's and 2.99 times
@@ -65,18 +73,18 @@ is a model applicability limitation: those forecasts completed, but the model
 is not optimized for those horizons.
 
 Seasonal Naive is useful as a scale-aware baseline rather than a competitive
-default. It wins only `Job_Claims/W`; that is also the only dataset where
-Chronos2 does not improve on it. Its high measured runtime reflects the
-current per-window StatsForecast evaluation wrapper and should not be
-interpreted as the intrinsic cost of copying a seasonal lag.
+default. In this unseeded realization it wins `Crypto/D` and `Job_Claims/W`.
+Its high measured runtime reflects the current per-window StatsForecast
+evaluation wrapper and should not be interpreted as the intrinsic cost of
+copying a seasonal lag.
 
 ## Horizon behavior
 
 | Horizon subset | Tasks | Chronos2 | TS-ICL | Chronos-Bolt | Seasonal Naive |
 |---|---:|---:|---:|---:|---:|
-| Short | 50 | **1.0143** | 1.0541 | 1.1044 | 1.4726 |
-| Medium | 24 | **0.9148** | 0.9530 | 1.0361 | 1.2652 |
-| Long | 24 | **1.1152** | 1.1649 | 1.2610 | 1.4819 |
+| Short | 50 | **1.0143** | 1.0541 | 1.1044 | 1.4753 |
+| Medium | 24 | **0.9148** | 0.9530 | 1.0361 | 1.2609 |
+| Long | 24 | **1.1152** | 1.1649 | 1.2610 | 1.4907 |
 
 Chronos2 leads every horizon subset. All models are strongest on the medium
 subset and degrade on the long subset, while the short subset covers more and
@@ -87,12 +95,12 @@ subset means, not a controlled horizon-only causal comparison.
 
 | Target representation | Macro MASE ↓ | Inference seconds ↓ | Datasets | Tasks |
 |---|---:|---:|---:|---:|
-| Native multivariate | **1.094275** | **328.077** | 38 | 74 |
-| Independent univariate | 1.111994 | 351.322 | 38 | 74 |
-| Past targets as covariates | 1.094275 | 1908.327 | 38 | 74 |
+| Native multivariate | **1.094275** | **330.415** | 38 | 74 |
+| Independent univariate | 1.111994 | 340.841 | 38 | 74 |
+| Past targets as covariates | 1.094275 | 1901.702 | 38 | 74 |
 
 On the paired multivariate subset, native multivariate inference reduces
-macro MASE by 1.59% and measured inference time by 6.62%. It wins 46 of 74
+macro MASE by 1.59% and measured inference time by 3.06%. It wins 46 of 74
 tasks and 24 of 38 dataset/frequency aggregates. The effect is heterogeneous:
 the largest dataset-level gains occur on `Crypto/D`, `Global_Price/Q`,
 `JOLTS/M`, `Vehicle_Supply/M`, and `Coastal_T_S/20T`, while the largest loss is
@@ -101,11 +109,21 @@ default across this subset, but it is not uniformly superior.
 
 The completed past-target branch has macro MASE `1.094275206`, numerically
 indistinguishable at six decimals from native multivariate's `1.094275190`.
-It is 5.82 times slower than native multivariate and 5.43 times slower than
-independent univariate under the measured adapters. This total is valid for
-the complete rerun: launch 3120322 forecast all 74 tasks exactly once, including
-new `run_1` artifacts for the six tasks produced by the earlier failed launch.
-The earlier six task timings are not added to the 1908.327-second total.
+It is 5.76 times slower than native multivariate and 5.58 times slower than
+independent univariate under the measured adapters. The current clean launch
+forecast all 74 tasks exactly once under `run_0`.
+
+## Feature relationships
+
+The dependent summary successfully regenerated `mase_vs_features.svg` from
+50 complete dataset-level feature rows and the current four-model results.
+The strongest displayed positive rank associations with MASE are temporal
+scale heterogeneity (Spearman rho 0.562--0.678 across models), overall
+temporal heterogeneity (0.498--0.683), temporal location heterogeneity
+(0.462--0.628), and trend Hurst behavior (0.383--0.504). Stationarity is
+negatively associated with MASE (-0.389 to -0.313). These are descriptive
+cross-dataset associations, not causal effects, and the Seasonal Naive points
+must be regenerated after its seed defect is repaired.
 
 ## Missing-value and constant-window diagnostics
 
@@ -148,6 +166,13 @@ that feature extraction failed.
   serialization notices, model-loading progress, and Chronos-Bolt's documented
   horizon warning; they contain no traceback, CUDA error, or out-of-memory
   marker.
+- `SeasonalNaiveForecast._generate_samples_from_quantiles` calls
+  `np.random.uniform` without a configured seed. All 98 task-level Seasonal
+  Naive MASE values changed relative to the preceding synchronized rerun, with
+  a maximum absolute task change of 0.248655, while all 294 learned-model task
+  values were unchanged. Repairing seed ownership requires rerunning the 98
+  Seasonal Naive tasks and then the dependent summary and feature plot; the
+  other three model jobs and all channel jobs do not require reruns.
 - The results describe one completed execution of each fixed pretrained model,
   not repeated stochastic trials; no uncertainty interval or significance
   claim is available.
@@ -157,7 +182,5 @@ that feature extraction failed.
 - Lightweight artifacts support manifest, aggregate, task-level, and log
   analysis. Raw per-window metrics require detailed synchronization, and
   prediction arrays require the full tier.
-- The past-target aggregate's CSV has blank lifecycle fields because its
-  summary was generated before the comparison-status reporting repair. Its
-  authoritative workflow status is `completed` with exit code zero; future
-  comparison summaries receive that successful evaluation status explicitly.
+- The current channel aggregates record `completed` and exit code zero for all
+  three target representations.

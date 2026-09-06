@@ -48,7 +48,8 @@ they do not create Conda environments or install packages during a Slurm job.
 The maintained runners are exactly `chronos_bolt`, `chronos2`, `ts_icl`, and
 `seasonal_naive`. All four share one prepared uv environment on each cluster,
 which must include `chronos-forecasting`, `tsicl`, and `statsforecast` before
-submission. Learned-model runners never download
+submission. Seasonal Naive passes StatsForecast's deterministic quantiles
+directly to TIME evaluation rather than resampling them. Learned-model runners never download
 weights at runtime. They require these local paths below `TIME_WEIGHTS`:
 
 ```text
