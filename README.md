@@ -125,7 +125,9 @@ dataset/frequency units with equal weight.
 
 The maintained baseline evaluates `chronos_bolt`, `chronos2`, `ts_icl`, and
 `seasonal_naive`. Learned-model jobs require local checkpoints and never
-download weights at runtime. Prepare the saved-Arrow dataset on an
+download weights at runtime. Seasonal Naive passes StatsForecast's
+deterministic quantiles directly to TIME evaluation rather than resampling
+them. Prepare the saved-Arrow dataset on an
 internet-connected host:
 
 ```bash

@@ -60,20 +60,20 @@ def get_quantile_column_name(model_name: str, quantile_level: float) -> str:
 
 class SeasonalNaiveForecast:
     """
-    Wrapper for SeasonalNaive forecast results with true probabilistic output.
+    Wrapper for SeasonalNaive quantile forecasts.
 
-    Uses statsforecast's prediction intervals to generate samples that
-    reflect actual forecast uncertainty, rather than replicating point forecasts.
+    StatsForecast already provides the point forecast and prediction-interval
+    bounds needed by TIME's quantile metrics, so retain those quantiles
+    directly without Monte Carlo resampling.
 
     Attributes:
-        samples: Forecast samples with shape (num_samples, num_variates, pred_len)
+        quantiles: Forecasts with shape (num_quantiles, num_variates, pred_len)
     """
 
     def __init__(
         self,
         quantile_forecasts: dict,
         quantile_levels: List[float],
-        num_samples: int = 100,
     ):
         """
         Initialize forecast wrapper from quantile predictions.
@@ -82,82 +82,22 @@ class SeasonalNaiveForecast:
             quantile_forecasts: Dict mapping quantile levels to forecast arrays
                                Each array has shape (num_variates, pred_len)
             quantile_levels: List of quantile levels used
-            num_samples: Number of samples to generate
         """
         self.quantile_levels = sorted(quantile_levels)
         self.quantile_forecasts = quantile_forecasts
 
-        # Get shape from any quantile forecast
-        sample_forecast = list(quantile_forecasts.values())[0]
-        if sample_forecast.ndim == 1:
-            sample_forecast = sample_forecast[np.newaxis, :]
-        num_variates, pred_len = sample_forecast.shape
-
-        # Generate samples from quantile forecasts
-        self._samples = self._generate_samples_from_quantiles(
-            quantile_forecasts, quantile_levels, num_samples, num_variates, pred_len
-        )
-
-    def _generate_samples_from_quantiles(
-        self,
-        quantile_forecasts: dict,
-        quantile_levels: List[float],
-        num_samples: int,
-        num_variates: int,
-        pred_len: int,
-    ) -> np.ndarray:
-        """
-        Generate samples from quantile forecasts using inverse CDF sampling.
-
-        This creates samples that match the distribution implied by the quantile
-        forecasts, providing true probabilistic diversity.
-        """
-        samples = np.zeros((num_samples, num_variates, pred_len))
-
-        # Sort quantile levels and get corresponding forecasts
-        sorted_levels = sorted(quantile_levels)
-
-        # Build quantile values array: (num_quantiles, num_variates, pred_len)
         quantile_values = []
-        for q in sorted_levels:
+        for q in self.quantile_levels:
             qf = quantile_forecasts[q]
             if qf.ndim == 1:
                 qf = qf[np.newaxis, :]
             quantile_values.append(qf)
-        quantile_values = np.stack(quantile_values, axis=0)
-
-        # Generate uniform random values for inverse CDF sampling
-        uniform_samples = np.random.uniform(0, 1, size=(num_samples,))
-
-        for i, u in enumerate(uniform_samples):
-            # For each sample, interpolate between quantiles
-            # Find which quantile interval this uniform value falls into
-            for v in range(num_variates):
-                for t in range(pred_len):
-                    qvals = quantile_values[:, v, t]
-                    samples[i, v, t] = np.interp(u, sorted_levels, qvals)
-
-        return samples
+        self._quantiles = np.stack(quantile_values, axis=0)
 
     @property
-    def samples(self) -> np.ndarray:
-        """Return forecast samples with shape (num_samples, num_variates, pred_len)."""
-        return self._samples
-
-    @property
-    def mean(self) -> np.ndarray:
-        """Return mean forecast with shape (num_variates, pred_len)."""
-        return np.mean(self._samples, axis=0)
-
-    @property
-    def median(self) -> np.ndarray:
-        """Return median forecast with shape (num_variates, pred_len)."""
-        if 0.5 in self.quantile_forecasts:
-            median = self.quantile_forecasts[0.5]
-            if median.ndim == 1:
-                median = median[np.newaxis, :]
-            return median
-        return np.median(self._samples, axis=0)
+    def quantiles(self) -> np.ndarray:
+        """Return direct quantile forecasts in ascending quantile order."""
+        return self._quantiles
 
 
 class SeasonalNaivePredictor:
@@ -178,7 +118,6 @@ class SeasonalNaivePredictor:
         prediction_length: int,
         season_length: int,
         freq: str,
-        num_samples: int = 100,
         quantile_levels: Optional[List[float]] = None,
     ):
         """
@@ -188,14 +127,12 @@ class SeasonalNaivePredictor:
             prediction_length: Number of time steps to forecast
             season_length: Seasonal period length (e.g., 7 for weekly, 24 for daily)
             freq: Frequency string (e.g., 'D', 'H', '15T')
-            num_samples: Number of samples to generate
             quantile_levels: List of quantile levels for prediction intervals.
                            Defaults to [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
         """
         self.prediction_length = prediction_length
         self.season_length = season_length
         self.freq = freq
-        self.num_samples = num_samples
         self.quantile_levels = quantile_levels or DEFAULT_QUANTILE_LEVELS
 
         # Convert quantile levels to statsforecast intervals
@@ -317,7 +254,6 @@ class SeasonalNaivePredictor:
                 yield SeasonalNaiveForecast(
                     quantile_forecasts,
                     self.quantile_levels,
-                    self.num_samples
                 )
 
             # Handle multivariate case - process each variate independently
@@ -344,5 +280,4 @@ class SeasonalNaivePredictor:
                 yield SeasonalNaiveForecast(
                     combined_qf,
                     self.quantile_levels,
-                    self.num_samples
                 )

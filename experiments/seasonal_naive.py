@@ -74,7 +74,6 @@ def run_seasonal_naive_experiment(
     dataset_name: str,
     terms: list[str] = None,
     output_dir: str | None = None,
-    num_samples: int = 100,
     config_path: Path | None = None,
     covariate_mode: str = "none",
     target_mode: str = "auto",
@@ -86,7 +85,6 @@ def run_seasonal_naive_experiment(
         dataset_name: Dataset name (e.g., "SG_Weather/D")
         terms: List of terms to evaluate ("short", "medium", "long")
         output_dir: Output directory for results
-        num_samples: Number of samples for forecast (all identical for point forecast)
         config_path: Path to datasets.yaml config file
         use_val: If True, evaluate on validation data (for hyperparameter selection, no saving)
     """
@@ -166,7 +164,6 @@ def run_seasonal_naive_experiment(
                 "term": term,
             },
             model_config={
-                "num_samples": num_samples,
                 "quantile_levels": quantile_levels,
             },
             pipeline_config={
@@ -193,7 +190,6 @@ def run_seasonal_naive_experiment(
             prediction_length=dataset.prediction_length,
             season_length=season_length,
             freq=dataset.freq,
-            num_samples=num_samples,
         )
 
         data_length = test_length
@@ -217,18 +213,9 @@ def run_seasonal_naive_experiment(
         timer.start()
         forecasts = list(predictor.predict(eval_data.input))
 
-        fc_samples = []
-        for fc in forecasts:
-            fc_samples.append(fc.samples[np.newaxis, ...])
-        fc_samples = np.concatenate(fc_samples, axis=0)  # (num_total_instances, num_samples, 1, prediction_length)
-
-        # Convert samples to quantiles
-        quantile_levels_array = np.array(quantile_levels, dtype=float)
-
-        fc_quantiles = np.quantile(fc_samples, quantile_levels_array, axis=1)
-        # np.quantile returns (num_quantiles, num_total_instances, 1, prediction_length), need to transpose
-        fc_quantiles = fc_quantiles.transpose(1, 0, 2, 3)  # (num_total_instances, num_quantiles, 1, prediction_length)
-        fc_quantiles = fc_quantiles.squeeze(axis=2)
+        fc_quantiles = np.stack([forecast.quantiles for forecast in forecasts])
+        if fc_quantiles.shape[2] == 1:
+            fc_quantiles = fc_quantiles.squeeze(axis=2)
         inference_seconds = timer.stop()
 
         # Compute metrics
@@ -276,8 +263,6 @@ def main():
                         help="Terms to evaluate. If not specified, auto-detect from config.")
     parser.add_argument("--output-dir", type=str, default=None,
                         help="Task root; defaults to the selected experiment's tasks directory")
-    parser.add_argument("--num-samples", type=int, default=100,
-                        help="Number of samples for probabilistic forecasting (all identical for Seasonal Naive)")
     parser.add_argument("--config", type=str, default=None,
                         help="Path to datasets.yaml config file")
     parser.add_argument(
@@ -318,7 +303,6 @@ def main():
             dataset_name=dataset_name,
             terms=args.terms,
             output_dir=args.output_dir,
-            num_samples=args.num_samples,
             config_path=config_path,
             covariate_mode=args.covariate_mode,
             target_mode=args.target_mode,
