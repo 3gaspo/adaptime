@@ -1,0 +1,49 @@
+{
+  "dataset_config": "current_velocity/20T/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 7.802743335031133,
+      "finite_values": 2430,
+      "total_values": 2430
+    },
+    "MAE": {
+      "mean": 0.88305501244981,
+      "finite_values": 2430,
+      "total_values": 2430
+    },
+    "RMSE": {
+      "mean": 1.0873183779242228,
+      "finite_values": 2430,
+      "total_values": 2430
+    },
+    "MAPE": {
+      "mean": 1.1919068503483565,
+      "finite_values": 2430,
+      "total_values": 2430
+    },
+    "sMAPE": {
+      "mean": 0.5212002320741213,
+      "finite_values": 2430,
+      "total_values": 2430
+    },
+    "MASE": {
+      "mean": 0.7585175834512805,
+      "finite_values": 2430,
+      "total_values": 2430
+    },
+    "ND": {
+      "mean": 0.3903163533966007,
+      "finite_values": 2430,
+      "total_values": 2430
+    },
+    "CRPS": {
+      "mean": 0.30878005145041676,
+      "finite_values": 2430,
+      "total_values": 2430
+    }
+  },
+  "launch_id": "selena_channels_20260905T202615Z_34874",
+  "model": "chronos2",
+  "inference_seconds": 8.40201105363667
+}

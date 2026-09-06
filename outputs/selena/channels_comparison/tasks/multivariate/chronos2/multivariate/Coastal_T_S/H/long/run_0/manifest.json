@@ -1,0 +1,73 @@
+{
+  "completed_at": "2026-09-05T20:30:12.544660+00:00",
+  "experiment": "channels_comparison",
+  "experiment_config": {
+    "covariate_channels": 0,
+    "covariate_mode": "none",
+    "covariate_source": "none",
+    "covariate_time_span": "none"
+  },
+  "identity": {
+    "dataset": "Coastal_T_S",
+    "frequency": "H",
+    "model": "chronos2",
+    "target_mode": "multivariate",
+    "term": "long"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_channels_20260905T202615Z_34874",
+        "launched_at": "2026-09-05T20:30:11.460313+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3157896"
+      }
+    ],
+    "launch_id": "selena_channels_20260905T202615Z_34874",
+    "launched_at": "2026-09-05T20:30:11.460313+00:00",
+    "slurm_job_id": "3157896"
+  },
+  "model_config": {
+    "context_length": 8192,
+    "model_size": "chronos2",
+    "quantile_levels": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ]
+  },
+  "pipeline_config": {
+    "prediction_length": 336,
+    "seasonality": 24,
+    "test_length": 672,
+    "val_length": 672,
+    "windows": 2
+  },
+  "project": "improved",
+  "provenance": {
+    "dataset_config_path": null
+  },
+  "required_artifacts": [
+    "predictions.npz",
+    "metrics.npz",
+    "config.json",
+    "metrics_summary.json"
+  ],
+  "runtime_config": {
+    "batch_size": 16,
+    "checkpoint_path": "/fslarge/scratch/users/h61084/weights/chronos2",
+    "device": "cuda"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-05T20:30:11.460313+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-05T20:30:12.544660+00:00"
+}

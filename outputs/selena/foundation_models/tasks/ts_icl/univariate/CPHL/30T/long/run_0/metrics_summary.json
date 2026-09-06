@@ -1,0 +1,49 @@
+{
+  "dataset_config": "CPHL/30T/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 0.8846211439542634,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "MAE": {
+      "mean": 0.5727341503907732,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "RMSE": {
+      "mean": 0.7039882269121782,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "MAPE": {
+      "mean": 0.5412275013420607,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "sMAPE": {
+      "mean": 0.40095986305384884,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "MASE": {
+      "mean": 1.6479933969108718,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "ND": {
+      "mean": 0.3792492755862628,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "CRPS": {
+      "mean": 0.2878524577384175,
+      "finite_values": 20,
+      "total_values": 20
+    }
+  },
+  "launch_id": "selena_20260905T202540Z_30178",
+  "model": "ts_icl",
+  "inference_seconds": 0.5098358243703842
+}

@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Vehicle_Sales/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 4435.22253391517,
+      "finite_values": 50,
+      "total_values": 50
+    },
+    "MAE": {
+      "mean": 15.455896847541974,
+      "finite_values": 50,
+      "total_values": 50
+    },
+    "RMSE": {
+      "mean": 19.205099330508567,
+      "finite_values": 50,
+      "total_values": 50
+    },
+    "MAPE": {
+      "mean": 0.138504352381945,
+      "finite_values": 50,
+      "total_values": 50
+    },
+    "sMAPE": {
+      "mean": 0.1380755542745847,
+      "finite_values": 50,
+      "total_values": 50
+    },
+    "MASE": {
+      "mean": 1.3288857232577425,
+      "finite_values": 50,
+      "total_values": 50
+    },
+    "ND": {
+      "mean": 0.13971245419928485,
+      "finite_values": 50,
+      "total_values": 50
+    },
+    "CRPS": {
+      "mean": 0.11373653499694625,
+      "finite_values": 50,
+      "total_values": 50
+    }
+  },
+  "launch_id": "selena_20260905T202540Z_30178",
+  "model": "seasonal_naive",
+  "inference_seconds": 0.39213831536471844
+}

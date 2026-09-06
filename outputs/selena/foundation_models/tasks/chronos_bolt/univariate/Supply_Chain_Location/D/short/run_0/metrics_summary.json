@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Supply_Chain_Location/D/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 21468139.985901974,
+      "finite_values": 612,
+      "total_values": 612
+    },
+    "MAE": {
+      "mean": 1791.9018142680459,
+      "finite_values": 612,
+      "total_values": 612
+    },
+    "RMSE": {
+      "mean": 2409.500846064167,
+      "finite_values": 612,
+      "total_values": 612
+    },
+    "MAPE": {
+      "mean": 0.500894001886812,
+      "finite_values": 612,
+      "total_values": 612
+    },
+    "sMAPE": {
+      "mean": 0.42251546183408895,
+      "finite_values": 612,
+      "total_values": 612
+    },
+    "MASE": {
+      "mean": 0.6500187666725908,
+      "finite_values": 612,
+      "total_values": 612
+    },
+    "ND": {
+      "mean": 0.38068952366955316,
+      "finite_values": 612,
+      "total_values": 612
+    },
+    "CRPS": {
+      "mean": 0.3040924595664873,
+      "finite_values": 612,
+      "total_values": 612
+    }
+  },
+  "launch_id": "selena_20260905T202540Z_30178",
+  "model": "chronos_bolt",
+  "inference_seconds": 1.1478314090054482
+}

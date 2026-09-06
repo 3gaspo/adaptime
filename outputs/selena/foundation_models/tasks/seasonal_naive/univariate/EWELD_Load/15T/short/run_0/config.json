@@ -1,0 +1,43 @@
+{
+  "dataset_config": "EWELD_Load/15T/short",
+  "num_series": 1,
+  "num_windows": 56,
+  "num_variates": 10,
+  "num_model_inputs": 560,
+  "prediction_length": 24,
+  "num_quantiles": 9,
+  "quantile_levels": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "freq": "15T",
+  "seasonality": 96,
+  "context_length": 20520,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_20260905T202540Z_30178",
+  "inference_seconds": 5.352341799065471,
+  "model": "seasonal_naive",
+  "season_length": 96,
+  "covariate_mode": "none",
+  "covariate_channels": 0,
+  "experiment": "foundation_models",
+  "target_mode": "univariate"
+}

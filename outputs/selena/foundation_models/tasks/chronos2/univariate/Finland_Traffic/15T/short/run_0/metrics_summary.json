@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Finland_Traffic/15T/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 835.9955569690788,
+      "finite_values": 186,
+      "total_values": 186
+    },
+    "MAE": {
+      "mean": 16.535215711080898,
+      "finite_values": 186,
+      "total_values": 186
+    },
+    "RMSE": {
+      "mean": 20.3035700025668,
+      "finite_values": 186,
+      "total_values": 186
+    },
+    "MAPE": {
+      "mean": 0.26124265876308067,
+      "finite_values": 186,
+      "total_values": 186
+    },
+    "sMAPE": {
+      "mean": 0.18482546022008425,
+      "finite_values": 186,
+      "total_values": 186
+    },
+    "MASE": {
+      "mean": 0.4022035802507917,
+      "finite_values": 186,
+      "total_values": 186
+    },
+    "ND": {
+      "mean": 0.2314161435723879,
+      "finite_values": 186,
+      "total_values": 186
+    },
+    "CRPS": {
+      "mean": 0.18597699736290088,
+      "finite_values": 186,
+      "total_values": 186
+    }
+  },
+  "launch_id": "selena_20260905T202540Z_30178",
+  "model": "chronos2",
+  "inference_seconds": 1.1118710907176137
+}

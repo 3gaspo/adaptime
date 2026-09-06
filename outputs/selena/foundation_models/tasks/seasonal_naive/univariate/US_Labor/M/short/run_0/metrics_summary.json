@@ -1,0 +1,49 @@
+{
+  "dataset_config": "US_Labor/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 4488391.46786484,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MAE": {
+      "mean": 908.7961496905333,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "RMSE": {
+      "mean": 991.7774988453218,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MAPE": {
+      "mean": 0.13277691828429275,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "sMAPE": {
+      "mean": 0.12068059830585427,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MASE": {
+      "mean": 1.816783897093889,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "ND": {
+      "mean": 0.12973636845913294,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "CRPS": {
+      "mean": 0.11071182812287025,
+      "finite_values": 70,
+      "total_values": 70
+    }
+  },
+  "launch_id": "selena_20260905T202540Z_30178",
+  "model": "seasonal_naive",
+  "inference_seconds": 0.4883880950510502
+}

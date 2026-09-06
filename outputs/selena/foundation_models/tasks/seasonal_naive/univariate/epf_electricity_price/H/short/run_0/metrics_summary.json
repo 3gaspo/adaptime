@@ -1,0 +1,49 @@
+{
+  "dataset_config": "epf_electricity_price/H/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 252.63517713683657,
+      "finite_values": 525,
+      "total_values": 525
+    },
+    "MAE": {
+      "mean": 9.248271056677204,
+      "finite_values": 525,
+      "total_values": 525
+    },
+    "RMSE": {
+      "mean": 11.41740723258938,
+      "finite_values": 525,
+      "total_values": 525
+    },
+    "MAPE": {
+      "mean": 1.6445460690395268,
+      "finite_values": 525,
+      "total_values": 525
+    },
+    "sMAPE": {
+      "mean": 0.2315157617780156,
+      "finite_values": 525,
+      "total_values": 525
+    },
+    "MASE": {
+      "mean": 1.4416618834342578,
+      "finite_values": 525,
+      "total_values": 525
+    },
+    "ND": {
+      "mean": 0.2373085996340132,
+      "finite_values": 525,
+      "total_values": 525
+    },
+    "CRPS": {
+      "mean": 0.1964840349385916,
+      "finite_values": 525,
+      "total_values": 525
+    }
+  },
+  "launch_id": "selena_20260905T202540Z_30178",
+  "model": "seasonal_naive",
+  "inference_seconds": 5.938113757409155
+}

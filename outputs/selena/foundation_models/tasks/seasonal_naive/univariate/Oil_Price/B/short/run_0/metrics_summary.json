@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Oil_Price/B/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 3.3027219432225565,
+      "finite_values": 420,
+      "total_values": 420
+    },
+    "MAE": {
+      "mean": 0.7177978863273866,
+      "finite_values": 420,
+      "total_values": 420
+    },
+    "RMSE": {
+      "mean": 0.8375596399361839,
+      "finite_values": 420,
+      "total_values": 420
+    },
+    "MAPE": {
+      "mean": 0.06656594765497044,
+      "finite_values": 420,
+      "total_values": 420
+    },
+    "sMAPE": {
+      "mean": 0.06516404493457004,
+      "finite_values": 420,
+      "total_values": 420
+    },
+    "MASE": {
+      "mean": 1.5218364327319027,
+      "finite_values": 420,
+      "total_values": 420
+    },
+    "ND": {
+      "mean": 0.0663592827696851,
+      "finite_values": 420,
+      "total_values": 420
+    },
+    "CRPS": {
+      "mean": 0.05389291970781639,
+      "finite_values": 420,
+      "total_values": 420
+    }
+  },
+  "launch_id": "selena_20260905T202540Z_30178",
+  "model": "seasonal_naive",
+  "inference_seconds": 14.357500136829913
+}

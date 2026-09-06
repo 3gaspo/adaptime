@@ -1,0 +1,73 @@
+{
+  "completed_at": "2026-09-05T20:46:24.641112+00:00",
+  "experiment": "channels_comparison",
+  "experiment_config": {
+    "covariate_channels": 4,
+    "covariate_mode": "past_targets",
+    "covariate_source": "other_target_variates",
+    "covariate_time_span": "L"
+  },
+  "identity": {
+    "dataset": "SG_PM25",
+    "frequency": "H",
+    "model": "chronos2",
+    "target_mode": "univariate",
+    "term": "long"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_channels_20260905T202615Z_34874",
+        "launched_at": "2026-09-05T20:46:22.815765+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3157898"
+      }
+    ],
+    "launch_id": "selena_channels_20260905T202615Z_34874",
+    "launched_at": "2026-09-05T20:46:22.815765+00:00",
+    "slurm_job_id": "3157898"
+  },
+  "model_config": {
+    "context_length": 8192,
+    "model_size": "chronos2",
+    "quantile_levels": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ]
+  },
+  "pipeline_config": {
+    "prediction_length": 168,
+    "seasonality": 24,
+    "test_length": 2208,
+    "val_length": 2160,
+    "windows": 13
+  },
+  "project": "improved",
+  "provenance": {
+    "dataset_config_path": null
+  },
+  "required_artifacts": [
+    "predictions.npz",
+    "metrics.npz",
+    "config.json",
+    "metrics_summary.json"
+  ],
+  "runtime_config": {
+    "batch_size": 16,
+    "checkpoint_path": "/fslarge/scratch/users/h61084/weights/chronos2",
+    "device": "cuda"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-05T20:46:22.815765+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-05T20:46:24.641112+00:00"
+}
