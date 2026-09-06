@@ -82,6 +82,9 @@ class TSRAGWindowReader:
         self.prepared = prepared
         self.cache_items = int(cache_items)
         self._targets: OrderedDict[int, np.ndarray] = OrderedDict()
+        self._seasonal_prefixes: OrderedDict[
+            int, tuple[np.ndarray, np.ndarray, np.ndarray]
+        ] = OrderedDict()
 
     def _target(self, item: int) -> np.ndarray:
         item = int(item)
@@ -89,8 +92,72 @@ class TSRAGWindowReader:
             self._targets[item] = _target_array(self.prepared.hf_dataset[item])
             self._targets.move_to_end(item)
             while len(self._targets) > self.cache_items:
-                self._targets.popitem(last=False)
+                expired, _ = self._targets.popitem(last=False)
+                self._seasonal_prefixes.pop(expired, None)
         return self._targets[item]
+
+    def _seasonal_prefix(
+        self, item: int
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        item = int(item)
+        if item not in self._seasonal_prefixes:
+            values = np.asarray(self._target(item), dtype=np.float64)
+            period = self.prepared.seasonality
+            left = values[:, :-period]
+            right = values[:, period:]
+            valid = np.isfinite(left) & np.isfinite(right)
+            difference = np.where(valid, right - left, 0.0)
+            shape = (values.shape[0], difference.shape[1] + 1)
+            absolute = np.zeros(shape, dtype=np.float64)
+            squared = np.zeros(shape, dtype=np.float64)
+            counts = np.zeros(shape, dtype=np.int64)
+            absolute[:, 1:] = np.cumsum(np.abs(difference), axis=-1)
+            squared[:, 1:] = np.cumsum(np.square(difference), axis=-1)
+            counts[:, 1:] = np.cumsum(valid, axis=-1)
+            self._seasonal_prefixes[item] = (absolute, squared, counts)
+            self._seasonal_prefixes.move_to_end(item)
+        return self._seasonal_prefixes[item]
+
+    def seasonal_scales(self, references: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Return full-prefix MASE and RMS seasonal scales per TS-RAG row."""
+
+        absolute: list[np.ndarray] = []
+        rms: list[np.ndarray] = []
+        for item, channel, origin in np.asarray(references, dtype=np.int64).reshape(-1, 3):
+            absolute_prefix, squared_prefix, count_prefix = self._seasonal_prefix(int(item))
+            position = max(int(origin) - self.prepared.seasonality, 0)
+            selected = slice(int(channel), int(channel) + 1)
+            count = count_prefix[selected, position]
+            absolute_mean = np.divide(
+                absolute_prefix[selected, position],
+                count,
+                out=np.full(count.shape, np.nan, dtype=np.float64),
+                where=count > 0,
+            )
+            squared_mean = np.divide(
+                squared_prefix[selected, position],
+                count,
+                out=np.full(count.shape, np.nan, dtype=np.float64),
+                where=count > 0,
+            )
+            absolute.append(np.where(absolute_mean > 0, absolute_mean, np.nan))
+            rms.append(np.where(squared_mean > 0, np.sqrt(squared_mean), np.nan))
+        return np.stack(absolute), np.stack(rms)
+
+    def seasonal_naive_forecast(self, references: np.ndarray) -> np.ndarray:
+        """Return deterministic seasonal-naive forecasts on identical test rows."""
+
+        forecasts: list[np.ndarray] = []
+        period = self.prepared.seasonality
+        horizon = self.prepared.prediction_length
+        repeats = int(np.ceil(horizon / period))
+        for item, channel, origin in np.asarray(references, dtype=np.int64).reshape(-1, 3):
+            values = self._target(int(item))[int(channel) : int(channel) + 1]
+            season = values[:, int(origin) - period : int(origin)]
+            if season.shape[-1] != period:
+                raise ValueError(f"reference {(item, channel, origin)} lacks one season")
+            forecasts.append(np.tile(season, (1, repeats))[..., :horizon])
+        return np.stack(forecasts)
 
     def read(
         self,
@@ -159,6 +226,10 @@ class TSRAGPreparedDataset:
     @property
     def prediction_length(self) -> int:
         return int(self.config["prediction_length"])
+
+    @property
+    def seasonality(self) -> int:
+        return int(self.config["seasonality"])
 
     def indices(self, split: str) -> np.ndarray:
         if split not in {"datastore", "test"}:
@@ -233,6 +304,7 @@ def prepare_tsrag_dataset(
         "target_mode": "univariate",
         "context_length": TSRAG_CONTEXT_LENGTH,
         "prediction_length": int(config["prediction_length"]),
+        "seasonality": int(config["seasonality"]),
         "native_prediction_length": TSRAG_NATIVE_HORIZON,
         "datastore_stride": TSRAG_DATASTORE_STRIDE,
         "datastore_scope": "same_series",

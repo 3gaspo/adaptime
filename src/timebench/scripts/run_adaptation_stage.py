@@ -31,7 +31,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--weights-id")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--target-mode", choices=("univariate",), default="univariate")
-    parser.add_argument("--max-context-length", type=int, default=2048)
     parser.add_argument("--adaptation-train-length", type=int)
     parser.add_argument("--adaptation-validation-length", type=int)
     parser.add_argument("--adaptation-stride", type=int)
@@ -72,7 +71,6 @@ def main() -> None:
         AdaptimeWorkflowConfig(
             model=args.model,
             target_mode=args.target_mode,
-            max_context_length=args.max_context_length,
             adaptation_train_length=args.adaptation_train_length,
             adaptation_validation_length=args.adaptation_validation_length,
             adaptation_stride=args.adaptation_stride,

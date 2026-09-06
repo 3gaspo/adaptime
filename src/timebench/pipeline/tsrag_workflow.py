@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Iterable
 
 import numpy as np
-from gluonts.time_feature import get_seasonality
 
 from timebench.evaluation.adaptation_data import PreparedDataset
 from timebench.evaluation.data import load_dataset_config
@@ -182,7 +181,7 @@ def _method_row(
     metric_method: str,
 ) -> dict[str, object]:
     methods = dict(summary["methods"])
-    metric = dict(dict(methods[metric_method])["mase"])
+    metric = dict(dict(methods[metric_method])["scaled_mase"])
     timing = dict(dict(summary["timing"])["methods"])[timing_method]
     return {
         "dataset": dataset,
@@ -191,7 +190,7 @@ def _method_row(
         "method": method,
         "backbone": backbone,
         "context_length": int(context_length),
-        "mase_equal_user": float(metric["equal_user_mean"]),
+        "scaled_mase_equal_user": float(metric["equal_user_mean"]),
         "total_inference_seconds": float(timing["total_seconds"]),
         "test_windows": int(dict(summary["timing"])["test_windows"]),
     }
@@ -201,14 +200,14 @@ def _write_markdown(path: Path, title: str, rows: list[dict[str, object]]) -> No
     lines = [
         f"# {title}",
         "",
-        "| Dataset | Term | H | Method | Backbone | L | MASE | Total inference (s) | Windows |",
+        "| Dataset | Term | H | Method | Backbone | L | Scaled MASE | Total inference (s) | Windows |",
         "|---|---|---:|---|---|---:|---:|---:|---:|",
     ]
     for row in rows:
         lines.append(
             f"| {row['dataset']} | {row['term']} | {row['horizon']} | "
             f"{row['method']} | {row['backbone']} | {row['context_length']} | "
-            f"{float(row['mase_equal_user']):.6f} | "
+            f"{float(row['scaled_mase_equal_user']):.6f} | "
             f"{float(row['total_inference_seconds']):.3f} | {row['test_windows']} |"
         )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -218,16 +217,16 @@ def _write_summary_markdown(path: Path, rows: list[dict[str, object]]) -> None:
     lines = [
         "# TS-RAG comparison summary",
         "",
-        "MASE gives equal weight to users, then terms within datasets, then datasets. "
-        "Inference time is summed over every selected official TIME task.",
+        "Each task MASE is divided by matching Seasonal Naive MASE, then tasks are "
+        "combined with a geometric mean. Inference time is summed over every task.",
         "",
-        "| Method | Backbone | MASE (macro) | Total inference (s) | Datasets | Tasks | Windows |",
+        "| Method | Backbone | Scaled MASE (GM) | Total inference (s) | Datasets | Tasks | Windows |",
         "|---|---|---:|---:|---:|---:|---:|",
     ]
     for row in rows:
         lines.append(
             f"| {row['method']} | {row['backbone']} | "
-            f"{float(row['mase_macro']):.6f} | "
+            f"{float(row['scaled_mase_geometric_mean']):.6f} | "
             f"{float(row['total_inference_seconds']):.3f} | "
             f"{row['datasets']} | {row['tasks']} | {row['test_windows']} |"
         )
@@ -243,7 +242,7 @@ def build_tsrag_comparison_table(
     config_policy: str,
     repeat_policy: str,
 ) -> Path:
-    """Build the requested identical-support MASE and total-time tables."""
+    """Build identical-support scaled-MASE and total-time tables."""
 
     rows: list[dict[str, object]] = []
     input_manifests: list[str] = []
@@ -341,23 +340,20 @@ def build_tsrag_comparison_table(
             if row["method"] == method and row["backbone"] == backbone
         ]
         datasets = sorted({str(row["dataset"]) for row in method_rows})
-        per_dataset = [
-            float(
-                np.nanmean(
-                    [
-                        float(row["mase_equal_user"])
-                        for row in method_rows
-                        if row["dataset"] == dataset
-                    ]
-                )
-            )
-            for dataset in datasets
-        ]
+        task_values = np.asarray(
+            [float(row["scaled_mase_equal_user"]) for row in method_rows],
+            dtype=np.float64,
+        )
+        finite_positive = task_values[np.isfinite(task_values) & (task_values > 0)]
         summary_rows.append(
             {
                 "method": method,
                 "backbone": backbone,
-                "mase_macro": float(np.nanmean(per_dataset)),
+                "scaled_mase_geometric_mean": (
+                    float(np.exp(np.log(finite_positive).mean()))
+                    if len(finite_positive)
+                    else np.nan
+                ),
                 "total_inference_seconds": float(
                     sum(float(row["total_inference_seconds"]) for row in method_rows)
                 ),
@@ -390,7 +386,7 @@ def build_tsrag_comparison_table(
                 "repeat_policy": repeat_policy,
             },
             "aggregation": {
-                "mase": "equal_user_then_equal_term_within_dataset_then_equal_dataset",
+                "scaled_mase": "task_mase_divided_by_matching_seasonal_naive_mase_then_geometric_mean",
                 "inference_seconds": "sum_over_selected_official_time_tasks",
             },
             "input_manifests": input_manifests,
@@ -460,12 +456,6 @@ def run_tsrag_comparison(
         )
         ridge_prepared_path = ridge_dir / "prepared" / "manifest.json"
         ridge_prepared = PreparedDataset(ridge_prepared_path)
-        if ridge_prepared.context_length != TSRAG_CONTEXT_LENGTH:
-            raise ValueError(
-                f"matched TS-RAG comparison requires full ridge L=512; "
-                f"{task.dataset}/{task.term} realized L={ridge_prepared.context_length}"
-            )
-        period = int(get_seasonality(str(ridge_manifest["identity"]["frequency"])))
         allocation = allocate_run(
             task.identity_root,
             experiment="tsrag_comparison",
@@ -513,7 +503,7 @@ def run_tsrag_comparison(
             },
             experiment_config={
                 "comparison": ["vanilla", "tsrag", "full_ridge_shared"],
-                "metrics": ["mase"],
+                "metrics": ["scaled_mase"],
                 "timing": "total_test_inference_seconds",
             },
             provenance={
@@ -554,7 +544,6 @@ def run_tsrag_comparison(
                 retriever,
                 runtime,
                 allocation.run_dir / "comparison",
-                seasonality=period,
                 device=workflow.device,
             )
             allocation.complete(

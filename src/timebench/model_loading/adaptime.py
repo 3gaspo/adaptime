@@ -8,11 +8,24 @@ from typing import Any
 
 import numpy as np
 
+from timebench.evaluation.window_audit import DEFAULT_CONTEXT_PROFILES
 from timebench.evaluation.utils import normalize_tsicl_quantiles
 from timebench.paths import foundation_weight_path
 
 
 MODEL_ALIASES = ("chronos_bolt", "chronos2", "ts_icl", "seasonal_naive")
+FOUNDATION_CONTEXT_LENGTHS = {
+    name: int(DEFAULT_CONTEXT_PROFILES[name])
+    for name in ("chronos_bolt", "chronos2", "ts_icl")
+}
+
+
+def foundation_context_length(name: str) -> int:
+    """Return the effective context limit used by the inherited TIME runner."""
+
+    if name not in FOUNDATION_CONTEXT_LENGTHS:
+        raise ValueError(f"{name} has no finite foundation-model context limit")
+    return FOUNDATION_CONTEXT_LENGTHS[name]
 
 
 def _numpy(value: Any) -> np.ndarray:

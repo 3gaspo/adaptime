@@ -13,7 +13,6 @@ from typing import Any
 import numpy as np
 import torch
 
-from timebench.adaptime.ridge import query_scale
 from timebench.evaluation.timing import EvaluationTimer
 from timebench.external_models.tsrag.retriever import TSRAGIndex, TSRAGRetriever
 from timebench.model_loading.tsrag import LoadedTSRAG
@@ -33,7 +32,8 @@ TSRAG_TOP_K = 10
 TSRAG_EMBEDDING_BATCH_SIZE = 512
 TSRAG_EMBEDDING_DIMENSION = 768
 TSRAG_METHODS = ("vanilla", "tsrag")
-TSRAG_METRICS = ("mse", "mae", "mase")
+TSRAG_SCORE_METHODS = ("seasonal_naive", *TSRAG_METHODS)
+TSRAG_METRICS = ("mse", "mae", "mase", "msse")
 
 
 @dataclass(frozen=True)
@@ -394,7 +394,6 @@ def evaluate_tsrag(
     runtime: TSRAGRuntimeConfig,
     output_dir: str | Path,
     *,
-    seasonality: int,
     device: str | torch.device = "cuda",
 ) -> Path:
     """Evaluate native TS-RAG, rolling 64-step blocks only when H exceeds 64."""
@@ -410,8 +409,9 @@ def evaluate_tsrag(
         "prepared_signature": prepared.signature,
         "extraction_signature": extraction["signature"],
         "source_commit": TSRAG_SOURCE_COMMIT,
-        "methods": list(TSRAG_METHODS),
+        "methods": list(TSRAG_SCORE_METHODS),
         "metrics": list(TSRAG_METRICS),
+        "performance_metric": "task_mase_divided_by_matching_seasonal_naive_mase",
         "rollout": (
             "native_single_call_crop" if horizon <= TSRAG_NATIVE_HORIZON
             else "autoregressive_64_step_reembed_retrieve"
@@ -447,7 +447,7 @@ def evaluate_tsrag(
             (len(test_references), 1, horizon),
             np.float32,
         )
-        for method in TSRAG_METHODS
+        for method in TSRAG_SCORE_METHODS
     }
     metric_stores = {
         (method, metric): _memmap(
@@ -455,7 +455,7 @@ def evaluate_tsrag(
             (len(test_references), 1),
             np.float32,
         )
-        for method in TSRAG_METHODS
+        for method in TSRAG_SCORE_METHODS
         for metric in TSRAG_METRICS
     }
     timings = {
@@ -472,6 +472,7 @@ def evaluate_tsrag(
         batch = reader.read(batch_references, target_length=horizon)
         context = batch.context[:, 0]
         predictions = {
+            "seasonal_naive": reader.seasonal_naive_forecast(batch_references)[:, 0],
             "vanilla": _rollout_vanilla(
                 loaded, context, horizon, torch_device, timings
             ),
@@ -491,16 +492,15 @@ def evaluate_tsrag(
             ),
         }
         target = batch.target
-        scale = query_scale(batch.context)
+        mase_scale, msse_scale = reader.seasonal_scales(batch_references)
         for method, values in predictions.items():
             values = values[:, None, :]
             prediction_stores[method][start:stop] = values
             computed = _metric_values(
                 values,
                 target,
-                scale,
-                batch.context,
-                int(seasonality),
+                mase_scale,
+                msse_scale,
             )
             for metric in TSRAG_METRICS:
                 metric_stores[(method, metric)][start:stop] = computed[metric]
@@ -515,8 +515,19 @@ def evaluate_tsrag(
                 for metric in TSRAG_METRICS
             },
         )
-        for method in TSRAG_METHODS
+        for method in TSRAG_SCORE_METHODS
     }
+    seasonal_naive_summary = summaries["seasonal_naive"]
+    for method in TSRAG_SCORE_METHODS:
+        scaled_mase: dict[str, float] = {}
+        for key in ("equal_window_mean", "equal_user_mean"):
+            denominator = float(seasonal_naive_summary["mase"][key])
+            if not np.isfinite(denominator) or denominator <= 0:
+                raise ValueError(
+                    "scaled MASE requires a positive matching Seasonal Naive MASE"
+                )
+            scaled_mase[key] = float(summaries[method]["mase"][key]) / denominator
+        summaries[method]["scaled_mase"] = scaled_mase
     extraction_timing = dict(extraction["timing_seconds"])
     tsrag_total = (
         float(extraction_timing["test_representation_seconds"])
@@ -575,7 +586,7 @@ def evaluate_tsrag(
             "prediction_length": horizon,
             "native_prediction_length": TSRAG_NATIVE_HORIZON,
             "top_k": TSRAG_TOP_K,
-            "seasonality": int(seasonality),
+            "seasonality": prepared.seasonality,
             "parameters": {
                 "trainable_during_evaluation": 0,
                 "released_arm_parameters": loaded.adaptor_parameters,
@@ -584,11 +595,11 @@ def evaluate_tsrag(
             "timing": timing,
             "files": {
                 "predictions": {
-                    method: f"predictions/{method}.npy" for method in TSRAG_METHODS
+                    method: f"predictions/{method}.npy" for method in TSRAG_SCORE_METHODS
                 },
                 "metrics": {
                     f"{method}.{metric}": f"metrics/{method}_{metric}.npy"
-                    for method in TSRAG_METHODS
+                    for method in TSRAG_SCORE_METHODS
                     for metric in TSRAG_METRICS
                 },
                 "comparison_summary": "comparison_summary.json",

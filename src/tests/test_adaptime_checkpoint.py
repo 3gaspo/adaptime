@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 import sys
 from pathlib import Path
@@ -55,6 +56,13 @@ def main() -> None:
         invalid_design,
         np.ones((1, 1, 2)),
     )
+    msse_statistics = FullRidgeStatistics(features=1)
+    msse_statistics.update(
+        np.ones((1, 1, 2, 1)),
+        np.array([[[2.0, 4.0]]]),
+        scale=np.array([[2.0]]),
+    )
+    assert np.isclose(msse_statistics.y_sum_squares, 5.0)
 
     query = np.array([[0.0, 1.0], [np.nan, 1.0]], dtype=np.float32)
     datastore = np.array([[0.0, 1.0], [2.0, 3.0]], dtype=np.float32)
@@ -83,11 +91,47 @@ def main() -> None:
     testing = (
         PROJECT_ROOT / "src/timebench/pipeline/adaptime_testing.py"
     ).read_text(encoding="utf-8")
+    model_loading = (
+        PROJECT_ROOT / "src/timebench/model_loading/adaptime.py"
+    ).read_text(encoding="utf-8")
+    window_audit = (
+        PROJECT_ROOT / "src/timebench/evaluation/window_audit.py"
+    ).read_text(encoding="utf-8")
+    tsrag_workflow = (
+        PROJECT_ROOT / "src/timebench/pipeline/tsrag_workflow.py"
+    ).read_text(encoding="utf-8")
+    additional_sources = [
+        (PROJECT_ROOT / relative).read_text(encoding="utf-8")
+        for relative in (
+            "src/timebench/evaluation/adaptation_data.py",
+            "src/timebench/pipeline/adaptime_workflow.py",
+            "src/timebench/pipeline/tsrag.py",
+            "src/timebench/pipeline/tsrag_data.py",
+        )
+    ]
+    for source in (
+        extraction,
+        training,
+        testing,
+        model_loading,
+        tsrag_workflow,
+        *additional_sources,
+    ):
+        ast.parse(source)
     assert "minimum_query_finite_fraction" in extraction
     assert 'arrays[f"{split}.rag_eligible"]' in extraction
     assert "include_vanilla_fallback=True" in training
+    assert 'arrays.open(f"{split}.msse_scale")' in training
+    assert '"criterion": "adaptation_validation_msse"' in training
     assert "full_ridge_predict_with_fallback" in testing
     assert '"rag_coverage"' in testing
+    assert '"scaled_mase"' in testing
+    assert "DEFAULT_CONTEXT_PROFILES" in model_loading
+    assert '"chronos2": 8192' in window_audit
+    assert '"ts_icl": 4096' in window_audit
+    assert '"chronos_bolt": 2048' in window_audit
+    assert "ridge_prepared.context_length != TSRAG_CONTEXT_LENGTH" not in tsrag_workflow
+    assert '"metrics": ["scaled_mase"]' in tsrag_workflow
 
     _run_slurm_contract()
     print("Adaptime missing-data, main-Slurm, and TS-RAG-Slurm contract passed.")

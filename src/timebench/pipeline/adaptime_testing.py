@@ -10,7 +10,6 @@ from pathlib import Path
 from time import perf_counter
 
 import numpy as np
-from gluonts.time_feature import get_seasonality
 
 from timebench.adaptime.ridge import (
     full_ridge_design,
@@ -23,19 +22,17 @@ from timebench.pipeline.adaptime_training import ExtractionArrays, open_adaptati
 
 ADAPTATION_RESULT_SCHEMA = 1
 METHODS = ("vanilla", "covariate", "adaptime")
-METRICS = ("mse", "mae", "mase", "nmse", "nmae")
+SCORE_METHODS = ("seasonal_naive", *METHODS)
+METRICS = ("mse", "mae", "mase", "msse")
 
 
 @dataclass(frozen=True)
 class AdaptimeTestingConfig:
     chunk_size: int = 1024
-    seasonality: int | None = None
 
     def validate(self) -> None:
         if int(self.chunk_size) <= 0:
             raise ValueError("chunk_size must be positive")
-        if self.seasonality is not None and int(self.seasonality) <= 0:
-            raise ValueError("seasonality must be positive")
 
 
 def _canonical_hash(value: dict[str, object]) -> str:
@@ -102,15 +99,14 @@ def _aggregate_metrics(
 def _metric_values(
     prediction: np.ndarray,
     target: np.ndarray,
-    scale: np.ndarray,
-    context: np.ndarray,
-    seasonality: int,
+    mase_scale: np.ndarray,
+    msse_scale: np.ndarray,
 ) -> dict[str, np.ndarray]:
-    def finite_mean(values: np.ndarray) -> np.ndarray:
-        finite = np.isfinite(values)
-        count = finite.sum(axis=-1)
+    def valid_target_mean(values: np.ndarray) -> np.ndarray:
+        valid = np.isfinite(target)
+        count = valid.sum(axis=-1)
         return np.divide(
-            np.where(finite, values, 0.0).sum(axis=-1),
+            np.where(valid, values, 0.0).sum(axis=-1),
             count,
             out=np.full(values.shape[:-1], np.nan, dtype=np.float64),
             where=count > 0,
@@ -118,23 +114,16 @@ def _metric_values(
 
     prediction = np.asarray(prediction)
     target = np.asarray(target)
-    valid = np.isfinite(prediction) & np.isfinite(target)
-    error = np.where(valid, prediction - target, np.nan)
-    selected_scale = np.maximum(np.asarray(scale), 1e-8)[..., None]
-    context = np.asarray(context)
-    if context.shape[-1] <= int(seasonality):
-        seasonal_scale = np.full(context.shape[:-1], np.nan, dtype=np.float64)
-    else:
-        seasonal_scale = finite_mean(
-            np.abs(context[..., int(seasonality) :] - context[..., : -int(seasonality)]),
-        )
-        seasonal_scale = np.where(seasonal_scale > 0, seasonal_scale, np.nan)
+    error = prediction - target
+    mse = valid_target_mean(np.square(error))
+    mae = valid_target_mean(np.abs(error))
+    mase_scale = np.where(np.asarray(mase_scale) > 0, mase_scale, np.nan)
+    msse_scale = np.where(np.asarray(msse_scale) > 0, msse_scale, np.nan)
     return {
-        "mse": finite_mean(np.square(error)),
-        "mae": finite_mean(np.abs(error)),
-        "mase": finite_mean(np.abs(error)) / seasonal_scale,
-        "nmse": finite_mean(np.square(error / selected_scale)),
-        "nmae": finite_mean(np.abs(error) / selected_scale),
+        "mse": mse,
+        "mae": mae,
+        "mase": mae / mase_scale,
+        "msse": mse / np.square(msse_scale),
     }
 
 
@@ -214,21 +203,16 @@ def evaluate_frozen_adaptation(
         raise ValueError("extraction and prepared TIME windows do not match")
     if model_manifest["extraction_signature"] != extraction_manifest["signature"]:
         raise ValueError("frozen Adaptime model and extraction do not match")
-    seasonality = int(
-        config.seasonality
-        if config.seasonality is not None
-        else get_seasonality(str(prepared.hf_dataset[0]["freq"]))
-    )
-
     identity = {
         "schema_version": ADAPTATION_RESULT_SCHEMA,
         "timing_contract": "test_method_seconds_per_window",
         "prepared_signature": prepared.signature,
         "extraction_signature": extraction_manifest["signature"],
         "model_signature": model_manifest["signature"],
-        "comparison": list(METHODS),
+        "comparison": list(SCORE_METHODS),
         "metrics": list(METRICS),
-        "metric_seasonality": seasonality,
+        "metric_seasonality": prepared.seasonality,
+        "performance_metric": "task_mase_divided_by_matching_seasonal_naive_mase",
         "testing_config": asdict(config),
     }
     signature = _canonical_hash(identity)
@@ -258,13 +242,15 @@ def evaluate_frozen_adaptation(
     vanilla = arrays.open("test.vanilla")
     context = arrays.open(f"test.context_forecast_k{selected_k}")
     target = arrays.open("test.target")
-    scale = arrays.open("test.query_scale")
+    mase_scale = arrays.open("test.mase_scale")
+    msse_scale = arrays.open("test.msse_scale")
+    seasonal_naive = arrays.open("test.seasonal_naive")
     neighbor_ids = arrays.open("test.neighbor_id")
     base_eligible = arrays.open("test.rag_eligible")
     base_reason = arrays.open("test.fallback_reason")
     prediction_stores = {
         method: _memmap(root / "predictions" / f"{method}.npy", target.shape, np.float32)
-        for method in METHODS
+        for method in SCORE_METHODS
     }
     metric_stores = {
         (method, metric): _memmap(
@@ -272,18 +258,14 @@ def evaluate_frozen_adaptation(
             target.shape[:-1],
             np.float32,
         )
-        for method in METHODS
+        for method in SCORE_METHODS
         for metric in METRICS
     }
     eligibility_store = _memmap(root / "predictions" / "rag_eligible.npy", (len(target),), bool)
     reason_store = _memmap(root / "predictions" / "fallback_reason.npy", (len(target),), np.uint8)
     ridge_seconds = 0.0
-    test_references = prepared.indices("test")
-    reader = prepared.reader()
-
     for start in range(0, len(target), config.chunk_size):
         stop = min(start + config.chunk_size, len(target))
-        query_context = reader.read(test_references[start:stop]).context
         ridge_started = perf_counter()
         chunk_vanilla = np.asarray(vanilla[start:stop])
         chunk_context = np.asarray(context[start:stop])
@@ -325,6 +307,7 @@ def evaluate_frozen_adaptation(
         reason_store[start:stop] = final_reason
         ridge_seconds += perf_counter() - ridge_started
         predictions = {
+            "seasonal_naive": np.asarray(seasonal_naive[start:stop]),
             "vanilla": chunk_vanilla,
             "covariate": covariate,
             "adaptime": adapted,
@@ -334,9 +317,8 @@ def evaluate_frozen_adaptation(
             computed = _metric_values(
                 values,
                 target[start:stop],
-                scale[start:stop],
-                query_context,
-                seasonality,
+                mase_scale[start:stop],
+                msse_scale[start:stop],
             )
             for metric, metric_values in computed.items():
                 metric_stores[(method, metric)][start:stop] = metric_values
@@ -357,18 +339,36 @@ def evaluate_frozen_adaptation(
                 for metric in METRICS
             },
         )
-        for method in METHODS
+        for method in SCORE_METHODS
     }
-    vanilla_mse = np.asarray(metric_stores[("vanilla", "mse")])
+    seasonal_naive_summary = summaries["seasonal_naive"]
+    task_baseline_mase = float(seasonal_naive_summary["mase"]["equal_user_mean"])
+    if not np.isfinite(task_baseline_mase) or task_baseline_mase <= 0:
+        raise ValueError("scaled MASE requires a positive matching Seasonal Naive MASE")
+    for method in SCORE_METHODS:
+        scaled_mase: dict[str, float] = {}
+        for key in ("equal_window_mean", "equal_user_mean"):
+            denominator = float(seasonal_naive_summary["mase"][key])
+            if not np.isfinite(denominator) or denominator <= 0:
+                raise ValueError(
+                    "scaled MASE requires a positive matching Seasonal Naive MASE"
+                )
+            scaled_mase[key] = float(summaries[method]["mase"][key]) / denominator
+        summaries[method]["scaled_mase"] = scaled_mase
+    vanilla_scaled_mase = (
+        np.asarray(metric_stores[("vanilla", "mase")]) / task_baseline_mase
+    )
     wins = {
         method: (
-            lambda compared, finite: float(np.mean(compared[finite] < vanilla_mse[finite]))
+            lambda compared, finite: float(
+                np.mean(compared[finite] < vanilla_scaled_mase[finite])
+            )
             if np.any(finite)
             else np.nan
         )(
-            np.asarray(metric_stores[(method, "mse")]),
-            np.isfinite(np.asarray(metric_stores[(method, "mse")]))
-            & np.isfinite(vanilla_mse),
+            np.asarray(metric_stores[(method, "mase")]) / task_baseline_mase,
+            np.isfinite(np.asarray(metric_stores[(method, "mase")]))
+            & np.isfinite(vanilla_scaled_mase),
         )
         for method in ("covariate", "adaptime")
     }
@@ -383,7 +383,7 @@ def evaluate_frozen_adaptation(
         root / "comparison_summary.json",
         {
             "methods": summaries,
-            "mse_win_rate_vs_vanilla": wins,
+            "scaled_mase_win_rate_vs_vanilla": wins,
             "selected": model_manifest["selected"],
             "rag_coverage": {
                 "eligible_windows": rag_windows,
@@ -417,11 +417,11 @@ def evaluate_frozen_adaptation(
         },
         "files": {
             "predictions": {
-                method: f"predictions/{method}.npy" for method in METHODS
+                method: f"predictions/{method}.npy" for method in SCORE_METHODS
             },
             "metrics": {
                 f"{method}.{metric}": f"metrics/{method}_{metric}.npy"
-                for method in METHODS
+                for method in SCORE_METHODS
                 for metric in METRICS
             },
             "comparison_summary": "comparison_summary.json",

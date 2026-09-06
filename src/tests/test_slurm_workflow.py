@@ -149,7 +149,7 @@ def main() -> None:
     workflow_source = (
         PROJECT_ROOT / "src/timebench/pipeline/adaptime_workflow.py"
     ).read_text(encoding="utf-8")
-    assert "repeat_then_config_then_term_then_dataset" in workflow_source
+    assert "task_scaled_mase_then_geometric_mean_across_tasks" in workflow_source
     assert 'if stage != "run":' in workflow_source
     assert "allocate_run(" in workflow_source
     assert "if not run.should_run:" in workflow_source

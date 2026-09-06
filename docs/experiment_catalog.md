@@ -25,6 +25,8 @@ and neighbor residual information.
   horizon positions.
 - Data: fixed datastore, adaptation training, adaptation validation, and
   unchanged official TIME test intervals.
+- Context: the ridge uses the same vanilla TIME context limit as its foundation
+  backbone (8192 for Chronos-2, 4096 for TS-ICL, 2048 for Chronos-Bolt).
 - Retrieval: exact instance-normalized Euclidean search across all series;
   fixed datastore dates align to each query modulo the dataset period. Missing
   dates use NaN-aware statistics and candidates require configurable finite
@@ -33,7 +35,8 @@ and neighbor residual information.
 - Missing-data gate: skip incomplete adaptation-training rows; use vanilla for
   ineligible validation/test queries or insufficient valid neighbors; mask
   missing test labels only from metrics. Report hybrid RAG coverage.
-- Selection: fit on adaptation training and choose
+- Objective and selection: fit MSSE by dividing each ridge row by the RMS
+  seasonal-lag error over its complete pre-origin history, then choose
   `K in {1,5,10,15}` and `alpha in {1e-3,1e-2,1e-1}` on adaptation
   validation; do not refit before test.
 - Primary configuration: `K=10`, `alpha=1e-2`.
@@ -44,10 +47,10 @@ and neighbor residual information.
   receive a new `run_n`. Partial stages are never reused.
 - Selection: configuration policy is `error`, `distinct`, `latest`, or
   `average`; repeat policy is `selected`, `latest`, `distinct`, or `average`.
-- TIME aggregate: repeated runs are averaged within exact configurations,
-  configurations are then separated or averaged as requested, terms receive
-  equal weight within each dataset/frequency, and dataset/frequency units
-  receive equal weight.
+- TIME aggregate: each method's task MASE is divided by matching Seasonal Naive
+  MASE and the resulting task ratios are combined with a geometric mean.
+  Missing timestamps retain their positions; only valid seasonal pairs enter
+  the normalizer and only valid target dates enter forecast error means.
 - Timing: compare total and per-window test inference for vanilla,
   retrieval-covariate prediction, and frozen Adaptime; retain representation,
   retrieval, context construction, foundation calls, ridge adjustment, and
@@ -60,7 +63,8 @@ complete and inspected.
 ## Matched TS-RAG control
 
 `scripts/submit_tsrag_comparison.sh` evaluates the pinned source-adapted
-TS-RAG ARM after a completed `full_ridge_shared` run with realized `L=512`.
+TS-RAG ARM after a completed `full_ridge_shared` run at the ridge backbone's
+normal context length.
 It discovers the ridge artifact from `TSRAG_RIDGE_OUTPUT_ROOT`, optionally
 restricts it with `TSRAG_RIDGE_LAUNCH_ID`, and reuses the ridge preparation's
 raw-date budget and exact official TIME test references.
@@ -68,9 +72,9 @@ raw-date budget and exact official TIME test references.
 - External method: released MoE ARM and Chronos-T5 EOS/FAISS retrieval from
   `UConn-DSIS/TS-RAG` commit `73ac807`.
 - Preserved rules: same-series stride-one datastore, top-K-plus-one retrieval,
-  512-step input, and native 64-step forecasts.
+  TS-RAG's own 512-step input, and native 64-step forecasts.
 - Long horizons: refresh retrieval after each 64-step rollout block; shorter
   horizons crop one native forecast.
 - Comparison: matched vanilla Chronos-Bolt, TS-RAG, and the completed
-  Chronos-2 `full_ridge_shared` result on identical test rows, with MASE and
-  total test inference time.
+  Chronos-2 `full_ridge_shared` result on identical test rows, with scaled MASE
+  and total test inference time.

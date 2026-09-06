@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import csv
 import json
-import math
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,7 +23,7 @@ from timebench.evaluation.data import (
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms
-from timebench.model_loading import load_adaptime_forecaster
+from timebench.model_loading import foundation_context_length, load_adaptime_forecaster
 from timebench.paths import dataset_storage_root, outputs_root
 from timebench.pipeline.adaptime_extraction import (
     ExtractionConfig,
@@ -34,6 +33,7 @@ from timebench.pipeline.adaptime_testing import (
     AdaptimeTestingConfig,
     METHODS,
     METRICS,
+    SCORE_METHODS,
     evaluate_frozen_adaptation,
 )
 from timebench.pipeline.adaptime_training import RidgeTrainingConfig, fit_full_ridge
@@ -44,7 +44,6 @@ from timebench.pipeline.runs import allocate_run, select_completed_runs
 class AdaptimeWorkflowConfig:
     model: str = "chronos2"
     target_mode: str = "univariate"
-    max_context_length: int = 2048
     adaptation_train_length: int | None = None
     adaptation_validation_length: int | None = None
     adaptation_stride: int | None = None
@@ -72,8 +71,6 @@ class AdaptimeWorkflowConfig:
     def validate(self) -> None:
         if self.target_mode != "univariate":
             raise ValueError("the current full_ridge_shared workflow is univariate")
-        if int(self.max_context_length) <= 0:
-            raise ValueError("max_context_length must be positive")
         if int(self.datastore_stride_multiple) <= 0:
             raise ValueError("datastore_stride_multiple must be positive")
         if max(self.k_values) > int(self.max_k):
@@ -212,7 +209,7 @@ def aggregate_time_comparison(
                 ),
                 "selected_k": int(selected["k"]),
                 "selected_alpha": float(selected["alpha"]),
-                "validation_nmse": float(selected["validation_nmse"]),
+                "validation_msse": float(selected["validation_msse"]),
             }
             for method in METHODS:
                 method_summary = dict(summary["methods"][method])
@@ -224,12 +221,19 @@ def aggregate_time_comparison(
                     row[f"{method}_{metric}_equal_window"] = float(
                         metric_summary["equal_window_mean"]
                     )
+                scaled_mase = dict(method_summary["scaled_mase"])
+                row[f"{method}_scaled_mase_equal_user"] = float(
+                    scaled_mase["equal_user_mean"]
+                )
+                row[f"{method}_scaled_mase_equal_window"] = float(
+                    scaled_mase["equal_window_mean"]
+                )
                 row[f"{method}_inference_seconds_per_window"] = float(
                     summary["timing"]["methods"][method]["seconds_per_window"]
                 )
             for method in ("covariate", "adaptime"):
-                row[f"{method}_mse_win_rate_vs_vanilla"] = float(
-                    summary["mse_win_rate_vs_vanilla"][method]
+                row[f"{method}_scaled_mase_win_rate_vs_vanilla"] = float(
+                    summary["scaled_mase_win_rate_vs_vanilla"][method]
                 )
             row["rag_eligible_fraction"] = float(
                 summary["rag_coverage"]["eligible_fraction"]
@@ -298,6 +302,23 @@ def aggregate_time_comparison(
                     "equal_dataset_mean": float(per_dataset.mean()),
                     "equal_dataset_std": float(per_dataset.std()),
                 }
+            scaled_field = f"{method}_scaled_mase_equal_user"
+            task_scaled_mase = np.asarray(
+                [float(row[scaled_field]) for row in variant_rows],
+                dtype=np.float64,
+            )
+            finite_positive = task_scaled_mase[
+                np.isfinite(task_scaled_mase) & (task_scaled_mase > 0)
+            ]
+            metrics["scaled_mase"] = {
+                "task_geometric_mean": (
+                    float(np.exp(np.log(finite_positive).mean()))
+                    if len(finite_positive)
+                    else np.nan
+                ),
+                "finite_tasks": int(len(finite_positive)),
+                "total_tasks": int(len(task_scaled_mase)),
+            }
             timing_field = f"{method}_inference_seconds_per_window"
             per_dataset_timing = np.asarray(
                 [
@@ -315,7 +336,7 @@ def aggregate_time_comparison(
             methods[method] = metrics
         wins: dict[str, object] = {}
         for method in ("covariate", "adaptime"):
-            field = f"{method}_mse_win_rate_vs_vanilla"
+            field = f"{method}_scaled_mase_win_rate_vs_vanilla"
             per_dataset = np.asarray(
                 [
                     np.mean([float(row[field]) for row in dataset_rows[dataset]])
@@ -331,7 +352,7 @@ def aggregate_time_comparison(
             "datasets": len(dataset_rows),
             "tasks": len(variant_rows),
             "methods": methods,
-            "mse_win_rate_vs_vanilla": wins,
+            "scaled_mase_win_rate_vs_vanilla": wins,
             "rag_coverage": {
                 "equal_dataset_eligible_fraction_mean": float(
                     np.mean(
@@ -361,7 +382,7 @@ def aggregate_time_comparison(
         {
             "schema_version": 1,
             "format": "adaptime_time_aggregate",
-            "protocol": "repeat_then_config_then_term_then_dataset",
+            "protocol": "task_scaled_mase_then_geometric_mean_across_tasks",
             "status": "completed",
             "selection": {
                 "launch_id": launch_id,
@@ -399,18 +420,10 @@ def _run_dataset_tasks(
         raise ValueError(f"empty TIME dataset: {dataset_name}")
     first = hf_dataset[0]
     freq = str(first["freq"])
-    period = int(workflow.retrieval_period or get_seasonality(freq))
+    metric_seasonality = int(get_seasonality(freq))
+    period = int(workflow.retrieval_period or metric_seasonality)
     shapes = [np.asarray(hf_dataset[index]["target"]).shape for index in range(len(hf_dataset))]
     min_length = min(int(shape[-1]) for shape in shapes)
-    entities = sum(int(shape[0]) if len(shape) > 1 else 1 for shape in shapes)
-    if workflow.retrieval_scope == "same_series":
-        eligible_entities = 1
-    elif workflow.retrieval_scope == "other_series":
-        eligible_entities = entities - 1
-    else:
-        eligible_entities = entities
-    if eligible_entities <= 0:
-        raise ValueError(f"{dataset_name} has no eligible retrieval series")
 
     for task in tasks:
         settings = get_dataset_settings(dataset_name, task.term, dataset_config)
@@ -431,17 +444,11 @@ def _run_dataset_tasks(
             min_length - int(settings["test_length"]) - validation_length - train_length
         )
         datastore_stride = period * int(workflow.datastore_stride_multiple)
-        origins_per_entity = math.ceil(int(workflow.max_k) / eligible_entities)
-        context_length = min(
-            int(workflow.max_context_length),
-            datastore_stop
-            - horizon
-            - (period - 1)
-            - (origins_per_entity - 1) * datastore_stride,
-        )
-        if context_length <= 0:
+        context_length = foundation_context_length(workflow.model)
+        if datastore_stop - context_length < horizon:
             raise ValueError(
-                f"{dataset_name}/{task.term} has no room for a datastore window before adaptation"
+                f"{dataset_name}/{task.term} cannot supply the foundation-model "
+                f"context L={context_length} before adaptation"
             )
         preparation = PreparationConfig(
             dataset=dataset_name,
@@ -451,6 +458,7 @@ def _run_dataset_tasks(
             test_length=int(settings["test_length"]),
             adaptation_train_length=train_length,
             adaptation_validation_length=validation_length,
+            seasonality=metric_seasonality,
             target_mode=workflow.target_mode,
             adaptation_stride=workflow.adaptation_stride,
             retrieval_period=period,
@@ -504,8 +512,9 @@ def _run_dataset_tasks(
             },
             experiment_config={
                 "target_mode": workflow.target_mode,
-                "methods": list(METHODS),
+                "methods": list(SCORE_METHODS),
                 "metrics": list(METRICS),
+                "performance_metric": "scaled_mase",
                 "formulation": "full_ridge_shared",
             },
             provenance={
@@ -574,7 +583,6 @@ def _run_dataset_tasks(
                 model_manifest,
                 AdaptimeTestingConfig(
                     chunk_size=workflow.ridge_chunk_size,
-                    seasonality=int(get_seasonality(freq)),
                 ),
                 comparison_dir,
             )

@@ -27,6 +27,11 @@ once on adaptation training, $K$ and $\alpha$ are selected on adaptation
 validation, and the selected coefficients are frozen for test. There is no
 train-plus-validation refit.
 
+The ridge history length is the same as in the inherited vanilla TIME run for
+its backbone: 8192 for Chronos-2, 4096 for TS-ICL, and 2048 for Chronos-Bolt.
+TS-RAG retains its separate native length of 512 when used as an external
+control.
+
 For a query time $t$, let $d_{\max}$ be the fixed datastore endpoint and $P$
 the dataset period. The latest eligible neighbor date is
 \begin{equation}
@@ -42,7 +47,6 @@ $q_t\geq0.8$ before retrieval. Datastore histories satisfy the same threshold,
 and their complete retrieved future must be finite. A query without $K$ valid
 chronological neighbors is ineligible rather than an experiment-ending error.
 
-\newpage
 \section{Full shared ridge}
 
 For each query, $V$ is the vanilla foundation forecast and $C$ is the forecast
@@ -53,12 +57,15 @@ design is
 \begin{equation}
   X = [V,C,Y_1,\ldots,Y_K,N_1,\ldots,N_K].
 \end{equation}
-The paired $Y_i$ and $N_i$ terms expose neighbor residual information. After
-normalizing each window and channel by its query-context standard deviation,
-one no-intercept ridge vector is shared across all forecast horizons:
+The paired $Y_i$ and $N_i$ terms expose neighbor residual information. Let
+$s_{t,c}$ be the root mean squared seasonal difference over the complete
+history before query $t$ for channel $c$. Only pairs whose two original dates
+are finite contribute, and their count is the denominator. One no-intercept
+ridge vector is shared across all forecast horizons and fitted by MSSE:
 \begin{align}
   \hat\beta_\alpha
-    &= \arg\min_\beta \| (Y-V)-X\beta \|_2^2
+    &= \arg\min_\beta \sum_{t,c,h}
+       \left(\frac{(Y-V)_{t,c,h}-(X\beta)_{t,c,h}}{s_{t,c}}\right)^2
        + \alpha\|\beta\|_2^2, \\
   V' &= V + X\hat\beta_\alpha.
 \end{align}
@@ -76,13 +83,13 @@ future labels affect metric support only and cannot select the prediction path.
 
 \section{Evaluation}
 
-The official test compares vanilla $V$, retrieval-context $C$ at the selected
-$K$, and frozen Adaptime $V'$. It retains per-window and per-user MSE, MAE,
-normalized MSE, and normalized MAE, then reports equal-window and equal-user
-means and population standard deviations. The TIME-wide view selects only
-completed task manifests, averages exact repeats before optionally averaging
-distinct scientific configurations, averages terms within each
-dataset/frequency, and then gives each dataset/frequency equal weight.
+The official test compares Seasonal Naive, vanilla $V$, retrieval-context $C$
+at the selected $K$, and frozen Adaptime $V'$. Raw MSE, MAE, MASE, and MSSE are
+retained as diagnostics. Performance uses scaled MASE: within each task, a
+method's equal-user MASE is divided by the matching Seasonal Naive MASE, then
+the task ratios are combined with a geometric mean. Missing dates are never
+removed or shifted: forecast errors skip non-finite target dates, while MASE
+and MSSE scales count only finite lagged pairs at their original timestamps.
 Conclusions require completed and inspected cluster artifacts.
 
 Eligibility arrays, reason codes, effective training counts, and test RAG

@@ -53,7 +53,7 @@ run_tsrag_and_table() {
 
 time_workflow_init
 time_stage_start tsrag_and_tables
-time_task_start "pinned TS-RAG evaluation from main Adaptime ridge results and MASE/time tables"
+time_task_start "pinned TS-RAG evaluation from main Adaptime ridge results and scaled-MASE/time tables"
 run_tsrag_and_table
 time_task_complete
 time_stage_complete

@@ -33,7 +33,6 @@ run_adaptime() {
         --model "${ADAPTIME_MODEL:-chronos2}"
         --device "${ADAPTIME_DEVICE:-cuda}"
         --target-mode "${ADAPTIME_TARGET_MODE:-univariate}"
-        --max-context-length "${ADAPTIME_MAX_CONTEXT_LENGTH:-2048}"
         --datastore-stride-multiple "${ADAPTIME_DATASTORE_STRIDE_MULTIPLE:-1}"
         --representation "${ADAPTIME_REPRESENTATION:-instance}"
         --distance-metric "${ADAPTIME_DISTANCE_METRIC:-euclidean}"

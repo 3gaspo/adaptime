@@ -20,8 +20,8 @@ univariate query it extracts:
 - `Y_1..Y_K`: the retrieved neighbors' ground-truth horizons;
 - `N_1..N_K`: vanilla foundation forecasts from those neighbors' own histories.
 
-With `X = [V, C, Y_1..Y_K, N_1..N_K]`, training fits the normalized residual
-`Y - V` and testing predicts `V' = V + X beta`. There is no intercept and one
+With `X = [V, C, Y_1..Y_K, N_1..N_K]`, training fits the residual
+`Y - V` under an MSSE objective and testing predicts `V' = V + X beta`. There is no intercept and one
 coefficient vector is shared across every forecast step. Validation selects
 from `K in {1, 5, 10, 15}` and
 `alpha in {1e-3, 1e-2, 1e-1}`; the primary configuration is `K=10`,
@@ -39,9 +39,10 @@ Each dataset/term task uses four strictly chronological regions:
 
 The training and validation regions each default to the dataset's TIME
 `val_length`. The datastore uses all earlier eligible history by default. The
-requested context is capped only when necessary to retain enough datastore
-candidates for the K grid; the realized value is recorded in the task
-manifest.
+ridge context equals the corresponding inherited vanilla TIME limit: 8192 for
+Chronos-2, 4096 for TS-ICL, and 2048 for Chronos-Bolt. A task fails explicitly
+when its pre-adaptation history cannot supply that context and a complete
+datastore window. TS-RAG separately retains its native 512 steps.
 
 Retrieval uses instance-normalized contexts and exact Euclidean top-K search by
 default. Distances are computed in bounded query/datastore blocks. For a query,
@@ -64,9 +65,11 @@ which prediction path is used.
 
 Extraction writes memory-mapped arrays for representations, neighbors,
 distances, targets, `V`, requested `C` forecasts, and unique neighbor forecasts.
-The ridge grid is fitted from streaming float64 sufficient statistics. Training
-never opens TIME test values, and testing loads only frozen selected
-coefficients.
+The ridge grid is fitted from streaming float64 sufficient statistics. Each
+window/channel design and residual row is divided by the RMS seasonal-lag
+error from the complete pre-origin history, so fitting and validation optimize
+MSSE without enlarging the optimization problem. Training never opens TIME
+test values, and testing loads only frozen selected coefficients.
 
 ## Running Adaptime
 
@@ -75,7 +78,7 @@ workflow locally with:
 
 ```bash
 PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage \
-  --stage run --datasets 'SG_Weather/D' --terms short --max-context-length 512
+  --stage run --datasets 'SG_Weather/D' --terms short
 ```
 
 The same complete-task workflow is the sole Slurm path:
@@ -86,9 +89,9 @@ bash scripts/submit_adaptime_comparison.sh selena
 ```
 
 It defaults to Chronos-2, univariate targets, every configured dataset and
-term, and a maximum context length of 2048. Submission-time overrides include
+term, and Chronos-2's inherited 8192-step context. Submission-time overrides include
 `ADAPTIME_DATASETS` and `ADAPTIME_TERMS` as comma-separated selections,
-`ADAPTIME_MODEL`, `ADAPTIME_MODEL_PATH`, `ADAPTIME_MAX_CONTEXT_LENGTH`, split
+`ADAPTIME_MODEL`, `ADAPTIME_MODEL_PATH`, split
 lengths, `ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION`, retrieval settings, block
 sizes, and the K/alpha grids. The proposal
 requires a model adapter with retrieval-covariate support; unsupported models
@@ -118,19 +121,22 @@ Readers use `ADAPTIME_CONFIG_POLICY=error|distinct|latest|average` and
 mixed scientific configurations and uses the selected completed repeat;
 `scripts/select_result_run.py` can pin a different completed repeat.
 
-The final `comparison_summary.json` and raw arrays compare vanilla `V`, the
-retrieval-covariate forecast `C`, and frozen Adaptime `V'`. MSE, MAE, normalized
-MSE, and normalized MAE retain per-window/channel values and report equal-user
-and equal-window summaries plus MSE win rates against vanilla. It also records
+The final `comparison_summary.json` and raw arrays compare Seasonal Naive,
+vanilla `V`, retrieval-covariate `C`, and frozen Adaptime `V'`. Raw MSE, MAE,
+MASE, and MSSE remain diagnostics. Performance comparisons use task scaled
+MASE: each method's equal-user MASE is divided by matching Seasonal Naive MASE,
+and task ratios are combined with a geometric mean. Win rates likewise compare
+MASE on identical valid targets. MASE/MSSE seasonal constants use the complete
+pre-origin history without compressing missing timestamps; only finite lagged
+pairs contribute to their sums and counts. It also records
 accelerator-synchronized model time and CPU retrieval/adaptor time, reporting
 end-to-end seconds per official test window for all three methods and retaining
 the underlying components plus fixed precomputed-extraction cost.
 
 After all selected tasks finish,
 `outputs/adaptime/summary/<model>/<target_mode>/<launch>/` records its input
-manifests and averages repeats within exact configurations, then configurations
-when requested, terms within each dataset/frequency, and finally
-dataset/frequency units with equal weight.
+manifests, resolves repeat/configuration policy within each task, and reports
+the geometric mean of task scaled-MASE ratios.
 
 ### Matched TS-RAG comparison
 
@@ -140,10 +146,11 @@ retrieval embeddings, same-series stride-one datastore, and native 512-context,
 keeps TS-RAG's own retrieval and adaptation mechanism rather than routing it
 through Adaptime's ridge code.
 
-Run the primary Adaptime job with a realized context length of 512 first. Once
-its selected task manifests are complete, the TS-RAG workflow discovers those
-runs below the configured Adaptime output root, reuses their exact official
-TIME test references, and writes a matched vanilla/TS-RAG/ridge table:
+Run the primary Adaptime job first at its foundation model's normal context
+length. Once its selected task manifests are complete, the TS-RAG workflow
+discovers those runs below the configured Adaptime output root, constructs its
+own native 512-step views over the same date budget, reuses the exact official
+TIME test references, and writes a matched scaled-MASE vanilla/TS-RAG/ridge table:
 
 ```bash
 bash scripts/submit_tsrag_comparison.sh dgx
@@ -192,6 +199,10 @@ completed Chronos-2 foundation summaries when available and recomputes when
 they are absent, incomplete, or scientifically different. Proposal runs remain
 below `outputs/adaptime/`. Shared diagnostic metadata lives below
 `TIME_METADATA`, outside these project-local runtime artifacts.
+
+Foundation and channel performance tables use task MASE divided by matching
+corrected Seasonal Naive MASE, followed by the TIME leaderboard geometric
+mean. Foundation runs must therefore finish before channel summaries.
 
 ## Source tree
 

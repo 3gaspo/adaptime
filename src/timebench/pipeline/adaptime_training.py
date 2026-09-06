@@ -96,7 +96,7 @@ def split_statistics_grid(
         k: arrays.open(f"{split}.context_forecast_k{k}") for k in k_values
     }
     target = arrays.open(f"{split}.target")
-    scale = arrays.open(f"{split}.query_scale")
+    scale = arrays.open(f"{split}.msse_scale")
     neighbor_ids = arrays.open(f"{split}.neighbor_id")
     rag_eligible = arrays.open(f"{split}.rag_eligible")
     statistics = {
@@ -237,19 +237,19 @@ def fit_full_ridge(
         validation_statistics = validation_by_k[k]
         for alpha in config.alpha_values:
             coefficients = train_statistics.solve(alpha)
-            validation_nmse = validation_statistics.mean_squared_error(coefficients)
+            validation_msse = validation_statistics.mean_squared_error(coefficients)
             selection_rows.append(
                 {
                     "k": int(k),
                     "alpha": float(alpha),
-                    "validation_nmse": float(validation_nmse),
+                    "validation_msse": float(validation_msse),
                 }
             )
-            candidate = (float(validation_nmse), int(k), float(alpha), coefficients)
+            candidate = (float(validation_msse), int(k), float(alpha), coefficients)
             if best is None or candidate[:3] < best[:3]:
                 best = candidate
     assert best is not None
-    validation_nmse, selected_k, selected_alpha, coefficients = best
+    validation_msse, selected_k, selected_alpha, coefficients = best
 
     coefficient_path = root / "coefficients.npy"
     with coefficient_path.open("wb") as stream:
@@ -257,10 +257,10 @@ def fit_full_ridge(
     _atomic_json(
         root / "selection.json",
         {
-            "criterion": "adaptation_validation_nmse",
+            "criterion": "adaptation_validation_msse",
             "selected_k": selected_k,
             "selected_alpha": selected_alpha,
-            "selected_validation_nmse": validation_nmse,
+            "selected_validation_msse": validation_msse,
             "primary_configuration": {"k": PRIMARY_K, "alpha": PRIMARY_ALPHA},
             "candidates": selection_rows,
         },
@@ -278,7 +278,7 @@ def fit_full_ridge(
         "selected": {
             "k": selected_k,
             "alpha": selected_alpha,
-            "validation_nmse": validation_nmse,
+            "validation_msse": validation_msse,
         },
         "primary_configuration": {"k": PRIMARY_K, "alpha": PRIMARY_ALPHA},
         "feature_names": full_ridge_feature_names(selected_k),

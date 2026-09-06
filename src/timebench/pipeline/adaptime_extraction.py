@@ -271,6 +271,9 @@ def _materialize_source_rows(
     rag_eligible = _memmap(eligible_path, (len(references),), bool)
     fallback_reason = _memmap(fallback_reason_path, (len(references),), np.uint8)
     vanilla: np.memmap | None = None
+    mase_scale: np.memmap | None = None
+    msse_scale: np.memmap | None = None
+    seasonal_naive: np.memmap | None = None
     if include_vanilla:
         vanilla_path = root / split / "vanilla.npy"
         vanilla = _memmap(
@@ -279,6 +282,21 @@ def _materialize_source_rows(
             np.float32,
         )
         arrays[f"{split}.vanilla"] = str(vanilla_path.relative_to(root))
+        mase_scale_path = root / split / "mase_scale.npy"
+        msse_scale_path = root / split / "msse_scale.npy"
+        seasonal_naive_path = root / split / "seasonal_naive.npy"
+        mase_scale = _memmap(mase_scale_path, (len(references), channels), np.float32)
+        msse_scale = _memmap(msse_scale_path, (len(references), channels), np.float32)
+        seasonal_naive = _memmap(
+            seasonal_naive_path,
+            (len(references), channels, horizon),
+            np.float32,
+        )
+        arrays[f"{split}.mase_scale"] = str(mase_scale_path.relative_to(root))
+        arrays[f"{split}.msse_scale"] = str(msse_scale_path.relative_to(root))
+        arrays[f"{split}.seasonal_naive"] = str(
+            seasonal_naive_path.relative_to(root)
+        )
     arrays[f"{split}.target"] = str(target_path.relative_to(root))
     arrays[f"{split}.representation"] = str(representation_path.relative_to(root))
     arrays[f"{split}.query_scale"] = str(scale_path.relative_to(root))
@@ -301,6 +319,15 @@ def _materialize_source_rows(
     rag_eligible[:first_stop] = first_eligible
     fallback_reason[:first_stop] = first_reason
     if vanilla is not None:
+        assert mase_scale is not None and msse_scale is not None and seasonal_naive is not None
+        first_mase_scale, first_msse_scale = reader.seasonal_scales(
+            references[:first_stop]
+        )
+        mase_scale[:first_stop] = first_mase_scale
+        msse_scale[:first_stop] = first_msse_scale
+        seasonal_naive[:first_stop] = reader.seasonal_naive_forecast(
+            references[:first_stop]
+        )
         vanilla[:first_stop] = _timed_forecast(
             forecaster,
             first.context,
@@ -330,6 +357,15 @@ def _materialize_source_rows(
         rag_eligible[start:stop] = batch_eligible
         fallback_reason[start:stop] = batch_reason
         if vanilla is not None:
+            assert mase_scale is not None and msse_scale is not None and seasonal_naive is not None
+            batch_mase_scale, batch_msse_scale = reader.seasonal_scales(
+                references[start:stop]
+            )
+            mase_scale[start:stop] = batch_mase_scale
+            msse_scale[start:stop] = batch_msse_scale
+            seasonal_naive[start:stop] = reader.seasonal_naive_forecast(
+                references[start:stop]
+            )
             vanilla[start:stop] = _timed_forecast(
                 forecaster,
                 batch.context,
@@ -345,6 +381,10 @@ def _materialize_source_rows(
     fallback_reason.flush()
     if vanilla is not None:
         vanilla.flush()
+        assert mase_scale is not None and msse_scale is not None and seasonal_naive is not None
+        mase_scale.flush()
+        msse_scale.flush()
+        seasonal_naive.flush()
     return target, representation
 
 
