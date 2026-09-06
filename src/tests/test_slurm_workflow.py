@@ -21,11 +21,13 @@ def main() -> None:
         "adaptime_comparison.slurm",
         "dataset_diagnostics.slurm",
         "foundation_summary.slurm",
+        "tsrag_comparison.slurm",
     ]
     assert sorted(path.name for path in selena.glob("*.slurm")) == [
         "adaptime_comparison_selena.slurm",
         "dataset_diagnostics_selena.slurm",
         "foundation_summary_selena.slurm",
+        "tsrag_comparison_selena.slurm",
     ]
     assert sorted(path.name for path in dgx_models.glob("*.slurm")) == [
         f"{model}.slurm" for model in sorted(MODELS)
@@ -100,9 +102,26 @@ def main() -> None:
     assert "uv run --no-sync python -m timebench.scripts.run_adaptation_stage" in adaptime_workflow
     assert "ADAPTIME_K_VALUES:-1 5 10 15" in adaptime_workflow
     assert "ADAPTIME_ALPHA_VALUES:-0.001 0.01 0.1" in adaptime_workflow
+    assert "ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION:-0.8" in adaptime_workflow
     assert "--stage run" in adaptime_workflow
-    assert 'TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE/results/' in adaptime_workflow
+    assert 'TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE/tasks/' in adaptime_workflow
     assert 'time_stage_start run' in adaptime_workflow
+
+    tsrag_fronts = (
+        (dgx / "tsrag_comparison.slurm").read_text(encoding="utf-8"),
+        (selena / "tsrag_comparison_selena.slurm").read_text(encoding="utf-8"),
+    )
+    for front in tsrag_fronts:
+        assert 'TSRAG_RIDGE_OUTPUT_ROOT="${TSRAG_RIDGE_OUTPUT_ROOT:-$TIME_OUTPUTS/adaptime}"' in front
+        assert 'source "$PROJECT_ROOT/src/slurm/run_tsrag_comparison.sh"' in front
+    tsrag_workflow = (
+        PROJECT_ROOT / "src/slurm/run_tsrag_comparison.sh"
+    ).read_text(encoding="utf-8")
+    assert 'RIDGE_OUTPUT_ROOT="${TSRAG_RIDGE_OUTPUT_ROOT:-' in tsrag_workflow
+    assert '--ridge-output-root "$RIDGE_OUTPUT_ROOT"' in tsrag_workflow
+    assert 'TSRAG_RIDGE_LAUNCH_ID' in tsrag_workflow
+    assert "run_matched_ridge" not in tsrag_workflow
+    assert "time_stage_start ridge" not in tsrag_workflow
 
     adaptime_submit = (
         PROJECT_ROOT / "scripts/submit_adaptime_comparison.sh"

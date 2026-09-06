@@ -90,12 +90,16 @@ class FullRidgeStatistics:
             raise ValueError("design must end in the configured feature dimension")
         if residual.shape != design.shape[:-1]:
             raise ValueError("residual must match every design axis except features")
+        if not np.isfinite(design).all() or not np.isfinite(residual).all():
+            raise ValueError("ridge statistics require complete finite observations")
         if scale is None:
             scale_values = np.ones(residual.shape[:-1], dtype=np.float64)
         else:
             scale_values = np.asarray(scale, dtype=np.float64)
             if scale_values.shape != residual.shape[:-1]:
                 raise ValueError("scale must have one value per query/channel window")
+            if not np.isfinite(scale_values).all():
+                raise ValueError("ridge scales must be finite")
             scale_values = np.maximum(scale_values, 1e-8)
         normalized_design = design / scale_values[..., None, None]
         normalized_residual = residual / scale_values[..., None]
@@ -161,6 +165,27 @@ def full_ridge_predict(
     if design.shape[:-1] != vanilla.shape or coefficients.shape != (design.shape[-1],):
         raise ValueError("vanilla, design, and coefficients are not aligned")
     return vanilla + np.einsum("...f,f->...", design, coefficients)
+
+
+def full_ridge_predict_with_fallback(
+    vanilla: np.ndarray,
+    design: np.ndarray,
+    coefficients: np.ndarray,
+    eligible: np.ndarray,
+) -> np.ndarray:
+    """Apply ridge only to eligible rows and preserve vanilla elsewhere."""
+
+    vanilla = np.asarray(vanilla)
+    design = np.asarray(design)
+    eligible = np.asarray(eligible, dtype=bool)
+    if eligible.shape != (len(vanilla),):
+        raise ValueError("eligibility must contain one value per query row")
+    result = np.array(vanilla, copy=True)
+    if np.any(eligible):
+        result[eligible] = full_ridge_predict(
+            vanilla[eligible], design[eligible], coefficients
+        )
+    return result
 
 
 def query_scale(context: np.ndarray) -> np.ndarray:

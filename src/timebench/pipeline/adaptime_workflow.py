@@ -55,6 +55,7 @@ class AdaptimeWorkflowConfig:
     distance_metric: str = "euclidean"
     retrieval_scope: str = "all"
     minimum_overlap_fraction: float = 0.8
+    minimum_query_finite_fraction: float = 0.8
     max_k: int = 15
     k_values: tuple[int, ...] = (1, 5, 10, 15)
     alpha_values: tuple[float, ...] = (1e-3, 1e-2, 1e-1)
@@ -79,6 +80,8 @@ class AdaptimeWorkflowConfig:
             raise ValueError("max_k must cover every selected K")
         if not 0.0 < float(self.minimum_overlap_fraction) <= 1.0:
             raise ValueError("minimum_overlap_fraction must be in (0, 1]")
+        if not 0.0 < float(self.minimum_query_finite_fraction) <= 1.0:
+            raise ValueError("minimum_query_finite_fraction must be in (0, 1]")
 
 
 @dataclass(frozen=True)
@@ -228,6 +231,9 @@ def aggregate_time_comparison(
                 row[f"{method}_mse_win_rate_vs_vanilla"] = float(
                     summary["mse_win_rate_vs_vanilla"][method]
                 )
+            row["rag_eligible_fraction"] = float(
+                summary["rag_coverage"]["eligible_fraction"]
+            )
             rows.append(row)
             input_manifests.append(str(run_dir / "manifest.json"))
 
@@ -326,6 +332,21 @@ def aggregate_time_comparison(
             "tasks": len(variant_rows),
             "methods": methods,
             "mse_win_rate_vs_vanilla": wins,
+            "rag_coverage": {
+                "equal_dataset_eligible_fraction_mean": float(
+                    np.mean(
+                        [
+                            np.mean(
+                                [
+                                    float(row["rag_eligible_fraction"])
+                                    for row in dataset_rows[dataset]
+                                ]
+                            )
+                            for dataset in sorted(dataset_rows)
+                        ]
+                    )
+                )
+            },
         }
 
     root = output_dir.expanduser().resolve()
@@ -453,6 +474,7 @@ def _run_dataset_tasks(
                 "distance_metric": workflow.distance_metric,
                 "retrieval_scope": workflow.retrieval_scope,
                 "minimum_overlap_fraction": workflow.minimum_overlap_fraction,
+                "minimum_query_finite_fraction": workflow.minimum_query_finite_fraction,
                 "max_k": workflow.max_k,
                 "k_values": list(workflow.k_values),
                 "alpha_values": list(workflow.alpha_values),
@@ -483,6 +505,7 @@ def _run_dataset_tasks(
             experiment_config={
                 "target_mode": workflow.target_mode,
                 "methods": list(METHODS),
+                "metrics": list(METRICS),
                 "formulation": "full_ridge_shared",
             },
             provenance={
@@ -524,6 +547,7 @@ def _run_dataset_tasks(
                     distance_metric=workflow.distance_metric,
                     retrieval_scope=workflow.retrieval_scope,
                     minimum_overlap_fraction=workflow.minimum_overlap_fraction,
+                    minimum_query_finite_fraction=workflow.minimum_query_finite_fraction,
                     max_k=workflow.max_k,
                     context_k=workflow.k_values,
                     model_batch_size=workflow.model_batch_size,
@@ -548,7 +572,10 @@ def _run_dataset_tasks(
                 prepared_manifest,
                 extraction_manifest,
                 model_manifest,
-                AdaptimeTestingConfig(chunk_size=workflow.ridge_chunk_size),
+                AdaptimeTestingConfig(
+                    chunk_size=workflow.ridge_chunk_size,
+                    seasonality=int(get_seasonality(freq)),
+                ),
                 comparison_dir,
             )
             run.complete(

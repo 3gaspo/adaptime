@@ -26,6 +26,14 @@ TIME saved-Arrow dataset + dataset YAML
   -> pipeline/adaptime_workflow.py: manifest-selected TIME aggregate
 ```
 
+Every source row receives a finite-context fraction and an explicit eligibility
+reason during extraction. Datastore candidates with incomplete futures are
+removed before blockwise search. Retrieval and covariate model calls operate
+only on eligible rows; full-size memory maps preserve original TIME row order
+and store vanilla output in every fallback slot. Training streams only complete
+ridge rows, validation scores ineligible rows as vanilla, and testing decides
+fallback without consulting the future target.
+
 `timebench.adaptime` owns exact retrieval and the proposal's readable ridge
 math. `timebench.model_loading` owns foundation construction, capability
 declarations, offline checkpoints, and the tensor/covariate adapters.
@@ -63,6 +71,19 @@ vanilla and covariate model calls, and fixed-datastore preprocessing separately.
 Testing adds the ridge design/adjustment cost and derives method-level total and
 per-window inference times without treating the fixed training procedure as
 online refitting.
+
+The matched external-control path is separate:
+
+```text
+completed Adaptime L=512 run
+  -> pipeline/tsrag_data.py: matched raw-date budget and TIME test references
+  -> external_models/tsrag + model_loading/tsrag.py: pinned ARM/checkpoint
+  -> pipeline/tsrag.py: Chronos-T5/FAISS extraction and frozen evaluation
+  -> pipeline/tsrag_workflow.py: vanilla/TS-RAG/full-ridge table
+```
+
+This preserves TS-RAG's same-series stride-one retrieval and native 64-step
+model contract rather than importing proposal code into the external method.
 
 The current proposal path is univariate. Native multivariate evaluation remains
 an inherited Chronos-2 control and is not mixed into `full_ridge_shared`.

@@ -86,7 +86,9 @@ def split_statistics_grid(
     split: str,
     k_values: tuple[int, ...],
     chunk_size: int,
-) -> dict[int, FullRidgeStatistics]:
+    *,
+    include_vanilla_fallback: bool = False,
+) -> tuple[dict[int, FullRidgeStatistics], dict[int, dict[str, int]]]:
     """Accumulate every K from one bounded pass over a split's neighbors."""
 
     vanilla = arrays.open(f"{split}.vanilla")
@@ -96,25 +98,82 @@ def split_statistics_grid(
     target = arrays.open(f"{split}.target")
     scale = arrays.open(f"{split}.query_scale")
     neighbor_ids = arrays.open(f"{split}.neighbor_id")
+    rag_eligible = arrays.open(f"{split}.rag_eligible")
     statistics = {
         k: FullRidgeStatistics(features=2 + 2 * int(k)) for k in k_values
     }
-    max_k = max(k_values)
+    coverage = {
+        k: {
+            "total_windows": int(len(target)),
+            "label_complete_windows": 0,
+            "adapted_windows": 0,
+            "vanilla_fallback_windows": 0,
+            "excluded_label_windows": 0,
+        }
+        for k in k_values
+    }
     for start in range(0, len(target), int(chunk_size)):
         stop = min(start + int(chunk_size), len(target))
-        selected = np.asarray(neighbor_ids[start:stop, :max_k])
-        neighbor_target = arrays.datastore_target[selected]
-        neighbor_forecast = arrays.neighbor_forecast(selected)
+        chunk_target = np.asarray(target[start:stop])
+        chunk_vanilla = np.asarray(vanilla[start:stop])
+        chunk_scale = np.asarray(scale[start:stop])
+        label_complete = (
+            np.isfinite(chunk_target).reshape(stop - start, -1).all(axis=1)
+            & np.isfinite(chunk_vanilla).reshape(stop - start, -1).all(axis=1)
+            & np.isfinite(chunk_scale).reshape(stop - start, -1).all(axis=1)
+        )
         for k in k_values:
-            design, residual = full_ridge_design(
-                vanilla[start:stop],
-                contexts[k][start:stop],
-                neighbor_target[:, :k],
-                neighbor_forecast[:, :k],
-                target[start:stop],
+            selected = np.asarray(neighbor_ids[start:stop, :k])
+            candidate = (
+                np.asarray(rag_eligible[start:stop], dtype=bool)
+                & label_complete
+                & np.all(selected >= 0, axis=1)
             )
-            statistics[k].update(design, residual, scale=scale[start:stop])
-    return statistics
+            candidate_positions = np.flatnonzero(candidate)
+            adapted = np.zeros(stop - start, dtype=bool)
+            if len(candidate_positions):
+                candidate_ids = selected[candidate_positions]
+                design, residual = full_ridge_design(
+                    chunk_vanilla[candidate_positions],
+                    np.asarray(contexts[k][start:stop])[candidate_positions],
+                    arrays.datastore_target[candidate_ids],
+                    arrays.neighbor_forecast(candidate_ids),
+                    chunk_target[candidate_positions],
+                )
+                complete_design = (
+                    np.isfinite(design).reshape(len(design), -1).all(axis=1)
+                    & np.isfinite(residual).reshape(len(residual), -1).all(axis=1)
+                )
+                complete_positions = candidate_positions[complete_design]
+                if len(complete_positions):
+                    statistics[k].update(
+                        design[complete_design],
+                        residual[complete_design],
+                        scale=chunk_scale[complete_positions],
+                    )
+                    adapted[complete_positions] = True
+            fallback = label_complete & ~adapted
+            if include_vanilla_fallback and np.any(fallback):
+                fallback_count = int(np.count_nonzero(fallback))
+                fallback_residual = chunk_target[fallback] - chunk_vanilla[fallback]
+                zero_design = np.zeros(
+                    (*fallback_residual.shape, statistics[k].features),
+                    dtype=np.float64,
+                )
+                statistics[k].update(
+                    zero_design,
+                    fallback_residual,
+                    scale=chunk_scale[fallback],
+                )
+            coverage[k]["label_complete_windows"] += int(np.count_nonzero(label_complete))
+            coverage[k]["adapted_windows"] += int(np.count_nonzero(adapted))
+            coverage[k]["vanilla_fallback_windows"] += (
+                int(np.count_nonzero(fallback)) if include_vanilla_fallback else 0
+            )
+            coverage[k]["excluded_label_windows"] += int(
+                len(label_complete) - np.count_nonzero(label_complete)
+            )
+    return statistics, coverage
 
 
 def fit_full_ridge(
@@ -163,11 +222,15 @@ def fit_full_ridge(
     arrays = ExtractionArrays(extraction_root, extraction_manifest)
     selection_rows: list[dict[str, object]] = []
     best: tuple[float, int, float, np.ndarray] | None = None
-    train_by_k = split_statistics_grid(
+    train_by_k, train_coverage = split_statistics_grid(
         arrays, "adaptation_train", config.k_values, config.chunk_size
     )
-    validation_by_k = split_statistics_grid(
-        arrays, "adaptation_validation", config.k_values, config.chunk_size
+    validation_by_k, validation_coverage = split_statistics_grid(
+        arrays,
+        "adaptation_validation",
+        config.k_values,
+        config.chunk_size,
+        include_vanilla_fallback=True,
     )
     for k in config.k_values:
         train_statistics = train_by_k[k]
@@ -219,6 +282,12 @@ def fit_full_ridge(
         },
         "primary_configuration": {"k": PRIMARY_K, "alpha": PRIMARY_ALPHA},
         "feature_names": full_ridge_feature_names(selected_k),
+        "coverage": {
+            "adaptation_train": {str(k): value for k, value in train_coverage.items()},
+            "adaptation_validation": {
+                str(k): value for k, value in validation_coverage.items()
+            },
+        },
         "files": {
             "coefficients": coefficient_path.name,
             "selection": "selection.json",

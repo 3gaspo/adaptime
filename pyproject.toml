@@ -30,6 +30,7 @@ dependencies = [
     "chronos-forecasting==2.3.1",
     "datasets>=2.17.1,<4",
     "einops>=0.8.0,<1",
+    "faiss-cpu>=1.15.0,<2",
     "gluonts==0.16.2",
     "huggingface-hub>=1.19.0",
     "numba",

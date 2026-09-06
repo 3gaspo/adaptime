@@ -37,6 +37,12 @@ Earlier candidates walk backward from $d_t$ by a datastore stride that is a
 multiple of $P$. This keeps the datastore fixed while aligning its phase to the
 query.
 
+Let $q_t$ be the finite fraction of a query history. The default gate requires
+$q_t\geq0.8$ before retrieval. Datastore histories satisfy the same threshold,
+and their complete retrieved future must be finite. A query without $K$ valid
+chronological neighbors is ineligible rather than an experiment-ending error.
+
+\newpage
 \section{Full shared ridge}
 
 For each query, $V$ is the vanilla foundation forecast and $C$ is the forecast
@@ -62,6 +68,12 @@ $K\in\{1,5,10,15\}$ and
 $\alpha\in\{10^{-3},10^{-2},10^{-1}\}$. Delta, convex, per-horizon, and
 multivariate Adaptime variants are outside the current protocol.
 
+Ridge fitting uses complete adaptation-training rows only; it never applies an
+element-wise NaN mean to the normal equations. During validation and test, an
+ineligible query receives the vanilla output for both $C$ and $V'$. This gate
+uses only query and datastore information available at forecast time. Missing
+future labels affect metric support only and cannot select the prediction path.
+
 \section{Evaluation}
 
 The official test compares vanilla $V$, retrieval-context $C$ at the selected
@@ -72,5 +84,9 @@ completed task manifests, averages exact repeats before optionally averaging
 distinct scientific configurations, averages terms within each
 dataset/frequency, and then gives each dataset/frequency equal weight.
 Conclusions require completed and inspected cluster artifacts.
+
+Eligibility arrays, reason codes, effective training counts, and test RAG
+coverage are retained with the task artifacts. The resulting estimand is a
+transparent gated hybrid: Adaptime on eligible windows and vanilla otherwise.
 
 \end{document}

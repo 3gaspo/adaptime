@@ -155,6 +155,7 @@ def blockwise_topk(
     minimum_overlap_fraction: float = 0.8,
     query_block_size: int = 256,
     datastore_block_size: int = 4096,
+    require_complete_k: bool = True,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Find exact neighbors without allocating the full distance matrix.
 
@@ -249,14 +250,17 @@ def blockwise_topk(
         best_index = np.take_along_axis(best_index, order, axis=1)
         missing = np.flatnonzero(~np.isfinite(best_distance[:, -1]))
         if len(missing):
-            local = int(missing[0])
-            first = int(query_start + local)
-            raise ValueError(
-                f"query row {first} has {eligible_count[local]} chronologically "
-                f"eligible candidates, {finite_overlap_count[local]} with at least "
-                f"{minimum_overlap_fraction:.0%} finite feature overlap and a finite "
-                f"distance, and needs k={k}"
-            )
+            if require_complete_k:
+                local = int(missing[0])
+                first = int(query_start + local)
+                raise ValueError(
+                    f"query row {first} has {eligible_count[local]} chronologically "
+                    f"eligible candidates, {finite_overlap_count[local]} with at least "
+                    f"{minimum_overlap_fraction:.0%} finite feature overlap and a finite "
+                    f"distance, and needs k={k}"
+                )
+            best_distance[missing] = np.inf
+            best_index[missing] = -1
         if metric == "euclidean":
             np.sqrt(best_distance, out=best_distance)
         neighbor_ids[query_start:query_stop] = best_index

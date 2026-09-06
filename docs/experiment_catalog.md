@@ -28,7 +28,11 @@ and neighbor residual information.
 - Retrieval: exact instance-normalized Euclidean search across all series;
   fixed datastore dates align to each query modulo the dataset period. Missing
   dates use NaN-aware statistics and candidates require configurable finite
-  feature overlap, 80% by default.
+  query content and pairwise feature overlap, both 80% by default. Candidates
+  also require a complete retrieved future.
+- Missing-data gate: skip incomplete adaptation-training rows; use vanilla for
+  ineligible validation/test queries or insufficient valid neighbors; mask
+  missing test labels only from metrics. Report hybrid RAG coverage.
 - Selection: fit on adaptation training and choose
   `K in {1,5,10,15}` and `alpha in {1e-3,1e-2,1e-1}` on adaptation
   validation; do not refit before test.
@@ -52,3 +56,21 @@ and neighbor residual information.
 No delta, convex, per-horizon, or native-multivariate Adaptime ablation belongs
 to this experiment family. No result is claimed until cluster outputs are
 complete and inspected.
+
+## Matched TS-RAG control
+
+`scripts/submit_tsrag_comparison.sh` evaluates the pinned source-adapted
+TS-RAG ARM after a completed `full_ridge_shared` run with realized `L=512`.
+It discovers the ridge artifact from `TSRAG_RIDGE_OUTPUT_ROOT`, optionally
+restricts it with `TSRAG_RIDGE_LAUNCH_ID`, and reuses the ridge preparation's
+raw-date budget and exact official TIME test references.
+
+- External method: released MoE ARM and Chronos-T5 EOS/FAISS retrieval from
+  `UConn-DSIS/TS-RAG` commit `73ac807`.
+- Preserved rules: same-series stride-one datastore, top-K-plus-one retrieval,
+  512-step input, and native 64-step forecasts.
+- Long horizons: refresh retrieval after each 64-step rollout block; shorter
+  horizons crop one native forecast.
+- Comparison: matched vanilla Chronos-Bolt, TS-RAG, and the completed
+  Chronos-2 `full_ridge_shared` result on identical test rows, with MASE and
+  total test inference time.

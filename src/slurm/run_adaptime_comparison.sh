@@ -39,6 +39,7 @@ run_adaptime() {
         --distance-metric "${ADAPTIME_DISTANCE_METRIC:-euclidean}"
         --retrieval-scope "${ADAPTIME_RETRIEVAL_SCOPE:-all}"
         --minimum-overlap-fraction "${ADAPTIME_MINIMUM_OVERLAP_FRACTION:-0.8}"
+        --minimum-query-finite-fraction "${ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION:-0.8}"
         --max-k "${ADAPTIME_MAX_K:-15}"
         --k "${k_values[@]}"
         --alpha "${alpha_values[@]}"

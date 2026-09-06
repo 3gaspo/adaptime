@@ -42,6 +42,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--distance-metric", choices=("euclidean", "cosine"), default="euclidean")
     parser.add_argument("--retrieval-scope", choices=("all", "same_series", "other_series"), default="all")
     parser.add_argument("--minimum-overlap-fraction", type=float, default=0.8)
+    parser.add_argument("--minimum-query-finite-fraction", type=float, default=0.8)
     parser.add_argument("--max-k", type=int, default=15)
     parser.add_argument("--k", type=int, nargs="+", default=(1, 5, 10, 15))
     parser.add_argument("--alpha", type=float, nargs="+", default=(1e-3, 1e-2, 1e-1))
@@ -82,6 +83,7 @@ def main() -> None:
             distance_metric=args.distance_metric,
             retrieval_scope=args.retrieval_scope,
             minimum_overlap_fraction=args.minimum_overlap_fraction,
+            minimum_query_finite_fraction=args.minimum_query_finite_fraction,
             max_k=args.max_k,
             k_values=tuple(sorted(set(args.k))),
             alpha_values=tuple(args.alpha),

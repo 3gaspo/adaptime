@@ -50,7 +50,17 @@ dataset period; earlier candidates then follow the datastore stride, one period
 by default. Instance statistics ignore missing dates. A context with undefined
 channel statistics is unusable; otherwise distances use shared finite features,
 require at least 80% overlap by default, and treat insufficient overlap as
-infinite distance.
+infinite distance. Query and datastore histories must independently contain at
+least 80% finite observations by default, and datastore candidates must have a
+complete finite future horizon. These eligibility thresholds are configurable.
+
+Adaptation-training rows are complete-case observations: a row is omitted from
+ridge statistics when its query, target, foundation forecasts, retrieved
+features, or scale is non-finite. Validation and test never impute those
+features. An ineligible query or one without `K` valid neighbors uses the
+vanilla forecast for both the retrieval-context and Adaptime outputs. Missing
+test targets only mask the corresponding metric positions and never determine
+which prediction path is used.
 
 Extraction writes memory-mapped arrays for representations, neighbors,
 distances, targets, `V`, requested `C` forecasts, and unique neighbor forecasts.
@@ -79,7 +89,8 @@ It defaults to Chronos-2, univariate targets, every configured dataset and
 term, and a maximum context length of 2048. Submission-time overrides include
 `ADAPTIME_DATASETS` and `ADAPTIME_TERMS` as comma-separated selections,
 `ADAPTIME_MODEL`, `ADAPTIME_MODEL_PATH`, `ADAPTIME_MAX_CONTEXT_LENGTH`, split
-lengths, retrieval settings, block sizes, and the K/alpha grids. The proposal
+lengths, `ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION`, retrieval settings, block
+sizes, and the K/alpha grids. The proposal
 requires a model adapter with retrieval-covariate support; unsupported models
 fail explicitly. Non-finite covariate observations are passed as NaNs so a
 capable backbone can apply its ordinary missing-value mask.
@@ -120,6 +131,27 @@ After all selected tasks finish,
 manifests and averages repeats within exact configurations, then configurations
 when requested, terms within each dataset/frequency, and finally
 dataset/frequency units with equal weight.
+
+### Matched TS-RAG comparison
+
+The source-adapted TS-RAG control uses the released MoE ARM, Chronos-T5 EOS
+retrieval embeddings, same-series stride-one datastore, and native 512-context,
+64-horizon contract from `UConn-DSIS/TS-RAG` commit `73ac807`. It deliberately
+keeps TS-RAG's own retrieval and adaptation mechanism rather than routing it
+through Adaptime's ridge code.
+
+Run the primary Adaptime job with a realized context length of 512 first. Once
+its selected task manifests are complete, the TS-RAG workflow discovers those
+runs below the configured Adaptime output root, reuses their exact official
+TIME test references, and writes a matched vanilla/TS-RAG/ridge table:
+
+```bash
+bash scripts/submit_tsrag_comparison.sh dgx
+bash scripts/submit_tsrag_comparison.sh selena
+```
+
+`TSRAG_RIDGE_OUTPUT_ROOT` may select another Adaptime output root, and
+`TSRAG_RIDGE_LAUNCH_ID` may restrict selection to one completed ridge launch.
 
 ## Inherited foundation-model benchmark
 
@@ -167,6 +199,7 @@ below `outputs/adaptime/`. Shared diagnostic metadata lives below
 src/timebench/evaluation/adaptation_data.py  Arrow-backed split/window preparation
 src/timebench/adaptime/                     retrieval and shared-ridge math
 src/timebench/model_loading/                foundation construction and adapters
+src/timebench/external_models/tsrag/         pinned source-adapted TS-RAG model
 src/timebench/pipeline/                     manifests, recovery, extraction, fitting, testing
 src/timebench/scripts/                      Python command entry points
 src/slurm/                                  shared cluster workflow implementations

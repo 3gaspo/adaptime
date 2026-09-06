@@ -589,6 +589,26 @@ wheels = [
 ]
 
 [[package]]
+name = "faiss-cpu"
+version = "1.15.0"
+source = { registry = "https://nexus.retd.edf.fr/repository/pypi-all/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "packaging" },
+]
+wheels = [
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp310-abi3-macosx_14_0_arm64.whl", hash = "sha256:50ea471ef1f4f3580eda8ab0ec9727d4bf65fd71c444bf306ce7cdbba8a42b21" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp310-abi3-macosx_15_0_x86_64.whl", hash = "sha256:dd383bb1ce06fabcff5785f998f253aa88f88dcbe1fe36c922417cd6666dd896" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp310-abi3-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:5d0a2d5d33fe023e263d0d355a837f20db67578e3be27fc5f4012a273274abf6" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp310-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ec9b29aae29e428c085c2d49dbb02e4673cdea75db418d420f9e60e0b4184498" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp310-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:30da3029952f0de69f16ce31946fd63fc3e292c867749bbcd2c0a0f09fd06f65" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp310-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:88fbe1acac6978869063cb2f9477f85718da596a6e0a17751618f9c756bce255" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp312-cp312-win_amd64.whl", hash = "sha256:5b940897b317febaa761088513a3db164fad3ac71a5e1ed7be9a052c9bf1a447" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp313-cp313-win_amd64.whl", hash = "sha256:22dddb013e764aad66dac6cd15b49c7598d60339e0591b73b5e081629419c21b" },
+    { url = "https://nexus.retd.edf.fr/repository/pypi-all/packages/faiss-cpu/1.15.0/faiss_cpu-1.15.0-cp314-cp314-win_amd64.whl", hash = "sha256:37170d5e9ead4b6bfd9c314afc39e17e92064068a0c5a4063dd3f39568c2667e" },
+]
+
+[[package]]
 name = "filelock"
 version = "3.32.4"
 source = { registry = "https://nexus.retd.edf.fr/repository/pypi-all/simple" }
@@ -2387,6 +2407,7 @@ dependencies = [
     { name = "chronos-forecasting" },
     { name = "datasets" },
     { name = "einops" },
+    { name = "faiss-cpu" },
     { name = "gluonts" },
     { name = "huggingface-hub" },
     { name = "numba" },
@@ -2411,6 +2432,7 @@ requires-dist = [
     { name = "chronos-forecasting", specifier = "==2.3.1" },
     { name = "datasets", specifier = ">=2.17.1,<4" },
     { name = "einops", specifier = ">=0.8.0,<1" },
+    { name = "faiss-cpu", specifier = ">=1.15.0,<2" },
     { name = "gluonts", specifier = "==0.16.2" },
     { name = "huggingface-hub", specifier = ">=1.19.0" },
     { name = "numba" },
