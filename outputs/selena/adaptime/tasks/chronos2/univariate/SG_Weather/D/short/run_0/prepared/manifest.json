@@ -1,0 +1,49 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 3,
+    "adaptation_train_length": 366,
+    "adaptation_validation_length": 366,
+    "context_length": 512,
+    "dataset": "SG_Weather/D",
+    "datastore_length": null,
+    "datastore_stride": 1,
+    "prediction_length": 3,
+    "retrieval_period": 1,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 366
+  },
+  "counts": {
+    "adaptation_train": 2928,
+    "adaptation_validation": 2928,
+    "datastore": 32184,
+    "test": 2928
+  },
+  "dataset_fingerprint": "d5349fe6ad4d938a",
+  "format": "adaptime_prepared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "query_period_residues": [
+    0
+  ],
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "bc6d79644b16f0aadf22d46b83f605ac0e89f1b9faafee586e429b7f87748631",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/SG_Weather/D"
+}

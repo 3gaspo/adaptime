@@ -1,0 +1,28 @@
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:   8%|▊         | 14/170 [00:00<00:01, 139.84it/s]Loading weights:  23%|██▎       | 39/170 [00:00<00:00, 187.93it/s]Loading weights:  41%|████      | 69/170 [00:00<00:00, 235.35it/s]Loading weights:  56%|█████▌    | 95/170 [00:00<00:00, 244.28it/s]Loading weights:  76%|███████▋  | 130/170 [00:00<00:00, 268.64it/s]Loading weights:  97%|█████████▋| 165/170 [00:00<00:00, 284.87it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 264.80it/s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 108, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 69, in main
+    run_adaptation_stage(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 593, in run_adaptation_stage
+    _run_dataset_tasks(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 519, in _run_dataset_tasks
+    extraction_manifest = extract_adaptation_features(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_extraction.py", line 502, in extract_adaptation_features
+    _materialize_neighbors(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_extraction.py", line 301, in _materialize_neighbors
+    distances, ids = blockwise_topk(
+                     ^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/adaptime/retrieval.py", line 254, in blockwise_topk
+    raise ValueError(
+ValueError: query row 2684 has 32184 chronologically eligible candidates, 0 with at least 80% finite feature overlap and a finite distance, and needs k=15
+srun: error: sean0014: task 0: Exited with exit code 1
+2026-09-05 22:31:27 | task TIME-wide Adaptime model=chronos2 target_mode=univariate completed status=failed exit_code=1
+2026-09-05 22:31:27 | stage run completed status=failed exit_code=1
+TIME interrupted-launch recovery launch_id=selena_adaptime_3157926 tasks=0 root=/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate
+2026-09-05 22:31:27 | workflow adaptime_comparison completed status=failed exit_code=1

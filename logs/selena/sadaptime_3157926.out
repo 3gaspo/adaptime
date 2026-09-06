@@ -1,0 +1,4 @@
+2026-09-05 22:30:57 | workflow adaptime_comparison started launch_id=selena_adaptime_3157926 task=chronos2_univariate slurm_job_id=3157926 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-05 22:30:57 | stage run started
+2026-09-05 22:30:57 | task TIME-wide Adaptime model=chronos2 target_mode=univariate started
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Weather/D/short/run_0 launch_id=selena_adaptime_3157926 slurm_job_id=3157926 launched_at=2026-09-05T20:31:02.059370+00:00
