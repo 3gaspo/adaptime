@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a macro-MASE and inference-time table from local TIME results."""
+"""Create a Seasonal-Naive-scaled MASE and inference-time TIME table."""
 
 import argparse
 import csv
@@ -83,8 +83,8 @@ def load_result_cells(
     return cells
 
 
-def summarize_cells(cells: list[dict]) -> list[dict]:
-    """Macro-average H settings within datasets, then datasets within models."""
+def _effective_cells(cells: list[dict]) -> list[dict]:
+    """Apply configured repeat/config averaging to task-level raw MASE."""
     by_exact_config = defaultdict(list)
     for cell in cells:
         key = (
@@ -147,19 +147,45 @@ def summarize_cells(cells: list[dict]) -> list[dict]:
             }
         )
 
+    return effective_cells
+
+
+def _geometric_mean(values: list[float]) -> float:
+    array = np.asarray(values, dtype=np.float64)
+    if not len(array) or not np.isfinite(array).all() or np.any(array < 0):
+        raise ValueError("scaled MASE requires finite non-negative task values")
+    if np.any(array == 0):
+        return 0.0
+    return float(np.exp(np.mean(np.log(array))))
+
+
+def summarize_cells(cells: list[dict], seasonal_naive_cells: list[dict]) -> list[dict]:
+    """Normalize each task by Seasonal Naive and geometrically average tasks."""
+
+    effective_cells = _effective_cells(cells)
+    baseline_cells = _effective_cells(seasonal_naive_cells)
+    baseline_by_task: dict[tuple[str, str], list[float]] = defaultdict(list)
+    for cell in baseline_cells:
+        baseline_by_task[(cell["dataset_id"], cell["horizon"])].append(cell["MASE"])
+    baseline = {
+        key: float(np.mean(values)) for key, values in baseline_by_task.items()
+    }
+    for cell in effective_cells:
+        key = (cell["dataset_id"], cell["horizon"])
+        denominator = baseline.get(key)
+        if denominator is None or not np.isfinite(denominator) or denominator <= 0:
+            raise ValueError(
+                f"missing positive Seasonal Naive MASE for {cell['dataset_id']}/{cell['horizon']}"
+            )
+        cell["scaled_MASE"] = float(cell["MASE"] / denominator)
+
     by_model = defaultdict(list)
     for cell in effective_cells:
         by_model[cell["model"]].append(cell)
 
     rows = []
     for model, model_cells in by_model.items():
-        mase_by_dataset = defaultdict(list)
-        for cell in model_cells:
-            mase_by_dataset[cell["dataset_id"]].append(cell["MASE"])
-
-        dataset_mase = [
-            float(np.nanmean(values)) for values in mase_by_dataset.values()
-        ]
+        datasets = {cell["dataset_id"] for cell in model_cells}
         timed = [
             cell["inference_seconds"]
             for cell in model_cells
@@ -174,15 +200,17 @@ def summarize_cells(cells: list[dict]) -> list[dict]:
                 "target_modes": ",".join(
                     sorted({cell["target_mode"] for cell in model_cells})
                 ),
-                "MASE_macro": float(np.nanmean(dataset_mase)),
+                "scaled_MASE": _geometric_mean(
+                    [cell["scaled_MASE"] for cell in model_cells]
+                ),
                 "inference_seconds": float(sum(timed)) if all_tasks_timed else None,
-                "datasets": len(mase_by_dataset),
+                "datasets": len(datasets),
                 "tasks": len(model_cells),
                 "timed_tasks": len(timed),
             }
         )
 
-    return sorted(rows, key=lambda row: (row["MASE_macro"], row["model"]))
+    return sorted(rows, key=lambda row: (row["scaled_MASE"], row["model"]))
 
 
 def load_model_statuses(status_dir: Path | None) -> dict[str, dict[str, str]]:
@@ -233,7 +261,7 @@ def add_model_status(
                     "model": model,
                     "base_model": model,
                     "target_modes": "",
-                    "MASE_macro": None,
+                    "scaled_MASE": None,
                     "inference_seconds": None,
                     "datasets": 0,
                     "tasks": 0,
@@ -249,8 +277,8 @@ def add_model_status(
     return sorted(
         rows,
         key=lambda row: (
-            row["MASE_macro"] is None,
-            float("inf") if row["MASE_macro"] is None else row["MASE_macro"],
+            row["scaled_MASE"] is None,
+            float("inf") if row["scaled_MASE"] is None else row["scaled_MASE"],
             row["model"],
             row["target_modes"],
         ),
@@ -266,7 +294,7 @@ def write_csv(rows: list[dict], path: Path) -> None:
         "target_modes",
         "state",
         "exit_code",
-        "MASE_macro",
+        "scaled_MASE",
         "inference_seconds",
         "datasets",
         "tasks",
@@ -283,17 +311,17 @@ def write_markdown(rows: list[dict], path: Path) -> None:
     lines = [
         "# Foundation-model benchmark summary",
         "",
-        "MASE is averaged equally over available H settings within each "
-        "dataset/frequency, then equally over dataset/frequency entries. "
+        "Each task MASE is divided by the matching Seasonal Naive MASE, then "
+        "task ratios are combined with the TIME leaderboard geometric mean. "
         "Inference seconds are summed over the same test forecasting tasks; "
         "a blank total means at least one task lacks timing metadata.",
         "",
-        "| Model | Target mode | State | Exit | MASE (macro) | Inference seconds | Datasets | Tasks | Timed tasks |",
+        "| Model | Target mode | State | Exit | Scaled MASE (GM) | Inference seconds | Datasets | Tasks | Timed tasks |",
         "|---|---|---|---:|---:|---:|---:|---:|---:|",
     ]
     for row in rows:
         seconds = row["inference_seconds"]
-        mase = row["MASE_macro"]
+        mase = row["scaled_MASE"]
         lines.append(
             f"| {row['model']} | {row['target_modes']} | {row['state']} | {row['exit_code']} | "
             f"{'' if mase is None else f'{mase:.6f}'} | "
@@ -305,9 +333,11 @@ def write_markdown(rows: list[dict], path: Path) -> None:
 
 def write_report_manifest(
     cells: list[dict],
+    seasonal_naive_cells: list[dict],
     path: Path,
     *,
     results_dir: Path,
+    seasonal_naive_results_dir: Path,
     models: list[str],
     target_modes: set[str] | None,
     launch_id: str | None,
@@ -321,6 +351,9 @@ def write_report_manifest(
         "schema_version": 1,
         "report": "foundation_model_summary",
         "results_dir": str(results_dir),
+        "metric": "task_MASE_divided_by_matching_Seasonal_Naive_MASE",
+        "aggregation": "geometric_mean_over_tasks",
+        "seasonal_naive_results_dir": str(seasonal_naive_results_dir),
         "selection": {
             "models": models,
             "target_modes": sorted(target_modes or []),
@@ -332,6 +365,9 @@ def write_report_manifest(
         "input_manifests": [
             Path(cell["manifest_path"]).resolve().relative_to(results_dir.resolve()).as_posix()
             for cell in cells
+        ],
+        "seasonal_naive_input_manifests": [
+            str(Path(cell["manifest_path"]).resolve()) for cell in seasonal_naive_cells
         ],
         "artifacts": [str(artifact) for artifact in artifacts],
     }
@@ -347,6 +383,20 @@ def main() -> None:
         type=Path,
         default=foundation_experiment_root(),
         help="One experiment task root (default: outputs/foundation_models/tasks)",
+    )
+    parser.add_argument(
+        "--seasonal-naive-results-dir",
+        type=Path,
+        default=None,
+        help=(
+            "Task root containing the matching Seasonal Naive baseline; "
+            "defaults to --results-dir"
+        ),
+    )
+    parser.add_argument(
+        "--seasonal-naive-launch-id",
+        default=None,
+        help="Optional launch filter for Seasonal Naive baseline tasks",
     )
     parser.add_argument(
         "--csv",
@@ -416,6 +466,10 @@ def main() -> None:
 
     args.csv = args.csv or args.results_dir / "foundation_model_summary.csv"
     args.markdown = args.markdown or args.results_dir / "foundation_model_summary.md"
+    baseline_root = args.seasonal_naive_results_dir or args.results_dir
+    baseline_launch_id = args.seasonal_naive_launch_id
+    if baseline_launch_id is None and baseline_root.resolve() == args.results_dir.resolve():
+        baseline_launch_id = args.launch_id
     models = set(args.models)
     config_filters = parse_config_filters(args.run_config)
     cells = load_result_cells(
@@ -427,7 +481,15 @@ def main() -> None:
         config_policy=args.config_policy,
         repeat_policy=args.repeat_policy,
     )
-    metric_rows = summarize_cells(cells)
+    seasonal_naive_cells = load_result_cells(
+        baseline_root,
+        {"seasonal_naive"},
+        launch_id=baseline_launch_id,
+        target_modes={"univariate"},
+        config_policy=args.config_policy,
+        repeat_policy=args.repeat_policy,
+    )
+    metric_rows = summarize_cells(cells, seasonal_naive_cells)
     statuses = load_model_statuses(args.status_dir)
     statuses.update(parse_model_statuses(args.model_status))
     rows = add_model_status(metric_rows, args.models, statuses, args.launch_id)
@@ -440,8 +502,10 @@ def main() -> None:
     write_markdown(rows, args.markdown)
     write_report_manifest(
         cells,
+        seasonal_naive_cells,
         args.csv.with_name("foundation_model_report_manifest.json"),
         results_dir=args.results_dir,
+        seasonal_naive_results_dir=baseline_root,
         models=args.models,
         target_modes=None if args.target_mode is None else set(args.target_mode),
         launch_id=args.launch_id,
@@ -455,12 +519,12 @@ def main() -> None:
     for row in rows:
         seconds = row["inference_seconds"]
         seconds_text = "incomplete" if seconds is None else f"{seconds:.3f}s"
-        mase = row["MASE_macro"]
+        mase = row["scaled_MASE"]
         mase_text = "incomplete" if mase is None else f"{mase:.6f}"
         print(
             f"{(row['model'] + ('/' + row['target_modes'] if row['target_modes'] else '')):<28} "
             f"state={row['state'] or 'unknown'}  "
-            f"MASE={mase_text}  "
+            f"scaled_MASE={mase_text}  "
             f"inference={seconds_text}  "
             f"coverage={row['timed_tasks']}/{row['tasks']} timed tasks"
         )

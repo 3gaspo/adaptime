@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot model MASE against selected or top-correlated dataset features."""
+"""Plot scaled model MASE against selected or top-correlated dataset features."""
 
 import argparse
 import sys
@@ -16,7 +16,7 @@ from timebench.pipeline import parse_config_filters
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Plot dataset-level MASE against TIME features."
+        description="Plot dataset-level Seasonal-Naive-scaled MASE against TIME features."
     )
     parser.add_argument(
         "--features-root",

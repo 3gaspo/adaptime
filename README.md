@@ -197,11 +197,13 @@ fails when it cannot provide one unambiguous equivalent completed result.
 ### Foundation-model performance and timing
 
 After the model jobs terminate, the summary job writes CSV, Markdown, and a
-report manifest inside the selected experiment root. Cluster summaries select
+report manifest inside the selected experiment root. Every performance table
+uses TIME's task-level scaled MASE: raw MASE divided by the matching Seasonal
+Naive MASE, followed by a geometric mean over tasks. Cluster summaries select
 only completed run manifests from the current launch and include terminal model
 states, so partial results cannot be mistaken for complete results or mixed
 with stale tasks. When all four model jobs completed successfully, the same
-summary job also writes the launch-filtered MASE-versus-feature SVG, joined
+summary job also writes the launch-filtered scaled-MASE-versus-feature SVG, joined
 data, and feature correlations below
 `foundation_models/feature_analysis/{launch_id}/`. Foundation tables live
 below `foundation_models/summary/{launch_id}/`; channel tables live below
@@ -227,12 +229,18 @@ a configuration directly with `--run-config FIELD=JSON`.
 Lightweight synchronization and publication retain task/report manifests,
 `SELECTED_RUNS.json`, and prior manifest states under `manifest_history/`.
 
-For each model, the reported MASE first averages short, medium, and long terms
-equally within each dataset/frequency and then averages those dataset/frequency
-means equally. Series, channels, windows, and datasets with more configured
-terms therefore do not receive extra weight. Inference seconds are summed over
-the same test tasks and are left blank unless every reported task has timing
-metadata; the task-coverage columns make partial runs explicit.
+For each model, the reported scaled MASE geometrically averages the available
+dataset/frequency/term task ratios, matching TIME's leaderboard aggregation.
+Inference seconds are summed over the same test tasks and are left blank unless
+every reported task has timing metadata; the task-coverage columns make partial
+runs explicit. Channel summaries require matching completed Seasonal Naive
+tasks below `foundation_models/tasks`, so run the foundation workflow before
+the channel workflow.
+
+Raw MASE still uses the median forecast. Its seasonal denominator is computed
+from the full pre-origin history without closing gaps: a lagged difference is
+included only when both observations at their original dates are finite, and
+the divisor is the number of valid seasonal pairs.
 
 The latest analyzed complete benchmark, channel comparison, and dataset audit
 are recorded in [Foundation-model results](docs/FOUNDATION_RESULTS.md).

@@ -73,10 +73,10 @@ deliberately.
 - Added one accelerator-synchronized test-loop timer used by every model
   runner. Each task stores total inference seconds in `config.json`, excluding
   model loading, dataset construction, metric computation, and result saving.
-- Added a four-model runner and CSV/Markdown summary whose MASE
-  macro-average weights H settings equally within dataset/frequency entries
-  and then weights those entries equally; timing totals require complete task
-  coverage.
+- Added a four-model runner and CSV/Markdown summary. Every task MASE is now
+  divided by its matching Seasonal Naive MASE and the resulting TIME
+  leaderboard ratios are geometrically averaged; timing totals require
+  complete task coverage.
 - Made the dependent foundation summary generate the launch-filtered
   MASE-versus-feature SVG, joined data, and correlation table after confirming
   that all four model jobs completed successfully. Transfer and publication
@@ -180,6 +180,12 @@ deliberately.
 - Removed stochastic inverse-CDF resampling from Seasonal Naive. Its
   StatsForecast quantiles now enter TIME evaluation directly, making repeated
   runs deterministic without inventing a second random-number stream.
+- Corrected MASE scaling so genuine missing timestamps are never removed from
+  the calendar. Only finite seasonal pairs contribute, and their exact count
+  is the denominator used by the seasonal-error mean.
+- Made foundation, channel, and feature-performance comparisons use task MASE
+  divided by the matching corrected Seasonal Naive MASE. Channel summaries
+  consequently require the completed foundation Seasonal Naive tasks.
 - Removed duplicate Seasonal Naive rows from local leaderboard aggregation and
   made result/cache paths configurable.
 
