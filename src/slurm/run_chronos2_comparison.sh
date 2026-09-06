@@ -55,6 +55,7 @@ summary_command=(
     uv run --no-sync python
     "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
     --results-dir "$TIME_TASKS_ROOT"
+    --seasonal-naive-results-dir "$TIME_OUTPUTS/foundation_models/tasks"
     --models chronos2
     --model-status chronos2=completed,0
     --launch-id "$TIME_LAUNCH_ID"

@@ -15,7 +15,7 @@ NON_FEATURE_COLUMNS = {
     "series_count",
     "variate_count",
     "model",
-    "MASE",
+    "scaled_MASE",
 }
 
 
@@ -42,7 +42,7 @@ def load_dataset_mase(
     config_policy: str = "error",
     repeat_policy: str = "selected",
 ) -> pd.DataFrame:
-    """Macro-average task MASE equally over available horizons per dataset."""
+    """Geometrically average Seasonal-Naive-scaled task MASE per dataset."""
     rows = []
     selected = select_completed_runs(
         results_root,
@@ -66,6 +66,7 @@ def load_dataset_mase(
                     "model": selection.get("model_label", identity["model"]),
                     "base_model": identity["model"],
                     "dataset_id": f"{identity['dataset']}/{identity['frequency']}",
+                    "horizon": identity["term"],
                     "MASE": float(mase),
                     "scientific_config": json.dumps(
                         selection.get(
@@ -83,13 +84,44 @@ def load_dataset_mase(
     if not rows:
         raise FileNotFoundError(f"No finite task MASE summaries found below {results_root}")
     frame = pd.DataFrame(rows)
+    baseline_selected = select_completed_runs(
+        results_root,
+        models={"seasonal_naive"},
+        target_modes={"univariate"},
+        launch_id=launch_id,
+        config_policy=config_policy,
+        repeat_policy=repeat_policy,
+    )
+    baseline_rows = []
+    for run_dir, manifest in baseline_selected:
+        summary = json.loads((run_dir / "metrics_summary.json").read_text(encoding="utf-8"))
+        mase = summary.get("metrics", {}).get("MASE", {}).get("mean")
+        if mase is not None and np.isfinite(float(mase)) and float(mase) > 0:
+            identity = manifest["identity"]
+            baseline_rows.append(
+                {
+                    "dataset_id": f"{identity['dataset']}/{identity['frequency']}",
+                    "horizon": identity["term"],
+                    "baseline_MASE": float(mase),
+                }
+            )
+    if not baseline_rows:
+        raise FileNotFoundError("No finite Seasonal Naive MASE baselines found")
+    baseline = pd.DataFrame(baseline_rows).groupby(
+        ["dataset_id", "horizon"], as_index=False
+    )["baseline_MASE"].mean()
+    frame = frame.merge(baseline, on=["dataset_id", "horizon"], validate="many_to_one")
+    frame["scaled_MASE"] = frame["MASE"] / frame["baseline_MASE"]
     per_config = frame.groupby(
-        ["model", "base_model", "dataset_id", "scientific_config"],
+        ["model", "base_model", "dataset_id", "horizon", "scientific_config"],
         as_index=False,
-    )["MASE"].mean()
-    return per_config.groupby(
+    )["scaled_MASE"].mean()
+    per_task = per_config.groupby(
+        ["model", "base_model", "dataset_id", "horizon"], as_index=False
+    )["scaled_MASE"].mean()
+    return per_task.groupby(
         ["model", "base_model", "dataset_id"], as_index=False
-    )["MASE"].mean()
+    )["scaled_MASE"].agg(lambda values: float(np.exp(np.log(values).mean())))
 
 
 def join_features_and_mase(
@@ -103,7 +135,7 @@ def join_features_and_mase(
     config_policy: str = "error",
     repeat_policy: str = "selected",
 ) -> pd.DataFrame:
-    """Join dataset-level feature summaries to model/dataset MASE."""
+    """Join dataset features to Seasonal-Naive-scaled model performance."""
     features = load_dataset_features(features_root, split=split)
     mase = load_dataset_mase(
         results_root,
@@ -139,10 +171,10 @@ def feature_correlations(
     for feature in features:
         correlations = []
         for model, group in frame.groupby("model"):
-            values = group[[feature, "MASE"]].replace([np.inf, -np.inf], np.nan).dropna()
+            values = group[[feature, "scaled_MASE"]].replace([np.inf, -np.inf], np.nan).dropna()
             correlation = np.nan
             if len(values) >= 3 and values[feature].nunique() > 1:
-                correlation = float(values[feature].corr(values["MASE"], method="spearman"))
+                correlation = float(values[feature].corr(values["scaled_MASE"], method="spearman"))
                 correlations.append(abs(correlation))
             rows.append(
                 {
@@ -181,7 +213,7 @@ def write_feature_svg(
     features: list[str],
     path: Path,
 ) -> None:
-    """Write a multi-panel MASE-versus-feature scatter plot as plain SVG."""
+    """Write a multi-panel scaled-MASE-versus-feature scatter plot as plain SVG."""
     width, height = 1280, 1160
     panel_width, panel_height = 600, 320
     left_margin, top_margin = 50, 105
@@ -192,8 +224,8 @@ def write_feature_svg(
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="white"/>',
         '<style>text{font-family:Arial,sans-serif;fill:#222}.axis{stroke:#555;stroke-width:1}.grid{stroke:#ddd;stroke-width:1}.point{fill-opacity:.68}.trend{fill:none;stroke-width:2}</style>',
-        '<text x="50" y="42" font-size="25" font-weight="bold">Dataset MASE versus top correlated TIME features</text>',
-        '<text x="50" y="70" font-size="14">Features selected by mean absolute within-model Spearman correlation; MASE is averaged equally over horizons.</text>',
+        '<text x="50" y="42" font-size="25" font-weight="bold">Dataset scaled MASE versus top correlated TIME features</text>',
+        '<text x="50" y="70" font-size="14">Features selected by mean absolute within-model Spearman correlation; task MASE is Seasonal-Naive-scaled and geometrically averaged.</text>',
     ]
 
     for model_index, model in enumerate(models):
@@ -209,9 +241,9 @@ def write_feature_svg(
         panel_y = top_margin + row * 345
         plot_left, plot_right = panel_x + 70, panel_x + panel_width - 20
         plot_top, plot_bottom = panel_y + 40, panel_y + panel_height - 55
-        panel = frame[["model", feature, "MASE"]].replace([np.inf, -np.inf], np.nan).dropna()
+        panel = frame[["model", feature, "scaled_MASE"]].replace([np.inf, -np.inf], np.nan).dropna()
         x_values = panel[feature].to_numpy(dtype=float)
-        y_values = panel["MASE"].to_numpy(dtype=float)
+        y_values = panel["scaled_MASE"].to_numpy(dtype=float)
         x_scaled, x_min, x_max = _scale(x_values, plot_left, plot_right)
         y_scaled, y_min, y_max = _scale(y_values, plot_bottom, plot_top)
         score_row = correlations[
@@ -232,7 +264,7 @@ def write_feature_svg(
             lines.append(f'<text x="{plot_left - 8}" y="{y + 4:.1f}" font-size="11" text-anchor="end">{value:.2f}</text>')
         lines.append(f'<line class="axis" x1="{plot_left}" y1="{plot_top}" x2="{plot_left}" y2="{plot_bottom}"/>')
         lines.append(f'<line class="axis" x1="{plot_left}" y1="{plot_bottom}" x2="{plot_right}" y2="{plot_bottom}"/>')
-        lines.append(f'<text x="{panel_x + 17}" y="{(plot_top + plot_bottom) / 2}" font-size="12" transform="rotate(-90 {panel_x + 17} {(plot_top + plot_bottom) / 2})" text-anchor="middle">MASE</text>')
+        lines.append(f'<text x="{panel_x + 17}" y="{(plot_top + plot_bottom) / 2}" font-size="12" transform="rotate(-90 {panel_x + 17} {(plot_top + plot_bottom) / 2})" text-anchor="middle">Scaled MASE</text>')
         lines.append(f'<text x="{(plot_left + plot_right) / 2}" y="{plot_bottom + 39}" font-size="12" text-anchor="middle">{escape(feature)}</text>')
         lines.append(f'<text x="{plot_left}" y="{plot_bottom + 17}" font-size="11" text-anchor="middle">{x_min:.3g}</text>')
         lines.append(f'<text x="{plot_right}" y="{plot_bottom + 17}" font-size="11" text-anchor="middle">{x_max:.3g}</text>')
@@ -246,7 +278,7 @@ def write_feature_svg(
         for model, group in panel.groupby("model"):
             if len(group) < 2 or group[feature].nunique() < 2:
                 continue
-            slope, intercept = np.polyfit(group[feature], group["MASE"], 1)
+            slope, intercept = np.polyfit(group[feature], group["scaled_MASE"], 1)
             trend_x = np.asarray([group[feature].min(), group[feature].max()], dtype=float)
             trend_y = slope * trend_x + intercept
             trend_x_scaled = plot_left + (trend_x - x_min) * (plot_right - plot_left) / (x_max - x_min)
