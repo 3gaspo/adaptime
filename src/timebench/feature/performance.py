@@ -119,9 +119,15 @@ def load_dataset_mase(
     per_task = per_config.groupby(
         ["model", "base_model", "dataset_id", "horizon"], as_index=False
     )["scaled_MASE"].mean()
+    def geometric_mean(values: pd.Series) -> float:
+        array = values.to_numpy(dtype=np.float64)
+        if np.any(array == 0):
+            return 0.0
+        return float(np.exp(np.log(array).mean()))
+
     return per_task.groupby(
         ["model", "base_model", "dataset_id"], as_index=False
-    )["scaled_MASE"].agg(lambda values: float(np.exp(np.log(values).mean())))
+    )["scaled_MASE"].agg(geometric_mean)
 
 
 def join_features_and_mase(

@@ -77,7 +77,8 @@ only binary-valued output: it is `1` when the ADF test rejects a unit root at
 the hard-coded 0.05 threshold and `0` otherwise; the inherited implementation
 falls back to `1` if the test fails.
 
-Dataset-level MASE can be plotted against explicit features or the five with
+Dataset-level Seasonal-Naive-scaled MASE can be plotted against explicit
+features or the five with
 the largest mean absolute within-model Spearman correlation:
 
 ```bash
