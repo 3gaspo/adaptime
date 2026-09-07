@@ -179,9 +179,14 @@ def feature_correlations(
         for model, group in frame.groupby("model"):
             values = group[[feature, "scaled_MASE"]].replace([np.inf, -np.inf], np.nan).dropna()
             correlation = np.nan
-            if len(values) >= 3 and values[feature].nunique() > 1:
+            if (
+                len(values) >= 3
+                and values[feature].nunique() > 1
+                and values["scaled_MASE"].nunique() > 1
+            ):
                 correlation = float(values[feature].corr(values["scaled_MASE"], method="spearman"))
-                correlations.append(abs(correlation))
+                if np.isfinite(correlation):
+                    correlations.append(abs(correlation))
             rows.append(
                 {
                     "feature": feature,

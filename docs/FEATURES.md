@@ -89,3 +89,8 @@ python scripts/plot_feature_performance.py \
 ```
 
 The SVG is accompanied by the joined per-dataset data and correlation tables.
+Because Seasonal Naive is the scaling reference, its scaled MASE is identically
+one wherever defined. Its within-model correlation is therefore undefined and
+is retained as NaN in the table, but excluded from the mean-absolute
+correlation used to select features. Any other constant model outcome is
+handled the same way.
