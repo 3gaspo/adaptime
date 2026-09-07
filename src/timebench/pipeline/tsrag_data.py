@@ -243,6 +243,8 @@ class TSRAGPreparedDataset:
 def prepare_tsrag_dataset(
     ridge_prepared_path: str | Path,
     output_dir: str | Path,
+    *,
+    max_datastore_windows: int | None = None,
 ) -> Path:
     """Use ridge's raw date budget and test rows with native TS-RAG windows."""
 
@@ -256,21 +258,33 @@ def prepare_tsrag_dataset(
     config = dict(ridge.config)
     source_path = Path(ridge.manifest["source_path"]).expanduser().resolve()
     source = ridge.hf_dataset
-    datastore_parts: list[np.ndarray] = []
+    source_shapes = [
+        tuple(map(int, _target_array(source[item]).shape))
+        for item in range(len(source))
+    ]
+    variates = sum(channels for channels, _ in source_shapes)
+    if max_datastore_windows is None:
+        max_datastore_windows = config.get("max_datastore_windows")
+    capped_dates = (
+        None
+        if max_datastore_windows is None
+        else int(max_datastore_windows) // int(variates)
+    )
+    if capped_dates is not None and capped_dates <= 0:
+        raise ValueError(
+            f"max_datastore_windows={max_datastore_windows} cannot retain one "
+            "complete TS-RAG date across all variates"
+        )
+    datastore_origins: list[np.ndarray] = []
     accessible_intervals: list[dict[str, int]] = []
-    datastore_length = config.get("datastore_length")
-    for item in range(len(source)):
-        target = _target_array(source[item])
-        channels, length = map(int, target.shape)
+    for item, (channels, length) in enumerate(source_shapes):
         train_stop = (
             length
             - int(config["test_length"])
             - int(config["adaptation_validation_length"])
             - int(config["adaptation_train_length"])
         )
-        datastore_start = (
-            0 if datastore_length is None else train_stop - int(datastore_length)
-        )
+        datastore_start = 0
         first_origin = max(datastore_start, TSRAG_CONTEXT_LENGTH)
         last_origin = train_stop - TSRAG_NATIVE_HORIZON
         if datastore_start < 0 or first_origin > last_origin:
@@ -283,7 +297,7 @@ def prepare_tsrag_dataset(
             TSRAG_DATASTORE_STRIDE,
             dtype=np.int64,
         )
-        datastore_parts.append(_references(item, channels, origins))
+        datastore_origins.append(origins)
         accessible_intervals.append(
             {
                 "item": item,
@@ -297,6 +311,21 @@ def prepare_tsrag_dataset(
             }
         )
 
+    retained_dates = (
+        min(int(capped_dates), *(len(values) for values in datastore_origins))
+        if capped_dates is not None
+        else None
+    )
+    datastore_parts: list[np.ndarray] = []
+    for item, ((channels, _), origins) in enumerate(
+        zip(source_shapes, datastore_origins)
+    ):
+        if retained_dates is not None:
+            origins = origins[-int(retained_dates) :]
+        datastore_parts.append(_references(item, channels, origins))
+        accessible_intervals[item]["retained_origin_start"] = int(origins[0])
+        accessible_intervals[item]["retained_dates_per_variate"] = int(len(origins))
+
     datastore = np.concatenate(datastore_parts)
     scientific = {
         "dataset": config["dataset"],
@@ -308,6 +337,8 @@ def prepare_tsrag_dataset(
         "native_prediction_length": TSRAG_NATIVE_HORIZON,
         "datastore_stride": TSRAG_DATASTORE_STRIDE,
         "datastore_scope": "same_series",
+        "max_datastore_windows": max_datastore_windows,
+        "retained_dates_per_variate": retained_dates,
         "test_support": "ridge_official_time_test_references",
         "ridge_matched_accessible_date_intervals": accessible_intervals,
     }

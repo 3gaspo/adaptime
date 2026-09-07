@@ -27,6 +27,16 @@ once on adaptation training, $K$ and $\alpha$ are selected on adaptation
 validation, and the selected coefficients are frozen for test. There is no
 train-plus-validation refit.
 
+Let $H$ be the forecast horizon, $T_{\mathrm{test}}$ TIME's configured test
+length, and $n=\lfloor T_{\mathrm{test}}/H\rfloor$ its official complete
+test-window count per variate. Adaptation training contains $2n$ window
+origins and validation contains $n$, giving three times the test-window count
+before test. Their interval lengths are $H+(2n-1)s_f$ and
+$H+(n-1)s_f$, where the prime stride $s_f$ depends on frequency rather than
+on $H$: 127 for intraday/hourly, 27 for business-daily/daily, 11 for weekly,
+5 for monthly, and 3 for quarterly data. The remaining earlier observations
+form the datastore.
+
 The ridge history length is the same as in the inherited vanilla TIME run for
 its backbone: 8192 for Chronos-2, 4096 for TS-ICL, and 2048 for Chronos-Bolt.
 TS-RAG retains its separate native length of 512 when used as an external
@@ -41,6 +51,14 @@ the dataset period. The latest eligible neighbor date is
 Earlier candidates walk backward from $d_t$ by a datastore stride that is a
 multiple of $P$. This keeps the datastore fixed while aligning its phase to the
 query.
+
+By default every eligible earlier datastore date is accessible. An optional
+global window cap is divided evenly across variates, rounded down, and retains
+the most recent dates; every variate must retain at least $P$ datastore dates.
+If the complete adaptation-window plan, requested foundation context, or this
+minimum datastore cannot be supplied, no ridge is fitted: the task evaluates
+TIME's unchanged official test windows with vanilla forecasts and records the
+vanilla-only fallback reason.
 
 Let $q_t$ be the finite fraction of a query history. The default gate requires
 $q_t\geq0.8$ before retrieval. Datastore histories satisfy the same threshold,
@@ -95,5 +113,7 @@ Conclusions require completed and inspected cluster artifacts.
 Eligibility arrays, reason codes, effective training counts, and test RAG
 coverage are retained with the task artifacts. The resulting estimand is a
 transparent gated hybrid: Adaptime on eligible windows and vanilla otherwise.
+An insufficient-history task is the limiting case with zero eligible Adaptime
+windows and vanilla predictions for every learned-method branch.
 
 \end{document}

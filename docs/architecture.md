@@ -19,7 +19,8 @@ The Adaptime path is:
 ```text
 TIME saved-Arrow dataset + dataset YAML
   -> pipeline/runs.py: allocate or reuse one dataset/frequency/term run_n
-  -> evaluation/adaptation_data.py: fixed datastore and pre-test/test indices
+  -> evaluation/adaptation_data.py: frequency-strided 2:1 adaptation windows,
+     balanced optional datastore cap, and unchanged TIME test indices
   -> pipeline/adaptime_extraction.py: V, C, neighbors, Y, N, timed components
   -> pipeline/adaptime_training.py: train statistics and validation selection
   -> pipeline/adaptime_testing.py: frozen V/C/Adaptime TIME comparison
@@ -36,6 +37,15 @@ optimize MSSE. Validation scores ineligible rows as vanilla, and testing
 decides fallback without consulting the future target. Evaluation preserves
 missing timestamps, counts only finite seasonal pairs, and compares task MASE
 after division by matching Seasonal Naive MASE.
+
+The official test-window count determines the custom split sizes: twice that
+many adaptation-training origins and the same number of validation origins.
+Frequency-specific prime strides cover seasonal phases without coupling these
+origins to the forecast horizon. All older history is datastore history unless
+a global maximum keeps an equal number of latest dates per variate. Failure to
+retain the planned adaptation windows, full requested context, or one period
+of datastore dates bypasses extraction and ridge fitting and writes an
+explicit vanilla-only TIME test result instead.
 
 `timebench.adaptime` owns exact retrieval and the proposal's readable ridge
 math. `timebench.model_loading` owns foundation construction, capability
@@ -87,7 +97,9 @@ completed Adaptime run at its foundation-model context limit
 
 This preserves TS-RAG's own 512-step, same-series stride-one retrieval and
 native 64-step model contract rather than forcing the ridge to use TS-RAG's
-context or importing proposal code into the external method.
+context or importing proposal code into the external method. Its optional
+global datastore cap only crops every variate to the same latest date count;
+within that retained interval TS-RAG still exposes every stride-one origin.
 
 The current proposal path is univariate. Native multivariate evaluation remains
 an inherited Chronos-2 control and is not mixed into `full_ridge_shared`.

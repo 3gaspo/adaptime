@@ -34,6 +34,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--model-batch-size", type=int, default=256)
     parser.add_argument("--arrow-cache-items", type=int, default=2)
+    parser.add_argument("--max-datastore-windows", type=int)
     parser.add_argument(
         "--config-policy",
         choices=("error", "distinct", "latest", "average"),
@@ -54,6 +55,7 @@ def main() -> None:
             device=args.device,
             model_batch_size=args.model_batch_size,
             arrow_cache_items=args.arrow_cache_items,
+            max_datastore_windows=args.max_datastore_windows,
             chronos_bolt_path=args.chronos_bolt_path,
             retriever_path=args.retriever_path,
             checkpoint_path=args.checkpoint_path,

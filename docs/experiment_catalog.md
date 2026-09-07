@@ -24,7 +24,14 @@ and neighbor residual information.
   `X=[V,C,Y_1..Y_K,N_1..N_K]` and one coefficient vector shared by all
   horizon positions.
 - Data: fixed datastore, adaptation training, adaptation validation, and
-  unchanged official TIME test intervals.
+  unchanged official TIME test intervals. If TIME supplies `n` complete test
+  windows per variate, frequency-strided preparation supplies `2n` training
+  and `n` validation windows; all preceding dates belong to the datastore.
+- Sampling: adaptation origins use prime strides 127 (intraday/hourly), 27
+  (business-daily/daily), 11 (weekly), 5 (monthly), or 3 (quarterly), never a
+  stride derived from `H`. Datastore retrieval uses the dataset period or an
+  explicit multiple. An optional global cap keeps equal numbers of the latest
+  datastore dates per variate and requires at least one period.
 - Context: the ridge uses the same vanilla TIME context limit as its foundation
   backbone (8192 for Chronos-2, 4096 for TS-ICL, 2048 for Chronos-Bolt).
 - Retrieval: exact instance-normalized Euclidean search across all series;
@@ -35,6 +42,9 @@ and neighbor residual information.
 - Missing-data gate: skip incomplete adaptation-training rows; use vanilla for
   ineligible validation/test queries or insufficient valid neighbors; mask
   missing test labels only from metrics. Report hybrid RAG coverage.
+- Insufficient-history gate: if the complete 2:1 adaptation window plan,
+  foundation context, or minimum datastore cannot fit, evaluate the official
+  test windows as a recorded vanilla-only task instead of dropping the task.
 - Objective and selection: fit MSSE by dividing each ridge row by the RMS
   seasonal-lag error over its complete pre-origin history, then choose
   `K in {1,5,10,15}` and `alpha in {1e-3,1e-2,1e-1}` on adaptation
@@ -73,6 +83,8 @@ raw-date budget and exact official TIME test references.
   `UConn-DSIS/TS-RAG` commit `73ac807`.
 - Preserved rules: same-series stride-one datastore, top-K-plus-one retrieval,
   TS-RAG's own 512-step input, and native 64-step forecasts.
+- Optional cap: keep an equal number of the latest accessible datastore dates
+  per variate while retaining stride one inside the cropped interval.
 - Long horizons: refresh retrieval after each 64-step rollout block; shorter
   horizons crop one native forecast.
 - Comparison: matched vanilla Chronos-Bolt, TS-RAG, and the completed

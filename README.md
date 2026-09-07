@@ -37,12 +37,26 @@ Each dataset/term task uses four strictly chronological regions:
 3. adaptation validation, used only to select `K` and `alpha`;
 4. TIME's unchanged, horizon-spaced official test interval.
 
-The training and validation regions each default to the dataset's TIME
-`val_length`. The datastore uses all earlier eligible history by default. The
-ridge context equals the corresponding inherited vanilla TIME limit: 8192 for
-Chronos-2, 4096 for TS-ICL, and 2048 for Chronos-Bolt. A task fails explicitly
-when its pre-adaptation history cannot supply that context and a complete
-datastore window. TS-RAG separately retains its native 512 steps.
+Let `n_test = floor(test_length / H)` be TIME's official test-window count per
+variate. Adaptime creates `2 * n_test` adaptation-training windows and
+`n_test` validation windows, so the two fitted/selection regions contain three
+times as many windows as the test region. Their window origins use a moderate
+prime stride selected from the dataset frequency rather than `H`: 127 for
+intraday and hourly data, 27 for business-daily and daily data, 11 for weekly,
+5 for monthly, and 3 for quarterly data. The corresponding interval span is
+`H + (n - 1) * stride`; all older dates form the datastore.
+
+The datastore uses all earlier eligible history by default and retrieves along
+a stride equal to the dataset period, optionally multiplied by
+`datastore_stride_multiple`. `max_datastore_windows` can instead impose one
+global window budget: it keeps the same number of most recent dates for every
+variate, rounded down when the budget is not evenly divisible. At least one
+complete period of datastore dates per variate is required. The ridge context
+equals the inherited vanilla TIME limit: 8192 for Chronos-2, 4096 for TS-ICL,
+and 2048 for Chronos-Bolt. If the requested adaptation windows, model context,
+or minimum datastore cannot be supplied, the task still evaluates the
+unchanged TIME test windows with vanilla forecasts and records an explicit
+vanilla-only fallback. TS-RAG separately retains its native 512 steps.
 
 Retrieval uses instance-normalized contexts and exact Euclidean top-K search by
 default. Distances are computed in bounded query/datastore blocks. For a query,
@@ -91,9 +105,11 @@ bash scripts/submit_adaptime_comparison.sh selena
 It defaults to Chronos-2, univariate targets, every configured dataset and
 term, and Chronos-2's inherited 8192-step context. Submission-time overrides include
 `ADAPTIME_DATASETS` and `ADAPTIME_TERMS` as comma-separated selections,
-`ADAPTIME_MODEL`, `ADAPTIME_MODEL_PATH`, split
-lengths, `ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION`, retrieval settings, block
-sizes, and the K/alpha grids. The proposal
+`ADAPTIME_MODEL`, `ADAPTIME_MODEL_PATH`,
+`ADAPTIME_ADAPTATION_STRIDE`, `ADAPTIME_MAX_DATASTORE_WINDOWS`,
+`ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION`, retrieval settings, block sizes, and
+the K/alpha grids. Train/validation lengths are derived from the official test
+window count and are not independently configurable. The proposal
 requires a model adapter with retrieval-covariate support; unsupported models
 fail explicitly. Non-finite covariate observations are passed as NaNs so a
 capable backbone can apply its ordinary missing-value mask.
@@ -137,6 +153,9 @@ After all selected tasks finish,
 `outputs/adaptime/summary/<model>/<target_mode>/<launch>/` records its input
 manifests, resolves repeat/configuration policy within each task, and reports
 the geometric mean of task scaled-MASE ratios.
+Tasks that cannot instantiate the four-way adaptation protocol remain in this
+aggregate as vanilla-only fallbacks, with null `K`, `alpha`, and validation
+MSSE plus their recorded reason.
 
 ### Matched TS-RAG comparison
 
@@ -159,6 +178,10 @@ bash scripts/submit_tsrag_comparison.sh selena
 
 `TSRAG_RIDGE_OUTPUT_ROOT` may select another Adaptime output root, and
 `TSRAG_RIDGE_LAUNCH_ID` may restrict selection to one completed ridge launch.
+TS-RAG keeps its defining stride-one datastore over every accessible
+pre-adaptation date. `TSRAG_MAX_DATASTORE_WINDOWS`, falling back to
+`ADAPTIME_MAX_DATASTORE_WINDOWS`, may crop it to an equal number of the most
+recent dates per variate without changing that stride-one mechanism.
 
 ## Inherited foundation-model benchmark
 

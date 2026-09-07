@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
+import re
 from collections import OrderedDict
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -17,6 +19,75 @@ import pandas as pd
 PREPARATION_SCHEMA = 1
 QUERY_SPLITS = ("adaptation_train", "adaptation_validation", "test")
 ALL_SPLITS = ("datastore", *QUERY_SPLITS)
+
+ADAPTATION_STRIDES = {
+    "intraday": 127,
+    "hourly": 127,
+    "business_daily": 27,
+    "daily": 27,
+    "weekly": 11,
+    "monthly": 5,
+    "quarterly": 3,
+}
+
+
+class InsufficientAdaptationHistory(ValueError):
+    """The requested four-way protocol leaves too little causal history."""
+
+
+def adaptation_stride_for_frequency(freq: str) -> int:
+    """Return a moderate cadence-specific stride that cycles seasonal phases."""
+
+    raw = str(freq).strip()
+    legacy_name = re.sub(r"^\d+", "", raw.upper())
+    if legacy_name in {"S", "T", "MIN"}:
+        return ADAPTATION_STRIDES["intraday"]
+    if legacy_name in {"H", "BH", "CBH"}:
+        return ADAPTATION_STRIDES["hourly"]
+    if legacy_name in {"B", "C"}:
+        return ADAPTATION_STRIDES["business_daily"]
+    if legacy_name == "D":
+        return ADAPTATION_STRIDES["daily"]
+    if legacy_name.startswith("W"):
+        return ADAPTATION_STRIDES["weekly"]
+    if legacy_name.startswith(("M", "BM", "CBM", "SM")):
+        return ADAPTATION_STRIDES["monthly"]
+    if legacy_name.startswith(("Q", "BQ")):
+        return ADAPTATION_STRIDES["quarterly"]
+
+    name = str(pd.tseries.frequencies.to_offset(raw).name).upper()
+    if name in {"S", "SEC", "T", "MIN"}:
+        return ADAPTATION_STRIDES["intraday"]
+    if name in {"H", "BH", "CBH"}:
+        return ADAPTATION_STRIDES["hourly"]
+    if name in {"B", "C"}:
+        return ADAPTATION_STRIDES["business_daily"]
+    if name == "D":
+        return ADAPTATION_STRIDES["daily"]
+    if name.startswith("W"):
+        return ADAPTATION_STRIDES["weekly"]
+    if name.startswith(("M", "BM", "CBM", "SM")):
+        return ADAPTATION_STRIDES["monthly"]
+    if name.startswith(("Q", "BQ")):
+        return ADAPTATION_STRIDES["quarterly"]
+    raise ValueError(f"no Adaptime adaptation stride is defined for frequency {freq!r}")
+
+
+def adaptation_split_lengths(
+    test_length: int,
+    horizon: int,
+    stride: int,
+) -> tuple[int, int, int]:
+    """Return train length, validation length, and official windows per variate."""
+
+    test_windows = int(test_length) // int(horizon)
+    if test_windows <= 0:
+        raise ValueError("test_length must contain at least one complete horizon")
+
+    def span(windows: int) -> int:
+        return int(horizon) + (int(windows) - 1) * int(stride)
+
+    return span(2 * test_windows), span(test_windows), test_windows
 
 
 def _canonical_hash(value: Mapping[str, object]) -> str:
@@ -51,15 +122,15 @@ class PreparationConfig:
     adaptation_train_length: int
     adaptation_validation_length: int
     seasonality: int
+    adaptation_stride: int
     target_mode: str = "univariate"
-    adaptation_stride: int | None = None
     retrieval_period: int = 1
     datastore_stride: int = 1
-    datastore_length: int | None = None
+    max_datastore_windows: int | None = None
 
     @property
     def query_stride(self) -> int:
-        return int(self.adaptation_stride or self.prediction_length)
+        return int(self.adaptation_stride)
 
     def validate(self) -> None:
         positive = {
@@ -76,6 +147,8 @@ class PreparationConfig:
         invalid = [name for name, value in positive.items() if int(value) <= 0]
         if invalid:
             raise ValueError(f"positive preparation settings required: {', '.join(invalid)}")
+        if self.query_stride <= 1:
+            raise ValueError("adaptation_stride must be greater than one")
         if self.target_mode not in {"univariate", "multivariate"}:
             raise ValueError("target_mode must be univariate or multivariate")
         if self.test_length < self.prediction_length:
@@ -84,10 +157,17 @@ class PreparationConfig:
             raise ValueError("adaptation_train_length must contain a complete horizon")
         if self.adaptation_validation_length < self.prediction_length:
             raise ValueError("adaptation_validation_length must contain a complete horizon")
-        if self.datastore_length is not None and int(self.datastore_length) <= 0:
-            raise ValueError("datastore_length must be positive when supplied")
+        if (
+            self.max_datastore_windows is not None
+            and int(self.max_datastore_windows) <= 0
+        ):
+            raise ValueError("max_datastore_windows must be positive when supplied")
         if self.datastore_stride % self.retrieval_period:
             raise ValueError("datastore_stride must be a multiple of retrieval_period")
+        if math.gcd(self.query_stride, self.retrieval_period) != 1:
+            raise ValueError(
+                "adaptation_stride must be coprime with retrieval_period to cycle phases"
+            )
 
 
 @dataclass(frozen=True)
@@ -112,19 +192,14 @@ def _intervals(length: int, config: PreparationConfig) -> dict[str, tuple[int, i
     test_start = length - config.test_length
     validation_start = test_start - config.adaptation_validation_length
     train_start = validation_start - config.adaptation_train_length
-    datastore_start = (
-        0
-        if config.datastore_length is None
-        else train_start - int(config.datastore_length)
-    )
-    if datastore_start < 0 or train_start <= 0:
+    datastore_start = 0
+    if train_start <= 0:
         required = (
             config.test_length
             + config.adaptation_validation_length
             + config.adaptation_train_length
-            + int(config.datastore_length or 0)
         )
-        raise ValueError(
+        raise InsufficientAdaptationHistory(
             f"series length {length} cannot provide the requested chronological "
             f"intervals (at least {required} values required)"
         )
@@ -160,7 +235,7 @@ def _official_test_origins(
     start, stop = interval
     windows = (int(stop) - int(start)) // int(horizon)
     if int(start) < int(context_length):
-        raise ValueError(
+        raise InsufficientAdaptationHistory(
             "context_length reaches before the series start at the first official TIME test origin"
         )
     return int(start) + np.arange(windows, dtype=np.int64) * int(horizon)
@@ -297,9 +372,21 @@ def prepare_adaptation_dataset(
                 horizon=config.prediction_length,
             ),
         }
+        expected_query_windows = {
+            "adaptation_train": 1
+            + (config.adaptation_train_length - config.prediction_length)
+            // config.query_stride,
+            "adaptation_validation": 1
+            + (config.adaptation_validation_length - config.prediction_length)
+            // config.query_stride,
+            "test": config.test_length // config.prediction_length,
+        }
         for split, origins in split_origins.items():
-            if len(origins) == 0:
-                raise ValueError(f"item {item} has no complete {split} windows")
+            if len(origins) != int(expected_query_windows[split]):
+                raise InsufficientAdaptationHistory(
+                    f"item {item} can provide {len(origins)} of the "
+                    f"{expected_query_windows[split]} planned {split} windows"
+                )
             query_period_residues.update(
                 int((start_tick + value) % config.retrieval_period) for value in origins
             )
@@ -314,7 +401,21 @@ def prepare_adaptation_dataset(
             )
 
     period_residues = sorted(query_period_residues)
+    variates = sum(
+        channels if config.target_mode == "univariate" else 1
+        for channels, _ in target_shapes
+    )
+    capped_dates = None
+    if config.max_datastore_windows is not None:
+        capped_dates = int(config.max_datastore_windows) // int(variates)
+        if capped_dates < int(config.retrieval_period):
+            raise InsufficientAdaptationHistory(
+                f"max_datastore_windows={config.max_datastore_windows} retains "
+                f"{capped_dates} dates per variate, fewer than one complete "
+                f"retrieval period ({config.retrieval_period})"
+            )
     datastore_end_ticks: list[int] = []
+    datastore_origins: list[np.ndarray] = []
     for item, ((channels, _), intervals, start_tick) in enumerate(
         zip(target_shapes, interval_rows, start_ticks)
     ):
@@ -339,8 +440,25 @@ def prepare_adaptation_dataset(
             stride=config.datastore_stride,
             phases=phases,
         )
-        if len(origins) == 0:
-            raise ValueError(f"item {item} has no eligible datastore windows")
+        if len(origins) < int(config.retrieval_period):
+            raise InsufficientAdaptationHistory(
+                f"item {item} has {len(origins)} eligible datastore dates, fewer "
+                f"than one complete retrieval period ({config.retrieval_period})"
+            )
+        datastore_origins.append(origins)
+
+    retained_dates = (
+        min(int(capped_dates), *(len(values) for values in datastore_origins))
+        if capped_dates is not None
+        else None
+    )
+    datastore_date_counts: list[int] = []
+    for item, ((channels, _), start_tick, origins) in enumerate(
+        zip(target_shapes, start_ticks, datastore_origins)
+    ):
+        if retained_dates is not None:
+            origins = origins[-int(retained_dates) :]
+        datastore_date_counts.append(int(len(origins)))
         _append_references(
             references["datastore"],
             calendar_ticks["datastore"],
@@ -390,6 +508,11 @@ def prepare_adaptation_dataset(
         "channel_convention": "-1 denotes the complete multivariate target",
         "interval_convention": "target start inclusive, target stop exclusive",
         "query_period_residues": period_residues,
+        "datastore_dates_per_variate": {
+            "minimum": int(min(datastore_date_counts)),
+            "maximum": int(max(datastore_date_counts)),
+            "balanced_cap": retained_dates,
+        },
         "arrays": arrays,
         "counts": counts,
     }

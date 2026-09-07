@@ -14,7 +14,13 @@ import numpy as np
 from gluonts.time_feature import get_seasonality, norm_freq_str
 from pandas.tseries.frequencies import to_offset
 
-from timebench.evaluation.adaptation_data import PreparationConfig, prepare_adaptation_dataset
+from timebench.evaluation.adaptation_data import (
+    InsufficientAdaptationHistory,
+    PreparationConfig,
+    adaptation_split_lengths,
+    adaptation_stride_for_frequency,
+    prepare_adaptation_dataset,
+)
 from timebench.evaluation.data import (
     M4_PRED_LENGTH_MAP,
     PRED_LENGTH_MAP,
@@ -35,6 +41,7 @@ from timebench.pipeline.adaptime_testing import (
     METRICS,
     SCORE_METHODS,
     evaluate_frozen_adaptation,
+    evaluate_vanilla_fallback,
 )
 from timebench.pipeline.adaptime_training import RidgeTrainingConfig, fit_full_ridge
 from timebench.pipeline.runs import allocate_run, select_completed_runs
@@ -44,12 +51,10 @@ from timebench.pipeline.runs import allocate_run, select_completed_runs
 class AdaptimeWorkflowConfig:
     model: str = "chronos2"
     target_mode: str = "univariate"
-    adaptation_train_length: int | None = None
-    adaptation_validation_length: int | None = None
     adaptation_stride: int | None = None
     retrieval_period: int | None = None
     datastore_stride_multiple: int = 1
-    datastore_length: int | None = None
+    max_datastore_windows: int | None = None
     representation: str = "instance"
     distance_metric: str = "euclidean"
     retrieval_scope: str = "all"
@@ -73,6 +78,13 @@ class AdaptimeWorkflowConfig:
             raise ValueError("the current full_ridge_shared workflow is univariate")
         if int(self.datastore_stride_multiple) <= 0:
             raise ValueError("datastore_stride_multiple must be positive")
+        if self.adaptation_stride is not None and int(self.adaptation_stride) <= 1:
+            raise ValueError("adaptation_stride must be greater than one when supplied")
+        if (
+            self.max_datastore_windows is not None
+            and int(self.max_datastore_windows) <= 0
+        ):
+            raise ValueError("max_datastore_windows must be positive when supplied")
         if max(self.k_values) > int(self.max_k):
             raise ValueError("max_k must cover every selected K")
         if not 0.0 < float(self.minimum_overlap_fraction) <= 1.0:
@@ -197,8 +209,12 @@ def aggregate_time_comparison(
                     encoding="utf-8"
                 )
             )
-            selected = dict(result["selected"])
+            selected = dict(result.get("selected", {}))
             selection = dict(run_manifest.get("selection", {}))
+            selected_k = selected.get("k")
+            selected_alpha = selected.get("alpha")
+            validation_msse = selected.get("validation_msse")
+            fallback_reason = result.get("fallback_reason")
             row: dict[str, object] = {
                 "variant": selection.get("model_label", run_manifest["identity"]["model"]),
                 "dataset": task.dataset,
@@ -207,9 +223,15 @@ def aggregate_time_comparison(
                 "scientific_config": json.dumps(
                     selection.get("scientific_config", {}), sort_keys=True
                 ),
-                "selected_k": int(selected["k"]),
-                "selected_alpha": float(selected["alpha"]),
-                "validation_msse": float(selected["validation_msse"]),
+                "selected_k": None if selected_k is None else int(selected_k),
+                "selected_alpha": (
+                    None if selected_alpha is None else float(selected_alpha)
+                ),
+                "validation_msse": (
+                    None if validation_msse is None else float(validation_msse)
+                ),
+                "fallback_reason": fallback_reason or "",
+                "vanilla_only_fallback": int(fallback_reason is not None),
             }
             for method in METHODS:
                 method_summary = dict(summary["methods"][method])
@@ -245,7 +267,17 @@ def aggregate_time_comparison(
         key
         for key in rows[0]
         if key
-        not in {"variant", "dataset", "term", "run", "scientific_config"}
+        not in {
+            "variant",
+            "dataset",
+            "term",
+            "run",
+            "scientific_config",
+            "selected_k",
+            "selected_alpha",
+            "validation_msse",
+            "fallback_reason",
+        }
     ]
 
     def averaged(
@@ -351,6 +383,11 @@ def aggregate_time_comparison(
         variants[variant] = {
             "datasets": len(dataset_rows),
             "tasks": len(variant_rows),
+            "vanilla_only_fallback_tasks": int(
+                np.count_nonzero(
+                    [float(row["vanilla_only_fallback"]) for row in variant_rows]
+                )
+            ),
             "methods": methods,
             "scaled_mase_win_rate_vs_vanilla": wins,
             "rag_coverage": {
@@ -396,17 +433,6 @@ def aggregate_time_comparison(
     return manifest_path
 
 
-def _positive_interval_length(
-    explicit: int | None,
-    settings: dict[str, object],
-    name: str,
-) -> int:
-    value = explicit if explicit is not None else settings.get("val_length")
-    if value is None or int(value) <= 0:
-        raise ValueError(f"{name} needs an explicit positive length")
-    return int(value)
-
-
 def _run_dataset_tasks(
     dataset_name: str,
     tasks: list[AdaptimeTask],
@@ -430,26 +456,21 @@ def _run_dataset_tasks(
         horizon = _prediction_length(
             dataset_name, task.term, settings.get("prediction_length"), freq
         )
-        train_length = _positive_interval_length(
-            workflow.adaptation_train_length,
-            settings,
-            f"{dataset_name}/{task.term} adaptation train",
+        adaptation_stride = int(
+            workflow.adaptation_stride or adaptation_stride_for_frequency(freq)
         )
-        validation_length = _positive_interval_length(
-            workflow.adaptation_validation_length,
-            settings,
-            f"{dataset_name}/{task.term} adaptation validation",
+        train_length, validation_length, test_windows_per_variate = (
+            adaptation_split_lengths(
+                int(settings["test_length"]),
+                horizon,
+                adaptation_stride,
+            )
         )
         datastore_stop = (
             min_length - int(settings["test_length"]) - validation_length - train_length
         )
         datastore_stride = period * int(workflow.datastore_stride_multiple)
         context_length = foundation_context_length(workflow.model)
-        if datastore_stop - context_length < horizon:
-            raise ValueError(
-                f"{dataset_name}/{task.term} cannot supply the foundation-model "
-                f"context L={context_length} before adaptation"
-            )
         preparation = PreparationConfig(
             dataset=dataset_name,
             term=task.term,
@@ -460,10 +481,10 @@ def _run_dataset_tasks(
             adaptation_validation_length=validation_length,
             seasonality=metric_seasonality,
             target_mode=workflow.target_mode,
-            adaptation_stride=workflow.adaptation_stride,
+            adaptation_stride=adaptation_stride,
             retrieval_period=period,
             datastore_stride=datastore_stride,
-            datastore_length=workflow.datastore_length,
+            max_datastore_windows=workflow.max_datastore_windows,
         )
         run = allocate_run(
             task.identity_root,
@@ -494,10 +515,13 @@ def _run_dataset_tasks(
                 "test_length": int(settings["test_length"]),
                 "adaptation_train_length": train_length,
                 "adaptation_validation_length": validation_length,
+                "test_windows_per_variate": test_windows_per_variate,
+                "adaptation_train_windows_per_variate": 2 * test_windows_per_variate,
+                "adaptation_validation_windows_per_variate": test_windows_per_variate,
                 "adaptation_stride": preparation.query_stride,
                 "retrieval_period": period,
                 "datastore_stride": datastore_stride,
-                "datastore_length": workflow.datastore_length,
+                "max_datastore_windows": workflow.max_datastore_windows,
             },
             runtime_config={
                 "model_batch_size": workflow.model_batch_size,
@@ -516,6 +540,7 @@ def _run_dataset_tasks(
                 "metrics": list(METRICS),
                 "performance_metric": "scaled_mase",
                 "formulation": "full_ridge_shared",
+                "insufficient_history_policy": "vanilla",
             },
             provenance={
                 "dataset_source": str(source_path),
@@ -524,6 +549,9 @@ def _run_dataset_tasks(
                     if dataset_config_path is not None
                     else "timebench.config.datasets"
                 ),
+                "minimum_series_length": min_length,
+                "available_datastore_values": datastore_stop,
+                "minimum_datastore_dates_per_variate": period,
             },
         )
         if not run.should_run:
@@ -534,12 +562,6 @@ def _run_dataset_tasks(
         training_dir = run.run_dir / "training"
         comparison_dir = run.run_dir / "comparison"
         with run:
-            prepared_manifest = prepare_adaptation_dataset(
-                hf_dataset,
-                preparation,
-                prepared_dir,
-                source_path=source_path,
-            )
             forecaster = load_adaptime_forecaster(
                 workflow.model,
                 horizon=horizon,
@@ -548,6 +570,44 @@ def _run_dataset_tasks(
                 weights_id=workflow.weights_id,
                 device=workflow.device,
             )
+            try:
+                prepared_manifest = prepare_adaptation_dataset(
+                    hf_dataset,
+                    preparation,
+                    prepared_dir,
+                    source_path=source_path,
+                )
+            except InsufficientAdaptationHistory as error:
+                fallback_reason = f"insufficient_adaptation_history: {error}"
+                print(
+                    f"{dataset_name}/{task.term} uses vanilla fallback ({fallback_reason})",
+                    flush=True,
+                )
+                result_manifest = evaluate_vanilla_fallback(
+                    hf_dataset,
+                    forecaster,
+                    dataset=dataset_name,
+                    term=task.term,
+                    frequency=freq,
+                    target_mode=workflow.target_mode,
+                    context_limit=context_length,
+                    prediction_length=horizon,
+                    test_length=int(settings["test_length"]),
+                    seasonality=metric_seasonality,
+                    model_batch_size=workflow.model_batch_size,
+                    fallback_reason=fallback_reason,
+                    output_dir=comparison_dir,
+                )
+                run.complete(
+                    [
+                        "comparison/result_manifest.json",
+                        "comparison/comparison_summary.json",
+                        "comparison/predictions/vanilla.npy",
+                        "comparison/predictions/adaptime.npy",
+                    ]
+                )
+                print(result_manifest, flush=True)
+                continue
             extraction_manifest = extract_adaptation_features(
                 prepared_manifest,
                 forecaster,

@@ -54,11 +54,9 @@ run_adaptime() {
     [ -z "${ADAPTIME_TERMS:-}" ] || command+=(--terms "$ADAPTIME_TERMS")
     [ -z "${ADAPTIME_MODEL_PATH:-}" ] || command+=(--model-path "$ADAPTIME_MODEL_PATH")
     [ -z "${ADAPTIME_WEIGHTS_ID:-}" ] || command+=(--weights-id "$ADAPTIME_WEIGHTS_ID")
-    [ -z "${ADAPTIME_TRAIN_LENGTH:-}" ] || command+=(--adaptation-train-length "$ADAPTIME_TRAIN_LENGTH")
-    [ -z "${ADAPTIME_VALIDATION_LENGTH:-}" ] || command+=(--adaptation-validation-length "$ADAPTIME_VALIDATION_LENGTH")
     [ -z "${ADAPTIME_ADAPTATION_STRIDE:-}" ] || command+=(--adaptation-stride "$ADAPTIME_ADAPTATION_STRIDE")
     [ -z "${ADAPTIME_RETRIEVAL_PERIOD:-}" ] || command+=(--retrieval-period "$ADAPTIME_RETRIEVAL_PERIOD")
-    [ -z "${ADAPTIME_DATASTORE_LENGTH:-}" ] || command+=(--datastore-length "$ADAPTIME_DATASTORE_LENGTH")
+    [ -z "${ADAPTIME_MAX_DATASTORE_WINDOWS:-}" ] || command+=(--max-datastore-windows "$ADAPTIME_MAX_DATASTORE_WINDOWS")
     if [ -n "${SLURM_JOB_ID:-}" ]; then
         srun --ntasks=1 "${command[@]}"
     else

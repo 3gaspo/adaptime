@@ -10,7 +10,12 @@ import numpy as np
 from gluonts.time_feature import get_seasonality, norm_freq_str
 from pandas.tseries.frequencies import to_offset
 
-from timebench.evaluation.adaptation_data import PreparationConfig, prepare_adaptation_dataset
+from timebench.evaluation.adaptation_data import (
+    PreparationConfig,
+    adaptation_split_lengths,
+    adaptation_stride_for_frequency,
+    prepare_adaptation_dataset,
+)
 from timebench.evaluation.data import (
     M4_PRED_LENGTH_MAP,
     PRED_LENGTH_MAP,
@@ -44,24 +49,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", type=Path)
     parser.add_argument("--context-length", type=int, required=True)
     parser.add_argument(
-        "--adaptation-train-length",
-        type=int,
-        help="Defaults to the dataset's TIME val_length",
-    )
-    parser.add_argument(
-        "--adaptation-validation-length",
-        type=int,
-        help="Defaults to the dataset's TIME val_length",
-    )
-    parser.add_argument(
         "--adaptation-stride",
         type=int,
-        help="Defaults to one prediction horizon; never changes official test origins",
+        help="Defaults by dataset frequency; never changes official test origins",
     )
     parser.add_argument(
-        "--datastore-length",
+        "--max-datastore-windows",
         type=int,
-        help="Use this many immediately preceding values; defaults to all earlier history",
+        help="Global balanced cap; keeps the most recent complete dates per variate",
     )
     parser.add_argument(
         "--retrieval-period",
@@ -122,24 +117,14 @@ def main() -> None:
                 settings.get("prediction_length"),
                 freq,
             )
-            validation_length = (
-                args.adaptation_validation_length
-                if args.adaptation_validation_length is not None
-                else settings.get("val_length")
+            adaptation_stride = int(
+                args.adaptation_stride or adaptation_stride_for_frequency(freq)
             )
-            if validation_length is None or int(validation_length) <= 0:
-                raise ValueError(
-                    f"{dataset_name}/{term} needs an explicit positive adaptation validation length"
-                )
-            train_length = (
-                args.adaptation_train_length
-                if args.adaptation_train_length is not None
-                else settings.get("val_length")
+            train_length, validation_length, _ = adaptation_split_lengths(
+                int(settings["test_length"]),
+                prediction_length,
+                adaptation_stride,
             )
-            if train_length is None or int(train_length) <= 0:
-                raise ValueError(
-                    f"{dataset_name}/{term} needs an explicit positive adaptation train length"
-                )
             for target_mode in args.target_mode:
                 if target_mode == "multivariate" and native_channels < 2:
                     print(f"Skipping {dataset_name}/{term}/multivariate: native target is univariate")
@@ -152,11 +137,12 @@ def main() -> None:
                     test_length=int(settings["test_length"]),
                     adaptation_train_length=int(train_length),
                     adaptation_validation_length=int(validation_length),
+                    seasonality=int(get_seasonality(freq)),
                     target_mode=target_mode,
-                    adaptation_stride=args.adaptation_stride,
+                    adaptation_stride=adaptation_stride,
                     retrieval_period=period,
                     datastore_stride=period * args.datastore_stride_multiple,
-                    datastore_length=args.datastore_length,
+                    max_datastore_windows=args.max_datastore_windows,
                 )
                 output = args.output_root / target_mode / dataset_name / term
                 manifest = prepare_adaptation_dataset(

@@ -31,12 +31,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--weights-id")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--target-mode", choices=("univariate",), default="univariate")
-    parser.add_argument("--adaptation-train-length", type=int)
-    parser.add_argument("--adaptation-validation-length", type=int)
     parser.add_argument("--adaptation-stride", type=int)
     parser.add_argument("--retrieval-period", type=int)
     parser.add_argument("--datastore-stride-multiple", type=int, default=1)
-    parser.add_argument("--datastore-length", type=int)
+    parser.add_argument("--max-datastore-windows", type=int)
     parser.add_argument("--representation", choices=("raw", "instance", "model"), default="instance")
     parser.add_argument("--distance-metric", choices=("euclidean", "cosine"), default="euclidean")
     parser.add_argument("--retrieval-scope", choices=("all", "same_series", "other_series"), default="all")
@@ -71,12 +69,10 @@ def main() -> None:
         AdaptimeWorkflowConfig(
             model=args.model,
             target_mode=args.target_mode,
-            adaptation_train_length=args.adaptation_train_length,
-            adaptation_validation_length=args.adaptation_validation_length,
             adaptation_stride=args.adaptation_stride,
             retrieval_period=args.retrieval_period,
             datastore_stride_multiple=args.datastore_stride_multiple,
-            datastore_length=args.datastore_length,
+            max_datastore_windows=args.max_datastore_windows,
             representation=args.representation,
             distance_metric=args.distance_metric,
             retrieval_scope=args.retrieval_scope,

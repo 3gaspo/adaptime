@@ -48,6 +48,7 @@ run_tsrag_and_table() {
     )
     [ -z "${TSRAG_TERMS:-${ADAPTIME_TERMS:-}}" ] || command+=(--terms "${TSRAG_TERMS:-${ADAPTIME_TERMS:-}}")
     [ -z "${TSRAG_RIDGE_LAUNCH_ID:-}" ] || command+=(--ridge-launch-id "$TSRAG_RIDGE_LAUNCH_ID")
+    [ -z "${TSRAG_MAX_DATASTORE_WINDOWS:-${ADAPTIME_MAX_DATASTORE_WINDOWS:-}}" ] || command+=(--max-datastore-windows "${TSRAG_MAX_DATASTORE_WINDOWS:-${ADAPTIME_MAX_DATASTORE_WINDOWS}}")
     run_command "${command[@]}"
 }
 

@@ -40,6 +40,7 @@ class TSRAGWorkflowConfig:
     device: str = "cuda"
     model_batch_size: int = 256
     arrow_cache_items: int = 2
+    max_datastore_windows: int | None = None
     chronos_bolt_path: Path | None = None
     retriever_path: Path | None = None
     checkpoint_path: Path | None = None
@@ -51,6 +52,11 @@ class TSRAGWorkflowConfig:
             model_batch_size=self.model_batch_size,
             arrow_cache_items=self.arrow_cache_items,
         ).validate()
+        if (
+            self.max_datastore_windows is not None
+            and int(self.max_datastore_windows) <= 0
+        ):
+            raise ValueError("max_datastore_windows must be positive when supplied")
 
 
 @dataclass(frozen=True)
@@ -456,6 +462,11 @@ def run_tsrag_comparison(
         )
         ridge_prepared_path = ridge_dir / "prepared" / "manifest.json"
         ridge_prepared = PreparedDataset(ridge_prepared_path)
+        max_datastore_windows = (
+            workflow.max_datastore_windows
+            if workflow.max_datastore_windows is not None
+            else ridge_prepared.config.get("max_datastore_windows")
+        )
         allocation = allocate_run(
             task.identity_root,
             experiment="tsrag_comparison",
@@ -482,9 +493,11 @@ def run_tsrag_comparison(
                     "full_ridge_shared": _scientific_config(ridge_manifest),
                 },
                 "test_support": "exact_ridge_official_time_test_references",
-                "accessible_dates": "same_per_item_raw_date_union_as_full_ridge_shared",
+                "accessible_dates": "all_stride_one_dates_before_adaptation_training",
                 "datastore_scope": "same_series",
                 "datastore_stride": TSRAG_DATASTORE_STRIDE,
+                "max_datastore_windows": max_datastore_windows,
+                "datastore_cap_policy": "latest_complete_dates_balanced_across_variates",
                 "embedding_batch_size": TSRAG_EMBEDDING_BATCH_SIZE,
                 "retrieval_rule": "top_k_plus_one_then_remove_final_result",
                 "horizon": ridge_prepared.prediction_length,
@@ -530,6 +543,7 @@ def run_tsrag_comparison(
             prepared_manifest = prepare_tsrag_dataset(
                 ridge_prepared_path,
                 allocation.run_dir / "prepared",
+                max_datastore_windows=max_datastore_windows,
             )
             extraction_manifest = extract_tsrag_features(
                 prepared_manifest,
