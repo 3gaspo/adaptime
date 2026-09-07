@@ -1,0 +1,12 @@
+workflow=channels_comparison
+launch_id=selena_channels_20260906T123941Z_31210
+task=univariate
+state=completed
+stage=none
+active_task=none
+launched_at=2026-09-06T13:26:58Z
+updated_at=2026-09-06T13:29:30Z
+exit_code=0
+slurm_job_id=3164005
+slurm_array_job_id=none
+slurm_array_task_id=none

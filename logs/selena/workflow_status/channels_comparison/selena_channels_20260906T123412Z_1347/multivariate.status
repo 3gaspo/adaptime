@@ -1,0 +1,12 @@
+workflow=channels_comparison
+launch_id=selena_channels_20260906T123412Z_1347
+task=multivariate
+state=failed
+stage=evaluate
+active_task=chronos2 comparison=multivariate covariate_mode=none target_mode=multivariate
+launched_at=2026-09-06T12:34:15Z
+updated_at=2026-09-06T12:39:41Z
+exit_code=0
+slurm_job_id=3163561
+slurm_array_job_id=none
+slurm_array_task_id=none

@@ -1,0 +1,13 @@
+2026-09-06 15:26:59 | workflow foundation_summary started launch_id=selena_20260906T123412Z_859 task=macro_mase_and_timing slurm_job_id=3163559 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-06 15:26:59 | stage summarize started
+2026-09-06 15:26:59 | task foundation_model_summary outputs=/scratch/users/h61084/codes/improved/outputs started
+Foundation-model summary written to /scratch/users/h61084/codes/improved/outputs/foundation_models/summary/selena_20260906T123412Z_859/foundation_model_summary.csv and /scratch/users/h61084/codes/improved/outputs/foundation_models/summary/selena_20260906T123412Z_859/foundation_model_summary.md
+
+chronos2/multivariate,univariate state=completed  scaled_MASE=0.685489  inference=431.897s  coverage=98/98 timed tasks
+ts_icl/univariate            state=completed  scaled_MASE=0.718394  inference=2839.180s  coverage=98/98 timed tasks
+chronos_bolt/univariate      state=completed  scaled_MASE=0.759559  inference=948.225s  coverage=98/98 timed tasks
+seasonal_naive/univariate    state=completed  scaled_MASE=1.000000  inference=652.878s  coverage=98/98 timed tasks
+2026-09-06 15:27:04 | task foundation_model_summary outputs=/scratch/users/h61084/codes/improved/outputs completed status=success
+2026-09-06 15:27:04 | stage summarize completed status=success
+2026-09-06 15:27:04 | stage feature_plot started
+2026-09-06 15:27:04 | task mase_vs_features features=/scratch/users/h61084/datasets/time_metadata/stl_features output=/scratch/users/h61084/codes/improved/outputs/foundation_models/feature_analysis/selena_20260906T123412Z_859 started

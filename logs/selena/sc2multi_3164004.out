@@ -1,0 +1,1114 @@
+2026-09-06 15:26:58 | workflow channels_comparison started launch_id=selena_channels_20260906T123941Z_31210 task=multivariate slurm_job_id=3164004 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-06 15:26:58 | stage evaluate started
+2026-09-06 15:26:58 | task chronos2 comparison=multivariate covariate_mode=none target_mode=multivariate started
+[2026-09-06 15:26:58] TIME runner: run_chronos2_comparison.sh
+[2026-09-06 15:26:58] datasets: /scratch/users/h61084/datasets/hf_dataset
+[2026-09-06 15:26:58] weights: /scratch/users/h61084/weights
+[2026-09-06 15:26:58] outputs: /scratch/users/h61084/codes/improved/outputs
+[2026-09-06 15:26:58] covariate mode: none
+[2026-09-06 15:26:58] target mode: multivariate
+Running all 38 datasets from config:
+  - Water_Quality_Darwin/15T
+  - current_velocity/5T
+  - current_velocity/10T
+  - current_velocity/15T
+  - current_velocity/20T
+  - current_velocity/H
+  - Coastal_T_S/5T
+  - Coastal_T_S/15T
+  - Coastal_T_S/20T
+  - Coastal_T_S/H
+  - SG_Weather/D
+  - SG_PM25/H
+  - NE_China_Wind/H
+  - Australia_Solar/H
+  - OpenElectricity_NEM/5T
+  - EWELD_Load/15T
+  - Port_Activity/D
+  - Port_Activity/W
+  - Global_Influenza/W
+  - Crypto/D
+  - US_Term_Structure/B
+  - Oil_Price/B
+  - Job_Claims/W
+  - Uncertainty_1M/M
+  - Housing_Inventory/M
+  - JOLTS/M
+  - US_Labor/M
+  - Vehicle_Supply/M
+  - WUI_Global/Q
+  - Global_Price/Q
+  - Vehicle_Sales/M
+  - Supply_Chain_Customer/D
+  - Supply_Chain_Location/D
+  - azure2019_D/5T
+  - azure2019_I/5T
+  - azure2019_U/5T
+  - Smart_Manufacturing/H
+  - MetroPT-3/5T
+
+############################################################
+# Dataset 1/38: Water_Quality_Darwin/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Water_Quality_Darwin/15T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=16, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Water_Quality_Darwin/15T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:17.696903+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Water_Quality_Darwin/15T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Water_Quality_Darwin/15T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:17.839264+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Water_Quality_Darwin/15T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Water_Quality_Darwin/15T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:17.981099+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Water_Quality_Darwin/15T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 2/38: current_velocity/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=36, test_length=4320, val_length=4320
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/5T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:18.144469+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/5T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=4320, val_length=4320
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/5T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:18.292208+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/5T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=864, test_length=4320, val_length=4320
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/5T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:18.437806+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/5T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 3/38: current_velocity/10T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/10T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=18, test_length=2160, val_length=2160
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/10T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:18.608350+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/10T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=144, test_length=2160, val_length=2160
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/10T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:18.758561+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/10T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=432, test_length=2160, val_length=2160
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/10T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:18.910705+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/10T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 4/38: current_velocity/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/15T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/15T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:19.067423+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/15T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/15T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:19.208488+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/15T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/15T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:19.351789+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/15T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 5/38: current_velocity/20T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/20T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=9, test_length=1080, val_length=1080
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/20T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:19.507853+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/20T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=1080, val_length=1080
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/20T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:19.643431+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/20T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=216, test_length=1080, val_length=1080
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/20T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:19.776680+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/20T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 6/38: current_velocity/H
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: current_velocity/H
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=672, val_length=672
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/H/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:19.932563+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/H/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=168, test_length=672, val_length=672
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/H/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:20.065756+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/H/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=336, test_length=672, val_length=672
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/H/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:20.199953+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/current_velocity/H/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 7/38: Coastal_T_S/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Coastal_T_S/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=36, test_length=4320, val_length=4320
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/5T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:20.389343+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/5T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=4320, val_length=4320
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/5T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:20.563095+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/5T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=864, test_length=4320, val_length=4320
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/5T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:20.738633+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/5T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 8/38: Coastal_T_S/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Coastal_T_S/15T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/15T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:20.890922+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/15T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/15T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:21.028108+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/15T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=1440, val_length=1440
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/15T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:21.167132+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/15T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 9/38: Coastal_T_S/20T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Coastal_T_S/20T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=9, test_length=1080, val_length=1080
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/20T/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:21.314052+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/20T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=1080, val_length=1080
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/20T/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:21.447241+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/20T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=216, test_length=1080, val_length=1080
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/20T/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:21.580489+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/20T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 10/38: Coastal_T_S/H
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Coastal_T_S/H
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=672, val_length=672
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/H/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:21.739428+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/H/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=168, test_length=672, val_length=672
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/H/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:21.872914+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/H/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=336, test_length=672, val_length=672
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/H/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:22.009672+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Coastal_T_S/H/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 11/38: SG_Weather/D
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: SG_Weather/D
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=3, test_length=366, val_length=366
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_Weather/D/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:22.158414+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_Weather/D/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=7, test_length=366, val_length=366
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_Weather/D/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:22.289045+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_Weather/D/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=14, test_length=366, val_length=366
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_Weather/D/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:22.419491+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_Weather/D/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 12/38: SG_PM25/H
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: SG_PM25/H
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=2208, val_length=2160
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_PM25/H/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:22.590103+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_PM25/H/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=2208, val_length=2160
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_PM25/H/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:22.742436+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_PM25/H/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=168, test_length=2208, val_length=2160
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_PM25/H/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:22.893973+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/SG_PM25/H/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 13/38: NE_China_Wind/H
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: NE_China_Wind/H
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=720, val_length=720
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/NE_China_Wind/H/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:23.042203+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/NE_China_Wind/H/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=720, val_length=720
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/NE_China_Wind/H/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:23.177233+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/NE_China_Wind/H/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=168, test_length=720, val_length=720
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/NE_China_Wind/H/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:23.313361+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/NE_China_Wind/H/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 14/38: Australia_Solar/H
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Australia_Solar/H
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=2520, val_length=2520
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Australia_Solar/H/short/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:23.470170+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Australia_Solar/H/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=72, test_length=2520, val_length=2520
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Australia_Solar/H/medium/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:23.613130+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Australia_Solar/H/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=168, test_length=2520, val_length=2520
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Australia_Solar/H/long/run_0 source_launch=selena_channels_20260906T123412Z_1347 launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 launched_at=2026-09-06T13:27:23.755564+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Australia_Solar/H/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 15/38: OpenElectricity_NEM/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: OpenElectricity_NEM/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=4032, val_length=4032
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/OpenElectricity_NEM/5T/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/OpenElectricity_NEM/5T/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:23.970496+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/OpenElectricity_NEM/5T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=4032, val_length=4032
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/OpenElectricity_NEM/5T/medium/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/OpenElectricity_NEM/5T/medium/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:24.164806+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/OpenElectricity_NEM/5T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=288, test_length=4032, val_length=4032
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/OpenElectricity_NEM/5T/long/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/OpenElectricity_NEM/5T/long/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:24.359978+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/OpenElectricity_NEM/5T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 16/38: EWELD_Load/15T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: EWELD_Load/15T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=1344, val_length=1344
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/EWELD_Load/15T/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/EWELD_Load/15T/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:24.537284+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/EWELD_Load/15T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=96, test_length=1344, val_length=1344
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/EWELD_Load/15T/medium/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/EWELD_Load/15T/medium/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:24.702604+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/EWELD_Load/15T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=672, test_length=1344, val_length=1344
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/EWELD_Load/15T/long/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/EWELD_Load/15T/long/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:24.864832+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/EWELD_Load/15T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 17/38: Port_Activity/D
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Port_Activity/D
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=365, val_length=90
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Port_Activity/D/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Port_Activity/D/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:25.028763+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Port_Activity/D/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 18/38: Port_Activity/W
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Port_Activity/W
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=13, test_length=52, val_length=13
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Port_Activity/W/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Port_Activity/W/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:25.184837+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Port_Activity/W/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 19/38: Global_Influenza/W
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Global_Influenza/W
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=13, test_length=52, val_length=13
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Global_Influenza/W/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Global_Influenza/W/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:25.336991+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Global_Influenza/W/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 20/38: Crypto/D
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Crypto/D
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=273, val_length=92
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Crypto/D/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Crypto/D/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:25.490040+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Crypto/D/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 21/38: US_Term_Structure/B
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: US_Term_Structure/B
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=20, test_length=717, val_length=100
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/US_Term_Structure/B/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/US_Term_Structure/B/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:25.692712+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/US_Term_Structure/B/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 22/38: Oil_Price/B
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Oil_Price/B
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=20, test_length=717, val_length=100
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Oil_Price/B/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Oil_Price/B/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:25.852510+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Oil_Price/B/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 23/38: Job_Claims/W
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Job_Claims/W
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=13, test_length=52, val_length=13
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Job_Claims/W/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Job_Claims/W/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:26.001847+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Job_Claims/W/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 24/38: Uncertainty_1M/M
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Uncertainty_1M/M
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=6, test_length=42, val_length=18
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Uncertainty_1M/M/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Uncertainty_1M/M/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:26.155132+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Uncertainty_1M/M/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 25/38: Housing_Inventory/M
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Housing_Inventory/M
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=36, val_length=12
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Housing_Inventory/M/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Housing_Inventory/M/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:26.307212+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Housing_Inventory/M/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 26/38: JOLTS/M
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: JOLTS/M
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/JOLTS/M/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/JOLTS/M/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:26.459158+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/JOLTS/M/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 27/38: US_Labor/M
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: US_Labor/M
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/US_Labor/M/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/US_Labor/M/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:26.611567+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/US_Labor/M/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 28/38: Vehicle_Supply/M
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Vehicle_Supply/M
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Vehicle_Supply/M/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Vehicle_Supply/M/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:26.764658+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Vehicle_Supply/M/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 29/38: WUI_Global/Q
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: WUI_Global/Q
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=4, test_length=20, val_length=20
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/WUI_Global/Q/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/WUI_Global/Q/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:26.922519+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/WUI_Global/Q/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 30/38: Global_Price/Q
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Global_Price/Q
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=4, test_length=20, val_length=8
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Global_Price/Q/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Global_Price/Q/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:27.074547+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Global_Price/Q/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 31/38: Vehicle_Sales/M
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Vehicle_Sales/M
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=12, test_length=60, val_length=12
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Vehicle_Sales/M/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Vehicle_Sales/M/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:27.226141+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Vehicle_Sales/M/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 32/38: Supply_Chain_Customer/D
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Supply_Chain_Customer/D
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=365, val_length=90
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Supply_Chain_Customer/D/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Supply_Chain_Customer/D/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:27.387134+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Supply_Chain_Customer/D/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 33/38: Supply_Chain_Location/D
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Supply_Chain_Location/D
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=30, test_length=365, val_length=90
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Supply_Chain_Location/D/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Supply_Chain_Location/D/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:27.548480+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Supply_Chain_Location/D/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 34/38: azure2019_D/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: azure2019_D/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=288, test_length=864, val_length=864
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/azure2019_D/5T/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/azure2019_D/5T/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:27.795774+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/azure2019_D/5T/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 35/38: azure2019_I/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: azure2019_I/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=288, test_length=864, val_length=864
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/azure2019_I/5T/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/azure2019_I/5T/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:27.995556+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/azure2019_I/5T/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 36/38: azure2019_U/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: azure2019_U/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=48, test_length=288, val_length=96
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/azure2019_U/5T/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/azure2019_U/5T/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:28.157416+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/azure2019_U/5T/short/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 37/38: Smart_Manufacturing/H
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: Smart_Manufacturing/H
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=24, test_length=336, val_length=336
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Smart_Manufacturing/H/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Smart_Manufacturing/H/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:28.318803+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Smart_Manufacturing/H/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=168, test_length=336, val_length=336
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Smart_Manufacturing/H/medium/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Smart_Manufacturing/H/medium/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:28.457922+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Smart_Manufacturing/H/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=336, test_length=336, val_length=336
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Smart_Manufacturing/H/long/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/Smart_Manufacturing/H/long/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:28.599935+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/Smart_Manufacturing/H/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# Dataset 38/38: MetroPT-3/5T
+############################################################
+Loading configuration...
+
+============================================================
+Dataset: MetroPT-3/5T
+Model: amazon/chronos-2
+Checkpoint: /fslarge/scratch/users/h61084/weights/chronos2
+Terms: ['short', 'medium', 'long']
+Covariate mode: none
+============================================================
+
+--- Term: short ---
+  Config: prediction_length=48, test_length=1728, val_length=1728
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/MetroPT-3/5T/short/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/MetroPT-3/5T/short/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:28.765177+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/MetroPT-3/5T/short/run_0
+
+--- Term: medium ---
+  Config: prediction_length=288, test_length=1728, val_length=1728
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/MetroPT-3/5T/medium/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/MetroPT-3/5T/medium/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:28.916333+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/MetroPT-3/5T/medium/run_0
+
+--- Term: long ---
+  Config: prediction_length=576, test_length=1728, val_length=1728
+TIME run allocation action=reuse run=/fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/MetroPT-3/5T/long/run_0 source=/fslarge/scratch/users/h61084/codes/improved/outputs/foundation_models/tasks/chronos2/multivariate/MetroPT-3/5T/long/run_0/manifest.json launch_id=selena_channels_20260906T123941Z_31210 slurm_job_id=3164004 reused_at=2026-09-06T13:27:29.064589+00:00
+  Reused completed task: /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate/chronos2/multivariate/MetroPT-3/5T/long/run_0
+
+============================================================
+All experiments completed!
+Results saved to: /scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/multivariate
+============================================================
+
+############################################################
+# All 38 dataset(s) completed!
+############################################################
+2026-09-06 15:27:29 | task chronos2 comparison=multivariate covariate_mode=none target_mode=multivariate completed status=success
+2026-09-06 15:27:29 | stage evaluate completed status=success
+2026-09-06 15:27:29 | stage summarize started
+Foundation-model summary written to /scratch/users/h61084/codes/improved/outputs/channels_comparison/summary/selena_channels_20260906T123941Z_31210/multivariate/foundation_model_summary.csv and /scratch/users/h61084/codes/improved/outputs/channels_comparison/summary/selena_channels_20260906T123941Z_31210/multivariate/foundation_model_summary.md
+
+chronos2/multivariate        state=completed  scaled_MASE=0.690045  inference=335.433s  coverage=74/74 timed tasks
+2026-09-06 15:27:32 | stage summarize completed status=success
+2026-09-06 15:27:32 | workflow channels_comparison completed status=success exit_code=0

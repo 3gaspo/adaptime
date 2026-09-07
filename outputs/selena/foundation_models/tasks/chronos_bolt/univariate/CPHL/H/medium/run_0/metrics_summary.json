@@ -28,7 +28,7 @@
       "total_values": 16
     },
     "MASE": {
-      "mean": 1.8837776422307124,
+      "mean": 1.9464693816144993,
       "finite_values": 16,
       "total_values": 16
     },
@@ -43,7 +43,7 @@
       "total_values": 16
     }
   },
-  "launch_id": "selena_20260905T202540Z_30178",
+  "launch_id": "selena_20260906T123412Z_859",
   "model": "chronos_bolt",
-  "inference_seconds": 0.32006975496187806
+  "inference_seconds": 0.3221253240481019
 }

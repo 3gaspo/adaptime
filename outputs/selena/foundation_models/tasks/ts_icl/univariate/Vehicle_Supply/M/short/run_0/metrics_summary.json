@@ -43,7 +43,7 @@
       "total_values": 30
     }
   },
-  "launch_id": "selena_20260905T202540Z_30178",
+  "launch_id": "selena_20260906T123412Z_859",
   "model": "ts_icl",
-  "inference_seconds": 1.8628065660595894
+  "inference_seconds": 1.7979905949905515
 }

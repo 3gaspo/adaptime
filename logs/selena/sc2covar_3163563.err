@@ -1,0 +1,37 @@
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:   8%|▊         | 13/170 [00:00<00:01, 116.35it/s]Loading weights:  22%|██▏       | 38/170 [00:00<00:00, 188.75it/s]Loading weights:  38%|███▊      | 64/170 [00:00<00:00, 219.39it/s]Loading weights:  54%|█████▎    | 91/170 [00:00<00:00, 230.20it/s]Loading weights:  75%|███████▍  | 127/170 [00:00<00:00, 274.07it/s]Loading weights:  92%|█████████▏| 156/170 [00:00<00:00, 270.20it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 251.73it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  return pd.Period(val, freq)
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  61%|██████    | 103/170 [00:00<00:00, 999.61it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1006.06it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  61%|██████    | 103/170 [00:00<00:00, 999.08it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1002.40it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  61%|██████    | 103/170 [00:00<00:00, 1000.00it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1004.80it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  return pd.Period(val, freq)
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  61%|██████    | 103/170 [00:00<00:00, 1011.10it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1011.28it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  61%|██████    | 103/170 [00:00<00:00, 998.54it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1003.45it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  61%|██████    | 103/170 [00:00<00:00, 1007.48it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1012.33it/s]
+/fssmall/home/h61084/codes/improved/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  return pd.Period(val, freq)
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 3163563.0 ON sean0011 CANCELLED AT 2026-09-06T14:39:41 ***
+slurmstepd: error: *** JOB 3163563 ON sean0011 CANCELLED AT 2026-09-06T14:39:41 ***
+2026-09-06 14:39:41 | task chronos2 comparison=covariate covariate_mode=past_targets target_mode=univariate completed status=failed exit_code=0
+2026-09-06 14:39:41 | stage evaluate completed status=failed exit_code=0
+TIME interrupted-launch recovery launch_id=selena_channels_20260906T123412Z_1347 tasks=1 root=/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/covariate/chronos2/univariate
+  interrupted /fslarge/scratch/users/h61084/codes/improved/outputs/channels_comparison/tasks/covariate/chronos2/univariate/current_velocity/10T/short/run_0
+2026-09-06 14:39:42 | workflow channels_comparison completed status=failed exit_code=0

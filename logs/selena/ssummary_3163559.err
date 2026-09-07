@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/fssmall/home/h61084/codes/improved/scripts/plot_feature_performance.py", line 100, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/improved/scripts/plot_feature_performance.py", line 75, in main
+    joined, correlations, selected = analyze_feature_performance(
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/improved/src/timebench/feature/performance.py", line 341, in analyze_feature_performance
+    raise ValueError("No feature has enough finite variation for correlation analysis")
+ValueError: No feature has enough finite variation for correlation analysis
+srun: error: sean0004: task 0: Exited with exit code 1
+2026-09-06 15:27:36 | task mase_vs_features features=/scratch/users/h61084/datasets/time_metadata/stl_features output=/scratch/users/h61084/codes/improved/outputs/foundation_models/feature_analysis/selena_20260906T123412Z_859 completed status=failed exit_code=1
+2026-09-06 15:27:36 | stage feature_plot completed status=failed exit_code=1
+2026-09-06 15:27:36 | workflow foundation_summary completed status=failed exit_code=1

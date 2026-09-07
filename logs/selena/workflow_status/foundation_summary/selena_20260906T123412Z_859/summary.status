@@ -1,0 +1,12 @@
+workflow=foundation_summary
+launch_id=selena_20260906T123412Z_859
+task=macro_mase_and_timing
+state=failed
+stage=feature_plot
+active_task=mase_vs_features features=/scratch/users/h61084/datasets/time_metadata/stl_features output=/scratch/users/h61084/codes/improved/outputs/foundation_models/feature_analysis/selena_20260906T123412Z_859
+launched_at=2026-09-06T13:26:59Z
+updated_at=2026-09-06T13:27:36Z
+exit_code=1
+slurm_job_id=3163559
+slurm_array_job_id=none
+slurm_array_task_id=none

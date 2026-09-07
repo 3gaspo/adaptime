@@ -3,47 +3,47 @@
   "aggregation": "mean over finite series/window/variate metric values",
   "metrics": {
     "MSE": {
-      "mean": 9.35140750697952,
+      "mean": 9.046284712136165,
       "finite_values": 720,
       "total_values": 720
     },
     "MAE": {
-      "mean": 1.1006703306254197,
+      "mean": 1.080223831764571,
       "finite_values": 720,
       "total_values": 720
     },
     "RMSE": {
-      "mean": 1.2415858157010073,
+      "mean": 1.2248725530023747,
       "finite_values": 720,
       "total_values": 720
     },
     "MAPE": {
-      "mean": 0.9644024773551368,
+      "mean": 0.9463727486088983,
       "finite_values": 720,
       "total_values": 720
     },
     "sMAPE": {
-      "mean": 0.5039174427928501,
+      "mean": 0.5009004823517418,
       "finite_values": 720,
       "total_values": 720
     },
     "MASE": {
-      "mean": 0.9256508060598715,
+      "mean": 0.9105016048084428,
       "finite_values": 720,
       "total_values": 720
     },
     "ND": {
-      "mean": 0.5886884542107629,
+      "mean": 0.5782740270896904,
       "finite_values": 720,
       "total_values": 720
     },
     "CRPS": {
-      "mean": 0.45552261576950615,
+      "mean": 0.4508318224586485,
       "finite_values": 720,
       "total_values": 720
     }
   },
-  "launch_id": "selena_20260905T202540Z_30178",
+  "launch_id": "selena_20260906T123412Z_859",
   "model": "seasonal_naive",
-  "inference_seconds": 9.381069468334317
+  "inference_seconds": 3.554947637952864
 }
