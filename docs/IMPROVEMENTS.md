@@ -202,6 +202,10 @@ deliberately.
   feature-versus-MASE SVG/CSV analysis. Documented the actual STL/MSTL output
   directories, frequency-domain columns, per-variate scope, and absence of
   feature binarization.
+- Made feature-correlation selection treat constant scaled-MASE outcomes as
+  undefined without emitting correlation warnings. Seasonal Naive therefore
+  remains visible at scaled MASE 1 but does not dilute the mean-absolute
+  within-model correlation used to rank features.
 - Added a shared source/window audit that records non-finite source positions
   once, evaluates each distinct context-limit/forecast-horizon pair once via
   prefix counts, detects constant windows from adjacent-value transitions,
