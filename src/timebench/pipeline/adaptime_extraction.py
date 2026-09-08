@@ -414,7 +414,8 @@ def _materialize_neighbors(
     started = perf_counter()
     distances = np.full((len(query_representation), config.max_k), np.inf, np.float32)
     ids = np.full((len(query_representation), config.max_k), -1, np.int64)
-    if len(query_positions) and len(datastore_positions) >= config.max_k:
+    if len(query_positions) and len(datastore_positions):
+        retrieval_k = min(config.max_k, len(datastore_positions))
         selected_distances, selected_ids = blockwise_topk(
             query_representation[query_positions],
             datastore_representation[datastore_positions],
@@ -426,7 +427,7 @@ def _materialize_neighbors(
             ],
             retrieval_period=int(prepared.config["retrieval_period"]),
             datastore_end_ticks_by_item=prepared.datastore_end_ticks_by_item,
-            k=config.max_k,
+            k=retrieval_k,
             stride=int(prepared.config["datastore_stride"]),
             horizon=prepared.prediction_length,
             scope=config.retrieval_scope,
@@ -436,12 +437,14 @@ def _materialize_neighbors(
             datastore_block_size=config.datastore_block_size,
             require_complete_k=False,
         )
-        complete = np.all(selected_ids >= 0, axis=1)
-        complete_positions = query_positions[complete]
-        distances[complete_positions] = selected_distances[complete]
-        ids[complete_positions] = datastore_positions[selected_ids[complete]]
-        query_eligible[query_positions[~complete]] = False
-        fallback_reason[query_positions[~complete]] = 2
+        distances[query_positions, :retrieval_k] = selected_distances
+        valid = selected_ids >= 0
+        mapped_ids = np.full_like(selected_ids, -1)
+        mapped_ids[valid] = datastore_positions[selected_ids[valid]]
+        ids[query_positions, :retrieval_k] = mapped_ids
+        enough = np.count_nonzero(valid, axis=1) >= min(config.context_k)
+        query_eligible[query_positions[~enough]] = False
+        fallback_reason[query_positions[~enough]] = 2
     else:
         query_eligible[query_positions] = False
         fallback_reason[query_positions] = 2
@@ -539,25 +542,29 @@ def _materialize_context_forecasts(
         stop = min(start + config.model_batch_size, len(query_refs))
         for store in stores.values():
             store[start:stop] = vanilla[start:stop]
-        positions = np.flatnonzero(rag_eligible[start:stop]) + start
-        if not len(positions):
-            continue
-        query_batch = reader.read(query_refs[positions])
-        selected_ids = np.asarray(neighbor_ids[positions])
-        flat_neighbor_batch = reader.read(datastore_refs[selected_ids.reshape(-1)])
-        neighbor_context = flat_neighbor_batch.context.reshape(
-            len(positions),
-            config.max_k,
-            channels,
-            prepared.context_length,
-        )
-        neighbor_target = np.asarray(datastore_target[selected_ids])
         for k in config.context_k:
+            selected_ids = np.asarray(neighbor_ids[start:stop, :k])
+            eligible = np.asarray(rag_eligible[start:stop], dtype=bool) & np.all(
+                selected_ids >= 0, axis=1
+            )
+            positions = np.flatnonzero(eligible) + start
+            if not len(positions):
+                continue
+            selected_ids = np.asarray(neighbor_ids[positions, :k])
+            query_batch = reader.read(query_refs[positions])
+            flat_neighbor_batch = reader.read(datastore_refs[selected_ids.reshape(-1)])
+            neighbor_context = flat_neighbor_batch.context.reshape(
+                len(positions),
+                k,
+                channels,
+                prepared.context_length,
+            )
+            neighbor_target = np.asarray(datastore_target[selected_ids])
             started = perf_counter()
             retrieval_context = _query_scaled_retrieval_context(
                 query_batch.context,
-                neighbor_context[:, :k],
-                neighbor_target[:, :k],
+                neighbor_context,
+                neighbor_target,
             )
             _record_seconds(
                 timings,

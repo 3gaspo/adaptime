@@ -11,7 +11,9 @@ from timebench.pipeline.adaptime_extraction import ExtractionConfig, extract_ada
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Extract Adaptime full-ridge inputs")
+    parser = argparse.ArgumentParser(
+        description="Extract reusable Adaptime Ridge/gate inputs"
+    )
     parser.add_argument("--prepared", type=Path, required=True)
     parser.add_argument(
         "--model",

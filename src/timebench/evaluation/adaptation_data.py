@@ -127,10 +127,18 @@ class PreparationConfig:
     retrieval_period: int = 1
     datastore_stride: int = 1
     max_datastore_windows: int | None = None
+    datastore_prediction_length: int | None = None
+    minimum_datastore_dates_per_variate: int = 1
 
     @property
     def query_stride(self) -> int:
         return int(self.adaptation_stride)
+
+    @property
+    def datastore_horizon(self) -> int:
+        """Future support required by every method sharing the datastore."""
+
+        return int(self.datastore_prediction_length or self.prediction_length)
 
     def validate(self) -> None:
         positive = {
@@ -143,6 +151,8 @@ class PreparationConfig:
             "retrieval_period": self.retrieval_period,
             "datastore_stride": self.datastore_stride,
             "adaptation_stride": self.query_stride,
+            "datastore_prediction_length": self.datastore_horizon,
+            "minimum_datastore_dates_per_variate": self.minimum_datastore_dates_per_variate,
         }
         invalid = [name for name, value in positive.items() if int(value) <= 0]
         if invalid:
@@ -157,6 +167,10 @@ class PreparationConfig:
             raise ValueError("adaptation_train_length must contain a complete horizon")
         if self.adaptation_validation_length < self.prediction_length:
             raise ValueError("adaptation_validation_length must contain a complete horizon")
+        if self.datastore_horizon < self.prediction_length:
+            raise ValueError(
+                "datastore_prediction_length must cover the task prediction_length"
+            )
         if (
             self.max_datastore_windows is not None
             and int(self.max_datastore_windows) <= 0
@@ -408,18 +422,22 @@ def prepare_adaptation_dataset(
     capped_dates = None
     if config.max_datastore_windows is not None:
         capped_dates = int(config.max_datastore_windows) // int(variates)
-        if capped_dates < int(config.retrieval_period):
+        minimum_dates = max(
+            int(config.retrieval_period),
+            int(config.minimum_datastore_dates_per_variate),
+        )
+        if capped_dates < minimum_dates:
             raise InsufficientAdaptationHistory(
                 f"max_datastore_windows={config.max_datastore_windows} retains "
-                f"{capped_dates} dates per variate, fewer than one complete "
-                f"retrieval period ({config.retrieval_period})"
+                f"{capped_dates} dates per variate, fewer than the shared "
+                f"minimum ({minimum_dates})"
             )
     datastore_end_ticks: list[int] = []
     datastore_origins: list[np.ndarray] = []
     for item, ((channels, _), intervals, start_tick) in enumerate(
         zip(target_shapes, interval_rows, start_ticks)
     ):
-        last_origin = int(intervals["datastore"][1]) - config.prediction_length
+        last_origin = int(intervals["datastore"][1]) - config.datastore_horizon
         datastore_end_tick = int(start_tick + last_origin)
         datastore_end_ticks.append(datastore_end_tick)
         phases = [
@@ -436,14 +454,18 @@ def prepare_adaptation_dataset(
         origins = _phase_origins(
             intervals["datastore"],
             context_length=config.context_length,
-            horizon=config.prediction_length,
+            horizon=config.datastore_horizon,
             stride=config.datastore_stride,
             phases=phases,
         )
-        if len(origins) < int(config.retrieval_period):
+        minimum_dates = max(
+            int(config.retrieval_period),
+            int(config.minimum_datastore_dates_per_variate),
+        )
+        if len(origins) < minimum_dates:
             raise InsufficientAdaptationHistory(
                 f"item {item} has {len(origins)} eligible datastore dates, fewer "
-                f"than one complete retrieval period ({config.retrieval_period})"
+                f"than the shared minimum ({minimum_dates})"
             )
         datastore_origins.append(origins)
 
@@ -498,7 +520,7 @@ def prepare_adaptation_dataset(
 
     manifest: dict[str, object] = {
         "schema_version": PREPARATION_SCHEMA,
-        "format": "adaptime_prepared_windows",
+        "format": "adaptime_shared_windows",
         "signature": signature,
         "dataset_fingerprint": str(hf_dataset._fingerprint),
         "source_path": str(Path(source_path).expanduser().resolve()),
@@ -644,6 +666,8 @@ class PreparedDataset:
         self.manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if self.manifest.get("schema_version") != PREPARATION_SCHEMA:
             raise ValueError("unsupported Adaptime preparation schema")
+        if self.manifest.get("format") != "adaptime_shared_windows":
+            raise ValueError("not a shared Adaptime data artifact")
         self.config = dict(self.manifest["config"])
         self._hf_dataset: datasets.Dataset | None = None
 

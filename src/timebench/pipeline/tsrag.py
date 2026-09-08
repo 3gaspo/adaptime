@@ -16,10 +16,9 @@ import torch
 from timebench.evaluation.timing import EvaluationTimer
 from timebench.external_models.tsrag.retriever import TSRAGIndex, TSRAGRetriever
 from timebench.model_loading.tsrag import LoadedTSRAG
-from timebench.pipeline.adaptime_testing import _aggregate_metrics, _metric_values
+from timebench.pipeline.adaptation_prediction import POINT_PREDICTION_SCHEMA
 from timebench.pipeline.tsrag_data import (
     TSRAG_CONTEXT_LENGTH,
-    TSRAG_DATASTORE_STRIDE,
     TSRAG_NATIVE_HORIZON,
     TSRAGPreparedDataset,
 )
@@ -27,13 +26,9 @@ from timebench.pipeline.tsrag_data import (
 
 TSRAG_SOURCE_COMMIT = "73ac807789d2e61b8a3dfc8514e3fc947fe185cc"
 TSRAG_EXTRACTION_SCHEMA = 1
-TSRAG_RESULT_SCHEMA = 1
 TSRAG_TOP_K = 10
 TSRAG_EMBEDDING_BATCH_SIZE = 512
 TSRAG_EMBEDDING_DIMENSION = 768
-TSRAG_METHODS = ("vanilla", "tsrag")
-TSRAG_SCORE_METHODS = ("seasonal_naive", *TSRAG_METHODS)
-TSRAG_METRICS = ("mse", "mae", "mase", "msse")
 
 
 @dataclass(frozen=True)
@@ -156,7 +151,7 @@ def extract_tsrag_features(
     runtime: TSRAGRuntimeConfig,
     output_dir: str | Path,
 ) -> Path:
-    """Apply TS-RAG's stride-one EOS/FAISS extraction to the TIME test rows."""
+    """Apply TS-RAG's EOS/FAISS extractor to the shared datastore rows."""
 
     runtime.validate()
     prepared = TSRAGPreparedDataset(prepared_path)
@@ -167,7 +162,7 @@ def extract_tsrag_features(
         "context_length": TSRAG_CONTEXT_LENGTH,
         "native_prediction_length": TSRAG_NATIVE_HORIZON,
         "top_k": TSRAG_TOP_K,
-        "datastore_stride": TSRAG_DATASTORE_STRIDE,
+        "datastore_stride": int(prepared.shared.config["datastore_stride"]),
         "retrieval_scope": "same_series",
         "embedding": "chronos_t5_base_eos",
         "embedding_batch_size": TSRAG_EMBEDDING_BATCH_SIZE,
@@ -303,33 +298,6 @@ def _fetch_neighbors(
     return sequences.reshape(len(ids), TSRAG_TOP_K, -1)
 
 
-def _rollout_vanilla(
-    loaded: LoadedTSRAG,
-    context: np.ndarray,
-    horizon: int,
-    device: torch.device,
-    timings: dict[str, float],
-) -> np.ndarray:
-    current = np.asarray(context, dtype=np.float32)
-    chunks: list[np.ndarray] = []
-    remaining = int(horizon)
-    while remaining > 0:
-        timer = EvaluationTimer()
-        timer.start()
-        native = _native_forecast(
-            loaded.vanilla_model, current, loaded.median_index, device
-        )
-        timings["vanilla_model_seconds"] += timer.stop()
-        take = min(remaining, TSRAG_NATIVE_HORIZON)
-        chunks.append(native[:, :take])
-        remaining -= take
-        if remaining:
-            current = np.concatenate((current, native), axis=-1)[
-                :, -TSRAG_CONTEXT_LENGTH:
-            ]
-    return np.concatenate(chunks, axis=-1)
-
-
 def _rollout_tsrag(
     loaded: LoadedTSRAG,
     retriever: TSRAGRetriever,
@@ -386,7 +354,7 @@ def _rollout_tsrag(
     return np.concatenate(chunks, axis=-1)
 
 
-def evaluate_tsrag(
+def predict_tsrag(
     prepared_path: str | Path,
     extraction_path: str | Path,
     loaded: LoadedTSRAG,
@@ -396,7 +364,7 @@ def evaluate_tsrag(
     *,
     device: str | torch.device = "cuda",
 ) -> Path:
-    """Evaluate native TS-RAG, rolling 64-step blocks only when H exceeds 64."""
+    """Produce TS-RAG point forecasts without owning TIME metric evaluation."""
 
     runtime.validate()
     prepared = TSRAGPreparedDataset(prepared_path)
@@ -405,13 +373,11 @@ def evaluate_tsrag(
         raise ValueError("TS-RAG extraction and prepared TIME windows do not match")
     horizon = prepared.prediction_length
     identity = {
-        "schema_version": TSRAG_RESULT_SCHEMA,
+        "schema_version": POINT_PREDICTION_SCHEMA,
+        "method": "tsrag",
         "prepared_signature": prepared.signature,
         "extraction_signature": extraction["signature"],
         "source_commit": TSRAG_SOURCE_COMMIT,
-        "methods": list(TSRAG_SCORE_METHODS),
-        "metrics": list(TSRAG_METRICS),
-        "performance_metric": "task_mase_divided_by_matching_seasonal_naive_mase",
         "rollout": (
             "native_single_call_crop" if horizon <= TSRAG_NATIVE_HORIZON
             else "autoregressive_64_step_reembed_retrieve"
@@ -419,12 +385,12 @@ def evaluate_tsrag(
     }
     signature = _canonical_hash(identity)
     root = Path(output_dir).expanduser().resolve()
-    manifest_path = root / "result_manifest.json"
+    manifest_path = root / "prediction_manifest.json"
     if manifest_path.is_file():
         existing = json.loads(manifest_path.read_text(encoding="utf-8"))
         if existing.get("signature") == signature and existing.get("status") == "completed":
             return manifest_path
-        raise FileExistsError(f"TS-RAG result already differs: {root}")
+        raise FileExistsError(f"TS-RAG prediction already differs: {root}")
 
     arrays = dict(extraction["arrays"])
     datastore_representation = np.load(
@@ -441,25 +407,12 @@ def evaluate_tsrag(
     )
     test_references = prepared.indices("test")
     reader = prepared.reader(cache_items=runtime.arrow_cache_items)
-    prediction_stores = {
-        method: _memmap(
-            root / "predictions" / f"{method}.npy",
-            (len(test_references), 1, horizon),
-            np.float32,
-        )
-        for method in TSRAG_SCORE_METHODS
-    }
-    metric_stores = {
-        (method, metric): _memmap(
-            root / "metrics" / f"{method}_{metric}.npy",
-            (len(test_references), 1),
-            np.float32,
-        )
-        for method in TSRAG_SCORE_METHODS
-        for metric in TSRAG_METRICS
-    }
+    prediction_store = _memmap(
+        root / "predictions.npy",
+        (len(test_references), 1, horizon),
+        np.float32,
+    )
     timings = {
-        "vanilla_model_seconds": 0.0,
         "rollout_representation_seconds": 0.0,
         "rollout_retrieval_seconds": 0.0,
         "retrieved_sequence_fetch_seconds": 0.0,
@@ -471,63 +424,23 @@ def evaluate_tsrag(
         batch_references = np.asarray(test_references[start:stop])
         batch = reader.read(batch_references, target_length=horizon)
         context = batch.context[:, 0]
-        predictions = {
-            "seasonal_naive": reader.seasonal_naive_forecast(batch_references)[:, 0],
-            "vanilla": _rollout_vanilla(
-                loaded, context, horizon, torch_device, timings
-            ),
-            "tsrag": _rollout_tsrag(
-                loaded,
-                retriever,
-                prepared,
-                reader,
-                indexes,
-                batch_references,
-                context,
-                initial_neighbors[start:stop],
-                initial_distances[start:stop],
-                horizon,
-                torch_device,
-                timings,
-            ),
-        }
-        target = batch.target
-        mase_scale, msse_scale = reader.seasonal_scales(batch_references)
-        for method, values in predictions.items():
-            values = values[:, None, :]
-            prediction_stores[method][start:stop] = values
-            computed = _metric_values(
-                values,
-                target,
-                mase_scale,
-                msse_scale,
-            )
-            for metric in TSRAG_METRICS:
-                metric_stores[(method, metric)][start:stop] = computed[metric]
-
-    for store in (*prediction_stores.values(), *metric_stores.values()):
-        store.flush()
-    summaries = {
-        method: _aggregate_metrics(
-            test_references,
-            {
-                metric: np.asarray(metric_stores[(method, metric)])
-                for metric in TSRAG_METRICS
-            },
+        values = _rollout_tsrag(
+            loaded,
+            retriever,
+            prepared,
+            reader,
+            indexes,
+            batch_references,
+            context,
+            initial_neighbors[start:stop],
+            initial_distances[start:stop],
+            horizon,
+            torch_device,
+            timings,
         )
-        for method in TSRAG_SCORE_METHODS
-    }
-    seasonal_naive_summary = summaries["seasonal_naive"]
-    for method in TSRAG_SCORE_METHODS:
-        scaled_mase: dict[str, float] = {}
-        for key in ("equal_window_mean", "equal_user_mean"):
-            denominator = float(seasonal_naive_summary["mase"][key])
-            if not np.isfinite(denominator) or denominator <= 0:
-                raise ValueError(
-                    "scaled MASE requires a positive matching Seasonal Naive MASE"
-                )
-            scaled_mase[key] = float(summaries[method]["mase"][key]) / denominator
-        summaries[method]["scaled_mase"] = scaled_mase
+        prediction_store[start:stop] = values[:, None, :]
+
+    prediction_store.flush()
     extraction_timing = dict(extraction["timing_seconds"])
     tsrag_total = (
         float(extraction_timing["test_representation_seconds"])
@@ -537,21 +450,12 @@ def evaluate_tsrag(
         + timings["retrieved_sequence_fetch_seconds"]
         + timings["tsrag_model_seconds"]
     )
-    method_seconds = {
-        "vanilla": timings["vanilla_model_seconds"],
-        "tsrag": tsrag_total,
-    }
     timing = {
         "unit": "seconds",
         "test_windows": int(len(test_references)),
         "native_calls_per_window": int(np.ceil(horizon / TSRAG_NATIVE_HORIZON)),
-        "methods": {
-            method: {
-                "total_seconds": float(seconds),
-                "seconds_per_window": float(seconds) / len(test_references),
-            }
-            for method, seconds in method_seconds.items()
-        },
+        "total_seconds": float(tsrag_total),
+        "seconds_per_window": float(tsrag_total) / len(test_references),
         "components": {
             "initial_query_representation_seconds": float(
                 extraction_timing["test_representation_seconds"]
@@ -573,15 +477,15 @@ def evaluate_tsrag(
             ),
         },
     }
-    _atomic_json(root / "comparison_summary.json", {"methods": summaries, "timing": timing})
     _atomic_json(
         manifest_path,
         {
             **identity,
-            "format": "adaptime_tsrag_time_comparison",
+            "format": "adaptime_point_predictions",
             "signature": signature,
             "status": "completed",
-            "protocol": "frozen_tsrag_on_ridge_official_time_test_support",
+            "forecast_type": "point",
+            "protocol": "frozen_tsrag_on_shared_official_time_test_support",
             "context_length": TSRAG_CONTEXT_LENGTH,
             "prediction_length": horizon,
             "native_prediction_length": TSRAG_NATIVE_HORIZON,
@@ -592,18 +496,9 @@ def evaluate_tsrag(
                 "released_arm_parameters": loaded.adaptor_parameters,
             },
             "checkpoint": str(loaded.checkpoint),
+            "inference_seconds": float(tsrag_total),
             "timing": timing,
-            "files": {
-                "predictions": {
-                    method: f"predictions/{method}.npy" for method in TSRAG_SCORE_METHODS
-                },
-                "metrics": {
-                    f"{method}.{metric}": f"metrics/{method}_{metric}.npy"
-                    for method in TSRAG_SCORE_METHODS
-                    for metric in TSRAG_METRICS
-                },
-                "comparison_summary": "comparison_summary.json",
-            },
+            "files": {"predictions": "predictions.npy"},
         },
     )
     return manifest_path

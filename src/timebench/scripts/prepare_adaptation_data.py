@@ -80,6 +80,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=outputs_root() / "adaptime" / "prepared",
     )
+    parser.add_argument(
+        "--datastore-prediction-length",
+        type=int,
+        default=64,
+        help="Future support shared by Ridge and TS-RAG datastore rows",
+    )
     return parser.parse_args()
 
 
@@ -143,6 +149,10 @@ def main() -> None:
                     retrieval_period=period,
                     datastore_stride=period * args.datastore_stride_multiple,
                     max_datastore_windows=args.max_datastore_windows,
+                    datastore_prediction_length=max(
+                        prediction_length, args.datastore_prediction_length
+                    ),
+                    minimum_datastore_dates_per_variate=11,
                 )
                 output = args.output_root / target_mode / dataset_name / term
                 manifest = prepare_adaptation_dataset(

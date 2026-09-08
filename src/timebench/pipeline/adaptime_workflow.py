@@ -1,11 +1,10 @@
-"""TIME-wide orchestration for Adaptime extraction, fitting, and testing."""
+"""Independent data, extraction, fitting, prediction, and evaluation stages."""
 
 from __future__ import annotations
 
-import csv
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
 
@@ -14,8 +13,8 @@ import numpy as np
 from gluonts.time_feature import get_seasonality, norm_freq_str
 from pandas.tseries.frequencies import to_offset
 
+from timebench.evaluation.adaptation import evaluate_point_predictions
 from timebench.evaluation.adaptation_data import (
-    InsufficientAdaptationHistory,
     PreparationConfig,
     adaptation_split_lengths,
     adaptation_stride_for_frequency,
@@ -29,26 +28,50 @@ from timebench.evaluation.data import (
     load_dataset_config,
 )
 from timebench.evaluation.utils import get_available_terms
+from timebench.external_models.tsrag.retriever import TSRAGRetriever
 from timebench.model_loading import foundation_context_length, load_adaptime_forecaster
-from timebench.paths import dataset_storage_root, outputs_root
+from timebench.model_loading.tsrag import LoadedTSRAG, load_tsrag
+from timebench.paths import dataset_storage_root, outputs_root, weights_root
+from timebench.pipeline.adaptation_prediction import (
+    PredictionConfig,
+    predict_frozen_ridge,
+)
 from timebench.pipeline.adaptime_extraction import (
     ExtractionConfig,
     extract_adaptation_features,
 )
-from timebench.pipeline.adaptime_testing import (
-    AdaptimeTestingConfig,
-    METHODS,
-    METRICS,
-    SCORE_METHODS,
-    evaluate_frozen_adaptation,
-    evaluate_vanilla_fallback,
-)
 from timebench.pipeline.adaptime_training import RidgeTrainingConfig, fit_full_ridge
 from timebench.pipeline.runs import allocate_run, select_completed_runs
+from timebench.pipeline.tsrag import (
+    TSRAG_CONTEXT_LENGTH,
+    TSRAG_EMBEDDING_DIMENSION,
+    TSRAG_NATIVE_HORIZON,
+    TSRAG_SOURCE_COMMIT,
+    TSRAG_TOP_K,
+    TSRAGRuntimeConfig,
+    extract_tsrag_features,
+    predict_tsrag,
+)
+from timebench.results.adaptation import build_adaptation_comparison
+
+
+METHODS = ("ridge", "tsrag")
+STAGES = (
+    "prepare",
+    "extract",
+    "fit",
+    "predict",
+    "evaluate",
+    "report",
+    "pipeline",
+    "all",
+)
 
 
 @dataclass(frozen=True)
 class AdaptimeWorkflowConfig:
+    """One configuration namespace shared by both Adaptime wrappers."""
+
     model: str = "chronos2"
     target_mode: str = "univariate"
     adaptation_stride: int | None = None
@@ -72,49 +95,64 @@ class AdaptimeWorkflowConfig:
     model_path: Path | None = None
     weights_id: str | None = None
     device: str = "cuda"
+    tsrag_model_batch_size: int = 256
+    tsrag_chronos_bolt_path: Path | None = None
+    tsrag_retriever_path: Path | None = None
+    tsrag_checkpoint_path: Path | None = None
 
-    def validate(self) -> None:
+    def validate(self, method: str) -> None:
         if self.target_mode != "univariate":
-            raise ValueError("the current full_ridge_shared workflow is univariate")
+            raise ValueError("Adaptime wrappers currently use univariate TIME rows")
         if int(self.datastore_stride_multiple) <= 0:
             raise ValueError("datastore_stride_multiple must be positive")
         if self.adaptation_stride is not None and int(self.adaptation_stride) <= 1:
             raise ValueError("adaptation_stride must be greater than one when supplied")
-        if (
-            self.max_datastore_windows is not None
-            and int(self.max_datastore_windows) <= 0
-        ):
+        if self.max_datastore_windows is not None and int(self.max_datastore_windows) <= 0:
             raise ValueError("max_datastore_windows must be positive when supplied")
-        if max(self.k_values) > int(self.max_k):
-            raise ValueError("max_k must cover every selected K")
-        if not 0.0 < float(self.minimum_overlap_fraction) <= 1.0:
-            raise ValueError("minimum_overlap_fraction must be in (0, 1]")
-        if not 0.0 < float(self.minimum_query_finite_fraction) <= 1.0:
-            raise ValueError("minimum_query_finite_fraction must be in (0, 1]")
+        if method == "ridge":
+            ExtractionConfig(
+                representation=self.representation,
+                distance_metric=self.distance_metric,
+                retrieval_scope=self.retrieval_scope,
+                minimum_overlap_fraction=self.minimum_overlap_fraction,
+                minimum_query_finite_fraction=self.minimum_query_finite_fraction,
+                max_k=self.max_k,
+                context_k=self.k_values,
+                model_batch_size=self.model_batch_size,
+                query_block_size=self.query_block_size,
+                datastore_block_size=self.datastore_block_size,
+                arrow_cache_items=self.arrow_cache_items,
+            ).validate()
+            self.ridge_training.validate()
+        else:
+            self.tsrag_runtime.validate()
+
+    @property
+    def ridge_training(self) -> RidgeTrainingConfig:
+        return RidgeTrainingConfig(
+            k_values=self.k_values,
+            alpha_values=self.alpha_values,
+            chunk_size=self.ridge_chunk_size,
+            seed=self.seed,
+        )
+
+    @property
+    def tsrag_runtime(self) -> TSRAGRuntimeConfig:
+        return TSRAGRuntimeConfig(
+            model_batch_size=self.tsrag_model_batch_size,
+            arrow_cache_items=self.arrow_cache_items,
+        )
 
 
 @dataclass(frozen=True)
 class AdaptimeTask:
     dataset: str
     term: str
-    identity_root: Path
-
-
-def _atomic_json(path: Path, value: dict[str, object]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2, sort_keys=True), encoding="utf-8")
-    os.replace(temporary, path)
-
-
-def _atomic_csv(path: Path, rows: list[dict[str, object]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    with temporary.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
-    os.replace(temporary, path)
+    frequency: str
+    source_path: Path
+    preparation: PreparationConfig
+    minimum_series_length: int
+    dataset_fingerprint: str
 
 
 def _prediction_length(dataset: str, term: str, configured: int | None, freq: str) -> int:
@@ -147,562 +185,728 @@ def _selected_terms(
     return terms
 
 
-def _task(
-    output_root: Path,
-    workflow: AdaptimeWorkflowConfig,
-    dataset: str,
-    term: str,
-) -> AdaptimeTask:
-    suffix = Path(workflow.target_mode) / dataset / term
-    model_suffix = Path(workflow.model) / suffix
-    return AdaptimeTask(
-        dataset=dataset,
-        term=term,
-        identity_root=output_root / "tasks" / model_suffix,
-    )
-
-
 def workflow_tasks(
     dataset_config: dict[str, object],
     datasets_selected: Iterable[str],
     terms_selected: Iterable[str] | None,
-    output_root: Path,
     workflow: AdaptimeWorkflowConfig,
 ) -> list[AdaptimeTask]:
-    return [
-        _task(output_root, workflow, dataset, term)
-        for dataset in _selected_datasets(dataset_config, datasets_selected)
-        for term in _selected_terms(dataset, dataset_config, terms_selected)
-    ]
+    """Resolve the same task plan regardless of the consuming method."""
+
+    tasks: list[AdaptimeTask] = []
+    context_length = foundation_context_length(workflow.model)
+    if context_length < TSRAG_CONTEXT_LENGTH:
+        raise ValueError("the shared context must cover TS-RAG's native L=512")
+    for dataset_name in _selected_datasets(dataset_config, datasets_selected):
+        source_path = (dataset_storage_root() / dataset_name).resolve()
+        source = datasets.load_from_disk(str(source_path))
+        if len(source) == 0:
+            raise ValueError(f"empty TIME dataset: {dataset_name}")
+        frequency = str(source[0]["freq"])
+        seasonality = int(get_seasonality(frequency))
+        period = int(workflow.retrieval_period or seasonality)
+        minimum_length = min(
+            int(np.asarray(source[index]["target"]).shape[-1])
+            for index in range(len(source))
+        )
+        for term in _selected_terms(
+            dataset_name, dataset_config, terms_selected
+        ):
+            settings = get_dataset_settings(dataset_name, term, dataset_config)
+            horizon = _prediction_length(
+                dataset_name, term, settings.get("prediction_length"), frequency
+            )
+            stride = int(
+                workflow.adaptation_stride
+                or adaptation_stride_for_frequency(frequency)
+            )
+            train_length, validation_length, _ = adaptation_split_lengths(
+                int(settings["test_length"]), horizon, stride
+            )
+            tasks.append(
+                AdaptimeTask(
+                    dataset=dataset_name,
+                    term=term,
+                    frequency=frequency,
+                    source_path=source_path,
+                    minimum_series_length=minimum_length,
+                    dataset_fingerprint=str(source._fingerprint),
+                    preparation=PreparationConfig(
+                        dataset=dataset_name,
+                        term=term,
+                        context_length=context_length,
+                        prediction_length=horizon,
+                        test_length=int(settings["test_length"]),
+                        adaptation_train_length=train_length,
+                        adaptation_validation_length=validation_length,
+                        seasonality=seasonality,
+                        target_mode=workflow.target_mode,
+                        adaptation_stride=stride,
+                        retrieval_period=period,
+                        datastore_stride=(
+                            period * int(workflow.datastore_stride_multiple)
+                        ),
+                        max_datastore_windows=workflow.max_datastore_windows,
+                        datastore_prediction_length=max(
+                            horizon, TSRAG_NATIVE_HORIZON
+                        ),
+                        minimum_datastore_dates_per_variate=TSRAG_TOP_K + 1,
+                    ),
+                )
+            )
+    return tasks
 
 
-def aggregate_time_comparison(
-    tasks: list[AdaptimeTask],
-    output_dir: Path,
-    *,
-    launch_id: str | None = None,
-    config_policy: str = "error",
-    repeat_policy: str = "selected",
+def _task_identity(task: AdaptimeTask, model: str) -> dict[str, object]:
+    return {
+        "model": model,
+        "target_mode": task.preparation.target_mode,
+        "dataset": task.dataset.rpartition("/")[0] or task.dataset,
+        "frequency": task.frequency,
+        "term": task.term,
+    }
+
+
+def _preparation_config(task: AdaptimeTask) -> dict[str, object]:
+    values = asdict(task.preparation)
+    values["adaptation_stride"] = task.preparation.query_stride
+    values["datastore_prediction_length"] = task.preparation.datastore_horizon
+    values["dataset_fingerprint"] = task.dataset_fingerprint
+    return values
+
+
+def _extraction_config(workflow: AdaptimeWorkflowConfig) -> ExtractionConfig:
+    return ExtractionConfig(
+        representation=workflow.representation,
+        distance_metric=workflow.distance_metric,
+        retrieval_scope=workflow.retrieval_scope,
+        minimum_overlap_fraction=workflow.minimum_overlap_fraction,
+        minimum_query_finite_fraction=workflow.minimum_query_finite_fraction,
+        max_k=workflow.max_k,
+        context_k=workflow.k_values,
+        model_batch_size=workflow.model_batch_size,
+        query_block_size=workflow.query_block_size,
+        datastore_block_size=workflow.datastore_block_size,
+        arrow_cache_items=workflow.arrow_cache_items,
+    )
+
+
+def _stage_root(root: Path, stage: str, method: str, task: AdaptimeTask) -> Path:
+    return (
+        root
+        / stage
+        / method
+        / task.preparation.target_mode
+        / task.dataset
+        / task.term
+    )
+
+
+def _spec(
+    task: AdaptimeTask,
+    workflow: AdaptimeWorkflowConfig,
+    stage: str,
+    method: str,
+) -> tuple[str, dict[str, object], dict[str, object], dict[str, object], dict[str, object]]:
+    data_config = _preparation_config(task)
+    if stage == "data":
+        return (
+            "adaptime_data",
+            _task_identity(task, "shared_datastore"),
+            {"artifact": "shared_global_datastore"},
+            data_config,
+            {
+                "splits": ["datastore", "adaptation_train", "adaptation_validation", "test"],
+                "consumers": ["full_ridge_shared", "tsrag"],
+            },
+        )
+    if method == "ridge":
+        method_name = "full_ridge_shared"
+        extraction_science = {
+            "backbone": workflow.model,
+            "weights_id": workflow.weights_id,
+            **asdict(_extraction_config(workflow)),
+        }
+    else:
+        method_name = "tsrag"
+        extraction_science = {
+            "source_commit": TSRAG_SOURCE_COMMIT,
+            "context_length": TSRAG_CONTEXT_LENGTH,
+            "native_prediction_length": TSRAG_NATIVE_HORIZON,
+            "top_k": TSRAG_TOP_K,
+            "embedding": "chronos_t5_base_eos",
+            "embedding_dimension": TSRAG_EMBEDDING_DIMENSION,
+            "retrieval_scope": "same_series",
+        }
+    if stage == "extractions":
+        return (
+            "adaptime_extraction",
+            _task_identity(task, method_name),
+            extraction_science,
+            {"data_config": data_config},
+            {"phase": "extraction"},
+        )
+    if stage == "adaptations":
+        return (
+            "adaptime_adaptation",
+            _task_identity(task, method_name),
+            {"method": method_name, **asdict(workflow.ridge_training)},
+            {"data_config": data_config, "extraction": extraction_science},
+            {"phase": "closed_form_fitting"},
+        )
+    if stage == "predictions":
+        model_config: dict[str, object] = {
+            "method": method_name,
+            "extraction": extraction_science,
+        }
+        if method == "ridge":
+            model_config["adaptation"] = asdict(workflow.ridge_training)
+        else:
+            model_config["checkpoint"] = "released_tsrag_arm"
+        return (
+            "adaptime_prediction",
+            _task_identity(task, method_name),
+            model_config,
+            {"data_config": data_config},
+            {"phase": "frozen_inference", "forecast_type": "point"},
+        )
+    if stage == "evaluations":
+        prediction_science: dict[str, object] = {
+            "method": method_name,
+            "extraction": extraction_science,
+        }
+        if method == "ridge":
+            prediction_science["adaptation"] = asdict(workflow.ridge_training)
+        else:
+            prediction_science["checkpoint"] = "released_tsrag_arm"
+        return (
+            "adaptime_evaluation",
+            _task_identity(task, method_name),
+            {"method": method_name, "forecast_type": "point"},
+            {
+                "data_config": data_config,
+                "prediction_config": prediction_science,
+                "evaluator": "timebench.evaluation.saver.save_window_predictions",
+            },
+            {
+                "phase": "evaluation",
+                "quantile_levels": [0.5],
+                "metrics": ["MSE", "MAE", "RMSE", "MAPE", "sMAPE", "MASE", "ND", "CRPS"],
+            },
+        )
+    raise ValueError(f"unknown artifact stage {stage!r}")
+
+
+def _completed_run(
+    root: Path,
+    spec: tuple[str, dict[str, object], dict[str, object], dict[str, object], dict[str, object]],
 ) -> Path:
-    """Select run manifests, then aggregate repeats, configs, terms, and datasets."""
-
-    rows: list[dict[str, object]] = []
-    input_manifests: list[str] = []
-    for task in tasks:
-        selected_runs = select_completed_runs(
-            task.identity_root,
-            launch_id=launch_id,
-            config_policy=config_policy,
-            repeat_policy=repeat_policy,
-        )
-        if not selected_runs:
-            raise ValueError(
-                f"no completed Adaptime run matches {task.dataset}/{task.term}"
-            )
-        for run_dir, run_manifest in selected_runs:
-            result_path = run_dir / "comparison" / "result_manifest.json"
-            result = json.loads(result_path.read_text(encoding="utf-8"))
-            if result.get("status") != "completed":
-                raise ValueError(f"incomplete Adaptime result: {result_path}")
-            summary = json.loads(
-                (run_dir / "comparison" / result["files"]["comparison_summary"]).read_text(
-                    encoding="utf-8"
-                )
-            )
-            selected = dict(result.get("selected", {}))
-            selection = dict(run_manifest.get("selection", {}))
-            selected_k = selected.get("k")
-            selected_alpha = selected.get("alpha")
-            validation_msse = selected.get("validation_msse")
-            fallback_reason = result.get("fallback_reason")
-            row: dict[str, object] = {
-                "variant": selection.get("model_label", run_manifest["identity"]["model"]),
-                "dataset": task.dataset,
-                "term": task.term,
-                "run": run_dir.name,
-                "scientific_config": json.dumps(
-                    selection.get("scientific_config", {}), sort_keys=True
-                ),
-                "selected_k": None if selected_k is None else int(selected_k),
-                "selected_alpha": (
-                    None if selected_alpha is None else float(selected_alpha)
-                ),
-                "validation_msse": (
-                    None if validation_msse is None else float(validation_msse)
-                ),
-                "fallback_reason": fallback_reason or "",
-                "vanilla_only_fallback": int(fallback_reason is not None),
-            }
-            for method in METHODS:
-                method_summary = dict(summary["methods"][method])
-                for metric in METRICS:
-                    metric_summary = dict(method_summary[metric])
-                    row[f"{method}_{metric}_equal_user"] = float(
-                        metric_summary["equal_user_mean"]
-                    )
-                    row[f"{method}_{metric}_equal_window"] = float(
-                        metric_summary["equal_window_mean"]
-                    )
-                scaled_mase = dict(method_summary["scaled_mase"])
-                row[f"{method}_scaled_mase_equal_user"] = float(
-                    scaled_mase["equal_user_mean"]
-                )
-                row[f"{method}_scaled_mase_equal_window"] = float(
-                    scaled_mase["equal_window_mean"]
-                )
-                row[f"{method}_inference_seconds_per_window"] = float(
-                    summary["timing"]["methods"][method]["seconds_per_window"]
-                )
-            for method in ("covariate", "adaptime"):
-                row[f"{method}_scaled_mase_win_rate_vs_vanilla"] = float(
-                    summary["scaled_mase_win_rate_vs_vanilla"][method]
-                )
-            row["rag_eligible_fraction"] = float(
-                summary["rag_coverage"]["eligible_fraction"]
-            )
-            rows.append(row)
-            input_manifests.append(str(run_dir / "manifest.json"))
-
-    numeric_fields = [
-        key
-        for key in rows[0]
-        if key
-        not in {
-            "variant",
-            "dataset",
-            "term",
-            "run",
-            "scientific_config",
-            "selected_k",
-            "selected_alpha",
-            "validation_msse",
-            "fallback_reason",
-        }
+    experiment, identity, model_config, pipeline_config, experiment_config = (
+        spec[0],
+        *(json.loads(json.dumps(value)) for value in spec[1:]),
+    )
+    candidates = select_completed_runs(
+        root,
+        config_policy="distinct",
+        repeat_policy="selected",
+    )
+    matches = [
+        path
+        for path, manifest in candidates
+        if manifest.get("experiment") == experiment
+        and manifest.get("identity") == identity
+        and manifest.get("model_config") == model_config
+        and manifest.get("pipeline_config") == pipeline_config
+        and manifest.get("experiment_config") == experiment_config
     ]
-
-    def averaged(
-        groups: dict[tuple[str, ...], list[dict[str, object]]],
-        keys: tuple[str, ...],
-    ) -> list[dict[str, object]]:
-        output: list[dict[str, object]] = []
-        for values in groups.values():
-            row = {key: values[0][key] for key in keys}
-            row.update(
-                {
-                    field: float(np.mean([float(value[field]) for value in values]))
-                    for field in numeric_fields
-                }
-            )
-            output.append(row)
-        return output
-
-    exact_groups: dict[tuple[str, ...], list[dict[str, object]]] = {}
-    for row in rows:
-        key = tuple(
-            str(row[field])
-            for field in ("variant", "dataset", "term", "scientific_config")
+    if len(matches) != 1:
+        raise FileNotFoundError(
+            f"expected one completed exact {experiment} input below {root}, "
+            f"found {len(matches)}"
         )
-        exact_groups.setdefault(key, []).append(row)
-    per_config = averaged(
-        exact_groups, ("variant", "dataset", "term", "scientific_config")
-    )
-    task_groups: dict[tuple[str, ...], list[dict[str, object]]] = {}
-    for row in per_config:
-        key = tuple(str(row[field]) for field in ("variant", "dataset", "term"))
-        task_groups.setdefault(key, []).append(row)
-    effective_rows = averaged(task_groups, ("variant", "dataset", "term"))
+    return matches[0]
 
-    variants: dict[str, object] = {}
-    for variant in sorted({str(row["variant"]) for row in effective_rows}):
-        variant_rows = [row for row in effective_rows if row["variant"] == variant]
-        dataset_rows: dict[str, list[dict[str, object]]] = {}
-        for row in variant_rows:
-            dataset_rows.setdefault(str(row["dataset"]), []).append(row)
-        methods: dict[str, object] = {}
-        for method in METHODS:
-            metrics: dict[str, object] = {}
-            for metric in METRICS:
-                field = f"{method}_{metric}_equal_user"
-                per_dataset = np.asarray(
-                    [
-                        np.mean([float(row[field]) for row in dataset_rows[dataset]])
-                        for dataset in sorted(dataset_rows)
-                    ],
-                    dtype=np.float64,
-                )
-                metrics[metric] = {
-                    "equal_dataset_mean": float(per_dataset.mean()),
-                    "equal_dataset_std": float(per_dataset.std()),
-                }
-            scaled_field = f"{method}_scaled_mase_equal_user"
-            task_scaled_mase = np.asarray(
-                [float(row[scaled_field]) for row in variant_rows],
-                dtype=np.float64,
-            )
-            finite_positive = task_scaled_mase[
-                np.isfinite(task_scaled_mase) & (task_scaled_mase > 0)
-            ]
-            metrics["scaled_mase"] = {
-                "task_geometric_mean": (
-                    float(np.exp(np.log(finite_positive).mean()))
-                    if len(finite_positive)
-                    else np.nan
-                ),
-                "finite_tasks": int(len(finite_positive)),
-                "total_tasks": int(len(task_scaled_mase)),
-            }
-            timing_field = f"{method}_inference_seconds_per_window"
-            per_dataset_timing = np.asarray(
-                [
-                    np.mean(
-                        [float(row[timing_field]) for row in dataset_rows[dataset]]
-                    )
-                    for dataset in sorted(dataset_rows)
-                ],
-                dtype=np.float64,
-            )
-            metrics["inference_seconds_per_window"] = {
-                "equal_dataset_mean": float(per_dataset_timing.mean()),
-                "equal_dataset_std": float(per_dataset_timing.std()),
-            }
-            methods[method] = metrics
-        wins: dict[str, object] = {}
-        for method in ("covariate", "adaptime"):
-            field = f"{method}_scaled_mase_win_rate_vs_vanilla"
-            per_dataset = np.asarray(
-                [
-                    np.mean([float(row[field]) for row in dataset_rows[dataset]])
-                    for dataset in sorted(dataset_rows)
-                ],
-                dtype=np.float64,
-            )
-            wins[method] = {
-                "equal_dataset_mean": float(per_dataset.mean()),
-                "equal_dataset_std": float(per_dataset.std()),
-            }
-        variants[variant] = {
-            "datasets": len(dataset_rows),
-            "tasks": len(variant_rows),
-            "vanilla_only_fallback_tasks": int(
-                np.count_nonzero(
-                    [float(row["vanilla_only_fallback"]) for row in variant_rows]
-                )
-            ),
-            "methods": methods,
-            "scaled_mase_win_rate_vs_vanilla": wins,
-            "rag_coverage": {
-                "equal_dataset_eligible_fraction_mean": float(
-                    np.mean(
-                        [
-                            np.mean(
-                                [
-                                    float(row["rag_eligible_fraction"])
-                                    for row in dataset_rows[dataset]
-                                ]
-                            )
-                            for dataset in sorted(dataset_rows)
-                        ]
-                    )
-                )
-            },
-        }
 
-    root = output_dir.expanduser().resolve()
-    manifest_path = root / "time_summary_manifest.json"
-    _atomic_csv(root / "time_tasks.csv", rows)
-    _atomic_json(
-        root / "time_summary.json",
-        {"variants": variants},
+def _matching_evaluation_runs(
+    root: Path,
+    tasks: Iterable[AdaptimeTask],
+    workflow: AdaptimeWorkflowConfig,
+    method: str,
+) -> list[Path] | None:
+    """Return exact completed evaluations, or fail closed for reuse."""
+
+    try:
+        return [
+            _completed_run(root, _spec(task, workflow, "evaluations", method))
+            for task in tasks
+        ]
+    except (FileNotFoundError, ValueError):
+        return None
+
+
+def _allocation(
+    artifact_root: Path,
+    task: AdaptimeTask,
+    workflow: AdaptimeWorkflowConfig,
+    stage: str,
+    method: str,
+    *,
+    runtime_config: dict[str, object],
+    provenance: dict[str, object],
+):
+    spec = _spec(task, workflow, stage, method)
+    experiment, identity, model_config, pipeline_config, experiment_config = (
+        spec[0],
+        *(json.loads(json.dumps(value)) for value in spec[1:]),
     )
-    _atomic_json(
-        manifest_path,
-        {
-            "schema_version": 1,
-            "format": "adaptime_time_aggregate",
-            "protocol": "task_scaled_mase_then_geometric_mean_across_tasks",
-            "status": "completed",
-            "selection": {
-                "launch_id": launch_id,
-                "config_policy": config_policy,
-                "repeat_policy": repeat_policy,
-            },
-            "input_manifests": input_manifests,
-            "files": {"summary": "time_summary.json", "tasks": "time_tasks.csv"},
+    return allocate_run(
+        _stage_root(artifact_root, stage, method, task),
+        experiment=experiment,
+        identity=identity,
+        model_config=model_config,
+        pipeline_config=pipeline_config,
+        runtime_config=runtime_config,
+        experiment_config=experiment_config,
+        provenance=provenance,
+    )
+
+
+def _data_manifest(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    root = _stage_root(artifact_root, "data", "shared", task)
+    run = _completed_run(root, _spec(task, workflow, "data", "shared"))
+    return run / "prepared" / "manifest.json"
+
+
+def _artifact_manifest(
+    artifact_root: Path,
+    task: AdaptimeTask,
+    workflow: AdaptimeWorkflowConfig,
+    stage: str,
+    method: str,
+    relative: str,
+) -> Path:
+    root = _stage_root(artifact_root, stage, method, task)
+    run = _completed_run(root, _spec(task, workflow, stage, method))
+    return run / relative
+
+
+def _run_prepare(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "data",
+        "shared",
+        runtime_config={},
+        provenance={
+            "dataset_source": str(task.source_path),
+            "minimum_series_length": task.minimum_series_length,
+            "dataset_fingerprint": task.dataset_fingerprint,
         },
     )
-    return manifest_path
+    manifest = run.run_dir / "prepared" / "manifest.json"
+    if not run.should_run:
+        return manifest
+    source = datasets.load_from_disk(str(task.source_path))
+    with run:
+        manifest = prepare_adaptation_dataset(
+            source,
+            task.preparation,
+            run.run_dir / "prepared",
+            source_path=task.source_path,
+        )
+        run.complete(["prepared/manifest.json"])
+    return manifest
 
 
-def _run_dataset_tasks(
-    dataset_name: str,
-    tasks: list[AdaptimeTask],
-    dataset_config: dict[str, object],
+def _run_ridge_extraction(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "extractions",
+        "ridge",
+        runtime_config={
+            "device": workflow.device,
+            "model_path": None if workflow.model_path is None else str(workflow.model_path),
+        },
+        provenance={"data_manifest": str(prepared)},
+    )
+    manifest = run.run_dir / "extraction" / "manifest.json"
+    if not run.should_run:
+        return manifest
+    forecaster = load_adaptime_forecaster(
+        workflow.model,
+        horizon=task.preparation.prediction_length,
+        period=task.preparation.retrieval_period,
+        model_path=workflow.model_path,
+        weights_id=workflow.weights_id,
+        device=workflow.device,
+    )
+    with run:
+        manifest = extract_adaptation_features(
+            prepared,
+            forecaster,
+            _extraction_config(workflow),
+            run.run_dir / "extraction",
+        )
+        run.complete(["extraction/manifest.json"])
+    return manifest
+
+
+def _tsrag_paths(workflow: AdaptimeWorkflowConfig) -> tuple[Path, Path, Path]:
+    root = weights_root()
+    return (
+        (workflow.tsrag_chronos_bolt_path or root / "chronos-bolt-base").expanduser().resolve(),
+        (workflow.tsrag_retriever_path or root / "chronos-t5-base").expanduser().resolve(),
+        (workflow.tsrag_checkpoint_path or root / "ts-rag").expanduser().resolve(),
+    )
+
+
+def _run_tsrag_extraction(
+    artifact_root: Path,
+    task: AdaptimeTask,
     workflow: AdaptimeWorkflowConfig,
-    dataset_config_path: Path | None,
-) -> None:
-    source_path = dataset_storage_root() / dataset_name
-    hf_dataset = datasets.load_from_disk(str(source_path))
-    if len(hf_dataset) == 0:
-        raise ValueError(f"empty TIME dataset: {dataset_name}")
-    first = hf_dataset[0]
-    freq = str(first["freq"])
-    metric_seasonality = int(get_seasonality(freq))
-    period = int(workflow.retrieval_period or metric_seasonality)
-    shapes = [np.asarray(hf_dataset[index]["target"]).shape for index in range(len(hf_dataset))]
-    min_length = min(int(shape[-1]) for shape in shapes)
+    retriever: TSRAGRetriever,
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    _, retriever_path, _ = _tsrag_paths(workflow)
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "extractions",
+        "tsrag",
+        runtime_config={
+            **asdict(workflow.tsrag_runtime),
+            "device": workflow.device,
+            "retriever_path": str(retriever_path),
+        },
+        provenance={
+            "data_manifest": str(prepared),
+            "upstream_repository": "https://github.com/UConn-DSIS/TS-RAG",
+            "upstream_commit": TSRAG_SOURCE_COMMIT,
+        },
+    )
+    manifest = run.run_dir / "extraction" / "manifest.json"
+    if not run.should_run:
+        return manifest
+    with run:
+        manifest = extract_tsrag_features(
+            prepared,
+            retriever,
+            workflow.tsrag_runtime,
+            run.run_dir / "extraction",
+        )
+        run.complete(["extraction/manifest.json"])
+    return manifest
 
-    for task in tasks:
-        settings = get_dataset_settings(dataset_name, task.term, dataset_config)
-        horizon = _prediction_length(
-            dataset_name, task.term, settings.get("prediction_length"), freq
-        )
-        adaptation_stride = int(
-            workflow.adaptation_stride or adaptation_stride_for_frequency(freq)
-        )
-        train_length, validation_length, test_windows_per_variate = (
-            adaptation_split_lengths(
-                int(settings["test_length"]),
-                horizon,
-                adaptation_stride,
-            )
-        )
-        datastore_stop = (
-            min_length - int(settings["test_length"]) - validation_length - train_length
-        )
-        datastore_stride = period * int(workflow.datastore_stride_multiple)
-        context_length = foundation_context_length(workflow.model)
-        preparation = PreparationConfig(
-            dataset=dataset_name,
-            term=task.term,
-            context_length=context_length,
-            prediction_length=horizon,
-            test_length=int(settings["test_length"]),
-            adaptation_train_length=train_length,
-            adaptation_validation_length=validation_length,
-            seasonality=metric_seasonality,
-            target_mode=workflow.target_mode,
-            adaptation_stride=adaptation_stride,
-            retrieval_period=period,
-            datastore_stride=datastore_stride,
-            max_datastore_windows=workflow.max_datastore_windows,
-        )
-        run = allocate_run(
-            task.identity_root,
-            experiment="adaptime",
-            identity={
-                "model": workflow.model,
-                "target_mode": workflow.target_mode,
-                "dataset": dataset_name.rpartition("/")[0] or dataset_name,
-                "frequency": freq,
-                "term": task.term,
-            },
-            model_config={
-                "method": "full_ridge_shared",
-                "weights_id": workflow.weights_id,
-                "representation": workflow.representation,
-                "distance_metric": workflow.distance_metric,
-                "retrieval_scope": workflow.retrieval_scope,
-                "minimum_overlap_fraction": workflow.minimum_overlap_fraction,
-                "minimum_query_finite_fraction": workflow.minimum_query_finite_fraction,
-                "max_k": workflow.max_k,
-                "k_values": list(workflow.k_values),
-                "alpha_values": list(workflow.alpha_values),
-                "seed": workflow.seed,
-            },
-            pipeline_config={
-                "context_length": context_length,
-                "prediction_length": horizon,
-                "test_length": int(settings["test_length"]),
-                "adaptation_train_length": train_length,
-                "adaptation_validation_length": validation_length,
-                "test_windows_per_variate": test_windows_per_variate,
-                "adaptation_train_windows_per_variate": 2 * test_windows_per_variate,
-                "adaptation_validation_windows_per_variate": test_windows_per_variate,
-                "adaptation_stride": preparation.query_stride,
-                "retrieval_period": period,
-                "datastore_stride": datastore_stride,
-                "max_datastore_windows": workflow.max_datastore_windows,
-            },
-            runtime_config={
-                "model_batch_size": workflow.model_batch_size,
-                "query_block_size": workflow.query_block_size,
-                "datastore_block_size": workflow.datastore_block_size,
-                "arrow_cache_items": workflow.arrow_cache_items,
-                "ridge_chunk_size": workflow.ridge_chunk_size,
-                "device": workflow.device,
-                "model_path": (
-                    str(workflow.model_path) if workflow.model_path is not None else None
-                ),
-            },
-            experiment_config={
-                "target_mode": workflow.target_mode,
-                "methods": list(SCORE_METHODS),
-                "metrics": list(METRICS),
-                "performance_metric": "scaled_mase",
-                "formulation": "full_ridge_shared",
-                "insufficient_history_policy": "vanilla",
-            },
-            provenance={
-                "dataset_source": str(source_path),
-                "dataset_config": (
-                    str(dataset_config_path.expanduser().resolve())
-                    if dataset_config_path is not None
-                    else "timebench.config.datasets"
-                ),
-                "minimum_series_length": min_length,
-                "available_datastore_values": datastore_stop,
-                "minimum_datastore_dates_per_variate": period,
-            },
-        )
-        if not run.should_run:
-            continue
 
-        prepared_dir = run.run_dir / "prepared"
-        extraction_dir = run.run_dir / "extraction"
-        training_dir = run.run_dir / "training"
-        comparison_dir = run.run_dir / "comparison"
-        with run:
-            forecaster = load_adaptime_forecaster(
-                workflow.model,
-                horizon=horizon,
-                period=period,
-                model_path=workflow.model_path,
-                weights_id=workflow.weights_id,
-                device=workflow.device,
-            )
-            try:
-                prepared_manifest = prepare_adaptation_dataset(
-                    hf_dataset,
-                    preparation,
-                    prepared_dir,
-                    source_path=source_path,
-                )
-            except InsufficientAdaptationHistory as error:
-                fallback_reason = f"insufficient_adaptation_history: {error}"
-                print(
-                    f"{dataset_name}/{task.term} uses vanilla fallback ({fallback_reason})",
-                    flush=True,
-                )
-                result_manifest = evaluate_vanilla_fallback(
-                    hf_dataset,
-                    forecaster,
-                    dataset=dataset_name,
-                    term=task.term,
-                    frequency=freq,
-                    target_mode=workflow.target_mode,
-                    context_limit=context_length,
-                    prediction_length=horizon,
-                    test_length=int(settings["test_length"]),
-                    seasonality=metric_seasonality,
-                    model_batch_size=workflow.model_batch_size,
-                    fallback_reason=fallback_reason,
-                    output_dir=comparison_dir,
-                )
-                run.complete(
-                    [
-                        "comparison/result_manifest.json",
-                        "comparison/comparison_summary.json",
-                        "comparison/predictions/vanilla.npy",
-                        "comparison/predictions/adaptime.npy",
-                    ]
-                )
-                print(result_manifest, flush=True)
-                continue
-            extraction_manifest = extract_adaptation_features(
-                prepared_manifest,
-                forecaster,
-                ExtractionConfig(
-                    representation=workflow.representation,
-                    distance_metric=workflow.distance_metric,
-                    retrieval_scope=workflow.retrieval_scope,
-                    minimum_overlap_fraction=workflow.minimum_overlap_fraction,
-                    minimum_query_finite_fraction=workflow.minimum_query_finite_fraction,
-                    max_k=workflow.max_k,
-                    context_k=workflow.k_values,
-                    model_batch_size=workflow.model_batch_size,
-                    query_block_size=workflow.query_block_size,
-                    datastore_block_size=workflow.datastore_block_size,
-                    arrow_cache_items=workflow.arrow_cache_items,
-                ),
-                extraction_dir,
-            )
-            model_manifest = fit_full_ridge(
-                prepared_manifest,
-                extraction_manifest,
-                RidgeTrainingConfig(
-                    k_values=workflow.k_values,
-                    alpha_values=workflow.alpha_values,
-                    chunk_size=workflow.ridge_chunk_size,
-                    seed=workflow.seed,
-                ),
-                training_dir,
-            )
-            result_manifest = evaluate_frozen_adaptation(
-                prepared_manifest,
-                extraction_manifest,
-                model_manifest,
-                AdaptimeTestingConfig(
-                    chunk_size=workflow.ridge_chunk_size,
-                ),
-                comparison_dir,
-            )
-            run.complete(
-                [
-                    "prepared/manifest.json",
-                    "extraction/manifest.json",
-                    "training/model_manifest.json",
-                    "comparison/result_manifest.json",
-                    "comparison/comparison_summary.json",
-                ]
-            )
-        print(result_manifest, flush=True)
+def _run_fit(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    extraction = _artifact_manifest(
+        artifact_root, task, workflow, "extractions", "ridge", "extraction/manifest.json"
+    )
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "adaptations",
+        "ridge",
+        runtime_config={"chunk_size": workflow.ridge_chunk_size},
+        provenance={
+            "data_manifest": str(prepared),
+            "extraction_manifest": str(extraction),
+        },
+    )
+    manifest = run.run_dir / "model" / "model_manifest.json"
+    if not run.should_run:
+        return manifest
+    with run:
+        manifest = fit_full_ridge(
+            prepared,
+            extraction,
+            workflow.ridge_training,
+            run.run_dir / "model",
+        )
+        required = ["model/model_manifest.json", "model/selection.json"]
+        if "coefficients" in json.loads(manifest.read_text(encoding="utf-8"))["files"]:
+            required.append("model/coefficients.npy")
+        run.complete(required)
+    return manifest
+
+
+def _run_ridge_prediction(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    extraction = _artifact_manifest(
+        artifact_root, task, workflow, "extractions", "ridge", "extraction/manifest.json"
+    )
+    adaptation = _artifact_manifest(
+        artifact_root, task, workflow, "adaptations", "ridge", "model/model_manifest.json"
+    )
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "predictions",
+        "ridge",
+        runtime_config={"chunk_size": workflow.ridge_chunk_size},
+        provenance={
+            "data_manifest": str(prepared),
+            "extraction_manifest": str(extraction),
+            "adaptation_manifest": str(adaptation),
+        },
+    )
+    manifest = run.run_dir / "prediction" / "prediction_manifest.json"
+    if not run.should_run:
+        return manifest
+    with run:
+        manifest = predict_frozen_ridge(
+            prepared,
+            extraction,
+            adaptation,
+            PredictionConfig(chunk_size=workflow.ridge_chunk_size),
+            run.run_dir / "prediction",
+        )
+        run.complete(
+            [
+                "prediction/prediction_manifest.json",
+                "prediction/predictions.npy",
+                "prediction/rag_eligible.npy",
+                "prediction/fallback_reason.npy",
+            ]
+        )
+    return manifest
+
+
+def _run_tsrag_prediction(
+    artifact_root: Path,
+    task: AdaptimeTask,
+    workflow: AdaptimeWorkflowConfig,
+    retriever: TSRAGRetriever,
+    loaded: LoadedTSRAG,
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    extraction = _artifact_manifest(
+        artifact_root, task, workflow, "extractions", "tsrag", "extraction/manifest.json"
+    )
+    base_path, retriever_path, checkpoint_path = _tsrag_paths(workflow)
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "predictions",
+        "tsrag",
+        runtime_config={
+            **asdict(workflow.tsrag_runtime),
+            "device": workflow.device,
+            "chronos_bolt_path": str(base_path),
+            "retriever_path": str(retriever_path),
+            "checkpoint_path": str(checkpoint_path),
+        },
+        provenance={
+            "data_manifest": str(prepared),
+            "extraction_manifest": str(extraction),
+        },
+    )
+    manifest = run.run_dir / "prediction" / "prediction_manifest.json"
+    if not run.should_run:
+        return manifest
+    with run:
+        manifest = predict_tsrag(
+            prepared,
+            extraction,
+            loaded,
+            retriever,
+            workflow.tsrag_runtime,
+            run.run_dir / "prediction",
+            device=workflow.device,
+        )
+        run.complete(["prediction/prediction_manifest.json", "prediction/predictions.npy"])
+    return manifest
+
+
+def _run_evaluation(
+    artifact_root: Path,
+    task: AdaptimeTask,
+    workflow: AdaptimeWorkflowConfig,
+    method: str,
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    prediction = _artifact_manifest(
+        artifact_root,
+        task,
+        workflow,
+        "predictions",
+        method,
+        "prediction/prediction_manifest.json",
+    )
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "evaluations",
+        method,
+        runtime_config={},
+        provenance={
+            "data_manifest": str(prepared),
+            "prediction_manifest": str(prediction),
+        },
+    )
+    if not run.should_run:
+        return run.run_dir / "metrics_summary.json"
+    with run:
+        evaluate_point_predictions(prepared, prediction, run.run_dir)
+        run.complete(["predictions.npz", "metrics.npz", "config.json", "metrics_summary.json"])
+    return run.run_dir / "metrics_summary.json"
 
 
 def run_adaptation_stage(
     stage: str,
+    method: str,
     workflow: AdaptimeWorkflowConfig,
     *,
     dataset_config_path: Path | None = None,
     datasets_selected: Iterable[str] = ("all_datasets",),
     terms_selected: Iterable[str] | None = None,
     output_root: Path | None = None,
+    ridge_results_path: Path | None = None,
     config_policy: str = "error",
     repeat_policy: str = "selected",
-) -> None:
-    """Run each TIME dataset/term task atomically, then aggregate selected runs."""
+) -> list[Path]:
+    """Run one explicit phase, or a method pipeline after shared preparation."""
 
-    workflow.validate()
-    if stage != "run":
-        raise ValueError("stage must be run")
+    if stage not in STAGES:
+        raise ValueError(f"stage must be one of {STAGES}")
+    if method not in METHODS:
+        raise ValueError(f"method must be one of {METHODS}")
+    workflow.validate(method)
+    if stage == "fit" and method != "ridge":
+        raise ValueError("TS-RAG uses its released frozen adaptor and has no fit stage")
     dataset_config = load_dataset_config(dataset_config_path)
     artifact_root = (output_root or outputs_root() / "adaptime").expanduser().resolve()
     tasks = workflow_tasks(
-        dataset_config,
-        datasets_selected,
-        terms_selected,
-        artifact_root,
-        workflow,
+        dataset_config, datasets_selected, terms_selected, workflow
     )
-    for dataset_name in _selected_datasets(dataset_config, datasets_selected):
-        selected_tasks = [task for task in tasks if task.dataset == dataset_name]
-        _run_dataset_tasks(
-            dataset_name,
-            selected_tasks,
-            dataset_config,
-            workflow,
-            dataset_config_path,
+    local_ridge_root = artifact_root / "evaluations" / "ridge"
+    matched_ridge_runs = (
+        _matching_evaluation_runs(
+            ridge_results_path.expanduser().resolve(), tasks, workflow, "ridge"
         )
-
-    launch_id = os.environ.get("TIME_LAUNCH_ID")
-    aggregate = aggregate_time_comparison(
-        tasks,
-        artifact_root
-        / "summary"
-        / workflow.model
-        / workflow.target_mode
-        / (launch_id or "manual"),
-        launch_id=launch_id,
-        config_policy=config_policy,
-        repeat_policy=repeat_policy,
+        if ridge_results_path is not None
+        and (stage == "report" or (stage == "pipeline" and method == "ridge"))
+        else None
     )
-    print(aggregate, flush=True)
+    if (
+        stage == "pipeline"
+        and method == "ridge"
+        and ridge_results_path is not None
+        and matched_ridge_runs is not None
+    ):
+        print(
+            "Reusing exact completed Ridge evaluations from "
+            f"{ridge_results_path.expanduser().resolve()}",
+            flush=True,
+        )
+        return [run / "metrics_summary.json" for run in matched_ridge_runs]
+    if stage == "pipeline" and method == "ridge" and ridge_results_path is not None:
+        print(
+            "Precomputed Ridge results do not exactly match every requested task; "
+            "running the Ridge pipeline.",
+            flush=True,
+        )
+    if stage == "report":
+        launch_id = os.environ.get("TIME_LAUNCH_ID") or "manual"
+        ridge_root = (
+            ridge_results_path.expanduser().resolve()
+            if matched_ridge_runs is not None and ridge_results_path is not None
+            else local_ridge_root
+        )
+        if ridge_results_path is not None and matched_ridge_runs is None:
+            print(
+                "Precomputed Ridge results do not exactly match every requested task; "
+                f"reporting local results from {local_ridge_root}.",
+                flush=True,
+            )
+        report = build_adaptation_comparison(
+            tsrag_results_root=artifact_root / "evaluations" / "tsrag",
+            ridge_results_root=ridge_root,
+            output_dir=artifact_root / "reports" / launch_id,
+            expected_tasks=((task.dataset, task.term) for task in tasks),
+            config_policy=config_policy,
+            repeat_policy=repeat_policy,
+        )
+        print(report, flush=True)
+        return [report]
+    stages = {
+        "pipeline": ("extract", "fit", "predict", "evaluate")
+        if method == "ridge"
+        else ("extract", "predict", "evaluate"),
+        "all": ("prepare", "extract", "fit", "predict", "evaluate")
+        if method == "ridge"
+        else ("prepare", "extract", "predict", "evaluate"),
+    }.get(stage, (stage,))
+
+    retriever: TSRAGRetriever | None = None
+    loaded: LoadedTSRAG | None = None
+    if method == "tsrag" and any(value in stages for value in ("extract", "predict")):
+        if "prepare" not in stages:
+            for task in tasks:
+                _data_manifest(artifact_root, task, workflow)
+                if "predict" in stages and "extract" not in stages:
+                    _artifact_manifest(
+                        artifact_root,
+                        task,
+                        workflow,
+                        "extractions",
+                        "tsrag",
+                        "extraction/manifest.json",
+                    )
+        base_path, retriever_path, checkpoint_path = _tsrag_paths(workflow)
+        retriever = TSRAGRetriever(
+            retriever_path,
+            device_map=workflow.device,
+            local_files_only=True,
+        )
+        if "predict" in stages:
+            loaded = load_tsrag(base_path, checkpoint_path, device=workflow.device)
+
+    outputs: list[Path] = []
+    for current in stages:
+        for task in tasks:
+            if current == "prepare":
+                result = _run_prepare(artifact_root, task, workflow)
+            elif current == "extract" and method == "ridge":
+                result = _run_ridge_extraction(artifact_root, task, workflow)
+            elif current == "extract":
+                assert retriever is not None
+                result = _run_tsrag_extraction(
+                    artifact_root, task, workflow, retriever
+                )
+            elif current == "fit":
+                result = _run_fit(artifact_root, task, workflow)
+            elif current == "predict" and method == "ridge":
+                result = _run_ridge_prediction(artifact_root, task, workflow)
+            elif current == "predict":
+                assert retriever is not None and loaded is not None
+                result = _run_tsrag_prediction(
+                    artifact_root, task, workflow, retriever, loaded
+                )
+            else:
+                result = _run_evaluation(
+                    artifact_root, task, workflow, method
+                )
+            outputs.append(result)
+            print(result, flush=True)
+    return outputs

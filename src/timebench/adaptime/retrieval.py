@@ -248,10 +248,10 @@ def blockwise_topk(
         order = np.argsort(best_distance, axis=1)
         best_distance = np.take_along_axis(best_distance, order, axis=1)
         best_index = np.take_along_axis(best_index, order, axis=1)
-        missing = np.flatnonzero(~np.isfinite(best_distance[:, -1]))
-        if len(missing):
+        incomplete = np.flatnonzero(~np.isfinite(best_distance[:, -1]))
+        if len(incomplete):
             if require_complete_k:
-                local = int(missing[0])
+                local = int(incomplete[0])
                 first = int(query_start + local)
                 raise ValueError(
                     f"query row {first} has {eligible_count[local]} chronologically "
@@ -259,8 +259,7 @@ def blockwise_topk(
                     f"{minimum_overlap_fraction:.0%} finite feature overlap and a finite "
                     f"distance, and needs k={k}"
                 )
-            best_distance[missing] = np.inf
-            best_index[missing] = -1
+            best_index[~np.isfinite(best_distance)] = -1
         if metric == "euclidean":
             np.sqrt(best_distance, out=best_distance)
         neighbor_ids[query_start:query_stop] = best_index

@@ -32,6 +32,10 @@ class RidgeTrainingConfig:
     alpha_values: tuple[float, ...] = (1e-3, 1e-2, 1e-1)
     chunk_size: int = 1024
     seed: int = 1
+    minimum_training_date_ratio: float = 1.0
+    minimum_validation_date_ratio: float = 0.1
+    default_k: int = PRIMARY_K
+    default_alpha: float = PRIMARY_ALPHA
 
     def validate(self) -> None:
         if not self.k_values or any(int(k) <= 0 for k in self.k_values):
@@ -44,6 +48,14 @@ class RidgeTrainingConfig:
             raise ValueError("alpha_values must be unique")
         if int(self.chunk_size) <= 0:
             raise ValueError("chunk_size must be positive")
+        if float(self.minimum_training_date_ratio) < 0:
+            raise ValueError("minimum_training_date_ratio must be non-negative")
+        if float(self.minimum_validation_date_ratio) < 0:
+            raise ValueError("minimum_validation_date_ratio must be non-negative")
+        if int(self.default_k) not in self.k_values:
+            raise ValueError("default_k must be included in k_values")
+        if float(self.default_alpha) not in set(map(float, self.alpha_values)):
+            raise ValueError("default_alpha must be included in alpha_values")
 
 
 def _canonical_hash(value: dict[str, object]) -> str:
@@ -87,6 +99,7 @@ def split_statistics_grid(
     k_values: tuple[int, ...],
     chunk_size: int,
     *,
+    date_ticks: np.ndarray,
     include_vanilla_fallback: bool = False,
 ) -> tuple[dict[int, FullRidgeStatistics], dict[int, dict[str, int]]]:
     """Accumulate every K from one bounded pass over a split's neighbors."""
@@ -99,6 +112,9 @@ def split_statistics_grid(
     scale = arrays.open(f"{split}.msse_scale")
     neighbor_ids = arrays.open(f"{split}.neighbor_id")
     rag_eligible = arrays.open(f"{split}.rag_eligible")
+    dates = np.asarray(date_ticks, dtype=np.int64)
+    if len(dates) != len(target):
+        raise ValueError(f"{split} calendar dates do not match extracted rows")
     statistics = {
         k: FullRidgeStatistics(features=2 + 2 * int(k)) for k in k_values
     }
@@ -109,9 +125,12 @@ def split_statistics_grid(
             "adapted_windows": 0,
             "vanilla_fallback_windows": 0,
             "excluded_label_windows": 0,
+            "total_dates": int(len(np.unique(dates))),
+            "adapted_dates": 0,
         }
         for k in k_values
     }
+    adapted_dates = {k: set() for k in k_values}
     for start in range(0, len(target), int(chunk_size)):
         stop = min(start + int(chunk_size), len(target))
         chunk_target = np.asarray(target[start:stop])
@@ -152,9 +171,11 @@ def split_statistics_grid(
                         scale=chunk_scale[complete_positions],
                     )
                     adapted[complete_positions] = True
+                    adapted_dates[k].update(
+                        map(int, dates[start:stop][complete_positions])
+                    )
             fallback = label_complete & ~adapted
             if include_vanilla_fallback and np.any(fallback):
-                fallback_count = int(np.count_nonzero(fallback))
                 fallback_residual = chunk_target[fallback] - chunk_vanilla[fallback]
                 zero_design = np.zeros(
                     (*fallback_residual.shape, statistics[k].features),
@@ -173,6 +194,8 @@ def split_statistics_grid(
             coverage[k]["excluded_label_windows"] += int(
                 len(label_complete) - np.count_nonzero(label_complete)
             )
+    for k in k_values:
+        coverage[k]["adapted_dates"] = len(adapted_dates[k])
     return statistics, coverage
 
 
@@ -209,11 +232,11 @@ def fit_full_ridge(
     if manifest_path.is_file():
         existing = json.loads(manifest_path.read_text(encoding="utf-8"))
         files = dict(existing.get("files", {}))
-        required = (files.get("coefficients"), files.get("selection"))
         if (
             existing.get("signature") == signature
             and existing.get("status") == "completed"
-            and all(relative and (root / relative).is_file() for relative in required)
+            and files.get("selection")
+            and all((root / relative).is_file() for relative in files.values())
         ):
             return manifest_path
         raise FileExistsError(f"training directory already contains a different run: {root}")
@@ -223,33 +246,124 @@ def fit_full_ridge(
     selection_rows: list[dict[str, object]] = []
     best: tuple[float, int, float, np.ndarray] | None = None
     train_by_k, train_coverage = split_statistics_grid(
-        arrays, "adaptation_train", config.k_values, config.chunk_size
+        arrays,
+        "adaptation_train",
+        config.k_values,
+        config.chunk_size,
+        date_ticks=prepared.calendar_ticks("adaptation_train"),
     )
     validation_by_k, validation_coverage = split_statistics_grid(
         arrays,
         "adaptation_validation",
         config.k_values,
         config.chunk_size,
+        date_ticks=prepared.calendar_ticks("adaptation_validation"),
         include_vanilla_fallback=True,
     )
-    for k in config.k_values:
-        train_statistics = train_by_k[k]
-        validation_statistics = validation_by_k[k]
-        for alpha in config.alpha_values:
-            coefficients = train_statistics.solve(alpha)
-            validation_msse = validation_statistics.mean_squared_error(coefficients)
-            selection_rows.append(
-                {
-                    "k": int(k),
-                    "alpha": float(alpha),
-                    "validation_msse": float(validation_msse),
-                }
-            )
-            candidate = (float(validation_msse), int(k), float(alpha), coefficients)
-            if best is None or candidate[:3] < best[:3]:
-                best = candidate
-    assert best is not None
-    validation_msse, selected_k, selected_alpha, coefficients = best
+    test_dates = int(len(np.unique(prepared.calendar_ticks("test"))))
+    training_date_limit = float(config.minimum_training_date_ratio) * test_dates
+    validation_date_limit = float(config.minimum_validation_date_ratio) * test_dates
+    default_k = int(config.default_k)
+    default_alpha = float(config.default_alpha)
+    default_training_dates = int(train_coverage[default_k]["adapted_dates"])
+    if default_training_dates <= training_date_limit:
+        reason = (
+            f"K={default_k} has {default_training_dates} valid training dates; "
+            f"requires more than {training_date_limit:g} for {test_dates} test dates"
+        )
+        _atomic_json(
+            root / "selection.json",
+            {
+                "criterion": "vanilla_fallback",
+                "fallback_reason": reason,
+                "primary_configuration": {"k": default_k, "alpha": default_alpha},
+                "date_support": {
+                    "test_dates": test_dates,
+                    "minimum_training_dates_exclusive": training_date_limit,
+                    "minimum_validation_dates_exclusive": validation_date_limit,
+                    "default_k_training_dates": default_training_dates,
+                    "default_k_validation_dates": int(
+                        validation_coverage[default_k]["adapted_dates"]
+                    ),
+                },
+                "candidates": [],
+            },
+        )
+        model = {
+            **identity,
+            "format": "adaptime_full_ridge_model",
+            "signature": signature,
+            "status": "completed",
+            "protocol": "vanilla_fallback_when_valid_training_dates_are_insufficient",
+            "selected": {"k": None, "alpha": None, "validation_msse": None},
+            "fallback_reason": reason,
+            "primary_configuration": {"k": default_k, "alpha": default_alpha},
+            "date_support": {
+                "test_dates": test_dates,
+                "minimum_training_dates_exclusive": training_date_limit,
+                "minimum_validation_dates_exclusive": validation_date_limit,
+            },
+            "feature_names": [],
+            "coverage": {
+                "adaptation_train": {
+                    str(k): value for k, value in train_coverage.items()
+                },
+                "adaptation_validation": {
+                    str(k): value for k, value in validation_coverage.items()
+                },
+            },
+            "files": {"selection": "selection.json"},
+        }
+        _atomic_json(manifest_path, model)
+        return manifest_path
+
+    default_validation_dates = int(validation_coverage[default_k]["adapted_dates"])
+    if default_validation_dates <= validation_date_limit:
+        selected_k = default_k
+        selected_alpha = default_alpha
+        validation_msse: float | None = None
+        coefficients = train_by_k[selected_k].solve(selected_alpha)
+        selection_criterion = "default_sparse_validation"
+        selection_rows.append(
+            {
+                "k": selected_k,
+                "alpha": selected_alpha,
+                "validation_msse": None,
+            }
+        )
+    else:
+        selection_criterion = "adaptation_validation_msse"
+        candidate_ks = [
+            k
+            for k in config.k_values
+            if int(train_coverage[k]["adapted_dates"]) > training_date_limit
+            and int(validation_coverage[k]["adapted_dates"]) > validation_date_limit
+        ]
+        for k in candidate_ks:
+            train_statistics = train_by_k[k]
+            validation_statistics = validation_by_k[k]
+            for alpha in config.alpha_values:
+                candidate_coefficients = train_statistics.solve(alpha)
+                candidate_msse = validation_statistics.mean_squared_error(
+                    candidate_coefficients
+                )
+                selection_rows.append(
+                    {
+                        "k": int(k),
+                        "alpha": float(alpha),
+                        "validation_msse": float(candidate_msse),
+                    }
+                )
+                candidate = (
+                    float(candidate_msse),
+                    int(k),
+                    float(alpha),
+                    candidate_coefficients,
+                )
+                if best is None or candidate[:3] < best[:3]:
+                    best = candidate
+        assert best is not None
+        validation_msse, selected_k, selected_alpha, coefficients = best
 
     coefficient_path = root / "coefficients.npy"
     with coefficient_path.open("wb") as stream:
@@ -257,11 +371,22 @@ def fit_full_ridge(
     _atomic_json(
         root / "selection.json",
         {
-            "criterion": "adaptation_validation_msse",
+            "criterion": selection_criterion,
             "selected_k": selected_k,
             "selected_alpha": selected_alpha,
             "selected_validation_msse": validation_msse,
-            "primary_configuration": {"k": PRIMARY_K, "alpha": PRIMARY_ALPHA},
+            "primary_configuration": {"k": default_k, "alpha": default_alpha},
+            "date_support": {
+                "test_dates": test_dates,
+                "minimum_training_dates_exclusive": training_date_limit,
+                "minimum_validation_dates_exclusive": validation_date_limit,
+                "selected_k_training_dates": int(
+                    train_coverage[selected_k]["adapted_dates"]
+                ),
+                "selected_k_validation_dates": int(
+                    validation_coverage[selected_k]["adapted_dates"]
+                ),
+            },
             "candidates": selection_rows,
         },
     )
@@ -272,15 +397,20 @@ def fit_full_ridge(
         "signature": signature,
         "status": "completed",
         "protocol": (
-            "fit_once_adaptation_train_select_adaptation_validation_"
-            "freeze_before_time_test"
+            "fit_once_valid_adaptation_train_select_when_validation_sufficient_"
+            "otherwise_use_default_freeze_before_time_test"
         ),
         "selected": {
             "k": selected_k,
             "alpha": selected_alpha,
             "validation_msse": validation_msse,
         },
-        "primary_configuration": {"k": PRIMARY_K, "alpha": PRIMARY_ALPHA},
+        "primary_configuration": {"k": default_k, "alpha": default_alpha},
+        "date_support": {
+            "test_dates": test_dates,
+            "minimum_training_dates_exclusive": training_date_limit,
+            "minimum_validation_dates_exclusive": validation_date_limit,
+        },
         "feature_names": full_ridge_feature_names(selected_k),
         "coverage": {
             "adaptation_train": {str(k): value for k, value in train_coverage.items()},

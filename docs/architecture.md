@@ -1,105 +1,66 @@
 # Code architecture
 
-Adaptime keeps TIME's inherited foundation benchmark recognizable while
-isolating the proposal pipeline beneath `src/timebench/`.
-
-The inherited baseline path is:
-
-```text
-scripts/run_*.sh
-  -> experiments/*.py
-  -> timebench.evaluation.Dataset and model inference
-  -> timebench.pipeline.allocate_run
-  -> predictions, metrics, completed schema-1 manifest
-  -> scripts/compute_foundation_summary.py
-```
-
-The Adaptime path is:
+Adaptime separates data preparation, method-specific extraction, adaptation,
+prediction, evaluation, and reporting. Each boundary is independently callable
+and owns a configuration-addressed schema-1 run.
 
 ```text
-TIME saved-Arrow dataset + dataset YAML
-  -> pipeline/runs.py: allocate or reuse one dataset/frequency/term run_n
-  -> evaluation/adaptation_data.py: frequency-strided 2:1 adaptation windows,
-     balanced optional datastore cap, and unchanged TIME test indices
-  -> pipeline/adaptime_extraction.py: V, C, neighbors, Y, N, timed components
-  -> pipeline/adaptime_training.py: train statistics and validation selection
-  -> pipeline/adaptime_testing.py: frozen V/C/Adaptime TIME comparison
-  -> pipeline/adaptime_workflow.py: manifest-selected TIME aggregate
+TIME saved-Arrow dataset + dataset configuration
+  -> evaluation/adaptation_data.py
+       shared datastore, train/validation references, official test references
+  -> ridge branch                         -> TS-RAG branch
+       pipeline/adaptime_extraction.py         pipeline/tsrag.py extraction
+       pipeline/adaptime_training.py           external_models/tsrag + loader
+       pipeline/adaptation_prediction.py       pipeline/tsrag.py inference
+  -> evaluation/adaptation.py
+       standard TIME save_window_predictions evaluator
+  -> results/adaptation.py
+       comparison over independently completed evaluation manifests
 ```
 
-Every source row receives a finite-context fraction and an explicit eligibility
-reason during extraction. Datastore candidates with incomplete futures are
-removed before blockwise search. Retrieval and covariate model calls operate
-only on eligible rows; full-size memory maps preserve original TIME row order
-and store vanilla output in every fallback slot. Training streams only complete
-ridge rows and scales each row by its full-history RMS seasonal error to
-optimize MSSE. Validation scores ineligible rows as vanilla, and testing
-decides fallback without consulting the future target. Evaluation preserves
-missing timestamps, counts only finite seasonal pairs, and compares task MASE
-after division by matching Seasonal Naive MASE.
+`pipeline/adaptime_workflow.py` owns configuration resolution and composes
+these phases. It does not make TS-RAG depend on a Ridge artifact. Both branches
+read the exact same prepared datastore and official test references, while
+their extraction and prediction artifacts live under separate method roots.
+The shared datastore retains enough future support for `max(H,64)` and at
+least 11 dates per variate so it is valid for the Ridge grid and TS-RAG top-10
+retrieval.
 
-The official test-window count determines the custom split sizes: twice that
-many adaptation-training origins and the same number of validation origins.
-Frequency-specific prime strides cover seasonal phases without coupling these
-origins to the forecast horizon. All older history is datastore history unless
-a global maximum keeps an equal number of latest dates per variate. Failure to
-retain the planned adaptation windows, full requested context, or one period
-of datastore dates bypasses extraction and ridge fitting and writes an
-explicit vanilla-only TIME test result instead.
+Ridge extraction materializes bounded `.npy` arrays for representations,
+neighbors, forecasts, targets, eligibility, and timing. Neighbor search accepts
+partial results, and every candidate `K` uses only rows with at least `K`
+valid neighbors. Closed-form fitting streams float64 sufficient statistics.
+When valid primary-`K` training dates do not exceed test dates, the model
+artifact records an explicit vanilla fallback instead of solving an empty
+ridge. Sparse validation uses the primary `K=10`, `alpha=1e-2` without model
+selection when valid validation dates do not exceed 10% of test dates.
 
-`timebench.adaptime` owns exact retrieval and the proposal's readable ridge
-math. `timebench.model_loading` owns foundation construction, capability
-declarations, offline checkpoints, and the tensor/covariate adapters.
-`timebench.evaluation.adaptation_data` owns chronological windows and lazy
-Arrow access. `timebench.pipeline` owns disk-backed extraction, model/result
-manifests, task-boundary recovery, run selection, and TIME-wide orchestration.
-`timebench.scripts` exposes the Python commands. `src/slurm` owns shared
-DGX/Selena workflow implementations, while `slurm` contains concise
-submit-ready fronts.
+TS-RAG owns its Chronos-T5 embedding/FAISS extraction and released ARM
+inference. Its reader projects native 512-step contexts and 64-step neighbor
+futures from the shared references without creating another datastore.
 
-One proposal task owns
-`outputs/adaptime/tasks/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
-Preparation, extraction, training, and testing are children of that run. An
-interrupted task clears those children and restarts from preparation in the
-same `run_n`; completed tasks are selected and reused as units. Aggregate
-reports live below `outputs/adaptime/summary/` and record every selected run
-manifest. This boundary prevents a partially written extraction or ridge fit
-from being treated as a scientific checkpoint.
+Both wrappers write deterministic point-prediction artifacts. The common
+evaluator exposes each point prediction as the median quantile and delegates
+TIME row reconstruction, labels, metrics, and evaluation files to
+`evaluation.saver.save_window_predictions`, the same owner used by vanilla
+foundation models.
 
-The inherited `evaluation/window_audit.py` diagnostics inspect the exact TIME
-test queries once per distinct model-effective `(L,H)` configuration. Exact
-source positions, window events, and full-series features live below shared
-`TIME_METADATA`; `feature/features_runner.py` reuses complete artifacts and
-repairs only missing source-variate rows. The workflow exports compact
-aggregates to its job log tree for standard result synchronization and
-publication.
-
-The extraction boundary is deliberate. Large values remain in Arrow or `.npy`
-memory maps; distance matrices are bounded by query and datastore blocks;
-neighbor foundation forecasts are computed once per selected datastore row;
-and every K/alpha candidate reuses the same extraction. Ridge fitting streams
-float64 sufficient statistics, so it never materializes the flattened design.
-Extraction records test-query representation, retrieval, context construction,
-vanilla and covariate model calls, and fixed-datastore preprocessing separately.
-Testing adds the ridge design/adjustment cost and derives method-level total and
-per-window inference times without treating the fixed training procedure as
-online refitting.
-
-The matched external-control path is separate:
+The combined submission order is:
 
 ```text
-completed Adaptime run at its foundation-model context limit
-  -> pipeline/tsrag_data.py: matched raw-date budget and TIME test references
-  -> external_models/tsrag + model_loading/tsrag.py: pinned ARM/checkpoint
-  -> pipeline/tsrag.py: Chronos-T5/FAISS extraction and frozen evaluation
-  -> pipeline/tsrag_workflow.py: vanilla/TS-RAG/full-ridge table
+prepare
+  +-> ridge pipeline ----+
+  +-> TS-RAG pipeline ---+-> report
 ```
 
-This preserves TS-RAG's own 512-step, same-series stride-one retrieval and
-native 64-step model contract rather than forcing the ridge to use TS-RAG's
-context or importing proposal code into the external method. Its optional
-global datastore cap only crops every variate to the same latest date count;
-within that retained interval TS-RAG still exposes every stride-one origin.
+A supplied Ridge-results root is consulted only by the Ridge pipeline and the
+final report. Ridge work is skipped only if every requested evaluation exactly
+matches the current identity, data fingerprint, pipeline configuration,
+experiment configuration, and selected repeat. Otherwise Ridge recomputes in
+the local artifact root. TS-RAG execution is unchanged in both cases.
 
-The current proposal path is univariate. Native multivariate evaluation remains
-an inherited Chronos-2 control and is not mixed into `full_ridge_shared`.
+Large series remain in Arrow and large numeric products remain memory-mapped.
+`pipeline/runs.py` owns allocation and exact reuse. `src/timebench/scripts/`
+contains explicit phase entry points; `src/slurm/run_adaptime_comparison.sh`
+is the common DGX/Selena implementation; root `scripts/` compose scheduler
+dependencies; `slurm/` contains the concise submit-ready fronts.

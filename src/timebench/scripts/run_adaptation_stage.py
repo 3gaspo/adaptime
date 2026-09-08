@@ -20,8 +20,15 @@ def _csv(value: str) -> tuple[str, ...]:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run Adaptime tasks over TIME")
-    parser.add_argument("--stage", choices=("run",), default="run")
+    parser = argparse.ArgumentParser(
+        description="Run one independent Adaptime phase over TIME tasks"
+    )
+    parser.add_argument(
+        "--stage",
+        choices=("prepare", "extract", "fit", "predict", "evaluate", "report", "pipeline", "all"),
+        required=True,
+    )
+    parser.add_argument("--method", choices=("ridge", "tsrag"), required=True)
     parser.add_argument("--datasets", type=_csv, default=("all_datasets",))
     parser.add_argument("--terms", type=_csv)
     parser.add_argument("--config", type=Path)
@@ -49,6 +56,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--arrow-cache-items", type=int, default=2)
     parser.add_argument("--ridge-chunk-size", type=int, default=1024)
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--tsrag-model-batch-size", type=int, default=256)
+    parser.add_argument("--tsrag-chronos-bolt-path", type=Path)
+    parser.add_argument("--tsrag-retriever-path", type=Path)
+    parser.add_argument("--tsrag-checkpoint-path", type=Path)
+    parser.add_argument(
+        "--ridge-results-path",
+        type=Path,
+        help=(
+            "Reuse already evaluated Ridge results when every requested task "
+            "matches the current scientific configuration exactly"
+        ),
+    )
     parser.add_argument(
         "--config-policy",
         choices=("error", "distinct", "latest", "average"),
@@ -66,6 +85,7 @@ def main() -> None:
     args = parse_args()
     run_adaptation_stage(
         args.stage,
+        args.method,
         AdaptimeWorkflowConfig(
             model=args.model,
             target_mode=args.target_mode,
@@ -90,11 +110,16 @@ def main() -> None:
             model_path=args.model_path,
             weights_id=args.weights_id,
             device=args.device,
+            tsrag_model_batch_size=args.tsrag_model_batch_size,
+            tsrag_chronos_bolt_path=args.tsrag_chronos_bolt_path,
+            tsrag_retriever_path=args.tsrag_retriever_path,
+            tsrag_checkpoint_path=args.tsrag_checkpoint_path,
         ),
         dataset_config_path=args.config,
         datasets_selected=args.datasets,
         terms_selected=args.terms,
         output_root=args.output_root,
+        ridge_results_path=args.ridge_results_path,
         config_policy=args.config_policy,
         repeat_policy=args.repeat_policy,
     )

@@ -1,249 +1,126 @@
 # Adaptime
 
-Adaptime evaluates retrieval-augmented adaptation of time-series foundation
-models on the public [TIME benchmark](https://github.com/zqiao11/TIME). It
-preserves TIME's official test windows and adds a pre-test extraction,
-adaptation-training, validation-selection, and frozen-testing workflow.
+Adaptime evaluates retrieval-augmented wrappers around time-series foundation
+models on the public [TIME benchmark](https://github.com/zqiao11/TIME). The
+official TIME test windows stay unchanged. The current proposal is the
+univariate `full_ridge_shared` adaptor; the matched external control is the
+source-adapted TS-RAG ARM from upstream commit `73ac807`.
 
-No Adaptime result is claimed until the cluster artifacts have completed and
-been inspected.
+For the Ridge wrapper, `V` is the vanilla forecast, `C` is the forecast with
+retrieved trajectories as covariates, `Y_i` are neighbor futures, and `N_i`
+are vanilla forecasts from neighbor histories. With
+`X=[V,C,Y_1..Y_K,N_1..N_K]`, the fitted forecast is `V + X beta`. One
+no-intercept coefficient vector is shared across horizon positions.
 
-## `full_ridge_shared`
+## Documentation map
 
-The current proposal is the fixed-training, fixed-datastore
-`full_ridge_shared` method adapted from `online_adaptation`. For each
-univariate query it extracts:
+- [Method overview](latex/method_overview.pdf): paper-ready formulation and
+  chronological protocol.
+- [Architecture](docs/architecture.md): source ownership, phase boundaries,
+  and artifact flow.
+- [Experiment catalog](docs/experiment_catalog.md): scientific questions,
+  controls, configurations, and public entry points.
+- [Results recap](docs/results_recap.md): inspected evidence and its limits.
 
-- `V`: the foundation model's vanilla forecast;
-- `C`: its context-aware forecast using retrieved neighbors as past and future
-  covariates;
-- `Y_1..Y_K`: the retrieved neighbors' ground-truth horizons;
-- `N_1..N_K`: vanilla foundation forecasts from those neighbors' own histories.
+No Adaptime result is claimed until its cluster artifacts are complete and
+inspected.
 
-With `X = [V, C, Y_1..Y_K, N_1..N_K]`, training fits the residual
-`Y - V` under an MSSE objective and testing predicts `V' = V + X beta`. There is no intercept and one
-coefficient vector is shared across every forecast step. Validation selects
-from `K in {1, 5, 10, 15}` and
-`alpha in {1e-3, 1e-2, 1e-1}`; the primary configuration is `K=10`,
-`alpha=1e-2`. Delta, convex, and per-horizon formulations are outside the
-current contract.
+## Setup
 
-## Chronology and retrieval
-
-Each dataset/term task uses four strictly chronological regions:
-
-1. a fixed datastore ending before adaptation training;
-2. adaptation training, used once to fit every candidate ridge;
-3. adaptation validation, used only to select `K` and `alpha`;
-4. TIME's unchanged, horizon-spaced official test interval.
-
-Let `n_test = floor(test_length / H)` be TIME's official test-window count per
-variate. Adaptime creates `2 * n_test` adaptation-training windows and
-`n_test` validation windows, so the two fitted/selection regions contain three
-times as many windows as the test region. Their window origins use a moderate
-prime stride selected from the dataset frequency rather than `H`: 127 for
-intraday and hourly data, 27 for business-daily and daily data, 11 for weekly,
-5 for monthly, and 3 for quarterly data. The corresponding interval span is
-`H + (n - 1) * stride`; all older dates form the datastore.
-
-The datastore uses all earlier eligible history by default and retrieves along
-a stride equal to the dataset period, optionally multiplied by
-`datastore_stride_multiple`. `max_datastore_windows` can instead impose one
-global window budget: it keeps the same number of most recent dates for every
-variate, rounded down when the budget is not evenly divisible. At least one
-complete period of datastore dates per variate is required. The ridge context
-equals the inherited vanilla TIME limit: 8192 for Chronos-2, 4096 for TS-ICL,
-and 2048 for Chronos-Bolt. If the requested adaptation windows, model context,
-or minimum datastore cannot be supplied, the task still evaluates the
-unchanged TIME test windows with vanilla forecasts and records an explicit
-vanilla-only fallback. TS-RAG separately retains its native 512 steps.
-
-Retrieval uses instance-normalized contexts and exact Euclidean top-K search by
-default. Distances are computed in bounded query/datastore blocks. For a query,
-the fixed datastore endpoint first shifts to the query's residue modulo the
-dataset period; earlier candidates then follow the datastore stride, one period
-by default. Instance statistics ignore missing dates. A context with undefined
-channel statistics is unusable; otherwise distances use shared finite features,
-require at least 80% overlap by default, and treat insufficient overlap as
-infinite distance. Query and datastore histories must independently contain at
-least 80% finite observations by default, and datastore candidates must have a
-complete finite future horizon. These eligibility thresholds are configurable.
-
-Adaptation-training rows are complete-case observations: a row is omitted from
-ridge statistics when its query, target, foundation forecasts, retrieved
-features, or scale is non-finite. Validation and test never impute those
-features. An ineligible query or one without `K` valid neighbors uses the
-vanilla forecast for both the retrieval-context and Adaptime outputs. Missing
-test targets only mask the corresponding metric positions and never determine
-which prediction path is used.
-
-Extraction writes memory-mapped arrays for representations, neighbors,
-distances, targets, `V`, requested `C` forecasts, and unique neighbor forecasts.
-The ridge grid is fitted from streaming float64 sufficient statistics. Each
-window/channel design and residual row is divided by the RMS seasonal-lag
-error from the complete pre-origin history, so fitting and validation optimize
-MSSE without enlarging the optimization problem. Training never opens TIME
-test values, and testing loads only frozen selected coefficients.
-
-## Running Adaptime
-
-Prepare TIME's saved-Arrow datasets and local weights, then run the complete
-workflow locally with:
-
-```bash
-PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage \
-  --stage run --datasets 'SG_Weather/D' --terms short
-```
-
-The same complete-task workflow is the sole Slurm path:
-
-```bash
-bash scripts/submit_adaptime_comparison.sh dgx
-bash scripts/submit_adaptime_comparison.sh selena
-```
-
-It defaults to Chronos-2, univariate targets, every configured dataset and
-term, and Chronos-2's inherited 8192-step context. Submission-time overrides include
-`ADAPTIME_DATASETS` and `ADAPTIME_TERMS` as comma-separated selections,
-`ADAPTIME_MODEL`, `ADAPTIME_MODEL_PATH`,
-`ADAPTIME_ADAPTATION_STRIDE`, `ADAPTIME_MAX_DATASTORE_WINDOWS`,
-`ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION`, retrieval settings, block sizes, and
-the K/alpha grids. Train/validation lengths are derived from the official test
-window count and are not independently configurable. The proposal
-requires a model adapter with retrieval-covariate support; unsupported models
-fail explicitly. Non-finite covariate observations are passed as NaNs so a
-capable backbone can apply its ordinary missing-value mask.
-
-### Task recovery and run selection
-
-Each task owns
-`outputs/adaptime/tasks/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
-Its plain schema-1 manifest records scientific, runtime, dataset, and launch
-configuration without hashing code, data, or checkpoints.
-
-The default `overwrite_exact` policy reuses an exact completed configuration,
-resumes an exact interrupted configuration in the same `run_n`, and allocates
-the next `run_n` for a different scientific configuration. Resume discards all
-partial files for that task and restarts preparation, extraction, fitting, and
-testing; there is no mid-task checkpoint reuse. Allocation logs record the
-current launch ID, Slurm job ID, and UTC launch time. A resume also records the
-preceding launch and job. A failed wrapper marks any still-running task owned by
-that launch as interrupted.
-
-`TIME_RUN_CONFLICT_POLICY=overwrite_exact|overwrite_path|new`,
-`TIME_FORCE_RERUN`, and `TIME_SKIP_COMPLETED` control deliberate reruns.
-Readers use `ADAPTIME_CONFIG_POLICY=error|distinct|latest|average` and
-`ADAPTIME_REPEAT_POLICY=selected|latest|distinct|average`. The default rejects
-mixed scientific configurations and uses the selected completed repeat;
-`scripts/select_result_run.py` can pin a different completed repeat.
-
-The final `comparison_summary.json` and raw arrays compare Seasonal Naive,
-vanilla `V`, retrieval-covariate `C`, and frozen Adaptime `V'`. Raw MSE, MAE,
-MASE, and MSSE remain diagnostics. Performance comparisons use task scaled
-MASE: each method's equal-user MASE is divided by matching Seasonal Naive MASE,
-and task ratios are combined with a geometric mean. Win rates likewise compare
-MASE on identical valid targets. MASE/MSSE seasonal constants use the complete
-pre-origin history without compressing missing timestamps; only finite lagged
-pairs contribute to their sums and counts. It also records
-accelerator-synchronized model time and CPU retrieval/adaptor time, reporting
-end-to-end seconds per official test window for all three methods and retaining
-the underlying components plus fixed precomputed-extraction cost.
-
-After all selected tasks finish,
-`outputs/adaptime/summary/<model>/<target_mode>/<launch>/` records its input
-manifests, resolves repeat/configuration policy within each task, and reports
-the geometric mean of task scaled-MASE ratios.
-Tasks that cannot instantiate the four-way adaptation protocol remain in this
-aggregate as vanilla-only fallbacks, with null `K`, `alpha`, and validation
-MSSE plus their recorded reason.
-
-### Matched TS-RAG comparison
-
-The source-adapted TS-RAG control uses the released MoE ARM, Chronos-T5 EOS
-retrieval embeddings, same-series stride-one datastore, and native 512-context,
-64-horizon contract from `UConn-DSIS/TS-RAG` commit `73ac807`. It deliberately
-keeps TS-RAG's own retrieval and adaptation mechanism rather than routing it
-through Adaptime's ridge code.
-
-Run the primary Adaptime job first at its foundation model's normal context
-length. Once its selected task manifests are complete, the TS-RAG workflow
-discovers those runs below the configured Adaptime output root, constructs its
-own native 512-step views over the same date budget, reuses the exact official
-TIME test references, and writes a matched scaled-MASE vanilla/TS-RAG/ridge table:
-
-```bash
-bash scripts/submit_tsrag_comparison.sh dgx
-bash scripts/submit_tsrag_comparison.sh selena
-```
-
-`TSRAG_RIDGE_OUTPUT_ROOT` may select another Adaptime output root, and
-`TSRAG_RIDGE_LAUNCH_ID` may restrict selection to one completed ridge launch.
-TS-RAG keeps its defining stride-one datastore over every accessible
-pre-adaptation date. `TSRAG_MAX_DATASTORE_WINDOWS`, falling back to
-`ADAPTIME_MAX_DATASTORE_WINDOWS`, may crop it to an equal number of the most
-recent dates per variate without changing that stride-one mechanism.
-
-## Inherited foundation-model benchmark
-
-The maintained baseline evaluates `chronos_bolt`, `chronos2`, `ts_icl`, and
-`seasonal_naive`. Learned-model jobs require local checkpoints and never
-download weights at runtime. Seasonal Naive passes StatsForecast's
-deterministic quantiles directly to TIME evaluation rather than resampling
-them. Prepare the saved-Arrow dataset on an
-internet-connected host:
+Adaptime uses the project `uv` environment on its execution host. Download the
+TIME saved-Arrow datasets on an internet-connected host:
 
 ```bash
 PYTHONPATH=src uv run --no-sync python scripts/download_time_dataset.py \
-  --destination "$HOME/datasets/hf_dataset"
+  --destination datasets/hf_dataset
 ```
 
-Optional `.env` roots default to `datasets/`, `datasets/hf_dataset/`,
-`weights/`, `outputs/`, and `logs/`. Learned models expect:
+Learned models run offline. The standard local checkpoint layout is:
 
 ```text
 weights/chronos2/
 weights/chronos-bolt-base/
+weights/chronos-t5-base/
+weights/ts-rag/
 weights/tsicl/tsicl-v1.ckpt
 ```
 
-Submit the four baselines and dependent summary, the Chronos-2 channel
-comparison, and dataset diagnostics with:
+Optional `.env` settings can override dataset, weight, output, log, and shared
+metadata roots.
+
+## Main executions
+
+Extraction, fitting, prediction, and evaluation are independent commands over
+configuration-addressed artifacts. Shared preparation is method-neutral:
 
 ```bash
-bash scripts/submit_foundation_models.sh dgx
-bash scripts/channels_comparison.sh dgx
-bash scripts/dataset_diagnostics.sh dgx
+PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage \
+  --stage prepare --method ridge --datasets SG_Weather/D --terms short
+
+PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage \
+  --stage pipeline --method ridge --datasets SG_Weather/D --terms short
+
+PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage \
+  --stage pipeline --method tsrag --datasets SG_Weather/D --terms short
 ```
 
-Use `selena` for matching Selena fronts. Foundation tasks and summaries live
-below `outputs/foundation_models/`; all three channel cases share
-`outputs/channels_comparison/`. The multivariate channel case imports matching
-completed Chronos-2 foundation summaries when available and recomputes when
-they are absent, incomplete, or scientifically different. Proposal runs remain
-below `outputs/adaptime/`. Shared diagnostic metadata lives below
-`TIME_METADATA`, outside these project-local runtime artifacts.
+The combined submission front schedules shared preparation first, then Ridge
+and TS-RAG concurrently, then the comparison report after both succeed:
 
-Foundation and channel performance tables use task MASE divided by matching
-corrected Seasonal Naive MASE, followed by the TIME leaderboard geometric
-mean. Foundation runs must therefore finish before channel summaries.
+```bash
+bash scripts/submit_adaptime_comparison.sh dgx
+```
 
-## Source tree
+`ADAPTIME_RIDGE_RESULTS_PATH` can point to completed Ridge evaluations. The
+Ridge pipeline skips extraction, fitting, prediction, and evaluation only when
+every requested task exactly matches the current scientific configuration; a
+missing or different task is recomputed. This override never changes TS-RAG's
+extraction, inference, or evaluation. `scripts/submit_tsrag_comparison.sh`
+runs the same shared preparation and TS-RAG pipeline without requiring Ridge;
+it adds a comparison report only when a Ridge-results path is supplied.
+
+The default Ridge grid is `K in {1,5,10,15}` and
+`alpha in {1e-3,1e-2,1e-1}`. Training uses only dates with enough valid
+neighbors. If valid training dates at the primary `K=10` do not exceed the
+number of test dates, the fitted wrapper becomes an explicit vanilla fallback.
+If valid validation dates do not exceed 10% of test dates, fitting uses the
+default `K=10`, `alpha=1e-2` without validation selection.
+
+The inherited foundation benchmark is launched through
+`scripts/submit_foundation_models.sh`; channel controls use
+`scripts/channels_comparison.sh`; dataset diagnostics use
+`scripts/dataset_diagnostics.sh`.
+
+## Outputs and cluster operations
+
+The current artifact layout below `outputs/adaptime/` is:
 
 ```text
-src/timebench/evaluation/adaptation_data.py  Arrow-backed split/window preparation
-src/timebench/adaptime/                     retrieval and shared-ridge math
-src/timebench/model_loading/                foundation construction and adapters
-src/timebench/external_models/tsrag/         pinned source-adapted TS-RAG model
-src/timebench/pipeline/                     manifests, recovery, extraction, fitting, testing
-src/timebench/scripts/                      Python command entry points
-src/slurm/                                  shared cluster workflow implementations
-slurm/{dgx,selena}/                          concise scheduler fronts
-src/tests/                                  scientific and workflow contracts
+data/shared/.../run_n/prepared/              shared Arrow-backed references
+extractions/{ridge,tsrag}/.../run_n/         method-specific retrieval features
+adaptations/ridge/.../run_n/model/           closed-form Ridge fit
+predictions/{ridge,tsrag}/.../run_n/         wrapper point forecasts
+evaluations/{ridge,tsrag}/.../run_n/         standard TIME evaluation artifacts
+reports/<launch>/                            comparison.csv and report manifest
 ```
 
-## Upstream attribution
+Each phase has its own schema-1 manifest and exact scientific identity.
+Completed exact phases are reusable; a different configuration receives a new
+`run_n`. Ridge and TS-RAG reference the same prepared datastore and official
+test rows but retain separate extraction and inference modules. Both wrapper
+predictions pass through the same TIME evaluator used by vanilla foundation
+models, represented as deterministic median forecasts.
 
-The benchmark base comes from Qiao et al., *It's TIME: Towards the Next
-Generation of Time Series Forecasting Benchmarks* (ICML 2026). Refer to the
-[TIME repository](https://github.com/zqiao11/TIME) for datasets, leaderboard,
-license, and citation.
+Runtime logs live below `logs/`. `sync_code_to_selena.sh`,
+`sync_results_to_dgx.sh`, and `publish_job.sh` handle the maintained cluster
+workflow without mixing Adaptime artifacts with another project.
+
+## Documentation maintenance
+
+Keep the architecture and experiment catalog aligned with executable package
+and launcher changes. Rebuild `latex/method_overview.pdf` whenever its TeX
+source changes. The TIME benchmark base comes from Qiao et al., *It's TIME:
+Towards the Next Generation of Time Series Forecasting Benchmarks* (ICML
+2026); see the
+[upstream repository](https://github.com/zqiao11/TIME) for data and citation
+details.

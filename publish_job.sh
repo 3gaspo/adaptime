@@ -129,6 +129,8 @@ elif [ -d outputs ]; then
                 -name audit_manifest.json -o \
                 -name config.json -o \
                 -name metrics_summary.json -o \
+                -name report_manifest.json -o \
+                -name comparison.csv -o \
                 -name metrics.npz -o \
                 -name task_summary.csv -o \
                 -name dataset_summary.csv -o \
@@ -158,6 +160,8 @@ elif [ -d outputs ]; then
                 -name audit_manifest.json -o \
                 -name config.json -o \
                 -name metrics_summary.json -o \
+                -name report_manifest.json -o \
+                -name comparison.csv -o \
                 -name task_summary.csv -o \
                 -name dataset_summary.csv -o \
                 -name full_dataset.csv -o \

@@ -18,5 +18,6 @@ cd "$PROJECT_ROOT"
 export PROJECT_ROOT
 source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"
 export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_tsrag_${SLURM_JOB_ID}}"
-export TSRAG_RIDGE_OUTPUT_ROOT="${TSRAG_RIDGE_OUTPUT_ROOT:-$TIME_OUTPUTS/adaptime}"
-source "$PROJECT_ROOT/src/slurm/run_tsrag_comparison.sh"
+export ADAPTIME_METHOD=tsrag
+export ADAPTIME_STAGE="${ADAPTIME_STAGE:-pipeline}"
+source "$PROJECT_ROOT/src/slurm/run_adaptime_comparison.sh"

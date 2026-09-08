@@ -103,25 +103,19 @@ def main() -> None:
     assert "ADAPTIME_K_VALUES:-1 5 10 15" in adaptime_workflow
     assert "ADAPTIME_ALPHA_VALUES:-0.001 0.01 0.1" in adaptime_workflow
     assert "ADAPTIME_MINIMUM_QUERY_FINITE_FRACTION:-0.8" in adaptime_workflow
-    assert "--stage run" in adaptime_workflow
-    assert 'TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE/tasks/' in adaptime_workflow
-    assert 'time_stage_start run' in adaptime_workflow
+    assert '--stage "$ADAPTIME_STAGE_VALUE"' in adaptime_workflow
+    assert '--method "$ADAPTIME_METHOD_VALUE"' in adaptime_workflow
+    assert 'TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE"' in adaptime_workflow
+    assert 'time_stage_start "$ADAPTIME_STAGE_VALUE"' in adaptime_workflow
 
     tsrag_fronts = (
         (dgx / "tsrag_comparison.slurm").read_text(encoding="utf-8"),
         (selena / "tsrag_comparison_selena.slurm").read_text(encoding="utf-8"),
     )
     for front in tsrag_fronts:
-        assert 'TSRAG_RIDGE_OUTPUT_ROOT="${TSRAG_RIDGE_OUTPUT_ROOT:-$TIME_OUTPUTS/adaptime}"' in front
-        assert 'source "$PROJECT_ROOT/src/slurm/run_tsrag_comparison.sh"' in front
-    tsrag_workflow = (
-        PROJECT_ROOT / "src/slurm/run_tsrag_comparison.sh"
-    ).read_text(encoding="utf-8")
-    assert 'RIDGE_OUTPUT_ROOT="${TSRAG_RIDGE_OUTPUT_ROOT:-' in tsrag_workflow
-    assert '--ridge-output-root "$RIDGE_OUTPUT_ROOT"' in tsrag_workflow
-    assert 'TSRAG_RIDGE_LAUNCH_ID' in tsrag_workflow
-    assert "run_matched_ridge" not in tsrag_workflow
-    assert "time_stage_start ridge" not in tsrag_workflow
+        assert "export ADAPTIME_METHOD=tsrag" in front
+        assert 'source "$PROJECT_ROOT/src/slurm/run_adaptime_comparison.sh"' in front
+    assert not (PROJECT_ROOT / "src/slurm/run_tsrag_comparison.sh").exists()
 
     adaptime_submit = (
         PROJECT_ROOT / "scripts/submit_adaptime_comparison.sh"
@@ -129,6 +123,11 @@ def main() -> None:
     assert "dgx|selena" in adaptime_submit
     assert "adaptime_comparison.slurm" in adaptime_submit
     assert "adaptime_comparison_selena.slurm" in adaptime_submit
+    assert "ADAPTIME_STAGE=prepare" in adaptime_submit
+    assert "ADAPTIME_METHOD=ridge,ADAPTIME_STAGE=pipeline" in adaptime_submit
+    assert "ADAPTIME_METHOD=tsrag,ADAPTIME_STAGE=pipeline" in adaptime_submit
+    assert 'report_dependency="afterok:$ridge_job:$tsrag_job"' in adaptime_submit
+    assert 'if [ -n "${ADAPTIME_RIDGE_RESULTS_PATH:-}" ]' not in adaptime_submit
 
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
         encoding="utf-8"
@@ -142,6 +141,8 @@ def main() -> None:
         "time_summary_manifest.json",
         "time_summary.json",
         "time_tasks.csv",
+        "report_manifest.json",
+        "comparison.csv",
     ):
         assert compact_artifact in result_sync
         assert compact_artifact in publisher
@@ -149,12 +150,13 @@ def main() -> None:
     workflow_source = (
         PROJECT_ROOT / "src/timebench/pipeline/adaptime_workflow.py"
     ).read_text(encoding="utf-8")
-    assert "task_scaled_mase_then_geometric_mean_across_tasks" in workflow_source
-    assert 'if stage != "run":' in workflow_source
+    assert '"evaluator": "timebench.evaluation.saver.save_window_predictions"' in workflow_source
+    assert "_matching_evaluation_runs(" in workflow_source
+    assert 'stage == "pipeline"' in workflow_source
     assert "allocate_run(" in workflow_source
     assert "if not run.should_run:" in workflow_source
     assert "with run:" in workflow_source
-    assert "aggregate_time_comparison(" in workflow_source
+    assert "build_adaptation_comparison(" in workflow_source
 
     dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
     selena_summary = (selena / "foundation_summary_selena.slurm").read_text(

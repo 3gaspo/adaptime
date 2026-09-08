@@ -1,92 +1,65 @@
 # Experiment catalog
 
-This catalog distinguishes inherited TIME controls from the Adaptime proposal.
-
 ## Inherited controls
 
 `scripts/submit_foundation_models.sh` evaluates `chronos_bolt`, `chronos2`,
 `ts_icl`, and `seasonal_naive` on the official target-only TIME tasks.
-
-`scripts/channels_comparison.sh` evaluates Chronos-2 with native multivariate
-targets, independent univariate targets, and one univariate target with the
-other target histories as past covariates. These are representation controls,
-not Adaptime results.
+`scripts/channels_comparison.sh` evaluates Chronos-2 with multivariate,
+univariate, and past-target-covariate inputs. These are controls rather than
+Adaptime results.
 
 ## Adaptime `full_ridge_shared`
 
-`scripts/submit_adaptime_comparison.sh` answers whether a ridge fitted once on
-pre-test adaptation data improves a foundation model's TIME forecasts when it
-combines vanilla prediction, retrieval-context prediction, neighbor horizons,
-and neighbor residual information.
+The Ridge experiment asks whether a frozen pre-test linear adaptor improves a
+foundation model when it combines vanilla prediction, retrieval-context
+prediction, neighbor futures, and neighbor forecasts.
 
-- Controls: vanilla `V` and retrieval-context forecast `C`.
-- Proposal: frozen `V + X beta`, with
-  `X=[V,C,Y_1..Y_K,N_1..N_K]` and one coefficient vector shared by all
-  horizon positions.
-- Data: fixed datastore, adaptation training, adaptation validation, and
-  unchanged official TIME test intervals. If TIME supplies `n` complete test
-  windows per variate, frequency-strided preparation supplies `2n` training
-  and `n` validation windows; all preceding dates belong to the datastore.
-- Sampling: adaptation origins use prime strides 127 (intraday/hourly), 27
-  (business-daily/daily), 11 (weekly), 5 (monthly), or 3 (quarterly), never a
-  stride derived from `H`. Datastore retrieval uses the dataset period or an
-  explicit multiple. An optional global cap keeps equal numbers of the latest
-  datastore dates per variate and requires at least one period.
-- Context: the ridge uses the same vanilla TIME context limit as its foundation
-  backbone (8192 for Chronos-2, 4096 for TS-ICL, 2048 for Chronos-Bolt).
-- Retrieval: exact instance-normalized Euclidean search across all series;
-  fixed datastore dates align to each query modulo the dataset period. Missing
-  dates use NaN-aware statistics and candidates require configurable finite
-  query content and pairwise feature overlap, both 80% by default. Candidates
-  also require a complete retrieved future.
-- Missing-data gate: skip incomplete adaptation-training rows; use vanilla for
-  ineligible validation/test queries or insufficient valid neighbors; mask
-  missing test labels only from metrics. Report hybrid RAG coverage.
-- Insufficient-history gate: if the complete 2:1 adaptation window plan,
-  foundation context, or minimum datastore cannot fit, evaluate the official
-  test windows as a recorded vanilla-only task instead of dropping the task.
-- Objective and selection: fit MSSE by dividing each ridge row by the RMS
-  seasonal-lag error over its complete pre-origin history, then choose
-  `K in {1,5,10,15}` and `alpha in {1e-3,1e-2,1e-1}` on adaptation
-  validation; do not refit before test.
-- Primary configuration: `K=10`, `alpha=1e-2`.
-- Task artifacts:
-  `outputs/adaptime/tasks/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/`.
-- Recovery: exact completed tasks are reused; exact interrupted tasks restart
-  from preparation in the same `run_n`; different scientific configurations
-  receive a new `run_n`. Partial stages are never reused.
-- Selection: configuration policy is `error`, `distinct`, `latest`, or
-  `average`; repeat policy is `selected`, `latest`, `distinct`, or `average`.
-- TIME aggregate: each method's task MASE is divided by matching Seasonal Naive
-  MASE and the resulting task ratios are combined with a geometric mean.
-  Missing timestamps retain their positions; only valid seasonal pairs enter
-  the normalizer and only valid target dates enter forecast error means.
-- Timing: compare total and per-window test inference for vanilla,
-  retrieval-covariate prediction, and frozen Adaptime; retain representation,
-  retrieval, context construction, foundation calls, ridge adjustment, and
-  fixed precomputed-extraction components.
+- Entry point: `scripts/submit_adaptime_comparison.sh` or the explicit
+  `prepare|extract|fit|predict|evaluate|pipeline` Python stages.
+- Data: one method-neutral datastore, adaptation-training and validation
+  references, and unchanged official TIME test references.
+- Context: the selected foundation model's normal TIME limit; 8192 for the
+  primary Chronos-2 configuration.
+- Retrieval: instance-normalized exact Euclidean search by default, with
+  configurable finite-content and overlap gates.
+- Fit: shared no-intercept `V + X beta`, trained with complete valid-neighbor
+  dates under MSSE.
+- Selection: `K in {1,5,10,15}` and
+  `alpha in {1e-3,1e-2,1e-1}`; primary/default values are `K=10` and
+  `alpha=1e-2`.
+- Training fallback: primary-`K` valid training dates must exceed test dates;
+  otherwise evaluation uses a recorded vanilla-only wrapper.
+- Validation fallback: primary-`K` valid validation dates must exceed 10% of
+  test dates; otherwise the primary/default values are fitted directly.
+- Evaluation: deterministic wrapper predictions use the standard TIME
+  foundation evaluator and artifact contract.
 
-No delta, convex, per-horizon, or native-multivariate Adaptime ablation belongs
-to this experiment family. No result is claimed until cluster outputs are
-complete and inspected.
+No delta, convex, per-horizon, or native-multivariate Ridge ablation belongs to
+this family.
 
-## Matched TS-RAG control
+## TS-RAG external control
 
-`scripts/submit_tsrag_comparison.sh` evaluates the pinned source-adapted
-TS-RAG ARM after a completed `full_ridge_shared` run at the ridge backbone's
-normal context length.
-It discovers the ridge artifact from `TSRAG_RIDGE_OUTPUT_ROOT`, optionally
-restricts it with `TSRAG_RIDGE_LAUNCH_ID`, and reuses the ridge preparation's
-raw-date budget and exact official TIME test references.
+The TS-RAG experiment asks how the frozen Ridge proposal compares with the
+released source-adapted TS-RAG ARM under the same chronological datastore and
+official TIME test support.
 
-- External method: released MoE ARM and Chronos-T5 EOS/FAISS retrieval from
-  `UConn-DSIS/TS-RAG` commit `73ac807`.
-- Preserved rules: same-series stride-one datastore, top-K-plus-one retrieval,
-  TS-RAG's own 512-step input, and native 64-step forecasts.
-- Optional cap: keep an equal number of the latest accessible datastore dates
-  per variate while retaining stride one inside the cropped interval.
-- Long horizons: refresh retrieval after each 64-step rollout block; shorter
-  horizons crop one native forecast.
-- Comparison: matched vanilla Chronos-Bolt, TS-RAG, and the completed
-  Chronos-2 `full_ridge_shared` result on identical test rows, with scaled MASE
-  and total test inference time.
+- Entry point: `scripts/submit_tsrag_comparison.sh` for an independent TS-RAG
+  run, or the combined Adaptime submission for concurrent Ridge and TS-RAG.
+- Shared data: exactly the global datastore and test references prepared for
+  the selected Adaptime configuration.
+- Native method: same-series Chronos-T5 EOS/FAISS retrieval, top 10 neighbors,
+  512-step contexts, 64-step ARM calls, and autoregressive rollout for longer
+  horizons, from upstream commit `73ac807`.
+- Independence: TS-RAG has its own extraction and inference modules and never
+  resolves or loads a Ridge extraction, model, or prediction.
+- Evaluation: the same standard TIME wrapper evaluator as Ridge and vanilla
+  foundation models.
+
+The optional `ADAPTIME_RIDGE_RESULTS_PATH` is only a Ridge computation/report
+input. An exact complete match skips Ridge computation; an incomplete or
+different configuration recomputes Ridge. It cannot suppress or alter TS-RAG.
+The final report compares only tasks whose independently evaluated support is
+identical.
+
+No result is claimed until the complete cluster outputs are synchronized and
+inspected.
