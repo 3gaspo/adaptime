@@ -32,8 +32,8 @@ class RidgeTrainingConfig:
     alpha_values: tuple[float, ...] = (1e-3, 1e-2, 1e-1)
     chunk_size: int = 1024
     seed: int = 1
-    minimum_training_date_ratio: float = 1.0
-    minimum_validation_date_ratio: float = 0.1
+    minimum_training_window_ratio: float = 1.0
+    minimum_validation_window_ratio: float = 0.1
     default_k: int = PRIMARY_K
     default_alpha: float = PRIMARY_ALPHA
 
@@ -48,10 +48,10 @@ class RidgeTrainingConfig:
             raise ValueError("alpha_values must be unique")
         if int(self.chunk_size) <= 0:
             raise ValueError("chunk_size must be positive")
-        if float(self.minimum_training_date_ratio) < 0:
-            raise ValueError("minimum_training_date_ratio must be non-negative")
-        if float(self.minimum_validation_date_ratio) < 0:
-            raise ValueError("minimum_validation_date_ratio must be non-negative")
+        if float(self.minimum_training_window_ratio) < 0:
+            raise ValueError("minimum_training_window_ratio must be non-negative")
+        if float(self.minimum_validation_window_ratio) < 0:
+            raise ValueError("minimum_validation_window_ratio must be non-negative")
         if int(self.default_k) not in self.k_values:
             raise ValueError("default_k must be included in k_values")
         if float(self.default_alpha) not in set(map(float, self.alpha_values)):
@@ -199,6 +199,63 @@ def split_statistics_grid(
     return statistics, coverage
 
 
+def covariate_win_evidence(
+    arrays: ExtractionArrays,
+    split: str,
+    k: int,
+    chunk_size: int,
+) -> dict[str, float | int]:
+    """Accumulate paired per-window MSSE wins for C against vanilla V."""
+
+    vanilla = arrays.open(f"{split}.vanilla")
+    context = arrays.open(f"{split}.context_forecast_k{k}")
+    target = arrays.open(f"{split}.target")
+    scale = arrays.open(f"{split}.msse_scale")
+    neighbor_ids = arrays.open(f"{split}.neighbor_id")
+    rag_eligible = arrays.open(f"{split}.rag_eligible")
+    trials = 0
+    wins = 0.0
+    vanilla_loss_sum = 0.0
+    covariate_loss_sum = 0.0
+    for start in range(0, len(target), int(chunk_size)):
+        stop = min(start + int(chunk_size), len(target))
+        chunk_vanilla = np.asarray(vanilla[start:stop])
+        chunk_context = np.asarray(context[start:stop])
+        chunk_target = np.asarray(target[start:stop])
+        chunk_scale = np.asarray(scale[start:stop])
+        selected = np.asarray(neighbor_ids[start:stop, : int(k)])
+        valid = (
+            np.asarray(rag_eligible[start:stop], dtype=bool)
+            & np.all(selected >= 0, axis=1)
+            & np.isfinite(chunk_vanilla).reshape(stop - start, -1).all(axis=1)
+            & np.isfinite(chunk_context).reshape(stop - start, -1).all(axis=1)
+            & np.isfinite(chunk_target).reshape(stop - start, -1).all(axis=1)
+            & np.isfinite(chunk_scale).reshape(stop - start, -1).all(axis=1)
+        )
+        if not np.any(valid):
+            continue
+        denominator = np.maximum(chunk_scale[valid], 1e-8)[..., None]
+        vanilla_loss = np.mean(
+            np.square((chunk_vanilla[valid] - chunk_target[valid]) / denominator),
+            axis=(1, 2),
+        )
+        covariate_loss = np.mean(
+            np.square((chunk_context[valid] - chunk_target[valid]) / denominator),
+            axis=(1, 2),
+        )
+        wins += float(np.count_nonzero(covariate_loss < vanilla_loss))
+        wins += 0.5 * float(np.count_nonzero(covariate_loss == vanilla_loss))
+        trials += int(len(vanilla_loss))
+        vanilla_loss_sum += float(vanilla_loss.sum(dtype=np.float64))
+        covariate_loss_sum += float(covariate_loss.sum(dtype=np.float64))
+    return {
+        "trials": trials,
+        "covariate_wins_including_half_ties": wins,
+        "vanilla_msse_sum": vanilla_loss_sum,
+        "covariate_msse_sum": covariate_loss_sum,
+    }
+
+
 def fit_full_ridge(
     prepared_path: str | Path,
     extraction_path: str | Path,
@@ -225,6 +282,11 @@ def fit_full_ridge(
         "extraction_signature": extraction_manifest["signature"],
         "method": "full_ridge_shared",
         "config": asdict(config),
+        "bayes_covariate_protocol": {
+            "evidence": "paired_train_validation_window_msse_wins",
+            "tie_weight": 0.5,
+            "prior": {"alpha": 1.0, "beta": 1.0},
+        },
     }
     signature = _canonical_hash(identity)
     root = Path(output_dir).expanduser().resolve()
@@ -236,6 +298,7 @@ def fit_full_ridge(
             existing.get("signature") == signature
             and existing.get("status") == "completed"
             and files.get("selection")
+            and files.get("bayes_mixture")
             and all((root / relative).is_file() for relative in files.values())
         ):
             return manifest_path
@@ -260,16 +323,21 @@ def fit_full_ridge(
         date_ticks=prepared.calendar_ticks("adaptation_validation"),
         include_vanilla_fallback=True,
     )
-    test_dates = int(len(np.unique(prepared.calendar_ticks("test"))))
-    training_date_limit = float(config.minimum_training_date_ratio) * test_dates
-    validation_date_limit = float(config.minimum_validation_date_ratio) * test_dates
+    test_windows = int(len(prepared.indices("test")))
+    training_window_limit = (
+        float(config.minimum_training_window_ratio) * test_windows
+    )
+    validation_window_limit = (
+        float(config.minimum_validation_window_ratio) * test_windows
+    )
     default_k = int(config.default_k)
     default_alpha = float(config.default_alpha)
-    default_training_dates = int(train_coverage[default_k]["adapted_dates"])
-    if default_training_dates <= training_date_limit:
+    default_training_windows = int(train_coverage[default_k]["adapted_windows"])
+    if default_training_windows <= training_window_limit:
         reason = (
-            f"K={default_k} has {default_training_dates} valid training dates; "
-            f"requires more than {training_date_limit:g} for {test_dates} test dates"
+            f"K={default_k} has {default_training_windows} valid training windows; "
+            f"requires more than {training_window_limit:g} for "
+            f"{test_windows} test windows"
         )
         _atomic_json(
             root / "selection.json",
@@ -277,16 +345,29 @@ def fit_full_ridge(
                 "criterion": "vanilla_fallback",
                 "fallback_reason": reason,
                 "primary_configuration": {"k": default_k, "alpha": default_alpha},
-                "date_support": {
-                    "test_dates": test_dates,
-                    "minimum_training_dates_exclusive": training_date_limit,
-                    "minimum_validation_dates_exclusive": validation_date_limit,
-                    "default_k_training_dates": default_training_dates,
-                    "default_k_validation_dates": int(
-                        validation_coverage[default_k]["adapted_dates"]
+                "window_support": {
+                    "test_windows": test_windows,
+                    "minimum_training_windows_exclusive": training_window_limit,
+                    "minimum_validation_windows_exclusive": validation_window_limit,
+                    "default_k_training_windows": default_training_windows,
+                    "default_k_validation_windows": int(
+                        validation_coverage[default_k]["adapted_windows"]
                     ),
                 },
                 "candidates": [],
+            },
+        )
+        _atomic_json(
+            root / "bayes_mixture.json",
+            {
+                "method": "bayes_covariate_prediction",
+                "status": "vanilla_fallback",
+                "selected_k": None,
+                "prior": {"alpha": 1.0, "beta": 1.0},
+                "trials": 0,
+                "covariate_wins_including_half_ties": 0.0,
+                "probability_covariate_better": 0.0,
+                "fallback_reason": reason,
             },
         )
         model = {
@@ -294,14 +375,14 @@ def fit_full_ridge(
             "format": "adaptime_full_ridge_model",
             "signature": signature,
             "status": "completed",
-            "protocol": "vanilla_fallback_when_valid_training_dates_are_insufficient",
+            "protocol": "vanilla_fallback_when_valid_training_windows_are_insufficient",
             "selected": {"k": None, "alpha": None, "validation_msse": None},
             "fallback_reason": reason,
             "primary_configuration": {"k": default_k, "alpha": default_alpha},
-            "date_support": {
-                "test_dates": test_dates,
-                "minimum_training_dates_exclusive": training_date_limit,
-                "minimum_validation_dates_exclusive": validation_date_limit,
+            "window_support": {
+                "test_windows": test_windows,
+                "minimum_training_windows_exclusive": training_window_limit,
+                "minimum_validation_windows_exclusive": validation_window_limit,
             },
             "feature_names": [],
             "coverage": {
@@ -312,13 +393,18 @@ def fit_full_ridge(
                     str(k): value for k, value in validation_coverage.items()
                 },
             },
-            "files": {"selection": "selection.json"},
+            "files": {
+                "selection": "selection.json",
+                "bayes_mixture": "bayes_mixture.json",
+            },
         }
         _atomic_json(manifest_path, model)
         return manifest_path
 
-    default_validation_dates = int(validation_coverage[default_k]["adapted_dates"])
-    if default_validation_dates <= validation_date_limit:
+    default_validation_windows = int(
+        validation_coverage[default_k]["adapted_windows"]
+    )
+    if default_validation_windows <= validation_window_limit:
         selected_k = default_k
         selected_alpha = default_alpha
         validation_msse: float | None = None
@@ -336,8 +422,8 @@ def fit_full_ridge(
         candidate_ks = [
             k
             for k in config.k_values
-            if int(train_coverage[k]["adapted_dates"]) > training_date_limit
-            and int(validation_coverage[k]["adapted_dates"]) > validation_date_limit
+            if int(train_coverage[k]["adapted_windows"]) > training_window_limit
+            and int(validation_coverage[k]["adapted_windows"]) > validation_window_limit
         ]
         for k in candidate_ks:
             train_statistics = train_by_k[k]
@@ -368,6 +454,53 @@ def fit_full_ridge(
     coefficient_path = root / "coefficients.npy"
     with coefficient_path.open("wb") as stream:
         np.save(stream, coefficients, allow_pickle=False)
+    train_evidence = covariate_win_evidence(
+        arrays, "adaptation_train", selected_k, config.chunk_size
+    )
+    validation_evidence = covariate_win_evidence(
+        arrays, "adaptation_validation", selected_k, config.chunk_size
+    )
+    trials = int(train_evidence["trials"]) + int(validation_evidence["trials"])
+    wins = float(train_evidence["covariate_wins_including_half_ties"]) + float(
+        validation_evidence["covariate_wins_including_half_ties"]
+    )
+    posterior_alpha = 1.0 + wins
+    posterior_beta = 1.0 + trials - wins
+    probability = posterior_alpha / (posterior_alpha + posterior_beta)
+    vanilla_msse = (
+        float(train_evidence["vanilla_msse_sum"])
+        + float(validation_evidence["vanilla_msse_sum"])
+    ) / trials
+    covariate_msse = (
+        float(train_evidence["covariate_msse_sum"])
+        + float(validation_evidence["covariate_msse_sum"])
+    ) / trials
+    _atomic_json(
+        root / "bayes_mixture.json",
+        {
+            "method": "bayes_covariate_prediction",
+            "status": "fitted",
+            "selected_k": selected_k,
+            "loss": "paired_per_window_msse",
+            "success": "covariate_prediction_msse_below_vanilla_msse",
+            "tie_weight": 0.5,
+            "prior": {"alpha": 1.0, "beta": 1.0},
+            "posterior": {
+                "alpha": posterior_alpha,
+                "beta": posterior_beta,
+            },
+            "training": train_evidence,
+            "validation": validation_evidence,
+            "trials": trials,
+            "covariate_wins_including_half_ties": wins,
+            "mean_msse": {
+                "vanilla": vanilla_msse,
+                "covariate_prediction": covariate_msse,
+            },
+            "covariate_better_on_average": covariate_msse < vanilla_msse,
+            "probability_covariate_better": probability,
+        },
+    )
     _atomic_json(
         root / "selection.json",
         {
@@ -376,15 +509,15 @@ def fit_full_ridge(
             "selected_alpha": selected_alpha,
             "selected_validation_msse": validation_msse,
             "primary_configuration": {"k": default_k, "alpha": default_alpha},
-            "date_support": {
-                "test_dates": test_dates,
-                "minimum_training_dates_exclusive": training_date_limit,
-                "minimum_validation_dates_exclusive": validation_date_limit,
-                "selected_k_training_dates": int(
-                    train_coverage[selected_k]["adapted_dates"]
+            "window_support": {
+                "test_windows": test_windows,
+                "minimum_training_windows_exclusive": training_window_limit,
+                "minimum_validation_windows_exclusive": validation_window_limit,
+                "selected_k_training_windows": int(
+                    train_coverage[selected_k]["adapted_windows"]
                 ),
-                "selected_k_validation_dates": int(
-                    validation_coverage[selected_k]["adapted_dates"]
+                "selected_k_validation_windows": int(
+                    validation_coverage[selected_k]["adapted_windows"]
                 ),
             },
             "candidates": selection_rows,
@@ -406,10 +539,10 @@ def fit_full_ridge(
             "validation_msse": validation_msse,
         },
         "primary_configuration": {"k": default_k, "alpha": default_alpha},
-        "date_support": {
-            "test_dates": test_dates,
-            "minimum_training_dates_exclusive": training_date_limit,
-            "minimum_validation_dates_exclusive": validation_date_limit,
+        "window_support": {
+            "test_windows": test_windows,
+            "minimum_training_windows_exclusive": training_window_limit,
+            "minimum_validation_windows_exclusive": validation_window_limit,
         },
         "feature_names": full_ridge_feature_names(selected_k),
         "coverage": {
@@ -421,6 +554,7 @@ def fit_full_ridge(
         "files": {
             "coefficients": coefficient_path.name,
             "selection": "selection.json",
+            "bayes_mixture": "bayes_mixture.json",
         },
     }
     _atomic_json(manifest_path, model)

@@ -1,4 +1,4 @@
-"""Focused missing-data and Slurm checkpoint contract for Adaptime."""
+"""Focused fixed-context, fallback, Bayesian, and Slurm Adaptime contract."""
 
 from __future__ import annotations
 
@@ -26,7 +26,6 @@ from timebench.adaptime.ridge import (
 )
 from timebench.evaluation.adaptation_data import (
     ADAPTATION_STRIDES,
-    InsufficientAdaptationHistory,
     PreparationConfig,
     adaptation_split_lengths,
     adaptation_stride_for_frequency,
@@ -121,14 +120,25 @@ def main() -> None:
         }
     )
     with tempfile.TemporaryDirectory() as temporary:
-        _raises(
-            InsufficientAdaptationHistory,
-            prepare_adaptation_dataset,
-            SyntheticDataset(),
-            clipped,
-            temporary,
-            source_path=temporary,
+        manifest_path = prepare_adaptation_dataset(
+            SyntheticDataset(), clipped, temporary, source_path=temporary
         )
+        manifest = __import__("json").loads(
+            manifest_path.read_text(encoding="utf-8")
+        )
+        assert manifest["counts"] == {
+            "datastore": 0,
+            "adaptation_train": 6,
+            "adaptation_validation": 4,
+            "test": 4,
+        }
+        assert manifest["excluded_fixed_context_rows"] == {
+            "adaptation_train": 2,
+            "adaptation_validation": 0,
+        }
+        assert "test retains every official TIME row" in manifest[
+            "query_window_contract"
+        ]
 
     vanilla = np.array([[[10.0, 11.0]], [[20.0, 21.0]]])
     design = np.ones((2, 1, 2, 2), dtype=np.float64)
@@ -190,6 +200,9 @@ def main() -> None:
     prediction = (
         PROJECT_ROOT / "src/timebench/pipeline/adaptation_prediction.py"
     ).read_text(encoding="utf-8")
+    vanilla_pipeline = (
+        PROJECT_ROOT / "src/timebench/pipeline/adaptime_vanilla.py"
+    ).read_text(encoding="utf-8")
     model_loading = (
         PROJECT_ROOT / "src/timebench/model_loading/adaptime.py"
     ).read_text(encoding="utf-8")
@@ -213,6 +226,7 @@ def main() -> None:
         extraction,
         training,
         prediction,
+        vanilla_pipeline,
         model_loading,
         tsrag_pipeline,
         *additional_sources,
@@ -224,12 +238,18 @@ def main() -> None:
     assert ">= config.max_k" in extraction
     assert "include_vanilla_fallback=True" in training
     assert 'arrays.open(f"{split}.msse_scale")' in training
-    assert "minimum_training_date_ratio: float = 1.0" in training
-    assert "minimum_validation_date_ratio: float = 0.1" in training
-    assert "vanilla_fallback_when_valid_training_dates_are_insufficient" in training
+    assert "minimum_training_window_ratio: float = 1.0" in training
+    assert "minimum_validation_window_ratio: float = 0.1" in training
+    assert "vanilla_fallback_when_valid_training_windows_are_insufficient" in training
+    assert "covariate_win_evidence" in training
+    assert '"prior": {"alpha": 1.0, "beta": 1.0}' in training
+    assert '"covariate_better_on_average"' in training
     assert 'selection_criterion = "default_sparse_validation"' in training
     assert "full_ridge_predict_with_fallback" in prediction
+    assert '"bayes_covariate_prediction"' in prediction
+    assert "(1.0 - probability) * chunk_vanilla" in prediction
     assert '"rag_coverage"' in prediction
+    assert "all_available_history_capped_at_model_limit" in vanilla_pipeline
     assert "DEFAULT_CONTEXT_PROFILES" in model_loading
     assert '"chronos2": 8192' in window_audit
     assert '"ts_icl": 4096' in window_audit
@@ -245,7 +265,9 @@ def main() -> None:
     assert '"consumers": ["full_ridge_shared", "tsrag"]' in adaptime_workflow
     assert "_matching_evaluation_runs(" in adaptime_workflow
     assert "adaptation_split_lengths(" in adaptime_workflow
+    assert "for comparison_method in ADAPTATION_METHODS" in adaptime_workflow
     assert "max_datastore_windows" in adaptation_data
+    assert "training and validation retain only fixed-context rows" in adaptation_data
     assert "return self.shared.indices(split)" in tsrag_data
     assert "PreparedDataset(path)" in tsrag_data
     assert "independently evaluated Adaptime wrappers" in result_builder

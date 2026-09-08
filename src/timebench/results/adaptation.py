@@ -52,19 +52,20 @@ def _runs(
 
 def build_adaptation_comparison(
     *,
-    tsrag_results_root: str | Path,
-    ridge_results_root: str | Path,
+    method_results_roots: dict[str, str | Path],
     output_dir: str | Path,
     expected_tasks: Iterable[tuple[str, str]],
     config_policy: str = "error",
     repeat_policy: str = "selected",
 ) -> Path:
-    """Join evaluation summaries; the Ridge override is report-only input."""
+    """Join independently evaluated method summaries on identical support."""
 
     roots = {
-        "full_ridge_shared": Path(ridge_results_root).expanduser().resolve(),
-        "tsrag": Path(tsrag_results_root).expanduser().resolve(),
+        method: Path(results_root).expanduser().resolve()
+        for method, results_root in method_results_roots.items()
     }
+    if not roots:
+        raise ValueError("comparison requires at least one method-results root")
     expected = set(expected_tasks)
     by_task: dict[tuple[str, str], dict[str, tuple[Path, dict[str, object]]]] = {}
     for model, root in roots.items():
@@ -111,10 +112,11 @@ def build_adaptation_comparison(
         }
         if len({json.dumps(value, sort_keys=True) for value in support.values()}) != 1:
             raise ValueError(
-                f"Ridge and TS-RAG evaluation support differs for {dataset}/{term}: "
+                f"method evaluation support differs for {dataset}/{term}: "
                 f"{support}"
             )
-        for model, (run_dir, _) in sorted(methods.items()):
+        for model in roots:
+            run_dir, _ = methods[model]
             summary = json.loads(
                 (run_dir / "metrics_summary.json").read_text(encoding="utf-8")
             )
@@ -138,8 +140,10 @@ def build_adaptation_comparison(
             "schema_version": 1,
             "format": "adaptime_independent_evaluation_comparison",
             "status": "completed",
-            "ridge_results_root": str(roots["full_ridge_shared"]),
-            "tsrag_results_root": str(roots["tsrag"]),
+            "method_results_roots": {
+                method: str(results_root)
+                for method, results_root in roots.items()
+            },
             "input_manifests": manifests,
             "files": {"comparison": "comparison.csv"},
         },

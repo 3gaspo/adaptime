@@ -125,9 +125,17 @@ def main() -> None:
     assert "adaptime_comparison_selena.slurm" in adaptime_submit
     assert "ADAPTIME_STAGE=prepare" in adaptime_submit
     assert "ADAPTIME_METHOD=ridge,ADAPTIME_STAGE=pipeline" in adaptime_submit
-    assert "ADAPTIME_METHOD=tsrag,ADAPTIME_STAGE=pipeline" in adaptime_submit
-    assert 'report_dependency="afterok:$ridge_job:$tsrag_job"' in adaptime_submit
+    assert "ADAPTIME_METHOD=tsrag,ADAPTIME_STAGE=pipeline" not in adaptime_submit
+    assert 'family_job="$(sbatch' in adaptime_submit
+    assert '--dependency="afterok:$family_job"' in adaptime_submit
+    assert "prepare=%s family=%s report=%s" in adaptime_submit
     assert 'if [ -n "${ADAPTIME_RIDGE_RESULTS_PATH:-}" ]' not in adaptime_submit
+
+    tsrag_submit = (
+        PROJECT_ROOT / "scripts/submit_tsrag_comparison.sh"
+    ).read_text(encoding="utf-8")
+    assert "ADAPTIME_STAGE=pipeline" in tsrag_submit
+    assert 'if [ -n "${ADAPTIME_RIDGE_RESULTS_PATH:-}" ]' in tsrag_submit
 
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
         encoding="utf-8"
@@ -152,7 +160,7 @@ def main() -> None:
     ).read_text(encoding="utf-8")
     assert '"evaluator": "timebench.evaluation.saver.save_window_predictions"' in workflow_source
     assert "_matching_evaluation_runs(" in workflow_source
-    assert 'stage == "pipeline"' in workflow_source
+    assert '"pipeline": (' in workflow_source
     assert "allocate_run(" in workflow_source
     assert "if not run.should_run:" in workflow_source
     assert "with run:" in workflow_source

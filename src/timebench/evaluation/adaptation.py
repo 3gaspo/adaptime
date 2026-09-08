@@ -23,6 +23,8 @@ def evaluate_point_predictions(
     prepared_path: str | Path,
     prediction_path: str | Path,
     output_dir: str | Path,
+    *,
+    method: str | None = None,
 ) -> dict[str, object]:
     """Evaluate one wrapper through the same saver used by foundation models."""
 
@@ -33,9 +35,20 @@ def evaluate_point_predictions(
     if prepared.target_mode != "univariate":
         raise ValueError("adaptation wrapper evaluation currently requires univariate rows")
 
-    values = np.load(
-        prediction_root / prediction["files"]["predictions"], mmap_mode="r"
-    )
+    if prediction["format"] == "adaptime_family_predictions":
+        available = tuple(prediction["methods"])
+        if method not in available:
+            raise ValueError(f"method must be one of {available} for this prediction")
+        prediction_file = prediction["files"]["predictions"][method]
+        inference_seconds = float(prediction["inference_seconds"][method])
+        prediction_method = str(method)
+    else:
+        if method is not None and method != prediction["method"]:
+            raise ValueError("requested method does not match point predictions")
+        prediction_file = prediction["files"]["predictions"]
+        inference_seconds = float(prediction["inference_seconds"])
+        prediction_method = str(prediction["method"])
+    values = np.load(prediction_root / prediction_file, mmap_mode="r")
     expected = (
         len(prepared.indices("test")),
         1,
@@ -73,7 +86,7 @@ def evaluate_point_predictions(
         output_base_dir=str(Path(output_dir).expanduser().resolve().parent),
         seasonality=prepared.seasonality,
         model_hyperparams={
-            "model": str(prediction["method"]),
+            "model": prediction_method,
             "experiment": "adaptime",
             "target_mode": prepared.target_mode,
             "forecast_type": "point",
@@ -82,9 +95,12 @@ def evaluate_point_predictions(
             ),
             "context_length": int(prediction["context_length"]),
             "selected_adaptation": prediction.get("selected"),
+            "bayes_probability_covariate_better": prediction.get(
+                "bayes_probability_covariate_better"
+            ),
             "adaptation_fallback_reason": prediction.get("fallback_reason"),
         },
         quantile_levels=[0.5],
-        inference_seconds=float(prediction["inference_seconds"]),
+        inference_seconds=inference_seconds,
         task_output_dir=str(Path(output_dir).expanduser().resolve()),
     )

@@ -1,4 +1,4 @@
-"""One-pass, disk-backed extraction for Adaptime retrieval experiments."""
+"""Disk-backed fit-grid and selected-K evaluation extraction for Adaptime."""
 
 from __future__ import annotations
 
@@ -15,16 +15,20 @@ import numpy as np
 
 from timebench.adaptime.retrieval import blockwise_topk, context_representation
 from timebench.adaptime.ridge import query_scale
-from timebench.evaluation.adaptation_data import PreparedDataset, QUERY_SPLITS
+from timebench.evaluation.adaptation_data import FIT_QUERY_SPLITS, PreparedDataset
 from timebench.evaluation.timing import EvaluationTimer
 
 
 EXTRACTION_SCHEMA = 1
+EVAL_EXTRACTION_SCHEMA = 1
 FALLBACK_REASONS = {
     0: "rag_eligible",
     1: "insufficient_finite_query_context",
     2: "insufficient_valid_neighbors",
     3: "nonfinite_datastore_target",
+    4: "insufficient_past_context",
+    5: "nonfinite_adaptation_design",
+    6: "insufficient_training_support",
 }
 
 
@@ -243,16 +247,35 @@ def _materialize_source_rows(
     references = prepared.indices(split)
     first_stop = min(len(references), config.model_batch_size)
     reader = prepared.reader(cache_items=config.arrow_cache_items)
-    first = reader.read(references[:first_stop])
     representation_key = f"{split}.representation_seconds"
-    first_representation = _timed_represent(
-        forecaster,
-        first.context,
-        config.representation,
-        timings,
-        representation_key,
-    )
-    channels = int(first.context.shape[1])
+    if first_stop:
+        first = reader.read(references[:first_stop])
+        first_representation = _timed_represent(
+            forecaster,
+            first.context,
+            config.representation,
+            timings,
+            representation_key,
+        )
+        channels = int(first.context.shape[1])
+        representation_width = int(first_representation.shape[1])
+    else:
+        channels = 1 if prepared.target_mode == "univariate" else int(
+            np.asarray(prepared.hf_dataset[0]["target"]).shape[0]
+        )
+        if config.representation in {"raw", "instance"}:
+            representation_width = channels * prepared.context_length
+        else:
+            probe = np.zeros((1, channels, prepared.context_length), dtype=np.float32)
+            representation_width = int(
+                _timed_represent(
+                    forecaster,
+                    probe,
+                    config.representation,
+                    timings,
+                    representation_key,
+                ).shape[1]
+            )
     horizon = prepared.prediction_length
     target_path = root / split / "target.npy"
     representation_path = root / split / "representation.npy"
@@ -263,7 +286,7 @@ def _materialize_source_rows(
     target = _memmap(target_path, (len(references), channels, horizon), np.float32)
     representation = _memmap(
         representation_path,
-        (len(references), first_representation.shape[1]),
+        (len(references), representation_width),
         np.float32,
     )
     scale = _memmap(scale_path, (len(references), channels), np.float32)
@@ -306,19 +329,20 @@ def _materialize_source_rows(
     arrays[f"{split}.rag_eligible"] = str(eligible_path.relative_to(root))
     arrays[f"{split}.fallback_reason"] = str(fallback_reason_path.relative_to(root))
 
-    target[:first_stop] = first.target
-    representation[:first_stop] = first_representation
-    scale[:first_stop] = query_scale(first.context)
-    first_fraction, first_eligible, first_reason = _source_eligibility(
-        first.context,
-        first.target,
-        split,
-        config.minimum_query_finite_fraction,
-    )
-    finite_fraction[:first_stop] = first_fraction
-    rag_eligible[:first_stop] = first_eligible
-    fallback_reason[:first_stop] = first_reason
-    if vanilla is not None:
+    if first_stop:
+        target[:first_stop] = first.target
+        representation[:first_stop] = first_representation
+        scale[:first_stop] = query_scale(first.context)
+        first_fraction, first_eligible, first_reason = _source_eligibility(
+            first.context,
+            first.target,
+            split,
+            config.minimum_query_finite_fraction,
+        )
+        finite_fraction[:first_stop] = first_fraction
+        rag_eligible[:first_stop] = first_eligible
+        fallback_reason[:first_stop] = first_reason
+    if vanilla is not None and first_stop:
         assert mase_scale is not None and msse_scale is not None and seasonal_naive is not None
         first_mase_scale, first_msse_scale = reader.seasonal_scales(
             references[:first_stop]
@@ -474,7 +498,7 @@ def _materialize_unique_neighbor_forecasts(
 ) -> tuple[np.ndarray, np.ndarray]:
     timings.setdefault("offline.neighbor_forecast_seconds", 0.0)
     selected = np.empty(0, dtype=np.int64)
-    for split in QUERY_SPLITS:
+    for split in FIT_QUERY_SPLITS:
         split_ids = np.load(root / arrays[f"{split}.neighbor_id"], mmap_mode="r")
         selected = np.union1d(
             selected,
@@ -589,7 +613,7 @@ def extract_adaptation_features(
     config: ExtractionConfig,
     output_dir: str | Path,
 ) -> Path:
-    """Extract every expensive quantity once for a complete ridge sweep."""
+    """Extract datastore and train/validation quantities for a complete sweep."""
 
     config.validate()
     prepared = PreparedDataset(prepared_path)
@@ -636,7 +660,7 @@ def extract_adaptation_features(
         arrays,
         timings,
     )
-    for split in QUERY_SPLITS:
+    for split in FIT_QUERY_SPLITS:
         _materialize_source_rows(
             prepared,
             split,
@@ -659,14 +683,14 @@ def extract_adaptation_features(
     unique_forecast, _ = _materialize_unique_neighbor_forecasts(
         prepared, forecaster, config, root, arrays, timings
     )
-    for split in QUERY_SPLITS:
+    for split in FIT_QUERY_SPLITS:
         _materialize_context_forecasts(
             prepared, split, forecaster, config, root, arrays, timings
         )
     timings["extraction_total_seconds"] = perf_counter() - extraction_started
 
     eligibility = {}
-    for split in ("datastore", *QUERY_SPLITS):
+    for split in ("datastore", *FIT_QUERY_SPLITS):
         eligible = np.load(root / arrays[f"{split}.rag_eligible"], mmap_mode="r")
         reasons = np.load(root / arrays[f"{split}.fallback_reason"], mmap_mode="r")
         eligibility[split] = {
@@ -682,12 +706,13 @@ def extract_adaptation_features(
 
     manifest: dict[str, object] = {
         **identity,
-        "format": "adaptime_extraction",
+        "format": "adaptime_fit_extraction",
         "signature": signature,
         "status": "completed",
         "arrays": arrays,
         "counts": {
-            split: int(len(prepared.indices(split))) for split in ("datastore", *QUERY_SPLITS)
+            split: int(len(prepared.indices(split)))
+            for split in ("datastore", *FIT_QUERY_SPLITS)
         },
         "computed_neighbor_forecasts": int(len(unique_forecast)),
         "eligibility": eligibility,
@@ -704,6 +729,329 @@ def open_extraction(path: str | Path) -> tuple[Path, dict[str, object]]:
     if manifest_path.is_dir():
         manifest_path = manifest_path / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("schema_version") != EXTRACTION_SCHEMA or manifest.get("status") != "completed":
-        raise ValueError("Adaptime extraction is not a completed schema-1 artifact")
+    if (
+        manifest.get("schema_version") != EXTRACTION_SCHEMA
+        or manifest.get("format") != "adaptime_fit_extraction"
+        or manifest.get("status") != "completed"
+    ):
+        raise ValueError("Adaptime fit extraction is not a completed schema-1 artifact")
+    return manifest_path.parent, manifest
+
+
+def extract_adaptation_eval_features(
+    prepared_path: str | Path,
+    fit_extraction_path: str | Path,
+    model_path: str | Path,
+    vanilla_path: str | Path,
+    forecaster: AdaptimeForecaster,
+    config: ExtractionConfig,
+    output_dir: str | Path,
+) -> Path:
+    """Extract only the selected-K test quantities after fitting is frozen."""
+
+    from timebench.pipeline.adaptime_training import open_adaptation_model
+    from timebench.pipeline.adaptime_vanilla import open_vanilla_test_forecasts
+
+    config.validate()
+    prepared = PreparedDataset(prepared_path)
+    fit_root, fit_extraction = open_extraction(fit_extraction_path)
+    _, model = open_adaptation_model(model_path)
+    vanilla_root, vanilla = open_vanilla_test_forecasts(vanilla_path)
+    if fit_extraction["prepared_signature"] != prepared.signature:
+        raise ValueError("fit extraction and prepared TIME windows do not match")
+    if model["extraction_signature"] != fit_extraction["signature"]:
+        raise ValueError("frozen adaptor and fit extraction do not match")
+    if vanilla["prepared_signature"] != prepared.signature:
+        raise ValueError("vanilla forecasts and prepared TIME windows do not match")
+    if (
+        fit_extraction["model"] != forecaster.model_name
+        or fit_extraction["weights_id"] != forecaster.weights_id
+        or vanilla["model"] != forecaster.model_name
+        or vanilla["weights_id"] != forecaster.weights_id
+    ):
+        raise ValueError("fit, vanilla, and evaluation forecasters do not match")
+    if dict(fit_extraction["config"]) != asdict(config):
+        raise ValueError("fit and evaluation extraction configurations do not match")
+    selected_value = model["selected"]["k"]
+    selected_k = None if selected_value is None else int(selected_value)
+    identity = {
+        "schema_version": EVAL_EXTRACTION_SCHEMA,
+        "timing_contract": "component_seconds",
+        "prepared_signature": prepared.signature,
+        "fit_extraction_signature": fit_extraction["signature"],
+        "adaptation_signature": model["signature"],
+        "vanilla_signature": vanilla["signature"],
+        "model": forecaster.model_name,
+        "weights_id": forecaster.weights_id,
+        "selected_k": selected_k,
+        "config": asdict(config),
+    }
+    signature = _canonical_hash(identity)
+    root = Path(output_dir).expanduser().resolve()
+    manifest_path = root / "manifest.json"
+    if manifest_path.is_file():
+        existing = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if (
+            existing.get("signature") == signature
+            and existing.get("status") == "completed"
+            and all(
+                (root / relative).is_file()
+                for relative in dict(existing.get("arrays", {})).values()
+            )
+        ):
+            return manifest_path
+        raise FileExistsError(f"evaluation extraction already differs: {root}")
+    root.mkdir(parents=True, exist_ok=True)
+
+    references = prepared.indices("test")
+    total = int(len(references))
+    arrays: dict[str, str] = {}
+    timings: dict[str, float] = {}
+    eligible_path = root / "test" / "rag_eligible.npy"
+    reason_path = root / "test" / "fallback_reason.npy"
+    rag_eligible = _memmap(eligible_path, (total,), bool)
+    fallback_reason = _memmap(reason_path, (total,), np.uint8)
+    rag_eligible[:] = False
+    fallback_reason[:] = 6 if selected_k is None else 4
+    arrays["test.rag_eligible"] = str(eligible_path.relative_to(root))
+    arrays["test.fallback_reason"] = str(reason_path.relative_to(root))
+
+    reused_neighbor_forecasts = 0
+    computed_neighbor_forecasts = 0
+    if selected_k is not None:
+        fit_arrays = dict(fit_extraction["arrays"])
+        datastore_representation = np.load(
+            fit_root / fit_arrays["datastore.representation"], mmap_mode="r"
+        )
+        datastore_eligible = np.load(
+            fit_root / fit_arrays["datastore.rag_eligible"], mmap_mode="r"
+        )
+        datastore_target = np.load(
+            fit_root / fit_arrays["datastore.target"], mmap_mode="r"
+        )
+        representation_path = root / "test" / "representation.npy"
+        scale_path = root / "test" / "query_scale.npy"
+        finite_fraction_path = root / "test" / "context_finite_fraction.npy"
+        distance_path = root / "test" / "neighbor_distance.npy"
+        neighbor_path = root / "test" / "neighbor_id.npy"
+        context_path = root / "test" / "context_forecast.npy"
+        representation = _memmap(
+            representation_path,
+            (total, datastore_representation.shape[1]),
+            np.float32,
+        )
+        scale = _memmap(scale_path, (total, 1), np.float32)
+        finite_fraction = _memmap(finite_fraction_path, (total,), np.float32)
+        distances = _memmap(distance_path, (total, selected_k), np.float32)
+        neighbor_ids = _memmap(neighbor_path, (total, selected_k), np.int64)
+        vanilla_values = np.load(
+            vanilla_root / vanilla["arrays"]["predictions"], mmap_mode="r"
+        )
+        context_forecast = _memmap(context_path, vanilla_values.shape, np.float32)
+        representation[:] = np.nan
+        scale[:] = np.nan
+        finite_fraction[:] = 0.0
+        distances[:] = np.inf
+        neighbor_ids[:] = -1
+        context_forecast[:] = vanilla_values
+        arrays.update(
+            {
+                "test.representation": str(representation_path.relative_to(root)),
+                "test.query_scale": str(scale_path.relative_to(root)),
+                "test.context_finite_fraction": str(
+                    finite_fraction_path.relative_to(root)
+                ),
+                "test.neighbor_distance": str(distance_path.relative_to(root)),
+                "test.neighbor_id": str(neighbor_path.relative_to(root)),
+                "test.context_forecast": str(context_path.relative_to(root)),
+            }
+        )
+
+        reader = prepared.reader(cache_items=config.arrow_cache_items)
+        fixed_positions = np.flatnonzero(
+            np.asarray(references[:, 2], dtype=np.int64) >= prepared.context_length
+        )
+        timings["test.representation_seconds"] = 0.0
+        for start in range(0, len(fixed_positions), config.model_batch_size):
+            positions = fixed_positions[start : start + config.model_batch_size]
+            batch = reader.read(references[positions])
+            representation[positions] = _timed_represent(
+                forecaster,
+                batch.context,
+                config.representation,
+                timings,
+                "test.representation_seconds",
+            )
+            scale[positions] = query_scale(batch.context)
+            fraction, eligible, reason = _source_eligibility(
+                batch.context,
+                batch.target,
+                "test",
+                config.minimum_query_finite_fraction,
+            )
+            finite_fraction[positions] = fraction
+            rag_eligible[positions] = eligible
+            fallback_reason[positions] = reason
+
+        query_positions = np.flatnonzero(rag_eligible)
+        datastore_positions = np.flatnonzero(datastore_eligible)
+        started = perf_counter()
+        if len(query_positions) and len(datastore_positions):
+            retrieval_k = min(selected_k, len(datastore_positions))
+            selected_distances, selected_ids = blockwise_topk(
+                representation[query_positions],
+                datastore_representation[datastore_positions],
+                prepared.indices("test")[query_positions],
+                prepared.indices("datastore")[datastore_positions],
+                query_calendar_ticks=prepared.calendar_ticks("test")[query_positions],
+                datastore_calendar_ticks=prepared.calendar_ticks("datastore")[
+                    datastore_positions
+                ],
+                retrieval_period=int(prepared.config["retrieval_period"]),
+                datastore_end_ticks_by_item=prepared.datastore_end_ticks_by_item,
+                k=retrieval_k,
+                stride=int(prepared.config["datastore_stride"]),
+                horizon=prepared.prediction_length,
+                scope=config.retrieval_scope,
+                metric=config.distance_metric,
+                minimum_overlap_fraction=config.minimum_overlap_fraction,
+                query_block_size=config.query_block_size,
+                datastore_block_size=config.datastore_block_size,
+                require_complete_k=False,
+            )
+            distances[query_positions, :retrieval_k] = selected_distances
+            valid = selected_ids >= 0
+            mapped = np.full_like(selected_ids, -1)
+            mapped[valid] = datastore_positions[selected_ids[valid]]
+            neighbor_ids[query_positions, :retrieval_k] = mapped
+            enough = np.count_nonzero(valid, axis=1) >= selected_k
+            rejected = query_positions[~enough]
+            rag_eligible[rejected] = False
+            fallback_reason[rejected] = 2
+        else:
+            rag_eligible[query_positions] = False
+            fallback_reason[query_positions] = 2
+        timings["test.retrieval_seconds"] = perf_counter() - started
+
+        eligible_neighbor_ids = np.asarray(neighbor_ids)[np.asarray(rag_eligible)]
+        selected = np.unique(eligible_neighbor_ids[eligible_neighbor_ids >= 0])
+        fit_forecast_ids = np.load(
+            fit_root / fit_arrays["datastore.selected_forecast_id"], mmap_mode="r"
+        )
+        missing = np.setdiff1d(selected, np.asarray(fit_forecast_ids))
+        reused_neighbor_forecasts = int(len(selected) - len(missing))
+        computed_neighbor_forecasts = int(len(missing))
+        missing_id_path = root / "datastore" / "selected_forecast_id.npy"
+        missing_value_path = root / "datastore" / "selected_forecast.npy"
+        missing_ids = _memmap(missing_id_path, missing.shape, np.int64)
+        missing_values = _memmap(
+            missing_value_path,
+            (len(missing), datastore_target.shape[1], prepared.prediction_length),
+            np.float32,
+        )
+        missing_ids[:] = missing
+        timings["test.neighbor_forecast_seconds"] = 0.0
+        datastore_references = prepared.indices("datastore")
+        for start in range(0, len(missing), config.model_batch_size):
+            stop = min(start + config.model_batch_size, len(missing))
+            batch = reader.read(datastore_references[missing[start:stop]])
+            missing_values[start:stop] = _timed_forecast(
+                forecaster,
+                batch.context,
+                timings,
+                "test.neighbor_forecast_seconds",
+                horizon=prepared.prediction_length,
+            )
+        arrays["datastore.selected_forecast_id"] = str(
+            missing_id_path.relative_to(root)
+        )
+        arrays["datastore.selected_forecast"] = str(
+            missing_value_path.relative_to(root)
+        )
+
+        timings["test.context_construction_seconds"] = 0.0
+        timings["test.context_forecast_seconds"] = 0.0
+        eligible_positions = np.flatnonzero(rag_eligible)
+        for start in range(0, len(eligible_positions), config.model_batch_size):
+            positions = eligible_positions[start : start + config.model_batch_size]
+            ids = np.asarray(neighbor_ids[positions])
+            query_batch = reader.read(references[positions])
+            neighbor_batch = reader.read(datastore_references[ids.reshape(-1)])
+            neighbor_context = neighbor_batch.context.reshape(
+                len(positions), selected_k, 1, prepared.context_length
+            )
+            neighbor_target = np.asarray(datastore_target[ids])
+            started = perf_counter()
+            retrieval_context = _query_scaled_retrieval_context(
+                query_batch.context, neighbor_context, neighbor_target
+            )
+            _record_seconds(
+                timings,
+                "test.context_construction_seconds",
+                perf_counter() - started,
+            )
+            context_forecast[positions] = _timed_forecast(
+                forecaster,
+                query_batch.context,
+                timings,
+                "test.context_forecast_seconds",
+                horizon=prepared.prediction_length,
+                retrieval_context=retrieval_context,
+            )
+
+        for store in (
+            representation,
+            scale,
+            finite_fraction,
+            distances,
+            neighbor_ids,
+            context_forecast,
+            missing_ids,
+            missing_values,
+        ):
+            store.flush()
+
+    rag_eligible.flush()
+    fallback_reason.flush()
+    manifest: dict[str, object] = {
+        **identity,
+        "format": "adaptime_eval_extraction",
+        "signature": signature,
+        "status": "completed",
+        "arrays": arrays,
+        "counts": {"test": total},
+        "eligibility": {
+            "total": total,
+            "rag_eligible": int(np.count_nonzero(rag_eligible)),
+            "vanilla_fallback": int(total - np.count_nonzero(rag_eligible)),
+            "fallback_reasons": {
+                label: int(np.count_nonzero(fallback_reason == code))
+                for code, label in FALLBACK_REASONS.items()
+                if code != 0
+            },
+        },
+        "neighbor_forecasts": {
+            "reused_from_fit_extraction": reused_neighbor_forecasts,
+            "computed_for_test": computed_neighbor_forecasts,
+        },
+        "fallback_reason_codes": {
+            str(code): label for code, label in FALLBACK_REASONS.items()
+        },
+        "timing_seconds": timings,
+    }
+    _atomic_json(manifest_path, manifest)
+    return manifest_path
+
+
+def open_eval_extraction(path: str | Path) -> tuple[Path, dict[str, object]]:
+    manifest_path = Path(path).expanduser().resolve()
+    if manifest_path.is_dir():
+        manifest_path = manifest_path / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if (
+        manifest.get("schema_version") != EVAL_EXTRACTION_SCHEMA
+        or manifest.get("format") != "adaptime_eval_extraction"
+        or manifest.get("status") != "completed"
+    ):
+        raise ValueError("Adaptime evaluation extraction is not completed")
     return manifest_path.parent, manifest

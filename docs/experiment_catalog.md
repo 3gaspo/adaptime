@@ -8,35 +8,48 @@
 univariate, and past-target-covariate inputs. These are controls rather than
 Adaptime results.
 
-## Adaptime `full_ridge_shared`
+## Adaptime family
 
-The Ridge experiment asks whether a frozen pre-test linear adaptor improves a
-foundation model when it combines vanilla prediction, retrieval-context
-prediction, neighbor futures, and neighbor forecasts.
+The main experiment separates the value of retrieval covariates, a Bayesian
+soft gate, and the complete frozen Ridge adaptor against the same vanilla
+foundation forecast.
 
+- Methods: `vanilla`, `covariate_prediction`,
+  `bayes_covariate_prediction`, and `full_ridge_shared`.
 - Entry point: `scripts/submit_adaptime_comparison.sh` or the explicit
-  `prepare|extract|fit|predict|evaluate|pipeline` Python stages.
+  `prepare|vanilla|extract|fit|extract_eval|predict|evaluate|pipeline` Python
+  stages.
 - Data: one method-neutral datastore, adaptation-training and validation
   references, and unchanged official TIME test references.
 - Context: the selected foundation model's normal TIME limit; 8192 for the
   primary Chronos-2 configuration.
 - Retrieval: instance-normalized exact Euclidean search by default, with
   configurable finite-content and overlap gates.
-- Eligibility: a query must have `max_k` valid neighbors (`15` by default).
+- Fit representation: training and validation require the complete backbone
+  context; the primary Chronos-2 representation therefore has fixed
+  `L=8192`. Official test windows retain all available context and are never
+  removed.
+- Eligibility: a fit query must have `max_k` valid neighbors (`15` by default).
   Every `K` candidate uses the same eligible rows and takes its first `K`
   neighbors; fewer than `max_k` valid neighbors makes the query ineligible for
   all candidates.
 - Fit: shared no-intercept `V + X beta`, trained with complete valid-neighbor
-  dates under MSSE.
+  windows under MSSE.
 - Selection: `K in {1,5,10,15}` and
   `alpha in {1e-3,1e-2,1e-1}`; primary/default values are `K=10` and
   `alpha=1e-2`.
-- Training fallback: primary-`K` valid training dates must exceed test dates;
-  otherwise evaluation uses a recorded vanilla-only wrapper.
-- Validation fallback: primary-`K` valid validation dates must exceed 10% of
-  test dates; otherwise the primary/default values are fitted directly.
-- Evaluation: deterministic wrapper predictions use the standard TIME
-  foundation evaluator and artifact contract.
+- Bayesian baseline: on selected `K`, eligible train and validation windows
+  provide paired MSSE wins of `C` over `V`; ties count one half and a Beta(1,1)
+  prior yields `p`. Test prediction is `(1-p)V+pC`.
+- Training fallback: primary-`K` valid training windows must exceed official
+  test windows; otherwise all four methods use cached vanilla predictions.
+- Validation fallback: primary-`K` valid validation windows must exceed 10% of
+  test windows; otherwise the primary/default values are fitted directly.
+- Test extraction: retrieval and `C` are computed only at selected `K` after
+  fitting. Any test row without sufficient fixed context or neighbors uses its
+  cached flexible-context vanilla forecast.
+- Evaluation: each deterministic method receives its own standard TIME
+  evaluation artifact and one four-method report joins identical support.
 
 No delta, convex, per-horizon, or native-multivariate Ridge ablation belongs to
 this family.
@@ -48,7 +61,7 @@ released source-adapted TS-RAG ARM under the same chronological datastore and
 official TIME test support.
 
 - Entry point: `scripts/submit_tsrag_comparison.sh` for an independent TS-RAG
-  run, or the combined Adaptime submission for concurrent Ridge and TS-RAG.
+  run. It is not part of the main four-method Adaptime submission.
 - Shared data: exactly the global datastore and test references prepared for
   the selected Adaptime configuration.
 - Native method: same-series Chronos-T5 EOS/FAISS retrieval, top 10 neighbors,
@@ -59,11 +72,11 @@ official TIME test support.
 - Evaluation: the same standard TIME wrapper evaluator as Ridge and vanilla
   foundation models.
 
-The optional `ADAPTIME_RIDGE_RESULTS_PATH` is only a Ridge computation/report
-input. An exact complete match skips Ridge computation; an incomplete or
-different configuration recomputes Ridge. It cannot suppress or alter TS-RAG.
-The final report compares only tasks whose independently evaluated support is
-identical.
+The optional `ADAPTIME_RIDGE_RESULTS_PATH` is a report-only input for the
+separate TS-RAG submission. An incomplete or scientifically different
+full-Ridge root is rejected in favor of local matching evaluations. It cannot
+suppress or alter TS-RAG. The report compares only tasks whose independently
+evaluated support is identical.
 
 No result is claimed until the complete cluster outputs are synchronized and
 inspected.

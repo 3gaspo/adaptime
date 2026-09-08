@@ -33,14 +33,20 @@ from timebench.model_loading import foundation_context_length, load_adaptime_for
 from timebench.model_loading.tsrag import LoadedTSRAG, load_tsrag
 from timebench.paths import dataset_storage_root, outputs_root, weights_root
 from timebench.pipeline.adaptation_prediction import (
+    ADAPTATION_METHODS,
     PredictionConfig,
-    predict_frozen_ridge,
+    predict_adaptation_family,
 )
 from timebench.pipeline.adaptime_extraction import (
     ExtractionConfig,
+    extract_adaptation_eval_features,
     extract_adaptation_features,
 )
 from timebench.pipeline.adaptime_training import RidgeTrainingConfig, fit_full_ridge
+from timebench.pipeline.adaptime_vanilla import (
+    VanillaConfig,
+    extract_vanilla_test_forecasts,
+)
 from timebench.pipeline.runs import allocate_run, select_completed_runs
 from timebench.pipeline.tsrag import (
     TSRAG_CONTEXT_LENGTH,
@@ -58,8 +64,10 @@ from timebench.results.adaptation import build_adaptation_comparison
 METHODS = ("ridge", "tsrag")
 STAGES = (
     "prepare",
+    "vanilla",
     "extract",
     "fit",
+    "extract_eval",
     "predict",
     "evaluate",
     "report",
@@ -320,7 +328,20 @@ def _spec(
                 "consumers": ["full_ridge_shared", "tsrag"],
             },
         )
-    if method == "ridge":
+    if stage == "vanilla":
+        return (
+            "adaptime_vanilla",
+            _task_identity(task, workflow.model),
+            {
+                "model": workflow.model,
+                "weights_id": workflow.weights_id,
+                "context_policy": "all_available_history_capped_at_model_limit",
+            },
+            {"data_config": data_config},
+            {"phase": "unconditional_official_test_vanilla"},
+        )
+    ridge_family = method == "ridge" or method in ADAPTATION_METHODS
+    if ridge_family:
         method_name = "full_ridge_shared"
         extraction_science = {
             "backbone": workflow.model,
@@ -344,23 +365,53 @@ def _spec(
             _task_identity(task, method_name),
             extraction_science,
             {"data_config": data_config},
-            {"phase": "extraction"},
+            {"phase": "fit_grid_extraction"},
         )
     if stage == "adaptations":
         return (
             "adaptime_adaptation",
             _task_identity(task, method_name),
-            {"method": method_name, **asdict(workflow.ridge_training)},
-            {"data_config": data_config, "extraction": extraction_science},
+            {
+                "method": method_name,
+                **asdict(workflow.ridge_training),
+                "bayes_covariate_protocol": {
+                    "evidence": "paired_train_validation_window_msse_wins",
+                    "tie_weight": 0.5,
+                    "prior": "beta_1_1",
+                },
+            },
+            {
+                "data_config": data_config,
+                "extraction": extraction_science,
+                "fit_extraction_contract": "fixed_context_train_validation_only",
+            },
             {"phase": "closed_form_fitting"},
+        )
+    if stage == "eval_extractions":
+        return (
+            "adaptime_eval_extraction",
+            _task_identity(task, method_name),
+            extraction_science,
+            {
+                "data_config": data_config,
+                "adaptation": asdict(workflow.ridge_training),
+                "vanilla_context_policy": "all_available_history_capped_at_model_limit",
+            },
+            {"phase": "selected_k_official_test_extraction"},
         )
     if stage == "predictions":
         model_config: dict[str, object] = {
-            "method": method_name,
+            "method": (
+                "adaptime_comparison_family" if ridge_family else method_name
+            ),
             "extraction": extraction_science,
         }
-        if method == "ridge":
+        if ridge_family:
+            model_config["methods"] = list(ADAPTATION_METHODS)
             model_config["adaptation"] = asdict(workflow.ridge_training)
+            model_config["prediction_protocol"] = (
+                "unconditional_vanilla_plus_selected_k_covariate_bayes_and_ridge"
+            )
         else:
             model_config["checkpoint"] = "released_tsrag_arm"
         return (
@@ -371,18 +422,25 @@ def _spec(
             {"phase": "frozen_inference", "forecast_type": "point"},
         )
     if stage == "evaluations":
+        evaluation_method = method if method in ADAPTATION_METHODS else method_name
         prediction_science: dict[str, object] = {
-            "method": method_name,
+            "method": (
+                "adaptime_comparison_family" if ridge_family else method_name
+            ),
             "extraction": extraction_science,
         }
-        if method == "ridge":
+        if ridge_family:
+            prediction_science["methods"] = list(ADAPTATION_METHODS)
             prediction_science["adaptation"] = asdict(workflow.ridge_training)
+            prediction_science["prediction_protocol"] = (
+                "unconditional_vanilla_plus_selected_k_covariate_bayes_and_ridge"
+            )
         else:
             prediction_science["checkpoint"] = "released_tsrag_arm"
         return (
             "adaptime_evaluation",
-            _task_identity(task, method_name),
-            {"method": method_name, "forecast_type": "point"},
+            _task_identity(task, evaluation_method),
+            {"method": evaluation_method, "forecast_type": "point"},
             {
                 "data_config": data_config,
                 "prediction_config": prediction_science,
@@ -479,6 +537,14 @@ def _data_manifest(
     return run / "prepared" / "manifest.json"
 
 
+def _vanilla_manifest(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    root = _stage_root(artifact_root, "vanilla", "shared", task)
+    run = _completed_run(root, _spec(task, workflow, "vanilla", "shared"))
+    return run / "vanilla" / "manifest.json"
+
+
 def _artifact_manifest(
     artifact_root: Path,
     task: AdaptimeTask,
@@ -520,6 +586,53 @@ def _run_prepare(
             source_path=task.source_path,
         )
         run.complete(["prepared/manifest.json"])
+    return manifest
+
+
+def _run_vanilla(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "vanilla",
+        "shared",
+        runtime_config={
+            "device": workflow.device,
+            "model_path": None if workflow.model_path is None else str(workflow.model_path),
+        },
+        provenance={"data_manifest": str(prepared)},
+    )
+    manifest = run.run_dir / "vanilla" / "manifest.json"
+    if not run.should_run:
+        return manifest
+    forecaster = load_adaptime_forecaster(
+        workflow.model,
+        horizon=task.preparation.prediction_length,
+        period=task.preparation.retrieval_period,
+        model_path=workflow.model_path,
+        weights_id=workflow.weights_id,
+        device=workflow.device,
+    )
+    with run:
+        manifest = extract_vanilla_test_forecasts(
+            prepared,
+            forecaster,
+            VanillaConfig(
+                model_batch_size=workflow.model_batch_size,
+                arrow_cache_items=workflow.arrow_cache_items,
+            ),
+            run.run_dir / "vanilla",
+        )
+        run.complete(
+            [
+                "vanilla/manifest.json",
+                "vanilla/predictions.npy",
+                "vanilla/context_length.npy",
+            ]
+        )
     return manifest
 
 
@@ -638,17 +751,22 @@ def _run_fit(
             workflow.ridge_training,
             run.run_dir / "model",
         )
-        required = ["model/model_manifest.json", "model/selection.json"]
+        required = [
+            "model/model_manifest.json",
+            "model/selection.json",
+            "model/bayes_mixture.json",
+        ]
         if "coefficients" in json.loads(manifest.read_text(encoding="utf-8"))["files"]:
             required.append("model/coefficients.npy")
         run.complete(required)
     return manifest
 
 
-def _run_ridge_prediction(
+def _run_ridge_eval_extraction(
     artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
 ) -> Path:
     prepared = _data_manifest(artifact_root, task, workflow)
+    vanilla = _vanilla_manifest(artifact_root, task, workflow)
     extraction = _artifact_manifest(
         artifact_root, task, workflow, "extractions", "ridge", "extraction/manifest.json"
     )
@@ -659,30 +777,98 @@ def _run_ridge_prediction(
         artifact_root,
         task,
         workflow,
+        "eval_extractions",
+        "ridge",
+        runtime_config={
+            "device": workflow.device,
+            "model_path": None if workflow.model_path is None else str(workflow.model_path),
+        },
+        provenance={
+            "data_manifest": str(prepared),
+            "vanilla_manifest": str(vanilla),
+            "fit_extraction_manifest": str(extraction),
+            "adaptation_manifest": str(adaptation),
+        },
+    )
+    manifest = run.run_dir / "extraction" / "manifest.json"
+    if not run.should_run:
+        return manifest
+    forecaster = load_adaptime_forecaster(
+        workflow.model,
+        horizon=task.preparation.prediction_length,
+        period=task.preparation.retrieval_period,
+        model_path=workflow.model_path,
+        weights_id=workflow.weights_id,
+        device=workflow.device,
+    )
+    with run:
+        manifest = extract_adaptation_eval_features(
+            prepared,
+            extraction,
+            adaptation,
+            vanilla,
+            forecaster,
+            _extraction_config(workflow),
+            run.run_dir / "extraction",
+        )
+        run.complete(["extraction/manifest.json"])
+    return manifest
+
+
+def _run_ridge_prediction(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    extraction = _artifact_manifest(
+        artifact_root, task, workflow, "extractions", "ridge", "extraction/manifest.json"
+    )
+    eval_extraction = _artifact_manifest(
+        artifact_root,
+        task,
+        workflow,
+        "eval_extractions",
+        "ridge",
+        "extraction/manifest.json",
+    )
+    adaptation = _artifact_manifest(
+        artifact_root, task, workflow, "adaptations", "ridge", "model/model_manifest.json"
+    )
+    vanilla = _vanilla_manifest(artifact_root, task, workflow)
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
         "predictions",
         "ridge",
         runtime_config={"chunk_size": workflow.ridge_chunk_size},
         provenance={
             "data_manifest": str(prepared),
-            "extraction_manifest": str(extraction),
+            "fit_extraction_manifest": str(extraction),
+            "eval_extraction_manifest": str(eval_extraction),
             "adaptation_manifest": str(adaptation),
+            "vanilla_manifest": str(vanilla),
         },
     )
     manifest = run.run_dir / "prediction" / "prediction_manifest.json"
     if not run.should_run:
         return manifest
     with run:
-        manifest = predict_frozen_ridge(
+        manifest = predict_adaptation_family(
             prepared,
             extraction,
             adaptation,
+            eval_extraction,
+            vanilla,
             PredictionConfig(chunk_size=workflow.ridge_chunk_size),
             run.run_dir / "prediction",
         )
         run.complete(
             [
                 "prediction/prediction_manifest.json",
-                "prediction/predictions.npy",
+                *(
+                    f"prediction/{method}.npy"
+                    for method in ADAPTATION_METHODS
+                ),
                 "prediction/rag_eligible.npy",
                 "prediction/fallback_reason.npy",
             ]
@@ -744,12 +930,13 @@ def _run_evaluation(
     method: str,
 ) -> Path:
     prepared = _data_manifest(artifact_root, task, workflow)
+    prediction_method = "ridge" if method in ADAPTATION_METHODS else method
     prediction = _artifact_manifest(
         artifact_root,
         task,
         workflow,
         "predictions",
-        method,
+        prediction_method,
         "prediction/prediction_manifest.json",
     )
     run = _allocation(
@@ -767,7 +954,12 @@ def _run_evaluation(
     if not run.should_run:
         return run.run_dir / "metrics_summary.json"
     with run:
-        evaluate_point_predictions(prepared, prediction, run.run_dir)
+        evaluate_point_predictions(
+            prepared,
+            prediction,
+            run.run_dir,
+            method=method if method in ADAPTATION_METHODS else None,
+        )
         run.complete(["predictions.npz", "metrics.npz", "config.json", "metrics_summary.json"])
     return run.run_dir / "metrics_summary.json"
 
@@ -792,56 +984,56 @@ def run_adaptation_stage(
     if method not in METHODS:
         raise ValueError(f"method must be one of {METHODS}")
     workflow.validate(method)
-    if stage == "fit" and method != "ridge":
-        raise ValueError("TS-RAG uses its released frozen adaptor and has no fit stage")
+    if stage in {"vanilla", "fit", "extract_eval"} and method != "ridge":
+        raise ValueError(
+            "vanilla, fit, and extract_eval are Ridge phases; "
+            "TS-RAG retains its native frozen pipeline"
+        )
     dataset_config = load_dataset_config(dataset_config_path)
     artifact_root = (output_root or outputs_root() / "adaptime").expanduser().resolve()
     tasks = workflow_tasks(
         dataset_config, datasets_selected, terms_selected, workflow
     )
-    local_ridge_root = artifact_root / "evaluations" / "ridge"
+    local_ridge_root = artifact_root / "evaluations" / "full_ridge_shared"
     matched_ridge_runs = (
         _matching_evaluation_runs(
-            ridge_results_path.expanduser().resolve(), tasks, workflow, "ridge"
+            ridge_results_path.expanduser().resolve(),
+            tasks,
+            workflow,
+            "full_ridge_shared",
         )
         if ridge_results_path is not None
-        and (stage == "report" or (stage == "pipeline" and method == "ridge"))
+        and stage == "report"
+        and method == "tsrag"
         else None
     )
-    if (
-        stage == "pipeline"
-        and method == "ridge"
-        and ridge_results_path is not None
-        and matched_ridge_runs is not None
-    ):
-        print(
-            "Reusing exact completed Ridge evaluations from "
-            f"{ridge_results_path.expanduser().resolve()}",
-            flush=True,
-        )
-        return [run / "metrics_summary.json" for run in matched_ridge_runs]
-    if stage == "pipeline" and method == "ridge" and ridge_results_path is not None:
-        print(
-            "Precomputed Ridge results do not exactly match every requested task; "
-            "running the Ridge pipeline.",
-            flush=True,
-        )
     if stage == "report":
         launch_id = os.environ.get("TIME_LAUNCH_ID") or "manual"
-        ridge_root = (
-            ridge_results_path.expanduser().resolve()
-            if matched_ridge_runs is not None and ridge_results_path is not None
-            else local_ridge_root
-        )
-        if ridge_results_path is not None and matched_ridge_runs is None:
-            print(
-                "Precomputed Ridge results do not exactly match every requested task; "
-                f"reporting local results from {local_ridge_root}.",
-                flush=True,
+        if method == "ridge":
+            roots = {
+                comparison_method: artifact_root
+                / "evaluations"
+                / comparison_method
+                for comparison_method in ADAPTATION_METHODS
+            }
+        else:
+            ridge_root = (
+                ridge_results_path.expanduser().resolve()
+                if matched_ridge_runs is not None and ridge_results_path is not None
+                else local_ridge_root
             )
+            if ridge_results_path is not None and matched_ridge_runs is None:
+                print(
+                    "Precomputed Ridge results do not exactly match every requested "
+                    f"task; reporting local results from {local_ridge_root}.",
+                    flush=True,
+                )
+            roots = {
+                "full_ridge_shared": ridge_root,
+                "tsrag": artifact_root / "evaluations" / "tsrag",
+            }
         report = build_adaptation_comparison(
-            tsrag_results_root=artifact_root / "evaluations" / "tsrag",
-            ridge_results_root=ridge_root,
+            method_results_roots=roots,
             output_dir=artifact_root / "reports" / launch_id,
             expected_tasks=((task.dataset, task.term) for task in tasks),
             config_policy=config_policy,
@@ -850,10 +1042,25 @@ def run_adaptation_stage(
         print(report, flush=True)
         return [report]
     stages = {
-        "pipeline": ("extract", "fit", "predict", "evaluate")
+        "pipeline": (
+            "vanilla",
+            "extract",
+            "fit",
+            "extract_eval",
+            "predict",
+            "evaluate",
+        )
         if method == "ridge"
         else ("extract", "predict", "evaluate"),
-        "all": ("prepare", "extract", "fit", "predict", "evaluate")
+        "all": (
+            "prepare",
+            "vanilla",
+            "extract",
+            "fit",
+            "extract_eval",
+            "predict",
+            "evaluate",
+        )
         if method == "ridge"
         else ("prepare", "extract", "predict", "evaluate"),
     }.get(stage, (stage,))
@@ -887,6 +1094,8 @@ def run_adaptation_stage(
         for task in tasks:
             if current == "prepare":
                 result = _run_prepare(artifact_root, task, workflow)
+            elif current == "vanilla":
+                result = _run_vanilla(artifact_root, task, workflow)
             elif current == "extract" and method == "ridge":
                 result = _run_ridge_extraction(artifact_root, task, workflow)
             elif current == "extract":
@@ -896,6 +1105,8 @@ def run_adaptation_stage(
                 )
             elif current == "fit":
                 result = _run_fit(artifact_root, task, workflow)
+            elif current == "extract_eval":
+                result = _run_ridge_eval_extraction(artifact_root, task, workflow)
             elif current == "predict" and method == "ridge":
                 result = _run_ridge_prediction(artifact_root, task, workflow)
             elif current == "predict":
@@ -903,6 +1114,17 @@ def run_adaptation_stage(
                 result = _run_tsrag_prediction(
                     artifact_root, task, workflow, retriever, loaded
                 )
+            elif current == "evaluate" and method == "ridge":
+                for comparison_method in ADAPTATION_METHODS:
+                    result = _run_evaluation(
+                        artifact_root,
+                        task,
+                        workflow,
+                        comparison_method,
+                    )
+                    outputs.append(result)
+                    print(result, flush=True)
+                continue
             else:
                 result = _run_evaluation(
                     artifact_root, task, workflow, method

@@ -64,7 +64,7 @@ run_adaptime() {
     [ -z "${TSRAG_CHRONOS_BOLT_PATH:-}" ] || command+=(--tsrag-chronos-bolt-path "$TSRAG_CHRONOS_BOLT_PATH")
     [ -z "${TSRAG_RETRIEVER_PATH:-}" ] || command+=(--tsrag-retriever-path "$TSRAG_RETRIEVER_PATH")
     [ -z "${TSRAG_CHECKPOINT_PATH:-}" ] || command+=(--tsrag-checkpoint-path "$TSRAG_CHECKPOINT_PATH")
-    if { [ "$ADAPTIME_STAGE_VALUE" = report ] || { [ "$ADAPTIME_STAGE_VALUE" = pipeline ] && [ "$ADAPTIME_METHOD_VALUE" = ridge ]; }; } && [ -n "${ADAPTIME_RIDGE_RESULTS_PATH:-}" ]; then
+    if [ "$ADAPTIME_STAGE_VALUE" = report ] && [ "$ADAPTIME_METHOD_VALUE" = tsrag ] && [ -n "${ADAPTIME_RIDGE_RESULTS_PATH:-}" ]; then
         command+=(--ridge-results-path "$ADAPTIME_RIDGE_RESULTS_PATH")
     fi
     if [ -n "${SLURM_JOB_ID:-}" ]; then

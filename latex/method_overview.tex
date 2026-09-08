@@ -40,7 +40,10 @@ form the datastore.
 The ridge history length is the same as in the inherited vanilla TIME run for
 its backbone: 8192 for Chronos-2, 4096 for TS-ICL, and 2048 for Chronos-Bolt.
 TS-RAG retains its separate native length of 512 when used as an external
-control.
+control. Adaptation training and validation retain only rows with this complete
+fixed-length history, so their retrieval distances always compare equal-width
+representations. The vanilla test pass instead uses every official window with
+all history available at that date, capped at the backbone limit.
 
 For a query time $t$, let $d_{\max}$ be the fixed datastore endpoint and $P$
 the dataset period. The latest eligible neighbor date is
@@ -55,10 +58,11 @@ query.
 By default every eligible earlier datastore date is accessible. An optional
 global window cap is divided evenly across variates, rounded down, and retains
 the most recent dates; every variate must retain at least $P$ datastore dates.
-If the complete adaptation-window plan, requested foundation context, or this
-minimum datastore cannot be supplied, no ridge is fitted: the task evaluates
-TIME's unchanged official test windows with vanilla forecasts and records the
-vanilla-only fallback reason.
+An early training or validation origin that cannot supply the fixed history is
+excluded from fitting, but no official test origin is removed. If too few
+valid fixed-context training windows remain, no ridge is fitted: every method
+evaluates TIME's unchanged test windows with cached vanilla forecasts and
+records the task-level fallback reason.
 
 Let $q_t$ be the finite fraction of a query history. The default gate requires
 $q_t\geq0.8$ before retrieval. Datastore histories satisfy the same threshold,
@@ -67,6 +71,8 @@ only when it has at least $K_{\max}$ valid chronological neighbors, where
 $K_{\max}=15$ for the default grid. Every candidate $K$ uses this common query
 support and consumes the first $K$ neighbors from the same ordered list; fewer
 than $K_{\max}$ valid neighbors makes the query ineligible for all candidates.
+After selection is frozen, test extraction retrieves only the selected $K$;
+a test query needs those $K$ neighbors rather than $K_{\max}$.
 
 \section{Full shared ridge}
 
@@ -102,21 +108,39 @@ ineligible query receives the vanilla output for both $C$ and $V'$. This gate
 uses only query and datastore information available at forecast time. Missing
 future labels affect metric support only and cannot select the prediction path.
 
+\section{Bayesian covariate baseline}
+
+For the selected $K$, each eligible adaptation-training or validation window
+is one paired trial. Let $z_i=1$ when the per-window MSSE of $C_i$ is lower
+than that of $V_i$, $z_i=0$ when it is higher, and $z_i=1/2$ for a tie. With a
+$\operatorname{Beta}(1,1)$ prior, the posterior-mean probability is
+\begin{equation}
+  p = \frac{1+\sum_i z_i}{2+n}.
+\end{equation}
+This evidence is frozen before test. The soft baseline is
+\begin{equation}
+  B=(1-p)V+pC.
+\end{equation}
+An ineligible test window receives $V$ for both the hard covariate and Bayesian
+branches. A task-level insufficient-training fallback fixes $p=0$ and makes
+all four family predictions equal to $V$.
+
 \section{Evaluation}
 
-The official test compares Seasonal Naive, vanilla $V$, retrieval-context $C$
-at the selected $K$, and frozen Adaptime $V'$. Raw MSE, MAE, MASE, and MSSE are
-retained as diagnostics. Performance uses scaled MASE: within each task, a
-method's equal-user MASE is divided by the matching Seasonal Naive MASE, then
-the task ratios are combined with a geometric mean. Missing dates are never
-removed or shifted: forecast errors skip non-finite target dates, while MASE
-and MSSE scales count only finite lagged pairs at their original timestamps.
+The main official-test report compares vanilla $V$, hard retrieval-context
+$C$, Bayesian $B$, and frozen full Ridge $V'$. Each receives its own standard
+TIME evaluation artifact on identical official windows. The evaluator retains
+MSE, MAE, RMSE, MAPE, sMAPE, MASE, ND, and CRPS. Seasonal Naive remains the
+inherited external baseline used by broader TIME summaries. Missing dates are
+never removed or shifted: forecast errors skip non-finite target dates and
+MASE scales count only finite lagged pairs at their original timestamps.
 Conclusions require completed and inspected cluster artifacts.
 
 Eligibility arrays, reason codes, effective training counts, and test RAG
-coverage are retained with the task artifacts. The resulting estimand is a
-transparent gated hybrid: Adaptime on eligible windows and vanilla otherwise.
-An insufficient-history task is the limiting case with zero eligible Adaptime
-windows and vanilla predictions for every learned-method branch.
+coverage, Ridge coefficients, and Bayesian evidence are retained with the task
+artifacts. The resulting adapted estimands are transparent gated hybrids:
+their selected method on eligible windows and vanilla otherwise. An
+insufficient-training task is the limiting case with zero eligible Adaptime
+windows and vanilla predictions for all four family branches.
 
 \end{document}

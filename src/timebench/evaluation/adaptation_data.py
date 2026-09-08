@@ -19,7 +19,8 @@ import pandas as pd
 from timebench.evaluation.metrics import seasonal_naive_point_forecast
 
 PREPARATION_SCHEMA = 1
-QUERY_SPLITS = ("adaptation_train", "adaptation_validation", "test")
+FIT_QUERY_SPLITS = ("adaptation_train", "adaptation_validation")
+QUERY_SPLITS = (*FIT_QUERY_SPLITS, "test")
 ALL_SPLITS = ("datastore", *QUERY_SPLITS)
 
 ADAPTATION_STRIDES = {
@@ -206,19 +207,14 @@ def _target_array(entry: Mapping[str, object]) -> np.ndarray:
 
 def _intervals(length: int, config: PreparationConfig) -> dict[str, tuple[int, int]]:
     test_start = length - config.test_length
-    validation_start = test_start - config.adaptation_validation_length
-    train_start = validation_start - config.adaptation_train_length
-    datastore_start = 0
-    if train_start <= 0:
-        required = (
-            config.test_length
-            + config.adaptation_validation_length
-            + config.adaptation_train_length
-        )
+    if test_start < 0:
         raise InsufficientAdaptationHistory(
-            f"series length {length} cannot provide the requested chronological "
-            f"intervals (at least {required} values required)"
+            f"series length {length} cannot provide the official "
+            f"test interval of {config.test_length} values"
         )
+    validation_start = max(0, test_start - config.adaptation_validation_length)
+    train_start = max(0, validation_start - config.adaptation_train_length)
+    datastore_start = 0
     return {
         "datastore": (datastore_start, train_start),
         "adaptation_train": (train_start, validation_start),
@@ -235,7 +231,11 @@ def _query_origins(
     stride: int,
 ) -> np.ndarray:
     start, stop = interval
-    first = max(int(start), int(context_length))
+    first = int(start)
+    if first < int(context_length):
+        first += (
+            (int(context_length) - first + int(stride) - 1) // int(stride)
+        ) * int(stride)
     last = int(stop) - int(horizon)
     if first > last:
         return np.empty(0, dtype=np.int64)
@@ -245,15 +245,10 @@ def _query_origins(
 def _official_test_origins(
     interval: tuple[int, int],
     *,
-    context_length: int,
     horizon: int,
 ) -> np.ndarray:
     start, stop = interval
     windows = (int(stop) - int(start)) // int(horizon)
-    if int(start) < int(context_length):
-        raise InsufficientAdaptationHistory(
-            "context_length reaches before the series start at the first official TIME test origin"
-        )
     return int(start) + np.arange(windows, dtype=np.int64) * int(horizon)
 
 
@@ -354,6 +349,16 @@ def prepare_adaptation_dataset(
     start_ticks: list[int] = []
     query_period_residues: set[int] = set()
     multivariate_channels: int | None = None
+    expected_query_windows = {
+        "adaptation_train": 1
+        + (config.adaptation_train_length - config.prediction_length)
+        // config.query_stride,
+        "adaptation_validation": 1
+        + (config.adaptation_validation_length - config.prediction_length)
+        // config.query_stride,
+        "test": config.test_length // config.prediction_length,
+    }
+    planned_query_rows = {split: 0 for split in QUERY_SPLITS}
 
     for item in range(len(hf_dataset)):
         entry = hf_dataset[item]
@@ -384,25 +389,12 @@ def prepare_adaptation_dataset(
             ),
             "test": _official_test_origins(
                 intervals["test"],
-                context_length=config.context_length,
                 horizon=config.prediction_length,
             ),
         }
-        expected_query_windows = {
-            "adaptation_train": 1
-            + (config.adaptation_train_length - config.prediction_length)
-            // config.query_stride,
-            "adaptation_validation": 1
-            + (config.adaptation_validation_length - config.prediction_length)
-            // config.query_stride,
-            "test": config.test_length // config.prediction_length,
-        }
+        rows_per_date = channels if config.target_mode == "univariate" else 1
         for split, origins in split_origins.items():
-            if len(origins) != int(expected_query_windows[split]):
-                raise InsufficientAdaptationHistory(
-                    f"item {item} can provide {len(origins)} of the "
-                    f"{expected_query_windows[split]} planned {split} windows"
-                )
+            planned_query_rows[split] += int(expected_query_windows[split]) * rows_per_date
             query_period_residues.update(
                 int((start_tick + value) % config.retrieval_period) for value in origins
             )
@@ -424,16 +416,6 @@ def prepare_adaptation_dataset(
     capped_dates = None
     if config.max_datastore_windows is not None:
         capped_dates = int(config.max_datastore_windows) // int(variates)
-        minimum_dates = max(
-            int(config.retrieval_period),
-            int(config.minimum_datastore_dates_per_variate),
-        )
-        if capped_dates < minimum_dates:
-            raise InsufficientAdaptationHistory(
-                f"max_datastore_windows={config.max_datastore_windows} retains "
-                f"{capped_dates} dates per variate, fewer than the shared "
-                f"minimum ({minimum_dates})"
-            )
     datastore_end_ticks: list[int] = []
     datastore_origins: list[np.ndarray] = []
     for item, ((channels, _), intervals, start_tick) in enumerate(
@@ -460,15 +442,6 @@ def prepare_adaptation_dataset(
             stride=config.datastore_stride,
             phases=phases,
         )
-        minimum_dates = max(
-            int(config.retrieval_period),
-            int(config.minimum_datastore_dates_per_variate),
-        )
-        if len(origins) < minimum_dates:
-            raise InsufficientAdaptationHistory(
-                f"item {item} has {len(origins)} eligible datastore dates, fewer "
-                f"than the shared minimum ({minimum_dates})"
-            )
         datastore_origins.append(origins)
 
     retained_dates = (
@@ -537,6 +510,16 @@ def prepare_adaptation_dataset(
             "maximum": int(max(datastore_date_counts)),
             "balanced_cap": retained_dates,
         },
+        "planned_query_windows_per_item": expected_query_windows,
+        "planned_query_rows": planned_query_rows,
+        "excluded_fixed_context_rows": {
+            split: int(planned_query_rows[split] - counts[split])
+            for split in FIT_QUERY_SPLITS
+        },
+        "query_window_contract": (
+            "training and validation retain only fixed-context rows; "
+            "test retains every official TIME row"
+        ),
         "arrays": arrays,
         "counts": counts,
     }
@@ -589,18 +572,28 @@ class WindowReader:
             self._seasonal_prefixes.move_to_end(item)
         return self._seasonal_prefixes[item]
 
-    def read(self, references: np.ndarray) -> WindowBatch:
+    def read(
+        self,
+        references: np.ndarray,
+        *,
+        context_length: int | None = None,
+    ) -> WindowBatch:
         refs = np.asarray(references, dtype=np.int64).reshape(-1, 3)
-        context_length = self.prepared.context_length
+        selected_context_length = int(context_length or self.prepared.context_length)
         horizon = self.prepared.prediction_length
         contexts: list[np.ndarray] = []
         targets: list[np.ndarray] = []
         for item, channel, origin in refs:
             values = self._target(int(item))
             selected = values if int(channel) == -1 else values[int(channel) : int(channel) + 1]
-            context = selected[:, int(origin) - context_length : int(origin)]
+            context = selected[
+                :, int(origin) - selected_context_length : int(origin)
+            ]
             target = selected[:, int(origin) : int(origin) + horizon]
-            if context.shape[-1] != context_length or target.shape[-1] != horizon:
+            if (
+                context.shape[-1] != selected_context_length
+                or target.shape[-1] != horizon
+            ):
                 raise ValueError(f"invalid prepared reference {(item, channel, origin)}")
             contexts.append(np.asarray(context))
             targets.append(np.asarray(target))

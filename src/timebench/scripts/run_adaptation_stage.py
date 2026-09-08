@@ -25,7 +25,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--stage",
-        choices=("prepare", "extract", "fit", "predict", "evaluate", "report", "pipeline", "all"),
+        choices=(
+            "prepare",
+            "vanilla",
+            "extract",
+            "fit",
+            "extract_eval",
+            "predict",
+            "evaluate",
+            "report",
+            "pipeline",
+            "all",
+        ),
         required=True,
     )
     parser.add_argument("--method", choices=("ridge", "tsrag"), required=True)
@@ -64,8 +75,7 @@ def parse_args() -> argparse.Namespace:
         "--ridge-results-path",
         type=Path,
         help=(
-            "Reuse already evaluated Ridge results when every requested task "
-            "matches the current scientific configuration exactly"
+            "Use matching full-ridge evaluations in the separate TS-RAG report"
         ),
     )
     parser.add_argument(

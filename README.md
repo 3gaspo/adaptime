@@ -3,8 +3,10 @@
 Adaptime evaluates retrieval-augmented wrappers around time-series foundation
 models on the public [TIME benchmark](https://github.com/zqiao11/TIME). The
 official TIME test windows stay unchanged. The current proposal is the
-univariate `full_ridge_shared` adaptor; the matched external control is the
-source-adapted TS-RAG ARM from upstream commit `73ac807`.
+univariate `full_ridge_shared` adaptor. Its main comparison contains vanilla,
+retrieval-covariate, Bayesian retrieval-covariate, and full-Ridge forecasts;
+the source-adapted TS-RAG ARM from upstream commit `73ac807` remains a separate
+external control.
 
 For the Ridge wrapper, `V` is the vanilla forecast, `C` is the forecast with
 retrieved trajectories as covariates, `Y_i` are neighbor futures, and `N_i`
@@ -64,31 +66,39 @@ PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage
   --stage pipeline --method tsrag --datasets SG_Weather/D --terms short
 ```
 
-The combined submission front schedules shared preparation first, then Ridge
-and TS-RAG concurrently, then the comparison report after both succeed:
+The main submission front schedules shared preparation, the four-method
+Adaptime family pipeline, and its comparison report in order:
 
 ```bash
 bash scripts/submit_adaptime_comparison.sh dgx
 ```
 
-`ADAPTIME_RIDGE_RESULTS_PATH` can point to completed Ridge evaluations. The
-Ridge pipeline skips extraction, fitting, prediction, and evaluation only when
-every requested task exactly matches the current scientific configuration; a
-missing or different task is recomputed. This override never changes TS-RAG's
-extraction, inference, or evaluation. `scripts/submit_tsrag_comparison.sh`
-runs the same shared preparation and TS-RAG pipeline without requiring Ridge;
-it adds a comparison report only when a Ridge-results path is supplied.
+`scripts/submit_tsrag_comparison.sh` independently schedules shared
+preparation and the native TS-RAG pipeline. It adds a TS-RAG versus full-Ridge
+report only when `ADAPTIME_RIDGE_RESULTS_PATH` supplies exact matching
+full-Ridge evaluations.
 
 The default Ridge grid is `K in {1,5,10,15}` and
 `alpha in {1e-3,1e-2,1e-1}`. A query is RAG-eligible only when retrieval
 returns `max_k` valid neighbors (`15` by default). Every candidate `K` is
 trained and selected on this common query support, using the first `K`
 neighbors from the same ordered list. A query with fewer than `max_k` valid
-neighbors is ineligible for every candidate. If valid training dates on this
-shared support at the primary `K=10` do not exceed the number of test dates,
-the fitted wrapper becomes an explicit vanilla fallback.
-If valid validation dates do not exceed 10% of test dates, fitting uses the
-default `K=10`, `alpha=1e-2` without validation selection.
+neighbors is ineligible for every candidate. Training and validation admit
+only fixed-length backbone contexts (`L=8192` for Chronos-2); this can exclude
+early fitting windows but never removes an official test window. If valid
+training windows on this shared support at the primary `K=10` do not exceed
+the number of official test windows, the complete task becomes an explicit
+vanilla fallback. If valid validation windows do not exceed 10% of test
+windows, fitting uses the default `K=10`, `alpha=1e-2` without validation
+selection.
+
+Vanilla test forecasts are computed first for every official window with all
+available history up to the backbone limit. Ridge fitting then freezes `K`
+and `alpha`; test extraction computes only that selected `K`. The Bayesian
+baseline estimates, over eligible fixed-context training and validation
+windows, a Beta(1,1)-smoothed probability that `C` has lower per-window MSSE
+than `V` (ties count one half), and predicts `(1-p)V + pC`. Each adapted method
+uses the cached vanilla forecast whenever its test window is ineligible.
 
 The inherited foundation benchmark is launched through
 `scripts/submit_foundation_models.sh`; channel controls use
@@ -106,16 +116,20 @@ data/shared/.../run_n/prepared/              shared Arrow-backed references
 extractions/{ridge,tsrag}/.../run_n/         method-specific retrieval features
 adaptations/ridge/.../run_n/model/           closed-form Ridge fit
 predictions/{ridge,tsrag}/.../run_n/         wrapper point forecasts
-evaluations/{ridge,tsrag}/.../run_n/         standard TIME evaluation artifacts
+evaluations/{vanilla,covariate_prediction,
+             bayes_covariate_prediction,
+             full_ridge_shared,tsrag}/.../   standard TIME evaluation artifacts
 reports/<launch>/                            comparison.csv and report manifest
 ```
 
 Each phase has its own schema-1 manifest and exact scientific identity.
 Completed exact phases are reusable; a different configuration receives a new
-`run_n`. Ridge and TS-RAG reference the same prepared datastore and official
-test rows but retain separate extraction and inference modules. Both wrapper
-predictions pass through the same TIME evaluator used by vanilla foundation
-models, represented as deterministic median forecasts.
+`run_n`. The main family shares prepared references, cached test vanilla
+forecasts, fit extraction, selected-K test extraction, and one prediction
+artifact containing all four forecast arrays. Every method receives its own
+TIME evaluation run. TS-RAG references the same prepared datastore and test
+rows but retains its independent extraction and inference modules. All point
+predictions pass through the TIME evaluator as deterministic median forecasts.
 
 Runtime logs live below `logs/`. `sync_code_to_selena.sh`,
 `sync_results_to_dgx.sh`, and `publish_job.sh` handle the maintained cluster
