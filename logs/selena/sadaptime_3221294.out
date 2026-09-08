@@ -1,0 +1,170 @@
+2026-09-08 01:22:54 | workflow adaptime_comparison started launch_id=selena_adaptime_3221294 task=chronos2_univariate slurm_job_id=3221294 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-08 01:22:54 | stage run started
+2026-09-08 01:22:54 | task TIME-wide Adaptime model=chronos2 target_mode=univariate started
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Water_Quality_Darwin/15T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:22:58.091603+00:00
+Water_Quality_Darwin/15T/short uses vanilla fallback (insufficient_adaptation_history: series length 17525 cannot provide the requested chronological intervals (at least 35508 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Water_Quality_Darwin/15T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Water_Quality_Darwin/15T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:24:49.760680+00:00
+Water_Quality_Darwin/15T/medium uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Water_Quality_Darwin/15T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Water_Quality_Darwin/15T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:24:52.844782+00:00
+Water_Quality_Darwin/15T/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Water_Quality_Darwin/15T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/5T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:24:54.019694+00:00
+current_velocity/5T/short uses vanilla fallback (insufficient_adaptation_history: series length 26486 cannot provide the requested chronological intervals (at least 49858 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/5T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/5T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:24:57.478031+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/5T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/5T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:26:21.530107+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/5T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/10T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:26:52.058389+00:00
+current_velocity/10T/short uses vanilla fallback (insufficient_adaptation_history: series length 28905 cannot provide the requested chronological intervals (at least 47662 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/10T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/10T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:27:25.301228+00:00
+current_velocity/10T/medium uses vanilla fallback (insufficient_adaptation_history: item 4 can provide 14 of the 30 planned adaptation_train windows)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/10T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/10T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:27:29.685446+00:00
+current_velocity/10T/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/10T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/15T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:27:31.386806+00:00
+current_velocity/15T/short uses vanilla fallback (insufficient_adaptation_history: series length 17953 cannot provide the requested chronological intervals (at least 46930 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/15T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/15T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:27:44.090569+00:00
+current_velocity/15T/medium uses vanilla fallback (insufficient_adaptation_history: series length 5105 cannot provide the requested chronological intervals (at least 7093 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/15T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/15T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:27:45.873713+00:00
+current_velocity/15T/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/15T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/20T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:27:46.620587+00:00
+current_velocity/20T/short uses vanilla fallback (insufficient_adaptation_history: series length 3609 cannot provide the requested chronological intervals (at least 46564 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/20T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/20T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:28:54.290608+00:00
+current_velocity/20T/medium uses vanilla fallback (insufficient_adaptation_history: series length 3609 cannot provide the requested chronological intervals (at least 6685 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/20T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/20T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:03.300319+00:00
+current_velocity/20T/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/20T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/H/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:06.682456+00:00
+current_velocity/H/short uses vanilla fallback (insufficient_adaptation_history: series length 4818 cannot provide the requested chronological intervals (at least 11134 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/H/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/H/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:15.638557+00:00
+current_velocity/H/medium uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/H/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/H/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:17.178691+00:00
+current_velocity/H/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/current_velocity/H/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/15T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:18.009191+00:00
+CPHL/15T/short uses vanilla fallback (insufficient_adaptation_history: series length 10831 cannot provide the requested chronological intervals (at least 46930 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/15T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/15T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:19.172656+00:00
+CPHL/15T/medium uses vanilla fallback (insufficient_adaptation_history: item 0 can provide 0 of the 30 planned adaptation_train windows)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/15T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/15T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:19.388298+00:00
+CPHL/15T/long uses vanilla fallback (insufficient_adaptation_history: item 0 can provide 1 of the 10 planned adaptation_train windows)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/15T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/30T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:19.527837+00:00
+CPHL/30T/short uses vanilla fallback (insufficient_adaptation_history: series length 11808 cannot provide the requested chronological intervals (at least 46930 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/30T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/30T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:20.698898+00:00
+CPHL/30T/medium uses vanilla fallback (insufficient_adaptation_history: series length 11808 cannot provide the requested chronological intervals (at least 12712 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/30T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/30T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:21.051132+00:00
+CPHL/30T/long uses vanilla fallback (insufficient_adaptation_history: item 0 can provide 6 of the 20 planned adaptation_train windows)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/30T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/H/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:21.238240+00:00
+CPHL/H/short uses vanilla fallback (insufficient_adaptation_history: series length 5904 cannot provide the requested chronological intervals (at least 11134 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/H/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/H/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:22.893615+00:00
+CPHL/H/medium uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/H/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/H/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:23.175548+00:00
+CPHL/H/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/CPHL/H/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/5T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:23.595570+00:00
+Coastal_T_S/5T/short uses vanilla fallback (insufficient_adaptation_history: series length 45242 cannot provide the requested chronological intervals (at least 49858 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/5T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/5T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-07T23:29:54.859433+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/5T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/5T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T00:41:08.353995+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/5T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/15T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:13:13.021640+00:00
+Coastal_T_S/15T/short uses vanilla fallback (insufficient_adaptation_history: series length 21971 cannot provide the requested chronological intervals (at least 46930 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/15T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/15T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:13:21.485917+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/15T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/15T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:17:17.305269+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/15T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/20T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:18:52.461401+00:00
+Coastal_T_S/20T/short uses vanilla fallback (insufficient_adaptation_history: series length 8198 cannot provide the requested chronological intervals (at least 46564 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/20T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/20T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:18:54.719436+00:00
+Coastal_T_S/20T/medium uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/20T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/20T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:18:55.079948+00:00
+Coastal_T_S/20T/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/20T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/H/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:18:55.295916+00:00
+Coastal_T_S/H/short uses vanilla fallback (insufficient_adaptation_history: series length 8524 cannot provide the requested chronological intervals (at least 11134 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/H/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/H/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:19:04.872496+00:00
+Coastal_T_S/H/medium uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/H/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/H/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:19:06.530335+00:00
+Coastal_T_S/H/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Coastal_T_S/H/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Weather/D/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:19:07.388887+00:00
+SG_Weather/D/short uses vanilla fallback (insufficient_adaptation_history: series length 2953 cannot provide the requested chronological intervals (at least 10200 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Weather/D/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Weather/D/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:19:12.248795+00:00
+SG_Weather/D/medium uses vanilla fallback (insufficient_adaptation_history: series length 2953 cannot provide the requested chronological intervals (at least 4538 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Weather/D/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Weather/D/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:19:14.392906+00:00
+SG_Weather/D/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Weather/D/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_PM25/H/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:19:15.537948+00:00
+SG_PM25/H/short uses vanilla fallback (insufficient_adaptation_history: item 0 can provide 132 of the 184 planned adaptation_train windows)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_PM25/H/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_PM25/H/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:19:17.788878+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_PM25/H/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_PM25/H/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:21:50.818797+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_PM25/H/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/NE_China_Wind/H/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:23:14.309147+00:00
+NE_China_Wind/H/short uses vanilla fallback (insufficient_adaptation_history: series length 8764 cannot provide the requested chronological intervals (at least 11944 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/NE_China_Wind/H/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/NE_China_Wind/H/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:23:14.977549+00:00
+NE_China_Wind/H/medium uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/NE_China_Wind/H/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/NE_China_Wind/H/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:23:15.258602+00:00
+NE_China_Wind/H/long uses vanilla fallback (insufficient_adaptation_history: context_length reaches before the series start at the first official TIME test origin)
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/NE_China_Wind/H/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Australia_Solar/H/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:23:15.444512+00:00
+Australia_Solar/H/short uses vanilla fallback (insufficient_adaptation_history: series length 35064 cannot provide the requested chronological intervals (at least 42319 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Australia_Solar/H/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Australia_Solar/H/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:23:16.992801+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Australia_Solar/H/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Australia_Solar/H/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:23:58.279058+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Australia_Solar/H/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/epf_electricity_price/H/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:24:24.490862+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/epf_electricity_price/H/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/epf_electricity_price/H/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:31:44.635879+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/epf_electricity_price/H/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/epf_electricity_price/H/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:35:21.247043+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/epf_electricity_price/H/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/OpenElectricity_NEM/5T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:37:23.791826+00:00
+OpenElectricity_NEM/5T/short uses vanilla fallback (insufficient_adaptation_history: series length 43488 cannot provide the requested chronological intervals (at least 67834 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/OpenElectricity_NEM/5T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/OpenElectricity_NEM/5T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:37:31.823622+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/OpenElectricity_NEM/5T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/OpenElectricity_NEM/5T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:44:01.124738+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/OpenElectricity_NEM/5T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/EWELD_Load/15T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:46:14.837797+00:00
+EWELD_Load/15T/short uses vanilla fallback (insufficient_adaptation_history: series length 20544 cannot provide the requested chronological intervals (at least 22474 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/EWELD_Load/15T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/EWELD_Load/15T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:46:17.534373+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/EWELD_Load/15T/medium/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/EWELD_Load/15T/long/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:48:30.154513+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/EWELD_Load/15T/long/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Carpark/15T/short/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:48:51.713162+00:00
+SG_Carpark/15T/short uses vanilla fallback (insufficient_adaptation_history: series length 14495 cannot provide the requested chronological intervals (at least 16452 values required))
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Carpark/15T/short/run_0/comparison/result_manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/SG_Carpark/15T/medium/run_0 launch_id=selena_adaptime_3221294 slurm_job_id=3221294 launched_at=2026-09-08T01:50:01.313040+00:00

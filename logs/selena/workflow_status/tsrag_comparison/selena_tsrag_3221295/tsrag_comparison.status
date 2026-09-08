@@ -1,0 +1,12 @@
+workflow=tsrag_comparison
+launch_id=selena_tsrag_3221295
+task=tsrag_vs_vanilla_vs_full_ridge
+state=failed
+stage=tsrag_and_tables
+active_task=pinned TS-RAG evaluation from main Adaptime ridge results and scaled-MASE/time tables
+launched_at=2026-09-07T23:23:27Z
+updated_at=2026-09-07T23:24:12Z
+exit_code=1
+slurm_job_id=3221295
+slurm_array_job_id=none
+slurm_array_task_id=none

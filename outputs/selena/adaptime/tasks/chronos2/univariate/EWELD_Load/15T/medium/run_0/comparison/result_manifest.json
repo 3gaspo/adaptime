@@ -1,0 +1,110 @@
+{
+  "comparison": [
+    "seasonal_naive",
+    "vanilla",
+    "covariate",
+    "adaptime"
+  ],
+  "extraction_signature": "7a489cd6dae1020f065d5f73757c0f7f298488d4803bfe3deb1f993bc289343f",
+  "fallback_reason_codes": {
+    "0": "rag_eligible",
+    "1": "insufficient_finite_query_context",
+    "2": "insufficient_valid_neighbors",
+    "4": "nonfinite_ridge_features"
+  },
+  "feature_names": [
+    "V",
+    "C",
+    "Y_1",
+    "N_1"
+  ],
+  "files": {
+    "comparison_summary": "comparison_summary.json",
+    "fallback_reason": "predictions/fallback_reason.npy",
+    "metrics": {
+      "adaptime.mae": "metrics/adaptime_mae.npy",
+      "adaptime.mase": "metrics/adaptime_mase.npy",
+      "adaptime.mse": "metrics/adaptime_mse.npy",
+      "adaptime.msse": "metrics/adaptime_msse.npy",
+      "covariate.mae": "metrics/covariate_mae.npy",
+      "covariate.mase": "metrics/covariate_mase.npy",
+      "covariate.mse": "metrics/covariate_mse.npy",
+      "covariate.msse": "metrics/covariate_msse.npy",
+      "seasonal_naive.mae": "metrics/seasonal_naive_mae.npy",
+      "seasonal_naive.mase": "metrics/seasonal_naive_mase.npy",
+      "seasonal_naive.mse": "metrics/seasonal_naive_mse.npy",
+      "seasonal_naive.msse": "metrics/seasonal_naive_msse.npy",
+      "vanilla.mae": "metrics/vanilla_mae.npy",
+      "vanilla.mase": "metrics/vanilla_mase.npy",
+      "vanilla.mse": "metrics/vanilla_mse.npy",
+      "vanilla.msse": "metrics/vanilla_msse.npy"
+    },
+    "predictions": {
+      "adaptime": "predictions/adaptime.npy",
+      "covariate": "predictions/covariate.npy",
+      "seasonal_naive": "predictions/seasonal_naive.npy",
+      "vanilla": "predictions/vanilla.npy"
+    },
+    "rag_eligible": "predictions/rag_eligible.npy"
+  },
+  "format": "adaptime_time_comparison",
+  "metric_seasonality": 96,
+  "metrics": [
+    "mse",
+    "mae",
+    "mase",
+    "msse"
+  ],
+  "model_signature": "ec6605730aea66a5745f63aa0c735c488b56f30dc94547a78063515683f7561d",
+  "performance_metric": "task_mase_divided_by_matching_seasonal_naive_mase",
+  "prepared_signature": "65add7434d191ed4dc905db2ad245f58923133ce3e87d46d4bd2c591cd18285b",
+  "protocol": "frozen_model_evaluate_untouched_official_time_test",
+  "rag_coverage": {
+    "eligible_fraction": 1.0,
+    "eligible_windows": 140,
+    "fallback_windows": 0
+  },
+  "schema_version": 1,
+  "selected": {
+    "alpha": 0.1,
+    "k": 1,
+    "validation_msse": 0.5039220956124683
+  },
+  "signature": "6035ea3af08033cc4f8c145560cdb7185f6211f11d10e707bca4ced6269a7ddb",
+  "status": "completed",
+  "testing_config": {
+    "chunk_size": 1024
+  },
+  "timing": {
+    "components": {
+      "context_construction_seconds": 0.008409785106778145,
+      "covariate_model_forecast_seconds": 1.3058639271184802,
+      "query_representation_seconds": 0.0041230954229831696,
+      "retrieval_seconds": 1.091030159033835,
+      "ridge_design_and_adjustment_seconds": 0.0008352817967534065,
+      "vanilla_model_forecast_seconds": 0.6134210983291268
+    },
+    "methods": {
+      "adaptime": {
+        "seconds_per_window": 0.021597738191485406,
+        "total_seconds": 3.0236833468079567
+      },
+      "covariate": {
+        "seconds_per_window": 0.01721019261915769,
+        "total_seconds": 2.4094269666820765
+      },
+      "vanilla": {
+        "seconds_per_window": 0.004381579273779477,
+        "total_seconds": 0.6134210983291268
+      }
+    },
+    "precomputed_extraction": {
+      "complete_extraction_seconds": 132.41950455587357,
+      "datastore_representation_seconds": 0.6634752433747053,
+      "neighbor_forecast_seconds": 22.97592916339636
+    },
+    "test_windows": 140,
+    "unit": "seconds"
+  },
+  "timing_contract": "test_method_seconds_per_window"
+}

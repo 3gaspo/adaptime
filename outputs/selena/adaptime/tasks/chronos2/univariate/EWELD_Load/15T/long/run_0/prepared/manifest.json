@@ -1,0 +1,59 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 1053,
+    "adaptation_validation_length": 799,
+    "context_length": 8192,
+    "dataset": "EWELD_Load/15T",
+    "datastore_stride": 96,
+    "max_datastore_windows": null,
+    "prediction_length": 672,
+    "retrieval_period": 96,
+    "seasonality": 96,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 1344
+  },
+  "counts": {
+    "adaptation_train": 40,
+    "adaptation_validation": 20,
+    "datastore": 4430,
+    "test": 20
+  },
+  "dataset_fingerprint": "d35c15d02d39bd1b",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 443,
+    "minimum": 443
+  },
+  "format": "adaptime_prepared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "query_period_residues": [
+    0,
+    3,
+    34,
+    65,
+    68
+  ],
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "f8ede0911ec761ea6fedd56b1f97467af748f9c9e1507a1ebbadef53cb7da72d",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/EWELD_Load/15T"
+}

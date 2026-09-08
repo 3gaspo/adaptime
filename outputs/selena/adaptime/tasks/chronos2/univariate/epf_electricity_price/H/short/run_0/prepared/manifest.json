@@ -1,0 +1,78 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 26567,
+    "adaptation_validation_length": 13232,
+    "context_length": 8192,
+    "dataset": "epf_electricity_price/H",
+    "datastore_stride": 24,
+    "max_datastore_windows": null,
+    "prediction_length": 24,
+    "retrieval_period": 24,
+    "seasonality": 24,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 2520
+  },
+  "counts": {
+    "adaptation_train": 1050,
+    "adaptation_validation": 525,
+    "datastore": 9410,
+    "test": 525
+  },
+  "dataset_fingerprint": "863868fd13460dd3",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 1882,
+    "minimum": 1882
+  },
+  "format": "adaptime_prepared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "query_period_residues": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "bdb097a30e26d860879c6edf1f49e321fb67a31901cddb9754e34b7f5f8d6073",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/epf_electricity_price/H"
+}

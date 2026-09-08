@@ -1,0 +1,112 @@
+{
+  "comparison": [
+    "seasonal_naive",
+    "vanilla",
+    "covariate",
+    "adaptime"
+  ],
+  "context_lengths": {
+    "limit": 8192,
+    "maximum": 8192,
+    "minimum": 8192
+  },
+  "context_limit": 8192,
+  "dataset": "CPHL/15T",
+  "dataset_fingerprint": "d11cc3633d603052",
+  "fallback_reason": "insufficient_adaptation_history: series length 10831 cannot provide the requested chronological intervals (at least 46930 values required)",
+  "fallback_reason_codes": {
+    "5": "insufficient_adaptation_history"
+  },
+  "feature_names": [],
+  "files": {
+    "comparison_summary": "comparison_summary.json",
+    "fallback_reason": "predictions/fallback_reason.npy",
+    "mase_scale": "mase_scale.npy",
+    "metrics": {
+      "adaptime.mae": "metrics/adaptime_mae.npy",
+      "adaptime.mase": "metrics/adaptime_mase.npy",
+      "adaptime.mse": "metrics/adaptime_mse.npy",
+      "adaptime.msse": "metrics/adaptime_msse.npy",
+      "covariate.mae": "metrics/covariate_mae.npy",
+      "covariate.mase": "metrics/covariate_mase.npy",
+      "covariate.mse": "metrics/covariate_mse.npy",
+      "covariate.msse": "metrics/covariate_msse.npy",
+      "seasonal_naive.mae": "metrics/seasonal_naive_mae.npy",
+      "seasonal_naive.mase": "metrics/seasonal_naive_mase.npy",
+      "seasonal_naive.mse": "metrics/seasonal_naive_mse.npy",
+      "seasonal_naive.msse": "metrics/seasonal_naive_msse.npy",
+      "vanilla.mae": "metrics/vanilla_mae.npy",
+      "vanilla.mase": "metrics/vanilla_mase.npy",
+      "vanilla.mse": "metrics/vanilla_mse.npy",
+      "vanilla.msse": "metrics/vanilla_msse.npy"
+    },
+    "msse_scale": "msse_scale.npy",
+    "predictions": {
+      "adaptime": "predictions/adaptime.npy",
+      "covariate": "predictions/covariate.npy",
+      "seasonal_naive": "predictions/seasonal_naive.npy",
+      "vanilla": "predictions/vanilla.npy"
+    },
+    "rag_eligible": "predictions/rag_eligible.npy",
+    "references": "references.npy",
+    "target": "target.npy"
+  },
+  "format": "adaptime_time_comparison",
+  "frequency": "15T",
+  "metric_seasonality": 96,
+  "metrics": [
+    "mse",
+    "mae",
+    "mase",
+    "msse"
+  ],
+  "model": "chronos2",
+  "performance_metric": "task_mase_divided_by_matching_seasonal_naive_mase",
+  "prediction_length": 12,
+  "protocol": "vanilla_fallback_insufficient_adaptation_history",
+  "rag_coverage": {
+    "eligible_fraction": 0.0,
+    "eligible_windows": 0,
+    "fallback_windows": 240
+  },
+  "schema_version": 1,
+  "selected": {
+    "alpha": null,
+    "k": null,
+    "validation_msse": null
+  },
+  "signature": "fa883aa654a851bd60615fe29ba1af5e76d5c449516b0f881f51d58b62d2243c",
+  "status": "completed",
+  "target_mode": "univariate",
+  "term": "short",
+  "test_length": 1440,
+  "timing": {
+    "components": {
+      "covariate_model_forecast_seconds": 0.0,
+      "retrieval_seconds": 0.0,
+      "ridge_design_and_adjustment_seconds": 0.0,
+      "vanilla_model_forecast_seconds": 1.0612682895734906
+    },
+    "methods": {
+      "adaptime": {
+        "seconds_per_window": 0.004421951206556211,
+        "total_seconds": 1.0612682895734906
+      },
+      "covariate": {
+        "seconds_per_window": 0.004421951206556211,
+        "total_seconds": 1.0612682895734906
+      },
+      "vanilla": {
+        "seconds_per_window": 0.004421951206556211,
+        "total_seconds": 1.0612682895734906
+      }
+    },
+    "precomputed_extraction": {
+      "complete_extraction_seconds": 0.0
+    },
+    "test_windows": 240,
+    "unit": "seconds"
+  },
+  "timing_contract": "test_method_seconds_per_window",
+  "weights_id": "chronos2"
+}

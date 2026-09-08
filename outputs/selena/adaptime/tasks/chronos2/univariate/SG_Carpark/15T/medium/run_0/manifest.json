@@ -1,5 +1,8 @@
 {
-  "completed_at": "2026-09-08T01:19:12.244163+00:00",
+  "error": {
+    "message": "cannot solve empty ridge statistics",
+    "type": "ValueError"
+  },
   "experiment": "adaptime",
   "experiment_config": {
     "formulation": "full_ridge_shared",
@@ -20,11 +23,11 @@
     "target_mode": "univariate"
   },
   "identity": {
-    "dataset": "SG_Weather",
-    "frequency": "D",
+    "dataset": "SG_Carpark",
+    "frequency": "15T",
     "model": "chronos2",
     "target_mode": "univariate",
-    "term": "short"
+    "term": "medium"
   },
   "launch": {
     "action": "new",
@@ -32,13 +35,13 @@
       {
         "action": "new",
         "launch_id": "selena_adaptime_3221294",
-        "launched_at": "2026-09-08T01:19:07.388887+00:00",
+        "launched_at": "2026-09-08T01:50:01.313040+00:00",
         "slurm_array_task_id": null,
         "slurm_job_id": "3221294"
       }
     ],
     "launch_id": "selena_adaptime_3221294",
-    "launched_at": "2026-09-08T01:19:07.388887+00:00",
+    "launched_at": "2026-09-08T01:50:01.313040+00:00",
     "slurm_job_id": "3221294"
   },
   "model_config": {
@@ -64,33 +67,28 @@
     "weights_id": null
   },
   "pipeline_config": {
-    "adaptation_stride": 27,
-    "adaptation_train_length": 6564,
-    "adaptation_train_windows_per_variate": 244,
-    "adaptation_validation_length": 3270,
-    "adaptation_validation_windows_per_variate": 122,
+    "adaptation_stride": 127,
+    "adaptation_train_length": 1747,
+    "adaptation_train_windows_per_variate": 14,
+    "adaptation_validation_length": 858,
+    "adaptation_validation_windows_per_variate": 7,
     "context_length": 8192,
-    "datastore_stride": 1,
+    "datastore_stride": 96,
     "max_datastore_windows": null,
-    "prediction_length": 3,
-    "retrieval_period": 1,
-    "test_length": 366,
-    "test_windows_per_variate": 122
+    "prediction_length": 96,
+    "retrieval_period": 96,
+    "test_length": 672,
+    "test_windows_per_variate": 7
   },
   "project": "adaptime",
   "provenance": {
-    "available_datastore_values": -7247,
+    "available_datastore_values": 11218,
     "dataset_config": "/fssmall/home/h61084/codes/adaptime/src/timebench/config/datasets.yaml",
-    "dataset_source": "/scratch/users/h61084/datasets/hf_dataset/SG_Weather/D",
-    "minimum_datastore_dates_per_variate": 1,
-    "minimum_series_length": 2953
+    "dataset_source": "/scratch/users/h61084/datasets/hf_dataset/SG_Carpark/15T",
+    "minimum_datastore_dates_per_variate": 96,
+    "minimum_series_length": 14495
   },
-  "required_artifacts": [
-    "comparison/result_manifest.json",
-    "comparison/comparison_summary.json",
-    "comparison/predictions/vanilla.npy",
-    "comparison/predictions/adaptime.npy"
-  ],
+  "required_artifacts": [],
   "runtime_config": {
     "arrow_cache_items": 2,
     "datastore_block_size": 4096,
@@ -101,7 +99,7 @@
     "ridge_chunk_size": 1024
   },
   "schema_version": 1,
-  "started_at": "2026-09-08T01:19:07.388887+00:00",
-  "status": "completed",
-  "updated_at": "2026-09-08T01:19:12.244163+00:00"
+  "started_at": "2026-09-08T01:50:01.313040+00:00",
+  "status": "interrupted",
+  "updated_at": "2026-09-08T01:51:25.711953+00:00"
 }

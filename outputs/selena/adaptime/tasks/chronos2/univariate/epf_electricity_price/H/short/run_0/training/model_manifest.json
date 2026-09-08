@@ -1,0 +1,105 @@
+{
+  "config": {
+    "alpha_values": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "chunk_size": 1024,
+    "k_values": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "seed": 1
+  },
+  "coverage": {
+    "adaptation_train": {
+      "1": {
+        "adapted_windows": 1050,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1050,
+        "total_windows": 1050,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_windows": 1050,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1050,
+        "total_windows": 1050,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_windows": 1050,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1050,
+        "total_windows": 1050,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_windows": 1050,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1050,
+        "total_windows": 1050,
+        "vanilla_fallback_windows": 0
+      }
+    },
+    "adaptation_validation": {
+      "1": {
+        "adapted_windows": 525,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 525,
+        "total_windows": 525,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_windows": 525,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 525,
+        "total_windows": 525,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_windows": 525,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 525,
+        "total_windows": 525,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_windows": 525,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 525,
+        "total_windows": 525,
+        "vanilla_fallback_windows": 0
+      }
+    }
+  },
+  "extraction_signature": "810bd717c0e0e2c200cae9fdd0759fc3d6b39cb94e488ebf07e3230a9d534712",
+  "feature_names": [
+    "V",
+    "C",
+    "Y_1",
+    "N_1"
+  ],
+  "files": {
+    "coefficients": "coefficients.npy",
+    "selection": "selection.json"
+  },
+  "format": "adaptime_full_ridge_model",
+  "method": "full_ridge_shared",
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "protocol": "fit_once_adaptation_train_select_adaptation_validation_freeze_before_time_test",
+  "schema_version": 1,
+  "selected": {
+    "alpha": 0.01,
+    "k": 1,
+    "validation_msse": 0.3915527543648183
+  },
+  "signature": "9ea46c43a0080fa5e0c4a275eede145712583013b88f30cf46367679089295ae",
+  "status": "completed"
+}

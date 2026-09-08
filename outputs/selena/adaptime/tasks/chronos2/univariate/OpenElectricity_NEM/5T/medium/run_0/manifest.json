@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-08T01:19:12.244163+00:00",
+  "completed_at": "2026-09-08T01:44:01.118826+00:00",
   "experiment": "adaptime",
   "experiment_config": {
     "formulation": "full_ridge_shared",
@@ -20,11 +20,11 @@
     "target_mode": "univariate"
   },
   "identity": {
-    "dataset": "SG_Weather",
-    "frequency": "D",
+    "dataset": "OpenElectricity_NEM",
+    "frequency": "5T",
     "model": "chronos2",
     "target_mode": "univariate",
-    "term": "short"
+    "term": "medium"
   },
   "launch": {
     "action": "new",
@@ -32,13 +32,13 @@
       {
         "action": "new",
         "launch_id": "selena_adaptime_3221294",
-        "launched_at": "2026-09-08T01:19:07.388887+00:00",
+        "launched_at": "2026-09-08T01:37:31.823622+00:00",
         "slurm_array_task_id": null,
         "slurm_job_id": "3221294"
       }
     ],
     "launch_id": "selena_adaptime_3221294",
-    "launched_at": "2026-09-08T01:19:07.388887+00:00",
+    "launched_at": "2026-09-08T01:37:31.823622+00:00",
     "slurm_job_id": "3221294"
   },
   "model_config": {
@@ -64,32 +64,33 @@
     "weights_id": null
   },
   "pipeline_config": {
-    "adaptation_stride": 27,
-    "adaptation_train_length": 6564,
-    "adaptation_train_windows_per_variate": 244,
-    "adaptation_validation_length": 3270,
-    "adaptation_validation_windows_per_variate": 122,
+    "adaptation_stride": 127,
+    "adaptation_train_length": 10637,
+    "adaptation_train_windows_per_variate": 84,
+    "adaptation_validation_length": 5303,
+    "adaptation_validation_windows_per_variate": 42,
     "context_length": 8192,
-    "datastore_stride": 1,
+    "datastore_stride": 288,
     "max_datastore_windows": null,
-    "prediction_length": 3,
-    "retrieval_period": 1,
-    "test_length": 366,
-    "test_windows_per_variate": 122
+    "prediction_length": 96,
+    "retrieval_period": 288,
+    "test_length": 4032,
+    "test_windows_per_variate": 42
   },
   "project": "adaptime",
   "provenance": {
-    "available_datastore_values": -7247,
+    "available_datastore_values": 23516,
     "dataset_config": "/fssmall/home/h61084/codes/adaptime/src/timebench/config/datasets.yaml",
-    "dataset_source": "/scratch/users/h61084/datasets/hf_dataset/SG_Weather/D",
-    "minimum_datastore_dates_per_variate": 1,
-    "minimum_series_length": 2953
+    "dataset_source": "/scratch/users/h61084/datasets/hf_dataset/OpenElectricity_NEM/5T",
+    "minimum_datastore_dates_per_variate": 288,
+    "minimum_series_length": 43488
   },
   "required_artifacts": [
+    "prepared/manifest.json",
+    "extraction/manifest.json",
+    "training/model_manifest.json",
     "comparison/result_manifest.json",
-    "comparison/comparison_summary.json",
-    "comparison/predictions/vanilla.npy",
-    "comparison/predictions/adaptime.npy"
+    "comparison/comparison_summary.json"
   ],
   "runtime_config": {
     "arrow_cache_items": 2,
@@ -101,7 +102,7 @@
     "ridge_chunk_size": 1024
   },
   "schema_version": 1,
-  "started_at": "2026-09-08T01:19:07.388887+00:00",
+  "started_at": "2026-09-08T01:37:31.823622+00:00",
   "status": "completed",
-  "updated_at": "2026-09-08T01:19:12.244163+00:00"
+  "updated_at": "2026-09-08T01:44:01.118826+00:00"
 }

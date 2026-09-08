@@ -1,0 +1,74 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 1747,
+    "adaptation_validation_length": 858,
+    "context_length": 8192,
+    "dataset": "SG_Carpark/15T",
+    "datastore_stride": 96,
+    "max_datastore_windows": null,
+    "prediction_length": 96,
+    "retrieval_period": 96,
+    "seasonality": 96,
+    "target_mode": "univariate",
+    "term": "medium",
+    "test_length": 672
+  },
+  "counts": {
+    "adaptation_train": 4956,
+    "adaptation_validation": 2478,
+    "datastore": 217002,
+    "test": 2478
+  },
+  "dataset_fingerprint": "8225a607ad319268",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 613,
+    "minimum": 613
+  },
+  "format": "adaptime_prepared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "query_period_residues": [
+    1,
+    14,
+    17,
+    20,
+    23,
+    26,
+    29,
+    32,
+    48,
+    51,
+    54,
+    57,
+    60,
+    63,
+    79,
+    82,
+    85,
+    88,
+    91,
+    94
+  ],
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "d0d09c12521b251ccc8c621c99b1fcd634eeed289916c0898e0a2a32f359e4e9",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/SG_Carpark/15T"
+}

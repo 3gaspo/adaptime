@@ -1,0 +1,20 @@
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_tsrag_comparison.py", line 75, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_tsrag_comparison.py", line 53, in main
+    run_tsrag_comparison(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/tsrag_workflow.py", line 456, in run_tsrag_comparison
+    ridge_dir, ridge_manifest = _one_completed_run(
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/tsrag_workflow.py", line 153, in _one_completed_run
+    raise ValueError(
+ValueError: expected one selected completed full_ridge_shared run below /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/tasks/chronos2/univariate/Water_Quality_Darwin/15T/short, found 0
+srun: error: sean0015: task 0: Exited with exit code 1
+2026-09-08 01:24:12 | task pinned TS-RAG evaluation from main Adaptime ridge results and scaled-MASE/time tables completed status=failed exit_code=1
+2026-09-08 01:24:12 | stage tsrag_and_tables completed status=failed exit_code=1
+TIME interrupted-launch recovery launch_id=selena_tsrag_3221295 tasks=0 root=/scratch/users/h61084/codes/adaptime/outputs/tsrag_comparison/tasks/tsrag/univariate
+2026-09-08 01:24:12 | workflow tsrag_comparison completed status=failed exit_code=1

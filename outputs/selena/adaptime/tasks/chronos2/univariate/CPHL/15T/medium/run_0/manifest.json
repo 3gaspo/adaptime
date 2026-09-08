@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-08T01:19:12.244163+00:00",
+  "completed_at": "2026-09-07T23:29:19.384152+00:00",
   "experiment": "adaptime",
   "experiment_config": {
     "formulation": "full_ridge_shared",
@@ -20,11 +20,11 @@
     "target_mode": "univariate"
   },
   "identity": {
-    "dataset": "SG_Weather",
-    "frequency": "D",
+    "dataset": "CPHL",
+    "frequency": "15T",
     "model": "chronos2",
     "target_mode": "univariate",
-    "term": "short"
+    "term": "medium"
   },
   "launch": {
     "action": "new",
@@ -32,13 +32,13 @@
       {
         "action": "new",
         "launch_id": "selena_adaptime_3221294",
-        "launched_at": "2026-09-08T01:19:07.388887+00:00",
+        "launched_at": "2026-09-07T23:29:19.172656+00:00",
         "slurm_array_task_id": null,
         "slurm_job_id": "3221294"
       }
     ],
     "launch_id": "selena_adaptime_3221294",
-    "launched_at": "2026-09-08T01:19:07.388887+00:00",
+    "launched_at": "2026-09-07T23:29:19.172656+00:00",
     "slurm_job_id": "3221294"
   },
   "model_config": {
@@ -64,26 +64,26 @@
     "weights_id": null
   },
   "pipeline_config": {
-    "adaptation_stride": 27,
-    "adaptation_train_length": 6564,
-    "adaptation_train_windows_per_variate": 244,
-    "adaptation_validation_length": 3270,
-    "adaptation_validation_windows_per_variate": 122,
+    "adaptation_stride": 127,
+    "adaptation_train_length": 3779,
+    "adaptation_train_windows_per_variate": 30,
+    "adaptation_validation_length": 1874,
+    "adaptation_validation_windows_per_variate": 15,
     "context_length": 8192,
-    "datastore_stride": 1,
+    "datastore_stride": 96,
     "max_datastore_windows": null,
-    "prediction_length": 3,
-    "retrieval_period": 1,
-    "test_length": 366,
-    "test_windows_per_variate": 122
+    "prediction_length": 96,
+    "retrieval_period": 96,
+    "test_length": 1440,
+    "test_windows_per_variate": 15
   },
   "project": "adaptime",
   "provenance": {
-    "available_datastore_values": -7247,
+    "available_datastore_values": 2863,
     "dataset_config": "/fssmall/home/h61084/codes/adaptime/src/timebench/config/datasets.yaml",
-    "dataset_source": "/scratch/users/h61084/datasets/hf_dataset/SG_Weather/D",
-    "minimum_datastore_dates_per_variate": 1,
-    "minimum_series_length": 2953
+    "dataset_source": "/scratch/users/h61084/datasets/hf_dataset/CPHL/15T",
+    "minimum_datastore_dates_per_variate": 96,
+    "minimum_series_length": 9956
   },
   "required_artifacts": [
     "comparison/result_manifest.json",
@@ -101,7 +101,7 @@
     "ridge_chunk_size": 1024
   },
   "schema_version": 1,
-  "started_at": "2026-09-08T01:19:07.388887+00:00",
+  "started_at": "2026-09-07T23:29:19.172656+00:00",
   "status": "completed",
-  "updated_at": "2026-09-08T01:19:12.244163+00:00"
+  "updated_at": "2026-09-07T23:29:19.384152+00:00"
 }

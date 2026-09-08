@@ -1,0 +1,138 @@
+{
+  "comparison": [
+    "seasonal_naive",
+    "vanilla",
+    "covariate",
+    "adaptime"
+  ],
+  "extraction_signature": "d227a8d27b3c998412291a4a92a377cd7aef12abb26f245ac3a0d2b709d8db6b",
+  "fallback_reason_codes": {
+    "0": "rag_eligible",
+    "1": "insufficient_finite_query_context",
+    "2": "insufficient_valid_neighbors",
+    "4": "nonfinite_ridge_features"
+  },
+  "feature_names": [
+    "V",
+    "C",
+    "Y_1",
+    "Y_2",
+    "Y_3",
+    "Y_4",
+    "Y_5",
+    "Y_6",
+    "Y_7",
+    "Y_8",
+    "Y_9",
+    "Y_10",
+    "Y_11",
+    "Y_12",
+    "Y_13",
+    "Y_14",
+    "Y_15",
+    "N_1",
+    "N_2",
+    "N_3",
+    "N_4",
+    "N_5",
+    "N_6",
+    "N_7",
+    "N_8",
+    "N_9",
+    "N_10",
+    "N_11",
+    "N_12",
+    "N_13",
+    "N_14",
+    "N_15"
+  ],
+  "files": {
+    "comparison_summary": "comparison_summary.json",
+    "fallback_reason": "predictions/fallback_reason.npy",
+    "metrics": {
+      "adaptime.mae": "metrics/adaptime_mae.npy",
+      "adaptime.mase": "metrics/adaptime_mase.npy",
+      "adaptime.mse": "metrics/adaptime_mse.npy",
+      "adaptime.msse": "metrics/adaptime_msse.npy",
+      "covariate.mae": "metrics/covariate_mae.npy",
+      "covariate.mase": "metrics/covariate_mase.npy",
+      "covariate.mse": "metrics/covariate_mse.npy",
+      "covariate.msse": "metrics/covariate_msse.npy",
+      "seasonal_naive.mae": "metrics/seasonal_naive_mae.npy",
+      "seasonal_naive.mase": "metrics/seasonal_naive_mase.npy",
+      "seasonal_naive.mse": "metrics/seasonal_naive_mse.npy",
+      "seasonal_naive.msse": "metrics/seasonal_naive_msse.npy",
+      "vanilla.mae": "metrics/vanilla_mae.npy",
+      "vanilla.mase": "metrics/vanilla_mase.npy",
+      "vanilla.mse": "metrics/vanilla_mse.npy",
+      "vanilla.msse": "metrics/vanilla_msse.npy"
+    },
+    "predictions": {
+      "adaptime": "predictions/adaptime.npy",
+      "covariate": "predictions/covariate.npy",
+      "seasonal_naive": "predictions/seasonal_naive.npy",
+      "vanilla": "predictions/vanilla.npy"
+    },
+    "rag_eligible": "predictions/rag_eligible.npy"
+  },
+  "format": "adaptime_time_comparison",
+  "metric_seasonality": 288,
+  "metrics": [
+    "mse",
+    "mae",
+    "mase",
+    "msse"
+  ],
+  "model_signature": "b6094e27e1790d5d4a5b57aa452faecf94a055030244961ef11b5e150dd2cb0f",
+  "performance_metric": "task_mase_divided_by_matching_seasonal_naive_mase",
+  "prepared_signature": "dcc993d70a501fb61a4fc370c0283a01e12e6870e528c846e8ddab18c1a63cfc",
+  "protocol": "frozen_model_evaluate_untouched_official_time_test",
+  "rag_coverage": {
+    "eligible_fraction": 1.0,
+    "eligible_windows": 140,
+    "fallback_windows": 0
+  },
+  "schema_version": 1,
+  "selected": {
+    "alpha": 0.001,
+    "k": 15,
+    "validation_msse": 0.46408436709043727
+  },
+  "signature": "53a0d26a6da29aa274611200b45d8f9e07460aa5c681c692f22c6988d41b351d",
+  "status": "completed",
+  "testing_config": {
+    "chunk_size": 1024
+  },
+  "timing": {
+    "components": {
+      "context_construction_seconds": 0.07489512488245964,
+      "covariate_model_forecast_seconds": 11.44750741776079,
+      "query_representation_seconds": 0.004129047505557537,
+      "retrieval_seconds": 1.633254655636847,
+      "ridge_design_and_adjustment_seconds": 0.005035858601331711,
+      "vanilla_model_forecast_seconds": 0.6474466463550925
+    },
+    "methods": {
+      "adaptime": {
+        "seconds_per_window": 0.09865906250530056,
+        "total_seconds": 13.812268750742078
+      },
+      "covariate": {
+        "seconds_per_window": 0.09399847318418324,
+        "total_seconds": 13.159786245785654
+      },
+      "vanilla": {
+        "seconds_per_window": 0.004624618902536375,
+        "total_seconds": 0.6474466463550925
+      }
+    },
+    "precomputed_extraction": {
+      "complete_extraction_seconds": 133.3481319770217,
+      "datastore_representation_seconds": 0.9948075525462627,
+      "neighbor_forecast_seconds": 17.50838452205062
+    },
+    "test_windows": 140,
+    "unit": "seconds"
+  },
+  "timing_contract": "test_method_seconds_per_window"
+}

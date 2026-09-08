@@ -1,0 +1,72 @@
+{
+  "candidates": [
+    {
+      "alpha": 0.001,
+      "k": 1,
+      "validation_msse": 0.3862284775793349
+    },
+    {
+      "alpha": 0.01,
+      "k": 1,
+      "validation_msse": 0.3747746331199505
+    },
+    {
+      "alpha": 0.1,
+      "k": 1,
+      "validation_msse": 0.334618931953632
+    },
+    {
+      "alpha": 0.001,
+      "k": 5,
+      "validation_msse": 0.4127986983276692
+    },
+    {
+      "alpha": 0.01,
+      "k": 5,
+      "validation_msse": 0.3851838142907546
+    },
+    {
+      "alpha": 0.1,
+      "k": 5,
+      "validation_msse": 0.3362960044337554
+    },
+    {
+      "alpha": 0.001,
+      "k": 10,
+      "validation_msse": 0.4693249719366707
+    },
+    {
+      "alpha": 0.01,
+      "k": 10,
+      "validation_msse": 0.42926259189098986
+    },
+    {
+      "alpha": 0.1,
+      "k": 10,
+      "validation_msse": 0.34960186573372753
+    },
+    {
+      "alpha": 0.001,
+      "k": 15,
+      "validation_msse": 0.4673343432099027
+    },
+    {
+      "alpha": 0.01,
+      "k": 15,
+      "validation_msse": 0.4345922897872977
+    },
+    {
+      "alpha": 0.1,
+      "k": 15,
+      "validation_msse": 0.35502477562689977
+    }
+  ],
+  "criterion": "adaptation_validation_msse",
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "selected_alpha": 0.1,
+  "selected_k": 1,
+  "selected_validation_msse": 0.334618931953632
+}

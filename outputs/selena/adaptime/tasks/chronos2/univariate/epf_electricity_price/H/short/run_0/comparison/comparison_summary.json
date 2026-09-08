@@ -1,0 +1,213 @@
+{
+  "methods": {
+    "adaptime": {
+      "channels": 1,
+      "mae": {
+        "equal_user_mean": 6.063637687478746,
+        "equal_user_std": 2.49331702435061,
+        "equal_window_mean": 6.063637687478747,
+        "equal_window_std": 6.205192186518533,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mase": {
+        "equal_user_mean": 0.9570680261084012,
+        "equal_user_std": 0.18444368743859316,
+        "equal_window_mean": 0.9570680261084011,
+        "equal_window_std": 0.880569113142117,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mse": {
+        "equal_user_mean": 124.3777346577389,
+        "equal_user_std": 92.7077306574297,
+        "equal_window_mean": 124.37773465773888,
+        "equal_window_std": 372.98362305673385,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "msse": {
+        "equal_user_mean": 1.0242794559745205,
+        "equal_user_std": 0.43512743966974055,
+        "equal_window_mean": 1.0242794559745207,
+        "equal_window_std": 2.446514520574463,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "scaled_mase": {
+        "equal_user_mean": 0.6698559980716768,
+        "equal_window_mean": 0.6698559980716767
+      },
+      "users": 5,
+      "windows": 525
+    },
+    "covariate": {
+      "channels": 1,
+      "mae": {
+        "equal_user_mean": 6.138243214913778,
+        "equal_user_std": 2.5033176482866875,
+        "equal_window_mean": 6.138243214913777,
+        "equal_window_std": 6.307692174746362,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mase": {
+        "equal_user_mean": 0.9752993909801754,
+        "equal_user_std": 0.20382956210147915,
+        "equal_window_mean": 0.9752993909801756,
+        "equal_window_std": 0.9297267170283008,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mse": {
+        "equal_user_mean": 128.28712634007135,
+        "equal_user_std": 94.17581491260972,
+        "equal_window_mean": 128.28712634007135,
+        "equal_window_std": 387.3302534503455,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "msse": {
+        "equal_user_mean": 1.08663521991067,
+        "equal_user_std": 0.47781681153698446,
+        "equal_window_mean": 1.08663521991067,
+        "equal_window_std": 2.668692000340887,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "scaled_mase": {
+        "equal_user_mean": 0.6826162081917962,
+        "equal_window_mean": 0.6826162081917964
+      },
+      "users": 5,
+      "windows": 525
+    },
+    "seasonal_naive": {
+      "channels": 1,
+      "mae": {
+        "equal_user_mean": 9.174453459523974,
+        "equal_user_std": 3.916681011687189,
+        "equal_window_mean": 9.174453459523972,
+        "equal_window_std": 8.87439788242022,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mase": {
+        "equal_user_mean": 1.4287668228149415,
+        "equal_user_std": 0.26407579828840466,
+        "equal_window_mean": 1.4287668228149415,
+        "equal_window_std": 1.2216949795494734,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mse": {
+        "equal_user_mean": 252.47440255420548,
+        "equal_user_std": 180.3153323801274,
+        "equal_window_mean": 252.47440255420548,
+        "equal_window_std": 641.9040283950728,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "msse": {
+        "equal_user_mean": 2.085866428122279,
+        "equal_user_std": 0.8500800162123442,
+        "equal_window_mean": 2.085866428122279,
+        "equal_window_std": 4.420073194415937,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "scaled_mase": {
+        "equal_user_mean": 1.0,
+        "equal_window_mean": 1.0
+      },
+      "users": 5,
+      "windows": 525
+    },
+    "vanilla": {
+      "channels": 1,
+      "mae": {
+        "equal_user_mean": 6.070351244381496,
+        "equal_user_std": 2.4973812812167293,
+        "equal_window_mean": 6.070351244381496,
+        "equal_window_std": 6.208702664342017,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mase": {
+        "equal_user_mean": 0.95829146700246,
+        "equal_user_std": 0.18549126654437212,
+        "equal_window_mean": 0.9582914670024599,
+        "equal_window_std": 0.8828304904086632,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "mse": {
+        "equal_user_mean": 124.52745858794167,
+        "equal_user_std": 92.81286530005988,
+        "equal_window_mean": 124.52745858794167,
+        "equal_window_std": 372.80654094463625,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "msse": {
+        "equal_user_mean": 1.0270625906774686,
+        "equal_user_std": 0.4374885704162787,
+        "equal_window_mean": 1.0270625906774686,
+        "equal_window_std": 2.451522503723049,
+        "finite_windows": 525,
+        "total_windows": 525
+      },
+      "scaled_mase": {
+        "equal_user_mean": 0.6707122895774162,
+        "equal_window_mean": 0.6707122895774162
+      },
+      "users": 5,
+      "windows": 525
+    }
+  },
+  "rag_coverage": {
+    "eligible_fraction": 1.0,
+    "eligible_windows": 525,
+    "fallback_windows": 0
+  },
+  "scaled_mase_win_rate_vs_vanilla": {
+    "adaptime": 0.5276190476190477,
+    "covariate": 0.46476190476190476
+  },
+  "selected": {
+    "alpha": 0.01,
+    "k": 1,
+    "validation_msse": 0.3915527543648183
+  },
+  "timing": {
+    "components": {
+      "context_construction_seconds": 0.029244380071759224,
+      "covariate_model_forecast_seconds": 4.655558535829186,
+      "query_representation_seconds": 0.01504897978156805,
+      "retrieval_seconds": 1.2373897656798363,
+      "ridge_design_and_adjustment_seconds": 0.0014501996338367462,
+      "vanilla_model_forecast_seconds": 2.339441802352667
+    },
+    "methods": {
+      "adaptime": {
+        "seconds_per_window": 0.015767873644474007,
+        "total_seconds": 8.278133663348854
+      },
+      "covariate": {
+        "seconds_per_window": 0.011309031735928286,
+        "total_seconds": 5.93724166136235
+      },
+      "vanilla": {
+        "seconds_per_window": 0.004456079623528889,
+        "total_seconds": 2.339441802352667
+      }
+    },
+    "precomputed_extraction": {
+      "complete_extraction_seconds": 439.92087761778384,
+      "datastore_representation_seconds": 0.2585787270218134,
+      "neighbor_forecast_seconds": 35.64542343933135
+    },
+    "test_windows": 525,
+    "unit": "seconds"
+  }
+}
