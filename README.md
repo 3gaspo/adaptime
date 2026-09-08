@@ -80,9 +80,13 @@ runs the same shared preparation and TS-RAG pipeline without requiring Ridge;
 it adds a comparison report only when a Ridge-results path is supplied.
 
 The default Ridge grid is `K in {1,5,10,15}` and
-`alpha in {1e-3,1e-2,1e-1}`. Training uses only dates with enough valid
-neighbors. If valid training dates at the primary `K=10` do not exceed the
-number of test dates, the fitted wrapper becomes an explicit vanilla fallback.
+`alpha in {1e-3,1e-2,1e-1}`. A query is RAG-eligible only when retrieval
+returns `max_k` valid neighbors (`15` by default). Every candidate `K` is
+trained and selected on this common query support, using the first `K`
+neighbors from the same ordered list. A query with fewer than `max_k` valid
+neighbors is ineligible for every candidate. If valid training dates on this
+shared support at the primary `K=10` do not exceed the number of test dates,
+the fitted wrapper becomes an explicit vanilla fallback.
 If valid validation dates do not exceed 10% of test dates, fitting uses the
 default `K=10`, `alpha=1e-2` without validation selection.
 
@@ -90,6 +94,8 @@ The inherited foundation benchmark is launched through
 `scripts/submit_foundation_models.sh`; channel controls use
 `scripts/channels_comparison.sh`; dataset diagnostics use
 `scripts/dataset_diagnostics.sh`.
+The foundation launcher runs Seasonal Naive first, releases the three learned
+models after that baseline succeeds, and summarizes all four after they end.
 
 ## Outputs and cluster operations
 

@@ -8,6 +8,7 @@ from typing import Any
 
 import numpy as np
 
+from timebench.evaluation.metrics import seasonal_naive_point_forecast
 from timebench.evaluation.window_audit import DEFAULT_CONTEXT_PROFILES
 from timebench.evaluation.utils import normalize_tsicl_quantiles
 from timebench.paths import foundation_weight_path
@@ -202,10 +203,11 @@ class _SeasonalNaiveAdapter:
     ) -> np.ndarray:
         if retrieval_context is not None:
             raise ValueError("seasonal_naive does not consume retrieval context")
-        context = np.asarray(context, dtype=np.float32)
-        period = min(self.period, context.shape[-1])
-        repeats = int(np.ceil(self.horizon / period))
-        return np.tile(context[..., -period:], (1, 1, repeats))[..., : self.horizon]
+        return seasonal_naive_point_forecast(
+            np.asarray(context, dtype=np.float32),
+            self.horizon,
+            self.period,
+        )
 
 
 @lru_cache(maxsize=None)

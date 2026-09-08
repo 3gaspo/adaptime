@@ -28,17 +28,37 @@ mkdir -p "$TIME_LOGS"
 
 source "$PROJECT_ROOT/src/slurm/foundation_model_runners.sh"
 launch_id="${TIME_LAUNCH_ID:-${cluster}_$(date -u '+%Y%m%dT%H%M%SZ')_$$}"
-model_jobs=()
+
+if [ "$cluster" = selena ]; then
+    seasonal_front="$PROJECT_ROOT/slurm/selena/foundation_models/seasonal_naive_selena.slurm"
+else
+    seasonal_front="$PROJECT_ROOT/slurm/dgx/foundation_models/seasonal_naive.slurm"
+fi
+seasonal_job="$(
+    sbatch --parsable \
+        --export="ALL,TIME_LAUNCH_ID=$launch_id" \
+        "$seasonal_front"
+)"
+seasonal_job="${seasonal_job%%;*}"
+model_jobs=("$seasonal_job")
+echo "foundation model submitted model=seasonal_naive job_id=$seasonal_job launch_id=$launch_id"
+
 for model in "${FOUNDATION_MODELS[@]}"; do
+    [ "$model" != seasonal_naive ] || continue
     if [ "$cluster" = selena ]; then
         front="$PROJECT_ROOT/slurm/selena/foundation_models/${model}_selena.slurm"
     else
         front="$PROJECT_ROOT/slurm/dgx/foundation_models/${model}.slurm"
     fi
-    job_id="$(sbatch --parsable --export="ALL,TIME_LAUNCH_ID=$launch_id" "$front")"
+    job_id="$(
+        sbatch --parsable \
+            --dependency="afterok:$seasonal_job" \
+            --export="ALL,TIME_LAUNCH_ID=$launch_id" \
+            "$front"
+    )"
     job_id="${job_id%%;*}"
     model_jobs+=("$job_id")
-    echo "foundation model submitted model=$model job_id=$job_id launch_id=$launch_id"
+    echo "foundation model submitted model=$model job_id=$job_id launch_id=$launch_id dependency=afterok:$seasonal_job"
 done
 
 dependency="$(IFS=:; echo "${model_jobs[*]}")"

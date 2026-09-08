@@ -62,8 +62,11 @@ vanilla-only fallback reason.
 
 Let $q_t$ be the finite fraction of a query history. The default gate requires
 $q_t\geq0.8$ before retrieval. Datastore histories satisfy the same threshold,
-and their complete retrieved future must be finite. A query without $K$ valid
-chronological neighbors is ineligible rather than an experiment-ending error.
+and their complete retrieved future must be finite. A query is RAG-eligible
+only when it has at least $K_{\max}$ valid chronological neighbors, where
+$K_{\max}=15$ for the default grid. Every candidate $K$ uses this common query
+support and consumes the first $K$ neighbors from the same ordered list; fewer
+than $K_{\max}$ valid neighbors makes the query ineligible for all candidates.
 
 \section{Full shared ridge}
 

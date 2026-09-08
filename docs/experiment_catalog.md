@@ -22,6 +22,10 @@ prediction, neighbor futures, and neighbor forecasts.
   primary Chronos-2 configuration.
 - Retrieval: instance-normalized exact Euclidean search by default, with
   configurable finite-content and overlap gates.
+- Eligibility: a query must have `max_k` valid neighbors (`15` by default).
+  Every `K` candidate uses the same eligible rows and takes its first `K`
+  neighbors; fewer than `max_k` valid neighbors makes the query ineligible for
+  all candidates.
 - Fit: shared no-intercept `V + X beta`, trained with complete valid-neighbor
   dates under MSSE.
 - Selection: `K in {1,5,10,15}` and

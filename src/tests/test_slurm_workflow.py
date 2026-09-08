@@ -336,6 +336,11 @@ def main() -> None:
     )
     assert "dgx|selena" in submit
     assert 'for model in "${FOUNDATION_MODELS[@]}"' in submit
+    assert submit.index('seasonal_job="$(') < submit.index(
+        'for model in "${FOUNDATION_MODELS[@]}"'
+    )
+    assert '[ "$model" != seasonal_naive ] || continue' in submit
+    assert '--dependency="afterok:$seasonal_job"' in submit
     assert 'dependency="$(IFS=:; echo "${model_jobs[*]}")"' in submit
     assert '--dependency="afterany:$dependency"' in submit
     assert 'TIME_LAUNCH_ID=$launch_id' in submit

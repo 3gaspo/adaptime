@@ -442,7 +442,7 @@ def _materialize_neighbors(
         mapped_ids = np.full_like(selected_ids, -1)
         mapped_ids[valid] = datastore_positions[selected_ids[valid]]
         ids[query_positions, :retrieval_k] = mapped_ids
-        enough = np.count_nonzero(valid, axis=1) >= min(config.context_k)
+        enough = np.count_nonzero(valid, axis=1) >= config.max_k
         query_eligible[query_positions[~enough]] = False
         fallback_reason[query_positions[~enough]] = 2
     else:

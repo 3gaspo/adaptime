@@ -17,6 +17,41 @@ Supported metrics:
 import numpy as np
 
 
+def fill_missing_history(context: np.ndarray) -> np.ndarray:
+    """Apply the maintained TIME forward-fill policy along the time axis."""
+
+    values = np.asarray(context).copy()
+    for history in values.reshape(-1, values.shape[-1]):
+        if not np.isnan(history).any():
+            continue
+        missing = np.isnan(history)
+        indexes = np.where(~missing, np.arange(len(missing)), 0)
+        np.maximum.accumulate(indexes, out=indexes)
+        history[:] = history[indexes]
+        if np.isnan(history).any():
+            observed = history[~np.isnan(history)]
+            first_observed = observed[0] if len(observed) else 0
+            history[:] = np.nan_to_num(history, nan=first_observed)
+    return values
+
+
+def seasonal_naive_point_forecast(
+    context: np.ndarray,
+    prediction_length: int,
+    seasonality: int,
+) -> np.ndarray:
+    """Repeat the last season after Improved's missing-history preparation."""
+
+    values = fill_missing_history(context)
+    period = min(int(seasonality), values.shape[-1])
+    if period <= 0:
+        raise ValueError("seasonality and context length must be positive")
+    repeats = int(np.ceil(int(prediction_length) / period))
+    return np.tile(values[..., -period:], (*([1] * (values.ndim - 1)), repeats))[
+        ..., : int(prediction_length)
+    ]
+
+
 def seasonal_naive_scale(
     context: np.ndarray,
     seasonality: int,

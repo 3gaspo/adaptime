@@ -32,6 +32,7 @@ from timebench.evaluation.adaptation_data import (
     adaptation_stride_for_frequency,
     prepare_adaptation_dataset,
 )
+from timebench.evaluation.metrics import seasonal_naive_point_forecast
 
 
 def _raises(error_type, function, *args, **kwargs) -> None:
@@ -155,6 +156,13 @@ def main() -> None:
     )
     assert np.isclose(msse_statistics.y_sum_squares, 5.0)
 
+    seasonal = seasonal_naive_point_forecast(
+        np.array([[np.nan, 1.0, np.nan, 3.0]]),
+        prediction_length=5,
+        seasonality=2,
+    )
+    assert np.array_equal(seasonal, np.array([[1.0, 3.0, 1.0, 3.0, 1.0]]))
+
     query = np.array([[0.0, 1.0], [np.nan, 1.0]], dtype=np.float32)
     datastore = np.array([[0.0, 1.0], [2.0, 3.0]], dtype=np.float32)
     references = np.array([[0, 0, 10], [0, 0, 11]], dtype=np.int64)
@@ -213,6 +221,7 @@ def main() -> None:
     assert "minimum_query_finite_fraction" in extraction
     assert 'arrays[f"{split}.rag_eligible"]' in extraction
     assert "require_complete_k=False" in extraction
+    assert ">= config.max_k" in extraction
     assert "include_vanilla_fallback=True" in training
     assert 'arrays.open(f"{split}.msse_scale")' in training
     assert "minimum_training_date_ratio: float = 1.0" in training

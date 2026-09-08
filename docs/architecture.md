@@ -23,13 +23,16 @@ these phases. It does not make TS-RAG depend on a Ridge artifact. Both branches
 read the exact same prepared datastore and official test references, while
 their extraction and prediction artifacts live under separate method roots.
 The shared datastore retains enough future support for `max(H,64)` and at
-least 11 dates per variate so it is valid for the Ridge grid and TS-RAG top-10
-retrieval.
+least 11 dates per variate so TS-RAG top-10 retrieval remains possible. Ridge
+separately applies its `max_k` eligibility gate and becomes vanilla-only when
+too few dates survive that gate.
 
 Ridge extraction materializes bounded `.npy` arrays for representations,
-neighbors, forecasts, targets, eligibility, and timing. Neighbor search accepts
-partial results, and every candidate `K` uses only rows with at least `K`
-valid neighbors. Closed-form fitting streams float64 sufficient statistics.
+neighbors, forecasts, targets, eligibility, and timing. Neighbor search may
+retain partial results for diagnostics, but a query is RAG-eligible only when
+it has `max_k` valid neighbors. Every candidate `K` uses the same eligible rows
+and consumes the first `K` neighbors from that shared ordered list. Closed-form
+fitting streams float64 sufficient statistics.
 When valid primary-`K` training dates do not exceed test dates, the model
 artifact records an explicit vanilla fallback instead of solving an empty
 ridge. Sparse validation uses the primary `K=10`, `alpha=1e-2` without model

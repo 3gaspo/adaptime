@@ -16,6 +16,8 @@ import datasets
 import numpy as np
 import pandas as pd
 
+from timebench.evaluation.metrics import seasonal_naive_point_forecast
+
 PREPARATION_SCHEMA = 1
 QUERY_SPLITS = ("adaptation_train", "adaptation_validation", "test")
 ALL_SPLITS = ("datastore", *QUERY_SPLITS)
@@ -638,20 +640,24 @@ class WindowReader:
         return np.stack(absolute), np.stack(rms)
 
     def seasonal_naive_forecast(self, references: np.ndarray) -> np.ndarray:
-        """Return the deterministic seasonal-naive point forecast per row."""
+        """Return Improved-compatible deterministic Seasonal Naive forecasts."""
 
         refs = np.asarray(references, dtype=np.int64).reshape(-1, 3)
         forecasts: list[np.ndarray] = []
-        period = self.prepared.seasonality
         horizon = self.prepared.prediction_length
-        repeats = int(np.ceil(horizon / period))
         for item, channel, origin in refs:
             values = self._target(int(item))
             selected = values if int(channel) == -1 else values[int(channel) : int(channel) + 1]
-            season = selected[:, int(origin) - period : int(origin)]
-            if season.shape[-1] != period:
+            context = selected[:, : int(origin)]
+            if context.shape[-1] < self.prepared.seasonality:
                 raise ValueError(f"reference {(item, channel, origin)} lacks one season")
-            forecasts.append(np.tile(season, (1, repeats))[..., :horizon])
+            forecasts.append(
+                seasonal_naive_point_forecast(
+                    context,
+                    horizon,
+                    self.prepared.seasonality,
+                )
+            )
         return np.stack(forecasts)
 
 

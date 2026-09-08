@@ -9,6 +9,8 @@ from typing import Iterator, List, Optional
 import numpy as np
 import pandas as pd
 
+from timebench.evaluation.metrics import fill_missing_history
+
 from statsforecast import StatsForecast
 from statsforecast.models import SeasonalNaive
 
@@ -198,18 +200,7 @@ class SeasonalNaivePredictor:
         Returns:
             Dict mapping quantile levels to forecast arrays of shape (pred_len,)
         """
-        # Handle NaN values by forward filling
-        history = history.copy()
-        if np.isnan(history).any():
-            # Forward fill NaN values
-            mask = np.isnan(history)
-            idx = np.where(~mask, np.arange(len(mask)), 0)
-            np.maximum.accumulate(idx, out=idx)
-            history = history[idx]
-            # If still has NaN (e.g., leading NaN), fill with first valid value
-            if np.isnan(history).any():
-                first_valid = history[~np.isnan(history)][0] if (~np.isnan(history)).any() else 0
-                history = np.nan_to_num(history, nan=first_valid)
+        history = fill_missing_history(history)
 
         # Create DataFrame
         df = self._create_dataframe(history, unique_id)
