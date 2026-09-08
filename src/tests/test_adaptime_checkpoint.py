@@ -139,6 +139,9 @@ def main() -> None:
         assert "test retains every official TIME row" in manifest[
             "query_window_contract"
         ]
+        assert manifest["query_window_contract_id"] == (
+            "fixed_context_fit_rows_complete_official_test"
+        )
 
     vanilla = np.array([[[10.0, 11.0]], [[20.0, 21.0]]])
     design = np.ones((2, 1, 2, 2), dtype=np.float64)
@@ -268,6 +271,8 @@ def main() -> None:
     assert "for comparison_method in ADAPTATION_METHODS" in adaptime_workflow
     assert "max_datastore_windows" in adaptation_data
     assert "training and validation retain only fixed-context rows" in adaptation_data
+    assert '"query_window_contract": QUERY_WINDOW_CONTRACT' in adaptation_data
+    assert '"query_window_contract": QUERY_WINDOW_CONTRACT' in adaptime_workflow
     assert "return self.shared.indices(split)" in tsrag_data
     assert "PreparedDataset(path)" in tsrag_data
     assert "independently evaluated Adaptime wrappers" in result_builder

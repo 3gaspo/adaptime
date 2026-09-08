@@ -16,6 +16,7 @@ from pandas.tseries.frequencies import to_offset
 from timebench.evaluation.adaptation import evaluate_point_predictions
 from timebench.evaluation.adaptation_data import (
     PreparationConfig,
+    QUERY_WINDOW_CONTRACT,
     adaptation_split_lengths,
     adaptation_stride_for_frequency,
     prepare_adaptation_dataset,
@@ -321,7 +322,10 @@ def _spec(
         return (
             "adaptime_data",
             _task_identity(task, "shared_datastore"),
-            {"artifact": "shared_global_datastore"},
+            {
+                "artifact": "shared_global_datastore",
+                "query_window_contract": QUERY_WINDOW_CONTRACT,
+            },
             data_config,
             {
                 "splits": ["datastore", "adaptation_train", "adaptation_validation", "test"],

@@ -22,6 +22,7 @@ PREPARATION_SCHEMA = 1
 FIT_QUERY_SPLITS = ("adaptation_train", "adaptation_validation")
 QUERY_SPLITS = (*FIT_QUERY_SPLITS, "test")
 ALL_SPLITS = ("datastore", *QUERY_SPLITS)
+QUERY_WINDOW_CONTRACT = "fixed_context_fit_rows_complete_official_test"
 
 ADAPTATION_STRIDES = {
     "intraday": 127,
@@ -330,6 +331,7 @@ def prepare_adaptation_dataset(
             "schema_version": PREPARATION_SCHEMA,
             "dataset_fingerprint": str(hf_dataset._fingerprint),
             "config": scientific,
+            "query_window_contract": QUERY_WINDOW_CONTRACT,
         }
     )
     manifest_path = root / "manifest.json"
@@ -520,6 +522,7 @@ def prepare_adaptation_dataset(
             "training and validation retain only fixed-context rows; "
             "test retains every official TIME row"
         ),
+        "query_window_contract_id": QUERY_WINDOW_CONTRACT,
         "arrays": arrays,
         "counts": counts,
     }
