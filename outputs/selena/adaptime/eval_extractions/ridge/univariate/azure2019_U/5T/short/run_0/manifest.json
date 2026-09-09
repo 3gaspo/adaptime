@@ -1,0 +1,107 @@
+{
+  "completed_at": "2026-09-09T11:32:58.699735+00:00",
+  "experiment": "adaptime_eval_extraction",
+  "experiment_config": {
+    "phase": "selected_k_official_test_extraction"
+  },
+  "identity": {
+    "dataset": "azure2019_U",
+    "frequency": "5T",
+    "model": "full_ridge_shared",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3241621",
+        "launched_at": "2026-09-09T11:32:58.680355+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3241621"
+      }
+    ],
+    "launch_id": "selena_adaptime_3241621",
+    "launched_at": "2026-09-09T11:32:58.680355+00:00",
+    "slurm_job_id": "3241621"
+  },
+  "model_config": {
+    "arrow_cache_items": 2,
+    "backbone": "chronos2",
+    "context_k": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "datastore_block_size": 4096,
+    "distance_metric": "euclidean",
+    "max_k": 15,
+    "minimum_overlap_fraction": 0.8,
+    "minimum_query_finite_fraction": 0.8,
+    "model_batch_size": 64,
+    "query_block_size": 256,
+    "representation": "instance",
+    "retrieval_scope": "all",
+    "weights_id": null
+  },
+  "pipeline_config": {
+    "adaptation": {
+      "alpha_values": [
+        0.001,
+        0.01,
+        0.1
+      ],
+      "chunk_size": 1024,
+      "default_alpha": 0.01,
+      "default_k": 10,
+      "k_values": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "minimum_training_window_ratio": 1.0,
+      "minimum_validation_window_ratio": 0.1,
+      "seed": 1
+    },
+    "data_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 1445,
+      "adaptation_validation_length": 683,
+      "context_length": 8192,
+      "dataset": "azure2019_U/5T",
+      "dataset_fingerprint": "6876a542b5338040",
+      "datastore_prediction_length": 64,
+      "datastore_stride": 288,
+      "max_datastore_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 48,
+      "retrieval_period": 288,
+      "seasonality": 288,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 288
+    },
+    "vanilla_context_policy": "all_available_history_capped_at_model_limit"
+  },
+  "project": "adaptime",
+  "provenance": {
+    "adaptation_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/adaptations/ridge/univariate/azure2019_U/5T/short/run_0/model/model_manifest.json",
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_U/5T/short/run_0/prepared/manifest.json",
+    "fit_extraction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/ridge/univariate/azure2019_U/5T/short/run_0/extraction/manifest.json",
+    "vanilla_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/shared/univariate/azure2019_U/5T/short/run_0/vanilla/manifest.json"
+  },
+  "required_artifacts": [
+    "extraction/manifest.json"
+  ],
+  "runtime_config": {
+    "device": "cuda",
+    "model_path": null
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-09T11:32:58.680355+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-09T11:32:58.699735+00:00"
+}

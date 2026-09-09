@@ -1,0 +1,66 @@
+{
+  "adaptation_signature": "eaab6c82b9fc425971a74a6db6c0a270b8509dbe0259d7eff18db7f92e092374",
+  "arrays": {
+    "test.fallback_reason": "test/fallback_reason.npy",
+    "test.rag_eligible": "test/rag_eligible.npy"
+  },
+  "config": {
+    "arrow_cache_items": 2,
+    "context_k": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "datastore_block_size": 4096,
+    "distance_metric": "euclidean",
+    "max_k": 15,
+    "minimum_overlap_fraction": 0.8,
+    "minimum_query_finite_fraction": 0.8,
+    "model_batch_size": 64,
+    "query_block_size": 256,
+    "representation": "instance",
+    "retrieval_scope": "all"
+  },
+  "counts": {
+    "test": 16
+  },
+  "eligibility": {
+    "fallback_reasons": {
+      "insufficient_finite_query_context": 0,
+      "insufficient_past_context": 0,
+      "insufficient_training_support": 16,
+      "insufficient_valid_neighbors": 0,
+      "nonfinite_adaptation_design": 0,
+      "nonfinite_datastore_target": 0
+    },
+    "rag_eligible": 0,
+    "total": 16,
+    "vanilla_fallback": 16
+  },
+  "fallback_reason_codes": {
+    "0": "rag_eligible",
+    "1": "insufficient_finite_query_context",
+    "2": "insufficient_valid_neighbors",
+    "3": "nonfinite_datastore_target",
+    "4": "insufficient_past_context",
+    "5": "nonfinite_adaptation_design",
+    "6": "insufficient_training_support"
+  },
+  "fit_extraction_signature": "e39822349b5a0ae64924a14d56ea6112f6a3c648451349106b10b33c2e75d9d9",
+  "format": "adaptime_eval_extraction",
+  "model": "chronos2",
+  "neighbor_forecasts": {
+    "computed_for_test": 0,
+    "reused_from_fit_extraction": 0
+  },
+  "prepared_signature": "74b6a90644ee480a6b1dbbd8f1c9135cc70eae3fc7aa8c09e0f43a35f01b5a5a",
+  "schema_version": 1,
+  "selected_k": null,
+  "signature": "7c4d632f410969edbe92c101eabbe18f78ad466185623d91f7926a3b011156e9",
+  "status": "completed",
+  "timing_contract": "component_seconds",
+  "timing_seconds": {},
+  "vanilla_signature": "e9e36bb6a9534330c7118be9414ed7ae3dbf728e3e71f219a5473edbf4e7338f",
+  "weights_id": "chronos2"
+}

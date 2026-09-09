@@ -1,0 +1,12 @@
+workflow=adaptime
+launch_id=selena_adaptime_3241620
+task=ridge_prepare
+state=completed
+stage=none
+active_task=none
+launched_at=2026-09-09T09:25:43Z
+updated_at=2026-09-09T09:27:20Z
+exit_code=0
+slurm_job_id=3241620
+slurm_array_job_id=none
+slurm_array_task_id=none

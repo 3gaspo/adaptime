@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "metrics": [
+            "MSE",
+            "MAE",
+            "RMSE",
+            "MAPE",
+            "sMAPE",
+            "MASE",
+            "ND",
+            "CRPS"
+          ],
+          "phase": "evaluation",
+          "quantile_levels": [
+            0.5
+          ]
+        },
+        "model_config": {
+          "forecast_type": "point",
+          "method": "covariate_prediction"
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 3971,
+            "adaptation_validation_length": 2066,
+            "context_length": 8192,
+            "dataset": "current_velocity/5T",
+            "dataset_fingerprint": "56dc61161be7a25f",
+            "datastore_prediction_length": 288,
+            "datastore_stride": 288,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 288,
+            "retrieval_period": 288,
+            "seasonality": 288,
+            "target_mode": "univariate",
+            "term": "medium",
+            "test_length": 4320
+          },
+          "evaluator": "timebench.evaluation.saver.save_window_predictions",
+          "prediction_config": {
+            "adaptation": {
+              "alpha_values": [
+                0.001,
+                0.01,
+                0.1
+              ],
+              "chunk_size": 1024,
+              "default_alpha": 0.01,
+              "default_k": 10,
+              "k_values": [
+                1,
+                5,
+                10,
+                15
+              ],
+              "minimum_training_window_ratio": 1.0,
+              "minimum_validation_window_ratio": 0.1,
+              "seed": 1
+            },
+            "extraction": {
+              "arrow_cache_items": 2,
+              "backbone": "chronos2",
+              "context_k": [
+                1,
+                5,
+                10,
+                15
+              ],
+              "datastore_block_size": 4096,
+              "distance_metric": "euclidean",
+              "max_k": 15,
+              "minimum_overlap_fraction": 0.8,
+              "minimum_query_finite_fraction": 0.8,
+              "model_batch_size": 64,
+              "query_block_size": 256,
+              "representation": "instance",
+              "retrieval_scope": "all",
+              "weights_id": null
+            },
+            "method": "adaptime_comparison_family",
+            "methods": [
+              "vanilla",
+              "covariate_prediction",
+              "bayes_covariate_prediction",
+              "full_ridge_shared"
+            ],
+            "prediction_protocol": "unconditional_vanilla_plus_selected_k_covariate_bayes_and_ridge"
+          }
+        }
+      }
+    }
+  ]
+}

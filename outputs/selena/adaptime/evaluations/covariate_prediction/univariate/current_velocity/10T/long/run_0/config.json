@@ -1,0 +1,41 @@
+{
+  "dataset_config": "current_velocity/10T/long",
+  "num_series": 10,
+  "num_windows": 5,
+  "num_variates": 6,
+  "num_model_inputs": 300,
+  "prediction_length": 432,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "10T",
+  "seasonality": 144,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_3241621",
+  "inference_seconds": 40.0466016093269,
+  "model": "covariate_prediction",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/current_velocity/10T/long/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": 0.001,
+    "k": 10,
+    "validation_msse": 1.0898933276328127
+  },
+  "bayes_probability_covariate_better": 0.5802816901408451,
+  "adaptation_fallback_reason": null
+}

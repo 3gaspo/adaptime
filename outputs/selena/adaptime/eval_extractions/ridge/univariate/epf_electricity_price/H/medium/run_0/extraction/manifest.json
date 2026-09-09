@@ -1,0 +1,80 @@
+{
+  "adaptation_signature": "2d248fca3382511e5e61b2ecf49c577cf20388caa2836c6847e679dfa1a8ad5f",
+  "arrays": {
+    "datastore.selected_forecast": "datastore/selected_forecast.npy",
+    "datastore.selected_forecast_id": "datastore/selected_forecast_id.npy",
+    "test.context_finite_fraction": "test/context_finite_fraction.npy",
+    "test.context_forecast": "test/context_forecast.npy",
+    "test.fallback_reason": "test/fallback_reason.npy",
+    "test.neighbor_distance": "test/neighbor_distance.npy",
+    "test.neighbor_id": "test/neighbor_id.npy",
+    "test.query_scale": "test/query_scale.npy",
+    "test.rag_eligible": "test/rag_eligible.npy",
+    "test.representation": "test/representation.npy"
+  },
+  "config": {
+    "arrow_cache_items": 2,
+    "context_k": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "datastore_block_size": 4096,
+    "distance_metric": "euclidean",
+    "max_k": 15,
+    "minimum_overlap_fraction": 0.8,
+    "minimum_query_finite_fraction": 0.8,
+    "model_batch_size": 64,
+    "query_block_size": 256,
+    "representation": "instance",
+    "retrieval_scope": "all"
+  },
+  "counts": {
+    "test": 175
+  },
+  "eligibility": {
+    "fallback_reasons": {
+      "insufficient_finite_query_context": 0,
+      "insufficient_past_context": 0,
+      "insufficient_training_support": 0,
+      "insufficient_valid_neighbors": 0,
+      "nonfinite_adaptation_design": 0,
+      "nonfinite_datastore_target": 0
+    },
+    "rag_eligible": 175,
+    "total": 175,
+    "vanilla_fallback": 0
+  },
+  "fallback_reason_codes": {
+    "0": "rag_eligible",
+    "1": "insufficient_finite_query_context",
+    "2": "insufficient_valid_neighbors",
+    "3": "nonfinite_datastore_target",
+    "4": "insufficient_past_context",
+    "5": "nonfinite_adaptation_design",
+    "6": "insufficient_training_support"
+  },
+  "fit_extraction_signature": "7fc343a0e60948c9e504e583db67bc852218989cfaf53c1d73db2ae75a61f775",
+  "format": "adaptime_eval_extraction",
+  "model": "chronos2",
+  "neighbor_forecasts": {
+    "computed_for_test": 123,
+    "reused_from_fit_extraction": 15
+  },
+  "prepared_signature": "457eeb7dcb8e14ca8c061e70452618408c14f00c1b72a563634670ec0f27730c",
+  "schema_version": 1,
+  "selected_k": 1,
+  "signature": "e3dc6739c4f31e736e75cae1434780b1973068a0b4f59f7c2455c562393a8dbf",
+  "status": "completed",
+  "timing_contract": "component_seconds",
+  "timing_seconds": {
+    "test.context_construction_seconds": 0.00942586362361908,
+    "test.context_forecast_seconds": 1.6125034764409065,
+    "test.neighbor_forecast_seconds": 0.6053815726190805,
+    "test.representation_seconds": 0.004584654234349728,
+    "test.retrieval_seconds": 9.892192686907947
+  },
+  "vanilla_signature": "b32d9f095bd281090f835bec18aea951b55f0919ec74836dcbed4b1707d6ddf9",
+  "weights_id": "chronos2"
+}

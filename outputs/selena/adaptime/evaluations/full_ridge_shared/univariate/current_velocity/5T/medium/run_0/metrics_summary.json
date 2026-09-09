@@ -1,0 +1,49 @@
+{
+  "dataset_config": "current_velocity/5T/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 4.994739415785143,
+      "finite_values": 90,
+      "total_values": 90
+    },
+    "MAE": {
+      "mean": 0.7780799056905051,
+      "finite_values": 90,
+      "total_values": 90
+    },
+    "RMSE": {
+      "mean": 0.9559409259345467,
+      "finite_values": 90,
+      "total_values": 90
+    },
+    "MAPE": {
+      "mean": 1.1498497226429962,
+      "finite_values": 90,
+      "total_values": 90
+    },
+    "sMAPE": {
+      "mean": 0.43243714709727277,
+      "finite_values": 90,
+      "total_values": 90
+    },
+    "MASE": {
+      "mean": 0.7393925783966134,
+      "finite_values": 90,
+      "total_values": 90
+    },
+    "ND": {
+      "mean": 0.5827903672526903,
+      "finite_values": 90,
+      "total_values": 90
+    },
+    "CRPS": {
+      "mean": 0.5827903672526903,
+      "finite_values": 90,
+      "total_values": 90
+    }
+  },
+  "launch_id": "selena_adaptime_3241621",
+  "model": "full_ridge_shared",
+  "inference_seconds": 8.980567815713584
+}

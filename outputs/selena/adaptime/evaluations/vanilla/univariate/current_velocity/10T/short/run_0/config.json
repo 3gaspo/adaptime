@@ -1,0 +1,41 @@
+{
+  "dataset_config": "current_velocity/10T/short",
+  "num_series": 10,
+  "num_windows": 120,
+  "num_variates": 6,
+  "num_model_inputs": 7200,
+  "prediction_length": 18,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "10T",
+  "seasonality": 144,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_3241621",
+  "inference_seconds": 32.40479180775583,
+  "model": "vanilla",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/current_velocity/10T/short/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": null,
+    "k": null,
+    "validation_msse": null
+  },
+  "bayes_probability_covariate_better": 0.0,
+  "adaptation_fallback_reason": "K=10 has 0 valid training windows; requires more than 7200 for 7200 test windows"
+}

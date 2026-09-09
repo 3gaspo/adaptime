@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "selected_k_official_test_extraction"
+        },
+        "model_config": {
+          "arrow_cache_items": 2,
+          "backbone": "chronos2",
+          "context_k": [
+            1,
+            5,
+            10,
+            15
+          ],
+          "datastore_block_size": 4096,
+          "distance_metric": "euclidean",
+          "max_k": 15,
+          "minimum_overlap_fraction": 0.8,
+          "minimum_query_finite_fraction": 0.8,
+          "model_batch_size": 64,
+          "query_block_size": 256,
+          "representation": "instance",
+          "retrieval_scope": "all",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "adaptation": {
+            "alpha_values": [
+              0.001,
+              0.01,
+              0.1
+            ],
+            "chunk_size": 1024,
+            "default_alpha": 0.01,
+            "default_k": 10,
+            "k_values": [
+              1,
+              5,
+              10,
+              15
+            ],
+            "minimum_training_window_ratio": 1.0,
+            "minimum_validation_window_ratio": 0.1,
+            "seed": 1
+          },
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 3971,
+            "adaptation_validation_length": 2066,
+            "context_length": 8192,
+            "dataset": "Coastal_T_S/5T",
+            "dataset_fingerprint": "1aa94918a5698736",
+            "datastore_prediction_length": 288,
+            "datastore_stride": 288,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 288,
+            "retrieval_period": 288,
+            "seasonality": 288,
+            "target_mode": "univariate",
+            "term": "medium",
+            "test_length": 4320
+          },
+          "vanilla_context_policy": "all_available_history_capped_at_model_limit"
+        }
+      }
+    }
+  ]
+}

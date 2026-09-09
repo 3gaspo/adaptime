@@ -1,0 +1,47 @@
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:   1%|          | 1/170 [00:00<00:34,  4.96it/s]Loading weights:  15%|█▍        | 25/170 [00:00<00:01, 97.08it/s]Loading weights:  25%|██▌       | 43/170 [00:00<00:01, 126.27it/s]Loading weights:  44%|████▎     | 74/170 [00:00<00:00, 187.28it/s]Loading weights:  58%|█████▊    | 99/170 [00:00<00:00, 206.28it/s]Loading weights:  76%|███████▌  | 129/170 [00:00<00:00, 235.26it/s]Loading weights:  95%|█████████▍| 161/170 [00:00<00:00, 251.47it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 198.72it/s]
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  return pd.Period(val, freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/dataset/common.py:263: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  return pd.Period(val, freq)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 139, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 96, in main
+    run_adaptation_stage(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 1123, in run_adaptation_stage
+    result = _run_evaluation(
+             ^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 961, in _run_evaluation
+    evaluate_point_predictions(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/evaluation/adaptation.py", line 82, in evaluate_point_predictions
+    return save_window_predictions(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/evaluation/saver.py", line 108, in save_window_predictions
+    for inp, label in test_data:
+                      ^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/dataset/split.py", line 386, in __iter__
+    yield from self.splitter.generate_test_pairs(
+  File "/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/dataset/split.py", line 251, in generate_test_pairs
+    test = self.test_pair(
+           ^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/dataset/split.py", line 289, in test_pair
+    offset_ += entry[FieldName.TARGET].shape[-1]
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+IndexError: tuple index out of range
+srun: error: sean0016: task 0: Exited with exit code 1
+2026-09-09 13:33:41 | task TIME-wide Adaptime method=ridge stage=pipeline completed status=failed exit_code=1
+2026-09-09 13:33:41 | stage pipeline completed status=failed exit_code=1
+TIME interrupted-launch recovery launch_id=selena_adaptime_3241621 tasks=0 root=/scratch/users/h61084/codes/adaptime/outputs/adaptime
+2026-09-09 13:33:44 | workflow adaptime completed status=failed exit_code=1

@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Water_Quality_Darwin/15T/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 11.967264375173501,
+      "finite_values": 210,
+      "total_values": 210
+    },
+    "MAE": {
+      "mean": 0.9909671523437077,
+      "finite_values": 210,
+      "total_values": 210
+    },
+    "RMSE": {
+      "mean": 1.2522744696187855,
+      "finite_values": 210,
+      "total_values": 210
+    },
+    "MAPE": {
+      "mean": 0.09509488755387877,
+      "finite_values": 210,
+      "total_values": 210
+    },
+    "sMAPE": {
+      "mean": 0.08988085786015138,
+      "finite_values": 210,
+      "total_values": 210
+    },
+    "MASE": {
+      "mean": 1.417430731085,
+      "finite_values": 210,
+      "total_values": 210
+    },
+    "ND": {
+      "mean": 0.08616149622207513,
+      "finite_values": 210,
+      "total_values": 210
+    },
+    "CRPS": {
+      "mean": 0.08616149622207513,
+      "finite_values": 210,
+      "total_values": 210
+    }
+  },
+  "launch_id": "selena_adaptime_3241621",
+  "model": "bayes_covariate_prediction",
+  "inference_seconds": 8.77471856214106
+}

@@ -1,0 +1,123 @@
+{
+  "completed_at": "2026-09-09T11:33:08.115794+00:00",
+  "experiment": "adaptime_prediction",
+  "experiment_config": {
+    "forecast_type": "point",
+    "phase": "frozen_inference"
+  },
+  "identity": {
+    "dataset": "SG_Carpark",
+    "frequency": "15T",
+    "model": "full_ridge_shared",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3241621",
+        "launched_at": "2026-09-09T11:33:08.002289+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3241621"
+      }
+    ],
+    "launch_id": "selena_adaptime_3241621",
+    "launched_at": "2026-09-09T11:33:08.002289+00:00",
+    "slurm_job_id": "3241621"
+  },
+  "model_config": {
+    "adaptation": {
+      "alpha_values": [
+        0.001,
+        0.01,
+        0.1
+      ],
+      "chunk_size": 1024,
+      "default_alpha": 0.01,
+      "default_k": 10,
+      "k_values": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "minimum_training_window_ratio": 1.0,
+      "minimum_validation_window_ratio": 0.1,
+      "seed": 1
+    },
+    "extraction": {
+      "arrow_cache_items": 2,
+      "backbone": "chronos2",
+      "context_k": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "datastore_block_size": 4096,
+      "distance_metric": "euclidean",
+      "max_k": 15,
+      "minimum_overlap_fraction": 0.8,
+      "minimum_query_finite_fraction": 0.8,
+      "model_batch_size": 64,
+      "query_block_size": 256,
+      "representation": "instance",
+      "retrieval_scope": "all",
+      "weights_id": null
+    },
+    "method": "adaptime_comparison_family",
+    "methods": [
+      "vanilla",
+      "covariate_prediction",
+      "bayes_covariate_prediction",
+      "full_ridge_shared"
+    ],
+    "prediction_protocol": "unconditional_vanilla_plus_selected_k_covariate_bayes_and_ridge"
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 10557,
+      "adaptation_validation_length": 5223,
+      "context_length": 8192,
+      "dataset": "SG_Carpark/15T",
+      "dataset_fingerprint": "8225a607ad319268",
+      "datastore_prediction_length": 64,
+      "datastore_stride": 96,
+      "max_datastore_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 16,
+      "retrieval_period": 96,
+      "seasonality": 96,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 672
+    }
+  },
+  "project": "adaptime",
+  "provenance": {
+    "adaptation_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/adaptations/ridge/univariate/SG_Carpark/15T/short/run_0/model/model_manifest.json",
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Carpark/15T/short/run_0/prepared/manifest.json",
+    "eval_extraction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/eval_extractions/ridge/univariate/SG_Carpark/15T/short/run_0/extraction/manifest.json",
+    "fit_extraction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/ridge/univariate/SG_Carpark/15T/short/run_0/extraction/manifest.json",
+    "vanilla_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/shared/univariate/SG_Carpark/15T/short/run_0/vanilla/manifest.json"
+  },
+  "required_artifacts": [
+    "prediction/prediction_manifest.json",
+    "prediction/vanilla.npy",
+    "prediction/covariate_prediction.npy",
+    "prediction/bayes_covariate_prediction.npy",
+    "prediction/full_ridge_shared.npy",
+    "prediction/rag_eligible.npy",
+    "prediction/fallback_reason.npy"
+  ],
+  "runtime_config": {
+    "chunk_size": 1024
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-09T11:33:08.002289+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-09T11:33:08.115794+00:00"
+}
