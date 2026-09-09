@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Vehicle_Supply/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 2704.58699951601,
+      "finite_values": 30,
+      "total_values": 30
+    },
+    "MAE": {
+      "mean": 22.320222251365582,
+      "finite_values": 30,
+      "total_values": 30
+    },
+    "RMSE": {
+      "mean": 26.449555347278547,
+      "finite_values": 30,
+      "total_values": 30
+    },
+    "MAPE": {
+      "mean": 0.2518155462950676,
+      "finite_values": 30,
+      "total_values": 30
+    },
+    "sMAPE": {
+      "mean": 0.21088419268031608,
+      "finite_values": 30,
+      "total_values": 30
+    },
+    "MASE": {
+      "mean": 0.8042214388559568,
+      "finite_values": 30,
+      "total_values": 30
+    },
+    "ND": {
+      "mean": 0.23086327120620262,
+      "finite_values": 30,
+      "total_values": 30
+    },
+    "CRPS": {
+      "mean": 0.23086327120620262,
+      "finite_values": 30,
+      "total_values": 30
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "bayes_covariate_prediction",
+  "inference_seconds": 0.0701600443571806
+}

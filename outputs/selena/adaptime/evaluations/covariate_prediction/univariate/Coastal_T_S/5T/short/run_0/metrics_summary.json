@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Coastal_T_S/5T/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 119.41737138410781,
+      "finite_values": 6480,
+      "total_values": 6480
+    },
+    "MAE": {
+      "mean": 2.844371155547732,
+      "finite_values": 6480,
+      "total_values": 6480
+    },
+    "RMSE": {
+      "mean": 3.0053628574348643,
+      "finite_values": 6480,
+      "total_values": 6480
+    },
+    "MAPE": {
+      "mean": 0.08449089454921253,
+      "finite_values": 6480,
+      "total_values": 6480
+    },
+    "sMAPE": {
+      "mean": 0.06673491150422611,
+      "finite_values": 6480,
+      "total_values": 6480
+    },
+    "MASE": {
+      "mean": 0.7888440489264078,
+      "finite_values": 6480,
+      "total_values": 6480
+    },
+    "ND": {
+      "mean": 0.0616623830143632,
+      "finite_values": 6480,
+      "total_values": 6480
+    },
+    "CRPS": {
+      "mean": 0.0616623830143632,
+      "finite_values": 6480,
+      "total_values": 6480
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "covariate_prediction",
+  "inference_seconds": 1104.5166846038774
+}

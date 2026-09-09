@@ -1,0 +1,12 @@
+workflow=adaptime
+launch_id=selena_tsrag_3275044
+task=tsrag_prepare
+state=completed
+stage=none
+active_task=none
+launched_at=2026-09-09T13:14:48Z
+updated_at=2026-09-09T13:15:02Z
+exit_code=0
+slurm_job_id=3275044
+slurm_array_job_id=none
+slurm_array_task_id=none

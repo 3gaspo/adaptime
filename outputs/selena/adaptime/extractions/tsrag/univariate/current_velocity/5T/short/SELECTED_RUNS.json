@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "fit_grid_extraction"
+        },
+        "model_config": {
+          "context_length": 512,
+          "embedding": "chronos_t5_base_eos",
+          "embedding_dimension": 768,
+          "native_prediction_length": 64,
+          "retrieval_scope": "same_series",
+          "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+          "top_k": 10
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 30389,
+            "adaptation_validation_length": 15149,
+            "context_length": 8192,
+            "dataset": "current_velocity/5T",
+            "dataset_fingerprint": "56dc61161be7a25f",
+            "datastore_prediction_length": 64,
+            "datastore_stride": 288,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 36,
+            "retrieval_period": 288,
+            "seasonality": 288,
+            "target_mode": "univariate",
+            "term": "short",
+            "test_length": 4320
+          }
+        }
+      }
+    }
+  ]
+}

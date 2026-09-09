@@ -1,0 +1,12 @@
+workflow=adaptime
+launch_id=selena_tsrag_3275045
+task=tsrag_pipeline
+state=failed
+stage=pipeline
+active_task=TIME-wide Adaptime method=tsrag stage=pipeline
+launched_at=2026-09-09T13:15:04Z
+updated_at=2026-09-09T13:16:13Z
+exit_code=1
+slurm_job_id=3275045
+slurm_array_job_id=none
+slurm_array_task_id=none

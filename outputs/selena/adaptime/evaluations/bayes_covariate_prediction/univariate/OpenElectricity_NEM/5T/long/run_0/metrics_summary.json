@@ -1,0 +1,49 @@
+{
+  "dataset_config": "OpenElectricity_NEM/5T/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 38998.76802815514,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MAE": {
+      "mean": 101.9592722622224,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "RMSE": {
+      "mean": 134.34715134827175,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MAPE": {
+      "mean": 5.834370075625843,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "sMAPE": {
+      "mean": 0.25986980274308,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "MASE": {
+      "mean": 0.7091579075785296,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "ND": {
+      "mean": 0.23213231931194325,
+      "finite_values": 140,
+      "total_values": 140
+    },
+    "CRPS": {
+      "mean": 0.23213231931194325,
+      "finite_values": 140,
+      "total_values": 140
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "bayes_covariate_prediction",
+  "inference_seconds": 14.881776843219995
+}

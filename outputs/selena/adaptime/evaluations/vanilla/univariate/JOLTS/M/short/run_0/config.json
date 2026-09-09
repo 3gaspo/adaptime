@@ -1,0 +1,41 @@
+{
+  "dataset_config": "JOLTS/M/short",
+  "num_series": 1,
+  "num_windows": 5,
+  "num_variates": 6,
+  "num_model_inputs": 30,
+  "prediction_length": 12,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "M",
+  "seasonality": 12,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_3275021",
+  "inference_seconds": 0.06943034566938877,
+  "model": "vanilla",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/JOLTS/M/short/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": null,
+    "k": null,
+    "validation_msse": null
+  },
+  "bayes_probability_covariate_better": 0.0,
+  "adaptation_fallback_reason": "K=10 has 0 valid training windows; requires more than 30 for 30 test windows"
+}

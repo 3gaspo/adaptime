@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Smart_Manufacturing/H/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 78.42633843584457,
+      "finite_values": 170,
+      "total_values": 170
+    },
+    "MAE": {
+      "mean": 5.719615523716557,
+      "finite_values": 170,
+      "total_values": 170
+    },
+    "RMSE": {
+      "mean": 7.159090045802481,
+      "finite_values": 170,
+      "total_values": 170
+    },
+    "MAPE": {
+      "mean": 0.3401990005303296,
+      "finite_values": 170,
+      "total_values": 170
+    },
+    "sMAPE": {
+      "mean": 0.22527335877205923,
+      "finite_values": 170,
+      "total_values": 170
+    },
+    "MASE": {
+      "mean": 0.711018864850903,
+      "finite_values": 170,
+      "total_values": 170
+    },
+    "ND": {
+      "mean": 0.21519545053428477,
+      "finite_values": 170,
+      "total_values": 170
+    },
+    "CRPS": {
+      "mean": 0.21519545053428477,
+      "finite_values": 170,
+      "total_values": 170
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "covariate_prediction",
+  "inference_seconds": 0.19876184687018394
+}

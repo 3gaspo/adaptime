@@ -1,0 +1,78 @@
+{
+  "error": {
+    "message": "No module named 'faiss'",
+    "type": "ModuleNotFoundError"
+  },
+  "experiment": "adaptime_extraction",
+  "experiment_config": {
+    "phase": "fit_grid_extraction"
+  },
+  "identity": {
+    "dataset": "current_velocity",
+    "frequency": "5T",
+    "model": "tsrag",
+    "target_mode": "univariate",
+    "term": "medium"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_tsrag_3275045",
+        "launched_at": "2026-09-09T13:15:55.690034+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3275045"
+      }
+    ],
+    "launch_id": "selena_tsrag_3275045",
+    "launched_at": "2026-09-09T13:15:55.690034+00:00",
+    "slurm_job_id": "3275045"
+  },
+  "model_config": {
+    "context_length": 512,
+    "embedding": "chronos_t5_base_eos",
+    "embedding_dimension": 768,
+    "native_prediction_length": 64,
+    "retrieval_scope": "same_series",
+    "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+    "top_k": 10
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 3971,
+      "adaptation_validation_length": 2066,
+      "context_length": 8192,
+      "dataset": "current_velocity/5T",
+      "dataset_fingerprint": "56dc61161be7a25f",
+      "datastore_prediction_length": 288,
+      "datastore_stride": 288,
+      "max_datastore_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 288,
+      "retrieval_period": 288,
+      "seasonality": 288,
+      "target_mode": "univariate",
+      "term": "medium",
+      "test_length": 4320
+    }
+  },
+  "project": "adaptime",
+  "provenance": {
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/5T/medium/run_0/prepared/manifest.json",
+    "upstream_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+    "upstream_repository": "https://github.com/UConn-DSIS/TS-RAG"
+  },
+  "required_artifacts": [],
+  "runtime_config": {
+    "arrow_cache_items": 2,
+    "device": "cuda",
+    "model_batch_size": 256,
+    "retriever_path": "/fslarge/scratch/users/h61084/weights/chronos-t5-base"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-09T13:15:55.690034+00:00",
+  "status": "interrupted",
+  "updated_at": "2026-09-09T13:16:12.225179+00:00"
+}

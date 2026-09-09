@@ -1,0 +1,49 @@
+{
+  "dataset_config": "SG_PM25/H/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 46.775157180378095,
+      "finite_values": 150,
+      "total_values": 150
+    },
+    "MAE": {
+      "mean": 4.94034356655898,
+      "finite_values": 150,
+      "total_values": 150
+    },
+    "RMSE": {
+      "mean": 6.28262409414974,
+      "finite_values": 150,
+      "total_values": 150
+    },
+    "MAPE": {
+      "mean": 0.5233967049064561,
+      "finite_values": 150,
+      "total_values": 150
+    },
+    "sMAPE": {
+      "mean": 0.4189214222083363,
+      "finite_values": 150,
+      "total_values": 150
+    },
+    "MASE": {
+      "mean": 0.938999363646257,
+      "finite_values": 150,
+      "total_values": 150
+    },
+    "ND": {
+      "mean": 0.40604255970856723,
+      "finite_values": 150,
+      "total_values": 150
+    },
+    "CRPS": {
+      "mean": 0.40604255970856723,
+      "finite_values": 150,
+      "total_values": 150
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "bayes_covariate_prediction",
+  "inference_seconds": 19.003139511682093
+}

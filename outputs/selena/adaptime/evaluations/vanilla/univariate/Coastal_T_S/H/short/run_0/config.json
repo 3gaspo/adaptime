@@ -1,0 +1,41 @@
+{
+  "dataset_config": "Coastal_T_S/H/short",
+  "num_series": 24,
+  "num_windows": 28,
+  "num_variates": 3,
+  "num_model_inputs": 2016,
+  "prediction_length": 24,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "H",
+  "seasonality": 24,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_3275021",
+  "inference_seconds": 9.696413544006646,
+  "model": "vanilla",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/Coastal_T_S/H/short/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": null,
+    "k": null,
+    "validation_msse": null
+  },
+  "bayes_probability_covariate_better": 0.0,
+  "adaptation_fallback_reason": "K=10 has 0 valid training windows; requires more than 2016 for 2016 test windows"
+}

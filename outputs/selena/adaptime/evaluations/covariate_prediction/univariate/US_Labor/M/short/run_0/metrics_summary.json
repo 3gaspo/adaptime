@@ -1,0 +1,49 @@
+{
+  "dataset_config": "US_Labor/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 473194.0676389152,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MAE": {
+      "mean": 338.29474425798367,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "RMSE": {
+      "mean": 383.67310193213876,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MAPE": {
+      "mean": 0.06213530792956431,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "sMAPE": {
+      "mean": 0.0595382790072609,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "MASE": {
+      "mean": 0.8665246354470926,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "ND": {
+      "mean": 0.06221503636491327,
+      "finite_values": 70,
+      "total_values": 70
+    },
+    "CRPS": {
+      "mean": 0.06221503636491327,
+      "finite_values": 70,
+      "total_values": 70
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "covariate_prediction",
+  "inference_seconds": 0.07169047556817532
+}

@@ -1,0 +1,49 @@
+{
+  "dataset_config": "SG_Carpark/15T/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 738.5260555764559,
+      "finite_values": 354,
+      "total_values": 354
+    },
+    "MAE": {
+      "mean": 10.876016315273354,
+      "finite_values": 354,
+      "total_values": 354
+    },
+    "RMSE": {
+      "mean": 15.645914325521172,
+      "finite_values": 354,
+      "total_values": 354
+    },
+    "MAPE": {
+      "mean": 0.06316077411610392,
+      "finite_values": 354,
+      "total_values": 354
+    },
+    "sMAPE": {
+      "mean": 0.06713208806629632,
+      "finite_values": 354,
+      "total_values": 354
+    },
+    "MASE": {
+      "mean": 0.7260138545483494,
+      "finite_values": 354,
+      "total_values": 354
+    },
+    "ND": {
+      "mean": 0.06260561583338838,
+      "finite_values": 354,
+      "total_values": 354
+    },
+    "CRPS": {
+      "mean": 0.06260561583338838,
+      "finite_values": 354,
+      "total_values": 354
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "covariate_prediction",
+  "inference_seconds": 1.8961197100579739
+}

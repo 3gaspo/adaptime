@@ -1,0 +1,41 @@
+{
+  "dataset_config": "Finland_Traffic/15T/long",
+  "num_series": 1,
+  "num_windows": 4,
+  "num_variates": 1,
+  "num_model_inputs": 4,
+  "prediction_length": 672,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "15T",
+  "seasonality": 96,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_3275021",
+  "inference_seconds": 0.6153218932449818,
+  "model": "covariate_prediction",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/Finland_Traffic/15T/long/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": 0.1,
+    "k": 10,
+    "validation_msse": 0.1174692015197398
+  },
+  "bayes_probability_covariate_better": 0.7142857142857143,
+  "adaptation_fallback_reason": null
+}

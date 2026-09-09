@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "fit_grid_extraction"
+        },
+        "model_config": {
+          "context_length": 512,
+          "embedding": "chronos_t5_base_eos",
+          "embedding_dimension": 768,
+          "native_prediction_length": 64,
+          "retrieval_scope": "same_series",
+          "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+          "top_k": 10
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 1431,
+            "adaptation_validation_length": 796,
+            "context_length": 8192,
+            "dataset": "Water_Quality_Darwin/15T",
+            "dataset_fingerprint": "e54e1205e93152bd",
+            "datastore_prediction_length": 288,
+            "datastore_stride": 96,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 288,
+            "retrieval_period": 96,
+            "seasonality": 96,
+            "target_mode": "univariate",
+            "term": "long",
+            "test_length": 1440
+          }
+        }
+      }
+    }
+  ]
+}

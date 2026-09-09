@@ -1,0 +1,41 @@
+{
+  "dataset_config": "CPHL/H/long",
+  "num_series": 4,
+  "num_windows": 2,
+  "num_variates": 1,
+  "num_model_inputs": 8,
+  "prediction_length": 336,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "H",
+  "seasonality": 24,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_3275021",
+  "inference_seconds": 0.10367101896554232,
+  "model": "bayes_covariate_prediction",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/CPHL/H/long/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": null,
+    "k": null,
+    "validation_msse": null
+  },
+  "bayes_probability_covariate_better": 0.0,
+  "adaptation_fallback_reason": "K=10 has 0 valid training windows; requires more than 8 for 8 test windows"
+}

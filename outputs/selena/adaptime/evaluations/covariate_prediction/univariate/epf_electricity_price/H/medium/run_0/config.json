@@ -1,0 +1,41 @@
+{
+  "dataset_config": "epf_electricity_price/H/medium",
+  "num_series": 5,
+  "num_windows": 35,
+  "num_variates": 1,
+  "num_model_inputs": 175,
+  "prediction_length": 72,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "H",
+  "seasonality": 24,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_3275021",
+  "inference_seconds": 12.306911817751825,
+  "model": "covariate_prediction",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/epf_electricity_price/H/medium/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": 0.1,
+    "k": 1,
+    "validation_msse": 0.4214602219067153
+  },
+  "bayes_probability_covariate_better": 0.47248576850094876,
+  "adaptation_fallback_reason": null
+}

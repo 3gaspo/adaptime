@@ -1,0 +1,12 @@
+2026-09-09 15:15:04 | workflow adaptime started launch_id=selena_tsrag_3275045 task=tsrag_pipeline slurm_job_id=3275045 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-09 15:15:04 | stage pipeline started
+2026-09-09 15:15:04 | task TIME-wide Adaptime method=tsrag stage=pipeline started
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/short/run_0 launch_id=selena_tsrag_3275045 slurm_job_id=3275045 launched_at=2026-09-09T13:15:55.598882+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/short/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/medium/run_0 launch_id=selena_tsrag_3275045 slurm_job_id=3275045 launched_at=2026-09-09T13:15:55.616424+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/medium/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/long/run_0 launch_id=selena_tsrag_3275045 slurm_job_id=3275045 launched_at=2026-09-09T13:15:55.634054+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/long/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/short/run_0 launch_id=selena_tsrag_3275045 slurm_job_id=3275045 launched_at=2026-09-09T13:15:55.673418+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/short/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/medium/run_0 launch_id=selena_tsrag_3275045 slurm_job_id=3275045 launched_at=2026-09-09T13:15:55.690034+00:00

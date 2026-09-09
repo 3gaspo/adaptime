@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Commodity_Import/M/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 1553826.9339495872,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "MAE": {
+      "mean": 502.59704690774277,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "RMSE": {
+      "mean": 607.3307599287584,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "MAPE": {
+      "mean": 0.374500118785188,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "sMAPE": {
+      "mean": 0.23649934538373324,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "MASE": {
+      "mean": 1.4590156952269822,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "ND": {
+      "mean": 0.2954049002128275,
+      "finite_values": 40,
+      "total_values": 40
+    },
+    "CRPS": {
+      "mean": 0.2954049002128275,
+      "finite_values": 40,
+      "total_values": 40
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "full_ridge_shared",
+  "inference_seconds": 0.41394280083477497
+}

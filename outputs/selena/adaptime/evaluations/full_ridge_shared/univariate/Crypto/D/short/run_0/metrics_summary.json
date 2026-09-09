@@ -1,0 +1,49 @@
+{
+  "dataset_config": "Crypto/D/short",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 13407382.124447713,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "MAE": {
+      "mean": 1476.153512099937,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "RMSE": {
+      "mean": 1767.7680310060641,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "MAPE": {
+      "mean": 0.09323376572345651,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "sMAPE": {
+      "mean": 0.09353011120937967,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "MASE": {
+      "mean": 6.414715690906018,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "ND": {
+      "mean": 0.0945085325361152,
+      "finite_values": 36,
+      "total_values": 36
+    },
+    "CRPS": {
+      "mean": 0.0945085325361152,
+      "finite_values": 36,
+      "total_values": 36
+    }
+  },
+  "launch_id": "selena_adaptime_3275021",
+  "model": "full_ridge_shared",
+  "inference_seconds": 0.12619594298303127
+}
