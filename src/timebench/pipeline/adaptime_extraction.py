@@ -101,6 +101,12 @@ def _canonical_hash(value: dict[str, object]) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def _normalize_extraction_config(value: dict[str, object]) -> dict[str, object]:
+    normalized = dict(value)
+    normalized["context_k"] = tuple(normalized["context_k"])
+    return normalized
+
+
 def _atomic_json(path: Path, value: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -770,7 +776,7 @@ def extract_adaptation_eval_features(
         or vanilla["weights_id"] != forecaster.weights_id
     ):
         raise ValueError("fit, vanilla, and evaluation forecasters do not match")
-    if dict(fit_extraction["config"]) != asdict(config):
+    if _normalize_extraction_config(fit_extraction["config"]) != asdict(config):
         raise ValueError("fit and evaluation extraction configurations do not match")
     selected_value = model["selected"]["k"]
     selected_k = None if selected_value is None else int(selected_value)

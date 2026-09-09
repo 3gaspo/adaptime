@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import ast
 import importlib.util
+import json
 import sys
 import tempfile
 import types
+from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
@@ -32,6 +34,10 @@ from timebench.evaluation.adaptation_data import (
     prepare_adaptation_dataset,
 )
 from timebench.evaluation.metrics import seasonal_naive_point_forecast
+from timebench.pipeline.adaptime_extraction import (
+    ExtractionConfig,
+    _normalize_extraction_config,
+)
 
 
 def _raises(error_type, function, *args, **kwargs) -> None:
@@ -52,6 +58,10 @@ def _run_slurm_contract() -> None:
 
 
 def main() -> None:
+    extraction_config = ExtractionConfig()
+    serialized_config = json.loads(json.dumps(asdict(extraction_config)))
+    assert _normalize_extraction_config(serialized_config) == asdict(extraction_config)
+
     assert {
         frequency: adaptation_stride_for_frequency(frequency)
         for frequency in ("5T", "H", "B", "D", "W", "M", "Q")
