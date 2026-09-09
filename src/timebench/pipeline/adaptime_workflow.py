@@ -59,6 +59,12 @@ from timebench.pipeline.tsrag import (
     extract_tsrag_features,
     predict_tsrag,
 )
+from timebench.pipeline.tsrag_fallback import (
+    open_tsrag_task_fallback,
+    predict_tsrag_vanilla_fallback,
+    tsrag_task_fallback,
+    write_tsrag_fallback_extraction,
+)
 from timebench.results.adaptation import build_adaptation_comparison
 
 
@@ -694,6 +700,7 @@ def _run_tsrag_extraction(
     retriever: TSRAGRetriever,
 ) -> Path:
     prepared = _data_manifest(artifact_root, task, workflow)
+    fallback = tsrag_task_fallback(prepared)
     _, retriever_path, _ = _tsrag_paths(workflow)
     run = _allocation(
         artifact_root,
@@ -716,12 +723,17 @@ def _run_tsrag_extraction(
     if not run.should_run:
         return manifest
     with run:
-        manifest = extract_tsrag_features(
-            prepared,
-            retriever,
-            workflow.tsrag_runtime,
-            run.run_dir / "extraction",
-        )
+        if fallback is None:
+            manifest = extract_tsrag_features(
+                prepared,
+                retriever,
+                workflow.tsrag_runtime,
+                run.run_dir / "extraction",
+            )
+        else:
+            manifest = write_tsrag_fallback_extraction(
+                prepared, fallback, run.run_dir / "extraction"
+            )
         run.complete(["extraction/manifest.json"])
     return manifest
 
@@ -891,6 +903,8 @@ def _run_tsrag_prediction(
     extraction = _artifact_manifest(
         artifact_root, task, workflow, "extractions", "tsrag", "extraction/manifest.json"
     )
+    fallback = open_tsrag_task_fallback(extraction)
+    vanilla = _vanilla_manifest(artifact_root, task, workflow) if fallback else None
     base_path, retriever_path, checkpoint_path = _tsrag_paths(workflow)
     run = _allocation(
         artifact_root,
@@ -908,21 +922,28 @@ def _run_tsrag_prediction(
         provenance={
             "data_manifest": str(prepared),
             "extraction_manifest": str(extraction),
+            **({"vanilla_manifest": str(vanilla)} if vanilla is not None else {}),
         },
     )
     manifest = run.run_dir / "prediction" / "prediction_manifest.json"
     if not run.should_run:
         return manifest
     with run:
-        manifest = predict_tsrag(
-            prepared,
-            extraction,
-            loaded,
-            retriever,
-            workflow.tsrag_runtime,
-            run.run_dir / "prediction",
-            device=workflow.device,
-        )
+        if fallback is None:
+            manifest = predict_tsrag(
+                prepared,
+                extraction,
+                loaded,
+                retriever,
+                workflow.tsrag_runtime,
+                run.run_dir / "prediction",
+                device=workflow.device,
+            )
+        else:
+            assert vanilla is not None
+            manifest = predict_tsrag_vanilla_fallback(
+                prepared, vanilla, fallback, run.run_dir / "prediction"
+            )
         run.complete(["prediction/prediction_manifest.json", "prediction/predictions.npy"])
     return manifest
 

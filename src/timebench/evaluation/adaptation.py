@@ -60,10 +60,12 @@ def evaluate_point_predictions(
     dataset_name = str(prepared.config["dataset"])
     term = str(prepared.config["term"])
     source_path = Path(prepared.manifest["source_path"]).expanduser().resolve()
+    source_target = np.asarray(prepared.hf_dataset[0]["target"])
+    source_target_dim = source_target.shape[0] if source_target.ndim > 1 else 1
     dataset = Dataset(
         dataset_name,
         term=term,
-        to_univariate=True,
+        to_univariate=source_target_dim > 1,
         prediction_length=prepared.prediction_length,
         test_length=int(prepared.config["test_length"]),
         val_length=0,

@@ -305,6 +305,18 @@ def _append_references(
     calendar_ticks.append(int(start_tick) + repeated_origins)
 
 
+def validate_global_datastore_requirement(manifest: Mapping[str, object]) -> None:
+    config = dict(manifest["config"])
+    coverage = dict(manifest["datastore_dates_per_variate"])
+    required = int(config["minimum_datastore_dates_per_variate"])
+    available = int(coverage["minimum"])
+    if available < required:
+        raise InsufficientAdaptationHistory(
+            "global datastore requires at least "
+            f"{required} dates per variate; the least-covered variate has {available}"
+        )
+
+
 def prepare_adaptation_dataset(
     hf_dataset: datasets.Dataset,
     config: PreparationConfig,
