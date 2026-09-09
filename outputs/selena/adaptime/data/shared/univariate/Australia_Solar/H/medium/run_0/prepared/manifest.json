@@ -1,0 +1,96 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 8835,
+    "adaptation_validation_length": 4390,
+    "context_length": 8192,
+    "dataset": "Australia_Solar/H",
+    "datastore_prediction_length": 72,
+    "datastore_stride": 24,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 72,
+    "retrieval_period": 24,
+    "seasonality": 24,
+    "target_mode": "univariate",
+    "term": "medium",
+    "test_length": 2520
+  },
+  "counts": {
+    "adaptation_train": 210,
+    "adaptation_validation": 105,
+    "datastore": 33168,
+    "test": 105
+  },
+  "dataset_fingerprint": "53809eaabd3c2773",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 11056,
+    "minimum": 11056
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 210,
+    "adaptation_validation": 105,
+    "test": 105
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 70,
+    "adaptation_validation": 35,
+    "test": 35
+  },
+  "query_period_residues": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "6cee5714b5d373a4ebce1b0337c85cc3f9cf1987db8418cc8b7dd92984a16eda",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Australia_Solar/H"
+}

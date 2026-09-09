@@ -1,0 +1,92 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 1431,
+    "adaptation_validation_length": 796,
+    "context_length": 8192,
+    "dataset": "current_velocity/15T",
+    "datastore_prediction_length": 288,
+    "datastore_stride": 96,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 288,
+    "retrieval_period": 96,
+    "seasonality": 96,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 1440
+  },
+  "counts": {
+    "adaptation_train": 60,
+    "adaptation_validation": 54,
+    "datastore": 7266,
+    "test": 150
+  },
+  "dataset_fingerprint": "cded105c62f4a6fe",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 1211,
+    "minimum": 0
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 240,
+    "adaptation_validation": 96
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 300,
+    "adaptation_validation": 150,
+    "test": 150
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 10,
+    "adaptation_validation": 5,
+    "test": 5
+  },
+  "query_period_residues": [
+    2,
+    5,
+    8,
+    11,
+    14,
+    17,
+    33,
+    36,
+    39,
+    42,
+    45,
+    48,
+    59,
+    64,
+    67,
+    68,
+    70,
+    73,
+    76,
+    79
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "d7c3fc5e43e7b6cbaad3d948fd98caf22d0d85c0d5af5881c89a27544104d85a",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/current_velocity/15T"
+}

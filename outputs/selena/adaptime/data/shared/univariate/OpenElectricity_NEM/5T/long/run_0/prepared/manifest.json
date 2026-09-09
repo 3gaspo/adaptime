@@ -1,0 +1,113 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 3717,
+    "adaptation_validation_length": 1939,
+    "context_length": 8192,
+    "dataset": "OpenElectricity_NEM/5T",
+    "datastore_prediction_length": 288,
+    "datastore_stride": 288,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 288,
+    "retrieval_period": 288,
+    "seasonality": 288,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 4032
+  },
+  "counts": {
+    "adaptation_train": 280,
+    "adaptation_validation": 140,
+    "datastore": 36060,
+    "test": 140
+  },
+  "dataset_fingerprint": "fb2ef33eeed0d98e",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 3606,
+    "minimum": 3606
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 280,
+    "adaptation_validation": 140,
+    "test": 140
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 28,
+    "adaptation_validation": 14,
+    "test": 14
+  },
+  "query_period_residues": [
+    0,
+    2,
+    9,
+    18,
+    27,
+    34,
+    36,
+    43,
+    52,
+    61,
+    68,
+    70,
+    77,
+    86,
+    95,
+    102,
+    104,
+    111,
+    120,
+    129,
+    136,
+    145,
+    154,
+    161,
+    163,
+    170,
+    179,
+    188,
+    195,
+    197,
+    204,
+    213,
+    222,
+    229,
+    231,
+    238,
+    247,
+    256,
+    263,
+    272,
+    281
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "450a7abb455501afc9965a355cef303f0238d7475ba6e64697d6216935f76b69",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/OpenElectricity_NEM/5T"
+}

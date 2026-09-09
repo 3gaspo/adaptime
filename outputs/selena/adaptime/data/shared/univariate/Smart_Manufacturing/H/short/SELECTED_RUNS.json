@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "consumers": [
+            "full_ridge_shared",
+            "tsrag"
+          ],
+          "splits": [
+            "datastore",
+            "adaptation_train",
+            "adaptation_validation",
+            "test"
+          ]
+        },
+        "model_config": {
+          "artifact": "shared_global_datastore",
+          "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+        },
+        "pipeline_config": {
+          "adaptation_stride": 127,
+          "adaptation_train_length": 3453,
+          "adaptation_validation_length": 1675,
+          "context_length": 8192,
+          "dataset": "Smart_Manufacturing/H",
+          "dataset_fingerprint": "37a131e03f9491ca",
+          "datastore_prediction_length": 64,
+          "datastore_stride": 24,
+          "max_datastore_windows": null,
+          "minimum_datastore_dates_per_variate": 11,
+          "prediction_length": 24,
+          "retrieval_period": 24,
+          "seasonality": 24,
+          "target_mode": "univariate",
+          "term": "short",
+          "test_length": 336
+        }
+      }
+    }
+  ]
+}

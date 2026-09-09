@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "unconditional_official_test_vanilla"
+        },
+        "model_config": {
+          "context_policy": "all_available_history_capped_at_model_limit",
+          "model": "chronos2",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 8835,
+            "adaptation_validation_length": 4390,
+            "context_length": 8192,
+            "dataset": "Australia_Solar/H",
+            "dataset_fingerprint": "53809eaabd3c2773",
+            "datastore_prediction_length": 72,
+            "datastore_stride": 24,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 72,
+            "retrieval_period": 24,
+            "seasonality": 24,
+            "target_mode": "univariate",
+            "term": "medium",
+            "test_length": 2520
+          }
+        }
+      }
+    }
+  ]
+}

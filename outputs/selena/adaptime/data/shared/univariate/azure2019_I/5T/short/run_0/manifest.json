@@ -1,0 +1,74 @@
+{
+  "completed_at": "2026-09-08T15:00:18.798477+00:00",
+  "experiment": "adaptime_data",
+  "experiment_config": {
+    "consumers": [
+      "full_ridge_shared",
+      "tsrag"
+    ],
+    "splits": [
+      "datastore",
+      "adaptation_train",
+      "adaptation_validation",
+      "test"
+    ]
+  },
+  "identity": {
+    "dataset": "azure2019_I",
+    "frequency": "5T",
+    "model": "shared_datastore",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3227290",
+        "launched_at": "2026-09-08T15:00:18.080306+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227290"
+      }
+    ],
+    "launch_id": "selena_adaptime_3227290",
+    "launched_at": "2026-09-08T15:00:18.080306+00:00",
+    "slurm_job_id": "3227290"
+  },
+  "model_config": {
+    "artifact": "shared_global_datastore",
+    "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+  },
+  "pipeline_config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 923,
+    "adaptation_validation_length": 542,
+    "context_length": 8192,
+    "dataset": "azure2019_I/5T",
+    "dataset_fingerprint": "42552b3eecb65e0e",
+    "datastore_prediction_length": 288,
+    "datastore_stride": 288,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 288,
+    "retrieval_period": 288,
+    "seasonality": 288,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 864
+  },
+  "project": "adaptime",
+  "provenance": {
+    "dataset_fingerprint": "42552b3eecb65e0e",
+    "dataset_source": "/fslarge/scratch/users/h61084/datasets/hf_dataset/azure2019_I/5T",
+    "minimum_series_length": 8250
+  },
+  "required_artifacts": [
+    "prepared/manifest.json"
+  ],
+  "runtime_config": {},
+  "schema_version": 1,
+  "started_at": "2026-09-08T15:00:18.080306+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-08T15:00:18.798477+00:00"
+}

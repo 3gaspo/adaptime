@@ -1,0 +1,80 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 30362,
+    "adaptation_validation_length": 15122,
+    "context_length": 8192,
+    "dataset": "Coastal_T_S/20T",
+    "datastore_prediction_length": 64,
+    "datastore_stride": 72,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 9,
+    "retrieval_period": 72,
+    "seasonality": 72,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 1080
+  },
+  "counts": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0,
+    "datastore": 0,
+    "test": 360
+  },
+  "dataset_fingerprint": "b21a604c3414e224",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 0,
+    "minimum": 0
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 720,
+    "adaptation_validation": 360
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 720,
+    "adaptation_validation": 360,
+    "test": 360
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 240,
+    "adaptation_validation": 120,
+    "test": 120
+  },
+  "query_period_residues": [
+    5,
+    14,
+    23,
+    32,
+    41,
+    50,
+    59,
+    68
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "8ec18a9a9a5a1469e365d6649ad0b1edd153ddd7ae428b86ab8c3f0f080626f4",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Coastal_T_S/20T"
+}

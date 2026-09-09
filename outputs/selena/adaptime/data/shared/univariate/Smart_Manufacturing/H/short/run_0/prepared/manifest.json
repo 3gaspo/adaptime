@@ -1,0 +1,77 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 3453,
+    "adaptation_validation_length": 1675,
+    "context_length": 8192,
+    "dataset": "Smart_Manufacturing/H",
+    "datastore_prediction_length": 64,
+    "datastore_stride": 24,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 24,
+    "retrieval_period": 24,
+    "seasonality": 24,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 336
+  },
+  "counts": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0,
+    "datastore": 0,
+    "test": 2380
+  },
+  "dataset_fingerprint": "37a131e03f9491ca",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 0,
+    "minimum": 0
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 4760,
+    "adaptation_validation": 2380
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 4760,
+    "adaptation_validation": 2380,
+    "test": 2380
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 28,
+    "adaptation_validation": 14,
+    "test": 14
+  },
+  "query_period_residues": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "9ebbac2e7a393ce0bd34af31deb71bd8a3423dca61919d80f84ba755190fdf40",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Smart_Manufacturing/H"
+}

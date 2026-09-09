@@ -1,0 +1,16 @@
+{
+  "candidates": [],
+  "criterion": "vanilla_fallback",
+  "fallback_reason": "K=10 has 30 valid training windows; requires more than 45 for 45 test windows",
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "window_support": {
+    "default_k_training_windows": 30,
+    "default_k_validation_windows": 15,
+    "minimum_training_windows_exclusive": 45.0,
+    "minimum_validation_windows_exclusive": 4.5,
+    "test_windows": 45
+  }
+}

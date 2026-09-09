@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "unconditional_official_test_vanilla"
+        },
+        "model_config": {
+          "context_policy": "all_available_history_capped_at_model_limit",
+          "model": "chronos2",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 923,
+            "adaptation_validation_length": 542,
+            "context_length": 8192,
+            "dataset": "azure2019_D/5T",
+            "dataset_fingerprint": "69c3e2b7548c48dc",
+            "datastore_prediction_length": 288,
+            "datastore_stride": 288,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 288,
+            "retrieval_period": 288,
+            "seasonality": 288,
+            "target_mode": "univariate",
+            "term": "short",
+            "test_length": 864
+          }
+        }
+      }
+    }
+  ]
+}

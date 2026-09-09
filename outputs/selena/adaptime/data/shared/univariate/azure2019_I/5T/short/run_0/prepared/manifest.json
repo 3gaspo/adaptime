@@ -1,0 +1,103 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 923,
+    "adaptation_validation_length": 542,
+    "context_length": 8192,
+    "dataset": "azure2019_I/5T",
+    "datastore_prediction_length": 288,
+    "datastore_stride": 288,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 288,
+    "retrieval_period": 288,
+    "seasonality": 288,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 864
+  },
+  "counts": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0,
+    "datastore": 0,
+    "test": 4428
+  },
+  "dataset_fingerprint": "42552b3eecb65e0e",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 0,
+    "minimum": 0
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 8856,
+    "adaptation_validation": 4428
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 8856,
+    "adaptation_validation": 4428,
+    "test": 4428
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 6,
+    "adaptation_validation": 3,
+    "test": 3
+  },
+  "query_period_residues": [
+    35,
+    148,
+    186,
+    211,
+    235,
+    242,
+    244,
+    245,
+    254,
+    264,
+    266,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279,
+    280,
+    281,
+    282,
+    283,
+    284,
+    285,
+    286,
+    287
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "add45dabb91c2e97587e35deb6b8badea315206265b26638010d1e2af5222773",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/azure2019_I/5T"
+}

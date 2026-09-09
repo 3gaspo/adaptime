@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "fit_grid_extraction"
+        },
+        "model_config": {
+          "arrow_cache_items": 2,
+          "backbone": "chronos2",
+          "context_k": [
+            1,
+            5,
+            10,
+            15
+          ],
+          "datastore_block_size": 4096,
+          "distance_metric": "euclidean",
+          "max_k": 15,
+          "minimum_overlap_fraction": 0.8,
+          "minimum_query_finite_fraction": 0.8,
+          "model_batch_size": 64,
+          "query_block_size": 256,
+          "representation": "instance",
+          "retrieval_scope": "all",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 7565,
+            "adaptation_validation_length": 3755,
+            "context_length": 8192,
+            "dataset": "SG_PM25/H",
+            "dataset_fingerprint": "94eec71f4bc34596",
+            "datastore_prediction_length": 72,
+            "datastore_stride": 24,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 72,
+            "retrieval_period": 24,
+            "seasonality": 24,
+            "target_mode": "univariate",
+            "term": "medium",
+            "test_length": 2208
+          }
+        }
+      }
+    }
+  ]
+}

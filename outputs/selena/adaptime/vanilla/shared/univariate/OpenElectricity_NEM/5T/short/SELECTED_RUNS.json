@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "unconditional_official_test_vanilla"
+        },
+        "model_config": {
+          "context_policy": "all_available_history_capped_at_model_limit",
+          "model": "chronos2",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 42569,
+            "adaptation_validation_length": 21233,
+            "context_length": 8192,
+            "dataset": "OpenElectricity_NEM/5T",
+            "dataset_fingerprint": "fb2ef33eeed0d98e",
+            "datastore_prediction_length": 64,
+            "datastore_stride": 288,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 24,
+            "retrieval_period": 288,
+            "seasonality": 288,
+            "target_mode": "univariate",
+            "term": "short",
+            "test_length": 4032
+          }
+        }
+      }
+    }
+  ]
+}

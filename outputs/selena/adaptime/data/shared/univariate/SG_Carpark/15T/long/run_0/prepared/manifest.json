@@ -1,0 +1,74 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 799,
+    "adaptation_validation_length": 672,
+    "context_length": 8192,
+    "dataset": "SG_Carpark/15T",
+    "datastore_prediction_length": 672,
+    "datastore_stride": 96,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 672,
+    "retrieval_period": 96,
+    "seasonality": 96,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 672
+  },
+  "counts": {
+    "adaptation_train": 708,
+    "adaptation_validation": 354,
+    "datastore": 25842,
+    "test": 354
+  },
+  "dataset_fingerprint": "8225a607ad319268",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 73,
+    "minimum": 73
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 708,
+    "adaptation_validation": 354,
+    "test": 354
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 2,
+    "adaptation_validation": 1,
+    "test": 1
+  },
+  "query_period_residues": [
+    14,
+    79
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "40a63a9f80ca9c3a7513679e5ac3cb71967b3291dcf210aebef26cfcac1b576c",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/SG_Carpark/15T"
+}

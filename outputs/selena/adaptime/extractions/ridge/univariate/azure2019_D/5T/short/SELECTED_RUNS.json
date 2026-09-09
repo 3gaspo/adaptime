@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "fit_grid_extraction"
+        },
+        "model_config": {
+          "arrow_cache_items": 2,
+          "backbone": "chronos2",
+          "context_k": [
+            1,
+            5,
+            10,
+            15
+          ],
+          "datastore_block_size": 4096,
+          "distance_metric": "euclidean",
+          "max_k": 15,
+          "minimum_overlap_fraction": 0.8,
+          "minimum_query_finite_fraction": 0.8,
+          "model_batch_size": 64,
+          "query_block_size": 256,
+          "representation": "instance",
+          "retrieval_scope": "all",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 923,
+            "adaptation_validation_length": 542,
+            "context_length": 8192,
+            "dataset": "azure2019_D/5T",
+            "dataset_fingerprint": "69c3e2b7548c48dc",
+            "datastore_prediction_length": 288,
+            "datastore_stride": 288,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 288,
+            "retrieval_period": 288,
+            "seasonality": 288,
+            "target_mode": "univariate",
+            "term": "short",
+            "test_length": 864
+          }
+        }
+      }
+    }
+  ]
+}

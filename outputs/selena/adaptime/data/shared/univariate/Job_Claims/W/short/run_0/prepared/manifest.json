@@ -1,0 +1,73 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 11,
+    "adaptation_train_length": 90,
+    "adaptation_validation_length": 46,
+    "context_length": 8192,
+    "dataset": "Job_Claims/W",
+    "datastore_prediction_length": 64,
+    "datastore_stride": 1,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 13,
+    "retrieval_period": 1,
+    "seasonality": 1,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 52
+  },
+  "counts": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0,
+    "datastore": 0,
+    "test": 8
+  },
+  "dataset_fingerprint": "727743060692c2e4",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 0,
+    "minimum": 0
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 16,
+    "adaptation_validation": 8
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 16,
+    "adaptation_validation": 8,
+    "test": 8
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 8,
+    "adaptation_validation": 4,
+    "test": 4
+  },
+  "query_period_residues": [
+    0
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "06b46338f5a3ffe91b9f3ed768daa8e91403d6776f228e216692fd62cc47b1fa",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Job_Claims/W"
+}

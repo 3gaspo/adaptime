@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "unconditional_official_test_vanilla"
+        },
+        "model_config": {
+          "context_policy": "all_available_history_capped_at_model_limit",
+          "model": "chronos2",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 2485,
+            "adaptation_validation_length": 1215,
+            "context_length": 8192,
+            "dataset": "NE_China_Wind/H",
+            "dataset_fingerprint": "fa5189f0746b013b",
+            "datastore_prediction_length": 72,
+            "datastore_stride": 24,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 72,
+            "retrieval_period": 24,
+            "seasonality": 24,
+            "target_mode": "univariate",
+            "term": "medium",
+            "test_length": 720
+          }
+        }
+      }
+    }
+  ]
+}

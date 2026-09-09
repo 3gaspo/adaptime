@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "consumers": [
+            "full_ridge_shared",
+            "tsrag"
+          ],
+          "splits": [
+            "datastore",
+            "adaptation_train",
+            "adaptation_validation",
+            "test"
+          ]
+        },
+        "model_config": {
+          "artifact": "shared_global_datastore",
+          "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+        },
+        "pipeline_config": {
+          "adaptation_stride": 127,
+          "adaptation_train_length": 923,
+          "adaptation_validation_length": 542,
+          "context_length": 8192,
+          "dataset": "azure2019_D/5T",
+          "dataset_fingerprint": "69c3e2b7548c48dc",
+          "datastore_prediction_length": 288,
+          "datastore_stride": 288,
+          "max_datastore_windows": null,
+          "minimum_datastore_dates_per_variate": 11,
+          "prediction_length": 288,
+          "retrieval_period": 288,
+          "seasonality": 288,
+          "target_mode": "univariate",
+          "term": "short",
+          "test_length": 864
+        }
+      }
+    }
+  ]
+}

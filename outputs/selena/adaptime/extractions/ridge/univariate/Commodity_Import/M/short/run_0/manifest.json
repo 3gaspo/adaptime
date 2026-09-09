@@ -1,0 +1,84 @@
+{
+  "completed_at": "2026-09-08T19:51:49.377673+00:00",
+  "experiment": "adaptime_extraction",
+  "experiment_config": {
+    "phase": "fit_grid_extraction"
+  },
+  "identity": {
+    "dataset": "Commodity_Import",
+    "frequency": "M",
+    "model": "full_ridge_shared",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3227291",
+        "launched_at": "2026-09-08T19:51:49.247154+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227291"
+      }
+    ],
+    "launch_id": "selena_adaptime_3227291",
+    "launched_at": "2026-09-08T19:51:49.247154+00:00",
+    "slurm_job_id": "3227291"
+  },
+  "model_config": {
+    "arrow_cache_items": 2,
+    "backbone": "chronos2",
+    "context_k": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "datastore_block_size": 4096,
+    "distance_metric": "euclidean",
+    "max_k": 15,
+    "minimum_overlap_fraction": 0.8,
+    "minimum_query_finite_fraction": 0.8,
+    "model_batch_size": 64,
+    "query_block_size": 256,
+    "representation": "instance",
+    "retrieval_scope": "all",
+    "weights_id": null
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 5,
+      "adaptation_train_length": 57,
+      "adaptation_validation_length": 32,
+      "context_length": 8192,
+      "dataset": "Commodity_Import/M",
+      "dataset_fingerprint": "bb5d4033bd2f8684",
+      "datastore_prediction_length": 64,
+      "datastore_stride": 12,
+      "max_datastore_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 12,
+      "retrieval_period": 12,
+      "seasonality": 12,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 60
+    }
+  },
+  "project": "adaptime",
+  "provenance": {
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Commodity_Import/M/short/run_0/prepared/manifest.json"
+  },
+  "required_artifacts": [
+    "extraction/manifest.json"
+  ],
+  "runtime_config": {
+    "device": "cuda",
+    "model_path": null
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-08T19:51:49.247154+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-08T19:51:49.377673+00:00"
+}

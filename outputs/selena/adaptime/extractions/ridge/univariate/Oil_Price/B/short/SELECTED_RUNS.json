@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "fit_grid_extraction"
+        },
+        "model_config": {
+          "arrow_cache_items": 2,
+          "backbone": "chronos2",
+          "context_k": [
+            1,
+            5,
+            10,
+            15
+          ],
+          "datastore_block_size": 4096,
+          "distance_metric": "euclidean",
+          "max_k": 15,
+          "minimum_overlap_fraction": 0.8,
+          "minimum_query_finite_fraction": 0.8,
+          "model_batch_size": 64,
+          "query_block_size": 256,
+          "representation": "instance",
+          "retrieval_scope": "all",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 27,
+            "adaptation_train_length": 1883,
+            "adaptation_validation_length": 938,
+            "context_length": 8192,
+            "dataset": "Oil_Price/B",
+            "dataset_fingerprint": "2a49e9e30c30de1d",
+            "datastore_prediction_length": 64,
+            "datastore_stride": 5,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 20,
+            "retrieval_period": 5,
+            "seasonality": 5,
+            "target_mode": "univariate",
+            "term": "short",
+            "test_length": 717
+          }
+        }
+      }
+    }
+  ]
+}

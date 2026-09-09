@@ -1,0 +1,134 @@
+{
+  "bayes_covariate_protocol": {
+    "evidence": "paired_train_validation_window_msse_wins",
+    "prior": {
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "tie_weight": 0.5
+  },
+  "config": {
+    "alpha_values": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "chunk_size": 1024,
+    "default_alpha": 0.01,
+    "default_k": 10,
+    "k_values": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "minimum_training_window_ratio": 1.0,
+    "minimum_validation_window_ratio": 0.1,
+    "seed": 1
+  },
+  "coverage": {
+    "adaptation_train": {
+      "1": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 15,
+        "label_complete_windows": 11,
+        "total_dates": 26,
+        "total_windows": 26,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 15,
+        "label_complete_windows": 11,
+        "total_dates": 26,
+        "total_windows": 26,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 15,
+        "label_complete_windows": 11,
+        "total_dates": 26,
+        "total_windows": 26,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 15,
+        "label_complete_windows": 11,
+        "total_dates": 26,
+        "total_windows": 26,
+        "vanilla_fallback_windows": 0
+      }
+    },
+    "adaptation_validation": {
+      "1": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 12,
+        "label_complete_windows": 8,
+        "total_dates": 20,
+        "total_windows": 20,
+        "vanilla_fallback_windows": 8
+      },
+      "10": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 12,
+        "label_complete_windows": 8,
+        "total_dates": 20,
+        "total_windows": 20,
+        "vanilla_fallback_windows": 8
+      },
+      "15": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 12,
+        "label_complete_windows": 8,
+        "total_dates": 20,
+        "total_windows": 20,
+        "vanilla_fallback_windows": 8
+      },
+      "5": {
+        "adapted_dates": 0,
+        "adapted_windows": 0,
+        "excluded_label_windows": 12,
+        "label_complete_windows": 8,
+        "total_dates": 20,
+        "total_windows": 20,
+        "vanilla_fallback_windows": 8
+      }
+    }
+  },
+  "extraction_signature": "900e498339f1b0b8d68f29716692b1b71f7adbc0ff587e8b2afa7bfc1bf9e45e",
+  "fallback_reason": "K=10 has 0 valid training windows; requires more than 20 for 20 test windows",
+  "feature_names": [],
+  "files": {
+    "bayes_mixture": "bayes_mixture.json",
+    "selection": "selection.json"
+  },
+  "format": "adaptime_full_ridge_model",
+  "method": "full_ridge_shared",
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "protocol": "vanilla_fallback_when_valid_training_windows_are_insufficient",
+  "schema_version": 1,
+  "selected": {
+    "alpha": null,
+    "k": null,
+    "validation_msse": null
+  },
+  "signature": "96d18c53fcc13b20e2ee2623a60f9ada9d4c77b33cfcca1788e8fbe5304ce193",
+  "status": "completed",
+  "window_support": {
+    "minimum_training_windows_exclusive": 20.0,
+    "minimum_validation_windows_exclusive": 2.0,
+    "test_windows": 20
+  }
+}

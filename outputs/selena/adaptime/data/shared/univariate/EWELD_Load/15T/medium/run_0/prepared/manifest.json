@@ -1,0 +1,113 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 3525,
+    "adaptation_validation_length": 1747,
+    "context_length": 8192,
+    "dataset": "EWELD_Load/15T",
+    "datastore_prediction_length": 96,
+    "datastore_stride": 96,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 96,
+    "retrieval_period": 96,
+    "seasonality": 96,
+    "target_mode": "univariate",
+    "term": "medium",
+    "test_length": 1344
+  },
+  "counts": {
+    "adaptation_train": 280,
+    "adaptation_validation": 140,
+    "datastore": 24110,
+    "test": 140
+  },
+  "dataset_fingerprint": "d35c15d02d39bd1b",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 2411,
+    "minimum": 2411
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 280,
+    "adaptation_validation": 140,
+    "test": 140
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 28,
+    "adaptation_validation": 14,
+    "test": 14
+  },
+  "query_period_residues": [
+    0,
+    2,
+    3,
+    5,
+    6,
+    8,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    34,
+    36,
+    37,
+    39,
+    40,
+    43,
+    46,
+    49,
+    52,
+    55,
+    58,
+    61,
+    64,
+    65,
+    67,
+    68,
+    70,
+    71,
+    74,
+    77,
+    80,
+    83,
+    86,
+    89,
+    92,
+    95
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "e4d1441ed901e850e4304c7ac119acbcbd9600a35ce85a449fba486d48c3917d",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/EWELD_Load/15T"
+}

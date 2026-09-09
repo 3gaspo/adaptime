@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "consumers": [
+            "full_ridge_shared",
+            "tsrag"
+          ],
+          "splits": [
+            "datastore",
+            "adaptation_train",
+            "adaptation_validation",
+            "test"
+          ]
+        },
+        "model_config": {
+          "artifact": "shared_global_datastore",
+          "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+        },
+        "pipeline_config": {
+          "adaptation_stride": 5,
+          "adaptation_train_length": 37,
+          "adaptation_validation_length": 22,
+          "context_length": 8192,
+          "dataset": "Housing_Inventory/M",
+          "dataset_fingerprint": "8528a851abd0db2b",
+          "datastore_prediction_length": 64,
+          "datastore_stride": 12,
+          "max_datastore_windows": null,
+          "minimum_datastore_dates_per_variate": 11,
+          "prediction_length": 12,
+          "retrieval_period": 12,
+          "seasonality": 12,
+          "target_mode": "univariate",
+          "term": "short",
+          "test_length": 36
+        }
+      }
+    }
+  ]
+}

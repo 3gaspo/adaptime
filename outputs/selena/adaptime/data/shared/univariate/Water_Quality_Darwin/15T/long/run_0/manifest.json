@@ -1,0 +1,74 @@
+{
+  "completed_at": "2026-09-08T15:00:11.641056+00:00",
+  "experiment": "adaptime_data",
+  "experiment_config": {
+    "consumers": [
+      "full_ridge_shared",
+      "tsrag"
+    ],
+    "splits": [
+      "datastore",
+      "adaptation_train",
+      "adaptation_validation",
+      "test"
+    ]
+  },
+  "identity": {
+    "dataset": "Water_Quality_Darwin",
+    "frequency": "15T",
+    "model": "shared_datastore",
+    "target_mode": "univariate",
+    "term": "long"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3227290",
+        "launched_at": "2026-09-08T15:00:11.581447+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227290"
+      }
+    ],
+    "launch_id": "selena_adaptime_3227290",
+    "launched_at": "2026-09-08T15:00:11.581447+00:00",
+    "slurm_job_id": "3227290"
+  },
+  "model_config": {
+    "artifact": "shared_global_datastore",
+    "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+  },
+  "pipeline_config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 1431,
+    "adaptation_validation_length": 796,
+    "context_length": 8192,
+    "dataset": "Water_Quality_Darwin/15T",
+    "dataset_fingerprint": "e54e1205e93152bd",
+    "datastore_prediction_length": 288,
+    "datastore_stride": 96,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 288,
+    "retrieval_period": 96,
+    "seasonality": 96,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 1440
+  },
+  "project": "adaptime",
+  "provenance": {
+    "dataset_fingerprint": "e54e1205e93152bd",
+    "dataset_source": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Water_Quality_Darwin/15T",
+    "minimum_series_length": 8662
+  },
+  "required_artifacts": [
+    "prepared/manifest.json"
+  ],
+  "runtime_config": {},
+  "schema_version": 1,
+  "started_at": "2026-09-08T15:00:11.581447+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-08T15:00:11.641056+00:00"
+}

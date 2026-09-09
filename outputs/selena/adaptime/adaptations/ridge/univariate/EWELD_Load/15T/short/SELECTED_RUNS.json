@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "closed_form_fitting"
+        },
+        "model_config": {
+          "alpha_values": [
+            0.001,
+            0.01,
+            0.1
+          ],
+          "bayes_covariate_protocol": {
+            "evidence": "paired_train_validation_window_msse_wins",
+            "prior": "beta_1_1",
+            "tie_weight": 0.5
+          },
+          "chunk_size": 1024,
+          "default_alpha": 0.01,
+          "default_k": 10,
+          "k_values": [
+            1,
+            5,
+            10,
+            15
+          ],
+          "method": "full_ridge_shared",
+          "minimum_training_window_ratio": 1.0,
+          "minimum_validation_window_ratio": 0.1,
+          "seed": 1
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 14121,
+            "adaptation_validation_length": 7009,
+            "context_length": 8192,
+            "dataset": "EWELD_Load/15T",
+            "dataset_fingerprint": "d35c15d02d39bd1b",
+            "datastore_prediction_length": 64,
+            "datastore_stride": 96,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 24,
+            "retrieval_period": 96,
+            "seasonality": 96,
+            "target_mode": "univariate",
+            "term": "short",
+            "test_length": 1344
+          },
+          "extraction": {
+            "arrow_cache_items": 2,
+            "backbone": "chronos2",
+            "context_k": [
+              1,
+              5,
+              10,
+              15
+            ],
+            "datastore_block_size": 4096,
+            "distance_metric": "euclidean",
+            "max_k": 15,
+            "minimum_overlap_fraction": 0.8,
+            "minimum_query_finite_fraction": 0.8,
+            "model_batch_size": 64,
+            "query_block_size": 256,
+            "representation": "instance",
+            "retrieval_scope": "all",
+            "weights_id": null
+          },
+          "fit_extraction_contract": "fixed_context_train_validation_only"
+        }
+      }
+    }
+  ]
+}

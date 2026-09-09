@@ -1,0 +1,73 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 27,
+    "adaptation_train_length": 1883,
+    "adaptation_validation_length": 938,
+    "context_length": 8192,
+    "dataset": "Oil_Price/B",
+    "datastore_prediction_length": 64,
+    "datastore_stride": 5,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 20,
+    "retrieval_period": 5,
+    "seasonality": 5,
+    "target_mode": "univariate",
+    "term": "short",
+    "test_length": 717
+  },
+  "counts": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0,
+    "datastore": 0,
+    "test": 420
+  },
+  "dataset_fingerprint": "2a49e9e30c30de1d",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 0,
+    "minimum": 0
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 840,
+    "adaptation_validation": 420
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 840,
+    "adaptation_validation": 420,
+    "test": 420
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 70,
+    "adaptation_validation": 35,
+    "test": 35
+  },
+  "query_period_residues": [
+    2
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "03ffbc4ffbc633cac159676be50a7a20a0fc9946105d4637423a03a358d5eee6",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Oil_Price/B"
+}

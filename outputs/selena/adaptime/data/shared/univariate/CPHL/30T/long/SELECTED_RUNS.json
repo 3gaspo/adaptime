@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "consumers": [
+            "full_ridge_shared",
+            "tsrag"
+          ],
+          "splits": [
+            "datastore",
+            "adaptation_train",
+            "adaptation_validation",
+            "test"
+          ]
+        },
+        "model_config": {
+          "artifact": "shared_global_datastore",
+          "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+        },
+        "pipeline_config": {
+          "adaptation_stride": 127,
+          "adaptation_train_length": 2557,
+          "adaptation_validation_length": 1287,
+          "context_length": 8192,
+          "dataset": "CPHL/30T",
+          "dataset_fingerprint": "38f16d3cc3efe62d",
+          "datastore_prediction_length": 144,
+          "datastore_stride": 48,
+          "max_datastore_windows": null,
+          "minimum_datastore_dates_per_variate": 11,
+          "prediction_length": 144,
+          "retrieval_period": 48,
+          "seasonality": 48,
+          "target_mode": "univariate",
+          "term": "long",
+          "test_length": 1440
+        }
+      }
+    }
+  ]
+}

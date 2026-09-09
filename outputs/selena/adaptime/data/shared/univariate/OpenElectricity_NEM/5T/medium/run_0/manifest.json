@@ -1,0 +1,74 @@
+{
+  "completed_at": "2026-09-08T15:00:14.761306+00:00",
+  "experiment": "adaptime_data",
+  "experiment_config": {
+    "consumers": [
+      "full_ridge_shared",
+      "tsrag"
+    ],
+    "splits": [
+      "datastore",
+      "adaptation_train",
+      "adaptation_validation",
+      "test"
+    ]
+  },
+  "identity": {
+    "dataset": "OpenElectricity_NEM",
+    "frequency": "5T",
+    "model": "shared_datastore",
+    "target_mode": "univariate",
+    "term": "medium"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3227290",
+        "launched_at": "2026-09-08T15:00:14.711612+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227290"
+      }
+    ],
+    "launch_id": "selena_adaptime_3227290",
+    "launched_at": "2026-09-08T15:00:14.711612+00:00",
+    "slurm_job_id": "3227290"
+  },
+  "model_config": {
+    "artifact": "shared_global_datastore",
+    "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+  },
+  "pipeline_config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 10637,
+    "adaptation_validation_length": 5303,
+    "context_length": 8192,
+    "dataset": "OpenElectricity_NEM/5T",
+    "dataset_fingerprint": "fb2ef33eeed0d98e",
+    "datastore_prediction_length": 96,
+    "datastore_stride": 288,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 96,
+    "retrieval_period": 288,
+    "seasonality": 288,
+    "target_mode": "univariate",
+    "term": "medium",
+    "test_length": 4032
+  },
+  "project": "adaptime",
+  "provenance": {
+    "dataset_fingerprint": "fb2ef33eeed0d98e",
+    "dataset_source": "/fslarge/scratch/users/h61084/datasets/hf_dataset/OpenElectricity_NEM/5T",
+    "minimum_series_length": 43488
+  },
+  "required_artifacts": [
+    "prepared/manifest.json"
+  ],
+  "runtime_config": {},
+  "schema_version": 1,
+  "started_at": "2026-09-08T15:00:14.711612+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-08T15:00:14.761306+00:00"
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "unconditional_official_test_vanilla"
+        },
+        "model_config": {
+          "context_policy": "all_available_history_capped_at_model_limit",
+          "model": "chronos2",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 2007,
+            "adaptation_validation_length": 1372,
+            "context_length": 8192,
+            "dataset": "current_velocity/5T",
+            "dataset_fingerprint": "56dc61161be7a25f",
+            "datastore_prediction_length": 864,
+            "datastore_stride": 288,
+            "max_datastore_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 864,
+            "retrieval_period": 288,
+            "seasonality": 288,
+            "target_mode": "univariate",
+            "term": "long",
+            "test_length": 4320
+          }
+        }
+      }
+    }
+  ]
+}

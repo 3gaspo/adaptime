@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "consumers": [
+            "full_ridge_shared",
+            "tsrag"
+          ],
+          "splits": [
+            "datastore",
+            "adaptation_train",
+            "adaptation_validation",
+            "test"
+          ]
+        },
+        "model_config": {
+          "artifact": "shared_global_datastore",
+          "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+        },
+        "pipeline_config": {
+          "adaptation_stride": 127,
+          "adaptation_train_length": 47133,
+          "adaptation_validation_length": 23511,
+          "context_length": 8192,
+          "dataset": "Finland_Traffic/15T",
+          "dataset_fingerprint": "e03fee122ed6900d",
+          "datastore_prediction_length": 64,
+          "datastore_stride": 96,
+          "max_datastore_windows": null,
+          "minimum_datastore_dates_per_variate": 11,
+          "prediction_length": 16,
+          "retrieval_period": 96,
+          "seasonality": 96,
+          "target_mode": "univariate",
+          "term": "short",
+          "test_length": 2976
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+2026-09-08 16:58:43 | workflow adaptime started launch_id=selena_adaptime_3227290 task=ridge_prepare slurm_job_id=3227290 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-08 16:58:43 | stage prepare started
+2026-09-08 16:58:43 | task TIME-wide Adaptime method=ridge stage=prepare started
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.454806+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.517270+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.581447+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/5T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.646640+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/5T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/5T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.680502+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/5T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/5T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.713786+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/5T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/10T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.747382+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/10T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/10T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.840284+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/10T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/10T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:11.949780+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/10T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/15T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.068611+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/15T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/15T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.108444+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/15T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/15T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.147101+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/15T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/20T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.186358+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/20T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/20T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.268244+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/20T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/20T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.350431+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/20T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.432007+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.484996+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.535335+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/15T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.586100+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/15T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/15T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.611620+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/15T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/15T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.637414+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/15T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/30T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.663067+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/30T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/30T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.688884+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/30T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/30T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.714682+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/30T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.741002+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.766690+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.792097+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/5T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:12.818987+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/5T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/5T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.098675+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/5T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/5T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.464028+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/5T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/15T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.777926+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/15T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/15T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.820039+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/15T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/15T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.866653+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/15T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/20T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.913328+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/20T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/20T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.939688+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/20T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/20T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.965560+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/20T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:13.991511+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.039922+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.087690+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Weather/D/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.137136+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Weather/D/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Weather/D/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.167182+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Weather/D/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Weather/D/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.196569+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Weather/D/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_PM25/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.226374+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_PM25/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_PM25/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.261165+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_PM25/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_PM25/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.301019+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_PM25/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/NE_China_Wind/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.342156+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/NE_China_Wind/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/NE_China_Wind/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.369032+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/NE_China_Wind/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/NE_China_Wind/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.395466+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/NE_China_Wind/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Australia_Solar/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.422677+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Australia_Solar/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Australia_Solar/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.452494+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Australia_Solar/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Australia_Solar/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.484719+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Australia_Solar/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/epf_electricity_price/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.518330+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/epf_electricity_price/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/epf_electricity_price/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.557106+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/epf_electricity_price/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/epf_electricity_price/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.606806+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/epf_electricity_price/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/OpenElectricity_NEM/5T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.662322+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/OpenElectricity_NEM/5T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/OpenElectricity_NEM/5T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.711612+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/OpenElectricity_NEM/5T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/OpenElectricity_NEM/5T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.765852+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/OpenElectricity_NEM/5T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/EWELD_Load/15T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.817614+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/EWELD_Load/15T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/EWELD_Load/15T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.853465+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/EWELD_Load/15T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/EWELD_Load/15T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.890867+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/EWELD_Load/15T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Carpark/15T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:14.926373+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Carpark/15T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Carpark/15T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:15.245553+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Carpark/15T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Carpark/15T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:15.577904+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/SG_Carpark/15T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Finland_Traffic/15T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:15.896259+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Finland_Traffic/15T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Finland_Traffic/15T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:15.922987+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Finland_Traffic/15T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Finland_Traffic/15T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:15.950346+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Finland_Traffic/15T/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Port_Activity/D/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:15.977060+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Port_Activity/D/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Port_Activity/W/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.037814+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Port_Activity/W/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/ECDC_COVID/D/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.077375+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/ECDC_COVID/D/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/ECDC_COVID/W/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.103782+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/ECDC_COVID/W/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Global_Influenza/W/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.130022+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Global_Influenza/W/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Crypto/D/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.158121+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Crypto/D/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/US_Term_Structure/B/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.184094+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/US_Term_Structure/B/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Oil_Price/B/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.230463+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Oil_Price/B/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Job_Claims/W/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.258901+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Job_Claims/W/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Uncertainty_1M/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.284085+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Uncertainty_1M/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Housing_Inventory/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.309973+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Housing_Inventory/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/JOLTS/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.335064+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/JOLTS/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/US_Labor/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.360406+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/US_Labor/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Vehicle_Supply/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.385690+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Vehicle_Supply/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Auto_Production_SF/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.411201+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Auto_Production_SF/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Commodity_Production/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.436741+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Commodity_Production/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Commodity_Import/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.465833+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Commodity_Import/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/WUI_Global/Q/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.492184+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/WUI_Global/Q/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Global_Price/Q/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.517934+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Global_Price/Q/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Vehicle_Sales/M/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.543898+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Vehicle_Sales/M/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Online_Retail_2_UCI/D/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.569321+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Online_Retail_2_UCI/D/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Supply_Chain_Customer/D/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.594342+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Supply_Chain_Customer/D/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Supply_Chain_Location/D/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.623443+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Supply_Chain_Location/D/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_D/5T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:16.653880+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_D/5T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_I/5T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:18.080306+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_I/5T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_U/5T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:18.805409+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_U/5T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Smart_Manufacturing/H/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:18.864225+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Smart_Manufacturing/H/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Smart_Manufacturing/H/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:18.910046+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Smart_Manufacturing/H/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Smart_Manufacturing/H/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:18.955502+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Smart_Manufacturing/H/long/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/MetroPT-3/5T/short/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:19.000921+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/MetroPT-3/5T/short/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/MetroPT-3/5T/medium/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:19.031529+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/MetroPT-3/5T/medium/run_0/prepared/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/MetroPT-3/5T/long/run_0 launch_id=selena_adaptime_3227290 slurm_job_id=3227290 launched_at=2026-09-08T15:00:19.061231+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/MetroPT-3/5T/long/run_0/prepared/manifest.json
+2026-09-08 17:00:30 | task TIME-wide Adaptime method=ridge stage=prepare completed status=success
+2026-09-08 17:00:30 | stage prepare completed status=success
+2026-09-08 17:00:30 | workflow adaptime completed status=success exit_code=0

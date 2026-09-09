@@ -1,0 +1,74 @@
+{
+  "completed_at": "2026-09-08T15:00:19.086969+00:00",
+  "experiment": "adaptime_data",
+  "experiment_config": {
+    "consumers": [
+      "full_ridge_shared",
+      "tsrag"
+    ],
+    "splits": [
+      "datastore",
+      "adaptation_train",
+      "adaptation_validation",
+      "test"
+    ]
+  },
+  "identity": {
+    "dataset": "MetroPT-3",
+    "frequency": "5T",
+    "model": "shared_datastore",
+    "target_mode": "univariate",
+    "term": "long"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3227290",
+        "launched_at": "2026-09-08T15:00:19.061231+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227290"
+      }
+    ],
+    "launch_id": "selena_adaptime_3227290",
+    "launched_at": "2026-09-08T15:00:19.061231+00:00",
+    "slurm_job_id": "3227290"
+  },
+  "model_config": {
+    "artifact": "shared_global_datastore",
+    "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+  },
+  "pipeline_config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 1211,
+    "adaptation_validation_length": 830,
+    "context_length": 8192,
+    "dataset": "MetroPT-3/5T",
+    "dataset_fingerprint": "63ef7572e9c9e1db",
+    "datastore_prediction_length": 576,
+    "datastore_stride": 288,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 576,
+    "retrieval_period": 288,
+    "seasonality": 288,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 1728
+  },
+  "project": "adaptime",
+  "provenance": {
+    "dataset_fingerprint": "63ef7572e9c9e1db",
+    "dataset_source": "/fslarge/scratch/users/h61084/datasets/hf_dataset/MetroPT-3/5T",
+    "minimum_series_length": 17809
+  },
+  "required_artifacts": [
+    "prepared/manifest.json"
+  ],
+  "runtime_config": {},
+  "schema_version": 1,
+  "started_at": "2026-09-08T15:00:19.061231+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-08T15:00:19.086969+00:00"
+}

@@ -1,0 +1,80 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 1211,
+    "adaptation_validation_length": 830,
+    "context_length": 8192,
+    "dataset": "MetroPT-3/5T",
+    "datastore_prediction_length": 576,
+    "datastore_stride": 288,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 576,
+    "retrieval_period": 288,
+    "seasonality": 288,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 1728
+  },
+  "counts": {
+    "adaptation_train": 36,
+    "adaptation_validation": 18,
+    "datastore": 882,
+    "test": 18
+  },
+  "dataset_fingerprint": "63ef7572e9c9e1db",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 147,
+    "minimum": 147
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 36,
+    "adaptation_validation": 18,
+    "test": 18
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 6,
+    "adaptation_validation": 3,
+    "test": 3
+  },
+  "query_period_residues": [
+    21,
+    55,
+    114,
+    148,
+    182,
+    216,
+    241,
+    275
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "0fa40a159bb079ca76c1d781d7cae8d162585c1bdd4c676e601fa919beabc1c2",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/MetroPT-3/5T"
+}

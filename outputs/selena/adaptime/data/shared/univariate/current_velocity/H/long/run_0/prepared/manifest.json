@@ -1,0 +1,83 @@
+{
+  "arrays": {
+    "adaptation_train": "indices/adaptation_train.npy",
+    "adaptation_train_calendar_tick": "indices/adaptation_train_calendar_tick.npy",
+    "adaptation_validation": "indices/adaptation_validation.npy",
+    "adaptation_validation_calendar_tick": "indices/adaptation_validation_calendar_tick.npy",
+    "datastore": "indices/datastore.npy",
+    "datastore_calendar_tick": "indices/datastore_calendar_tick.npy",
+    "datastore_end_tick_by_item": "indices/datastore_end_tick_by_item.npy",
+    "test": "indices/test.npy",
+    "test_calendar_tick": "indices/test_calendar_tick.npy"
+  },
+  "calendar_tick": "global pandas Period ordinal at the window target origin",
+  "channel_convention": "-1 denotes the complete multivariate target",
+  "config": {
+    "adaptation_stride": 127,
+    "adaptation_train_length": 717,
+    "adaptation_validation_length": 463,
+    "context_length": 8192,
+    "dataset": "current_velocity/H",
+    "datastore_prediction_length": 336,
+    "datastore_stride": 24,
+    "max_datastore_windows": null,
+    "minimum_datastore_dates_per_variate": 11,
+    "prediction_length": 336,
+    "retrieval_period": 24,
+    "seasonality": 24,
+    "target_mode": "univariate",
+    "term": "long",
+    "test_length": 672
+  },
+  "counts": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0,
+    "datastore": 0,
+    "test": 252
+  },
+  "dataset_fingerprint": "9038ef6f79396104",
+  "datastore_dates_per_variate": {
+    "balanced_cap": null,
+    "maximum": 0,
+    "minimum": 0
+  },
+  "excluded_fixed_context_rows": {
+    "adaptation_train": 504,
+    "adaptation_validation": 252
+  },
+  "format": "adaptime_shared_windows",
+  "interval_convention": "target start inclusive, target stop exclusive",
+  "planned_query_rows": {
+    "adaptation_train": 504,
+    "adaptation_validation": 252,
+    "test": 252
+  },
+  "planned_query_windows_per_item": {
+    "adaptation_train": 4,
+    "adaptation_validation": 2,
+    "test": 2
+  },
+  "query_period_residues": [
+    0,
+    1,
+    3,
+    4,
+    6,
+    12,
+    14,
+    19,
+    21,
+    22,
+    23
+  ],
+  "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
+  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "reference_columns": [
+    "item",
+    "channel",
+    "origin"
+  ],
+  "schema_version": 1,
+  "signature": "ee27939473762c8f8dd11eeb640351aaf5f67e341f829422a7caaea83f884ad5",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/current_velocity/H"
+}

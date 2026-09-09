@@ -1,0 +1,71 @@
+{
+  "completed_at": "2026-09-08T15:22:59.707000+00:00",
+  "experiment": "adaptime_vanilla",
+  "experiment_config": {
+    "phase": "unconditional_official_test_vanilla"
+  },
+  "identity": {
+    "dataset": "ECDC_COVID",
+    "frequency": "W",
+    "model": "chronos2",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3227291",
+        "launched_at": "2026-09-08T15:22:58.747519+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227291"
+      }
+    ],
+    "launch_id": "selena_adaptime_3227291",
+    "launched_at": "2026-09-08T15:22:58.747519+00:00",
+    "slurm_job_id": "3227291"
+  },
+  "model_config": {
+    "context_policy": "all_available_history_capped_at_model_limit",
+    "model": "chronos2",
+    "weights_id": null
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 11,
+      "adaptation_train_length": 90,
+      "adaptation_validation_length": 46,
+      "context_length": 8192,
+      "dataset": "ECDC_COVID/W",
+      "dataset_fingerprint": "1cbabea8e0eb530e",
+      "datastore_prediction_length": 64,
+      "datastore_stride": 1,
+      "max_datastore_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 13,
+      "retrieval_period": 1,
+      "seasonality": 1,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 52
+    }
+  },
+  "project": "adaptime",
+  "provenance": {
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/ECDC_COVID/W/short/run_0/prepared/manifest.json"
+  },
+  "required_artifacts": [
+    "vanilla/manifest.json",
+    "vanilla/predictions.npy",
+    "vanilla/context_length.npy"
+  ],
+  "runtime_config": {
+    "device": "cuda",
+    "model_path": null
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-08T15:22:58.747519+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-08T15:22:59.707000+00:00"
+}

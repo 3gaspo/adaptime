@@ -1,0 +1,79 @@
+{
+  "candidates": [
+    {
+      "alpha": 0.001,
+      "k": 1,
+      "validation_msse": 1.9473710034938403
+    },
+    {
+      "alpha": 0.01,
+      "k": 1,
+      "validation_msse": 1.9491117494874524
+    },
+    {
+      "alpha": 0.1,
+      "k": 1,
+      "validation_msse": 1.95007147920207
+    },
+    {
+      "alpha": 0.001,
+      "k": 5,
+      "validation_msse": 1.947368533694343
+    },
+    {
+      "alpha": 0.01,
+      "k": 5,
+      "validation_msse": 1.948128280482388
+    },
+    {
+      "alpha": 0.1,
+      "k": 5,
+      "validation_msse": 1.9487800530586437
+    },
+    {
+      "alpha": 0.001,
+      "k": 10,
+      "validation_msse": 1.9605819152146944
+    },
+    {
+      "alpha": 0.01,
+      "k": 10,
+      "validation_msse": 1.9519870849985137
+    },
+    {
+      "alpha": 0.1,
+      "k": 10,
+      "validation_msse": 1.948871899232743
+    },
+    {
+      "alpha": 0.001,
+      "k": 15,
+      "validation_msse": 1.947441712537011
+    },
+    {
+      "alpha": 0.01,
+      "k": 15,
+      "validation_msse": 1.9404049005282211
+    },
+    {
+      "alpha": 0.1,
+      "k": 15,
+      "validation_msse": 1.9457954475098567
+    }
+  ],
+  "criterion": "adaptation_validation_msse",
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "selected_alpha": 0.01,
+  "selected_k": 15,
+  "selected_validation_msse": 1.9404049005282211,
+  "window_support": {
+    "minimum_training_windows_exclusive": 75.0,
+    "minimum_validation_windows_exclusive": 7.5,
+    "selected_k_training_windows": 150,
+    "selected_k_validation_windows": 75,
+    "test_windows": 75
+  }
+}

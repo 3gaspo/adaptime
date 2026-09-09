@@ -1,0 +1,29 @@
+{
+  "arrays": {
+    "context_length": "context_length.npy",
+    "predictions": "predictions.npy"
+  },
+  "config": {
+    "arrow_cache_items": 2,
+    "model_batch_size": 64
+  },
+  "context_length_range": {
+    "maximum": 2809,
+    "minimum": 2569
+  },
+  "context_policy": "all_available_history_capped_at_model_limit",
+  "forecast_type": "point",
+  "format": "adaptime_vanilla_test_forecasts",
+  "maximum_context_length": 8192,
+  "model": "chronos2",
+  "prediction_length": 30,
+  "prepared_signature": "ff4ccf889c9ff31d67f7ff3c96a79b80ba1fd2150090b902a790f24365db5f6c",
+  "schema_version": 1,
+  "signature": "2e10e9328c97eb9cf3642b6e8d6cb1a532611e9b320ba5ef542f8be2f68eac18",
+  "status": "completed",
+  "test_windows": 36,
+  "timing_seconds": {
+    "vanilla_model_forecast_seconds": 0.12619594298303127
+  },
+  "weights_id": "chronos2"
+}

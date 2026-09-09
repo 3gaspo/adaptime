@@ -1,0 +1,82 @@
+{
+  "error": {
+    "message": "launch selena_adaptime_3227291 ended before task completion",
+    "type": "InterruptedLaunch"
+  },
+  "experiment": "adaptime_vanilla",
+  "experiment_config": {
+    "phase": "unconditional_official_test_vanilla"
+  },
+  "identity": {
+    "dataset": "Water_Quality_Darwin",
+    "frequency": "15T",
+    "model": "chronos2",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "resume",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_3227291",
+        "launched_at": "2026-09-08T15:00:38.744746+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227291"
+      },
+      {
+        "action": "resume",
+        "launch_id": "selena_adaptime_3227291",
+        "launched_at": "2026-09-08T15:12:28.186877+00:00",
+        "resumed_from": {
+          "launch_id": "selena_adaptime_3227291",
+          "launched_at": "2026-09-08T15:00:38.744746+00:00",
+          "slurm_job_id": "3227291"
+        },
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3227291"
+      }
+    ],
+    "launch_id": "selena_adaptime_3227291",
+    "launched_at": "2026-09-08T15:12:28.186877+00:00",
+    "slurm_job_id": "3227291"
+  },
+  "model_config": {
+    "context_policy": "all_available_history_capped_at_model_limit",
+    "model": "chronos2",
+    "weights_id": null
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 22749,
+      "adaptation_validation_length": 11319,
+      "context_length": 8192,
+      "dataset": "Water_Quality_Darwin/15T",
+      "dataset_fingerprint": "e54e1205e93152bd",
+      "datastore_prediction_length": 64,
+      "datastore_stride": 96,
+      "max_datastore_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 16,
+      "retrieval_period": 96,
+      "seasonality": 96,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 1440
+    }
+  },
+  "project": "adaptime",
+  "provenance": {
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/short/run_0/prepared/manifest.json"
+  },
+  "required_artifacts": [],
+  "runtime_config": {
+    "device": "cuda",
+    "model_path": null
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-08T15:12:28.186877+00:00",
+  "status": "interrupted",
+  "updated_at": "2026-09-08T15:12:55.944379+00:00"
+}
