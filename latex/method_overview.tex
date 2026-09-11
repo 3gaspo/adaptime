@@ -115,26 +115,31 @@ future labels affect metric support only and cannot select the prediction path.
 
 \section{Bayesian covariate baseline}
 
-For the selected $K$, each eligible adaptation-training or validation window
-is one paired trial. Let $z_i=1$ when the per-window MSSE of $C_i$ is lower
-than that of $V_i$, $z_i=0$ when it is higher, and $z_i=1/2$ for a tie. With a
+For each candidate $K$, every eligible adaptation-training window is one paired
+trial. Let $z_i=1$ when the per-window MSSE of $C_i$ is lower than that of
+$V_i$, $z_i=0$ when it is higher, and $z_i=1/2$ for a tie. With a
 $\operatorname{Beta}(1,1)$ prior, the posterior-mean probability is
 \begin{equation}
   p = \frac{1+\sum_i z_i}{2+n}.
 \end{equation}
-This evidence is frozen before test. The soft baseline is
+Adaptation validation compares these frozen candidate mixtures by MSSE and
+selects their $K$, or the virtual vanilla candidate. The selected evidence is
+then frozen before test. The soft baseline is
 \begin{equation}
   B=(1-p)V+pC.
 \end{equation}
 An ineligible test window receives $V$ for both the hard covariate and Bayesian
 branches. A task-level insufficient-training fallback fixes $p=0$ and makes
-all four family predictions equal to $V$.
+all family predictions equal to $V$.
 
 \section{Evaluation}
 
-The main official-test report compares vanilla $V$, hard retrieval-context
-$C$, Bayesian $B$, and frozen full Ridge $V'$. Each receives its own standard
-TIME evaluation artifact on identical official windows. The evaluator retains
+The unified official-test report compares vanilla $V$, hard retrieval-context
+$C$, Bayesian $B$, frozen full Ridge $V'$, and the independently implemented
+TS-RAG control. Nested-Ridge variants and the validation-selected family output
+are retained as diagnostics, while Seasonal Naive supplies the task scaling
+baseline. Each method receives its own standard TIME evaluation artifact on
+identical official windows. The evaluator retains
 MSE, MAE, RMSE, MAPE, sMAPE, MASE, ND, and CRPS. Seasonal Naive remains the
 inherited external baseline used by broader TIME summaries. Missing dates are
 never removed or shifted: forecast errors skip non-finite target dates and

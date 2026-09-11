@@ -3,10 +3,10 @@
 Adaptime evaluates retrieval-augmented wrappers around time-series foundation
 models on the public [TIME benchmark](https://github.com/zqiao11/TIME). The
 official TIME test windows stay unchanged. The current proposal is the
-univariate `full_ridge_shared` adaptor. Its main comparison contains vanilla,
-retrieval-covariate, Bayesian retrieval-covariate, and full-Ridge forecasts;
-the source-adapted TS-RAG ARM from upstream commit `73ac807` remains a separate
-external control.
+univariate `full_ridge_shared` adaptor. Its unified comparison contains
+vanilla, retrieval-covariate, Bayesian retrieval-covariate, and full-Ridge
+forecasts together with the source-adapted TS-RAG ARM from upstream commit
+`73ac807`. TS-RAG remains an independently implemented external control.
 
 For the Ridge wrapper, `V` is the vanilla forecast, `C` is the forecast with
 retrieved trajectories as covariates, `Y_i` are neighbor futures, and `N_i`
@@ -66,17 +66,18 @@ PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage
   --stage pipeline --method tsrag --datasets SG_Weather/D --terms short
 ```
 
-The main submission front schedules shared preparation, the four-method
-Adaptime family pipeline, and its comparison report in order:
+The main submission front schedules shared preparation and Seasonal Naive,
+then the vanilla pass, the Adaptime family and independent TS-RAG pipelines,
+and finally one unified comparison report after both branches succeed:
 
 ```bash
 bash scripts/submit_adaptime_comparison.sh dgx
 ```
 
-`scripts/submit_tsrag_comparison.sh` independently schedules shared
-preparation and the native TS-RAG pipeline. It adds a TS-RAG versus full-Ridge
-report only when `ADAPTIME_RIDGE_RESULTS_PATH` supplies exact matching
-full-Ridge evaluations.
+`scripts/submit_tsrag_comparison.sh` remains available for a TS-RAG-only run.
+It independently schedules shared preparation and the native TS-RAG pipeline,
+and adds a TS-RAG versus full-Ridge report only when
+`ADAPTIME_RIDGE_RESULTS_PATH` supplies exact matching full-Ridge evaluations.
 
 The default Ridge grid is `K in {1,5,10,15}` and
 `alpha in {1e-3,1e-2,1e-1}`. A query is RAG-eligible only when retrieval
@@ -94,11 +95,13 @@ selection.
 
 Vanilla test forecasts are computed first for every official window with all
 available history up to the backbone limit. Ridge fitting then freezes `K`
-and `alpha`; test extraction computes only that selected `K`. The Bayesian
-baseline estimates, over eligible fixed-context training and validation
-windows, a Beta(1,1)-smoothed probability that `C` has lower per-window MSSE
-than `V` (ties count one half), and predicts `(1-p)V + pC`. Each adapted method
-uses the cached vanilla forecast whenever its test window is ineligible.
+and `alpha`; test extraction computes only the selected `K` values. For each
+candidate `K`, the Bayesian baseline estimates from eligible fixed-context
+training windows a Beta(1,1)-smoothed probability that `C` has lower per-window
+MSSE than `V` (ties count one half). Adaptation validation selects the Bayesian
+`K`, or the virtual vanilla candidate, by MSSE. The resulting frozen test
+prediction is `(1-p)V + pC`. Each adapted method uses the cached vanilla
+forecast whenever its test window is ineligible.
 
 The inherited foundation benchmark is launched through
 `scripts/submit_foundation_models.sh`; channel controls use
@@ -126,10 +129,12 @@ Each phase has its own schema-1 manifest and exact scientific identity.
 Completed exact phases are reusable; a different configuration receives a new
 `run_n`. The main family shares prepared references, cached test vanilla
 forecasts, fit extraction, selected-K test extraction, and one prediction
-artifact containing all four forecast arrays. Every method receives its own
-TIME evaluation run. TS-RAG references the same prepared datastore and test
-rows but retains its independent extraction and inference modules. All point
-predictions pass through the TIME evaluator as deterministic median forecasts.
+artifact containing the four headline forecasts plus nested-Ridge and
+validation-selected diagnostic forecasts. Every method receives its own TIME
+evaluation run. TS-RAG references the same prepared datastore and test rows but
+retains its independent extraction and inference modules. The unified report
+joins those independently evaluated branches. All point predictions pass
+through the TIME evaluator as deterministic median forecasts.
 Shared preparation records the per-variate datastore counts. Before TS-RAG
 representation extraction, its project-owned data adapter rejects a new or
 reused artifact with fewer than 11 dates for any variate. Ridge remains able to

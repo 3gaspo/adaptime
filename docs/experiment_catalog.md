@@ -16,9 +16,10 @@ foundation forecast.
 
 - Methods: `vanilla`, `covariate_prediction`,
   `bayes_covariate_prediction`, and `full_ridge_shared`.
-- Entry point: `scripts/submit_adaptime_comparison.sh` or the explicit
-  `prepare|vanilla|extract|fit|extract_eval|predict|evaluate|pipeline` Python
-  stages.
+- Entry point: `scripts/submit_adaptime_comparison.sh` schedules this family
+  alongside the independent TS-RAG control before one unified report. The
+  explicit `prepare|vanilla|extract|fit|extract_eval|predict|evaluate|pipeline`
+  Python stages remain independently callable.
 - Data: one method-neutral datastore, adaptation-training and validation
   references, and unchanged official TIME test references.
 - Context: the selected foundation model's normal TIME limit; 8192 for the
@@ -38,9 +39,10 @@ foundation forecast.
 - Selection: `K in {1,5,10,15}` and
   `alpha in {1e-3,1e-2,1e-1}`; primary/default values are `K=10` and
   `alpha=1e-2`.
-- Bayesian baseline: on selected `K`, eligible train and validation windows
-  provide paired MSSE wins of `C` over `V`; ties count one half and a Beta(1,1)
-  prior yields `p`. Test prediction is `(1-p)V+pC`.
+- Bayesian baseline: for each candidate `K`, eligible training windows provide
+  paired MSSE wins of `C` over `V`; ties count one half and a Beta(1,1) prior
+  yields `p`. Validation selects the frozen mixture's `K`, or virtual vanilla,
+  by MSSE. Test prediction is `(1-p)V+pC`.
 - Training fallback: primary-`K` valid training windows must exceed official
   test windows; otherwise all four methods use cached vanilla predictions.
 - Validation fallback: primary-`K` valid validation windows must exceed 10% of
@@ -49,8 +51,10 @@ foundation forecast.
   fitting. Any test row without sufficient fixed context or neighbors uses its
   cached flexible-context vanilla forecast.
 - Evaluation: each deterministic method receives its own standard TIME
-  evaluation artifact. The four-method report joins identical configured
-  support and exposes each method's finite and total value counts per metric.
+  evaluation artifact. The unified report joins the four headline Adaptime
+  methods, retained family diagnostics, the independent TS-RAG control, and
+  the Seasonal Naive scaling baseline on identical configured support. It
+  exposes each method's finite and total value counts per metric.
 
 No delta, convex, per-horizon, or native-multivariate Ridge ablation belongs to
 this family.
@@ -61,8 +65,9 @@ The TS-RAG experiment asks how the frozen Ridge proposal compares with the
 released source-adapted TS-RAG ARM under the same chronological datastore and
 official TIME test support.
 
-- Entry point: `scripts/submit_tsrag_comparison.sh` for an independent TS-RAG
-  run. It is not part of the main four-method Adaptime submission.
+- Entry point: the main `scripts/submit_adaptime_comparison.sh` includes the
+  independent TS-RAG branch in its unified comparison;
+  `scripts/submit_tsrag_comparison.sh` runs that branch separately.
 - Shared data: exactly the global datastore and test references prepared for
   the selected Adaptime configuration.
 - Native method: same-series Chronos-T5 EOS/FAISS retrieval, top 10 neighbors,

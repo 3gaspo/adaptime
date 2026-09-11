@@ -10,15 +10,15 @@ TIME saved-Arrow dataset + dataset configuration
        shared datastore, train/validation references, official test references
   -> pipeline/adaptime_vanilla.py
        flexible-context vanilla forecast for every official test row
-  -> Adaptime family                       -> separate TS-RAG control
+  -> Adaptime family                       -> independent TS-RAG control
        fit-grid extraction                      pipeline/tsrag.py extraction
        Ridge selection + Bayesian evidence      external_models/tsrag + loader
        selected-K test extraction               pipeline/tsrag.py inference
-       four aligned prediction arrays
+       aligned family prediction bundle
   -> evaluation/adaptation.py
        one standard TIME evaluation per method
   -> results/adaptation.py
-       comparison over independently completed evaluation manifests
+       unified comparison over independently completed evaluation manifests
 ```
 
 `pipeline/adaptime_workflow.py` owns configuration resolution and composes
@@ -46,11 +46,13 @@ primary `K=10`, `alpha=1e-2` without selection when valid validation windows do
 not exceed 10% of test windows.
 
 The fitted artifact stores Ridge coefficients and Beta-Bernoulli evidence for
-the selected `K`. A trial is one eligible training or validation window;
-`C` wins when its per-window MSSE is below `V`, and a tie contributes one half.
-The Beta(1,1) posterior mean is the fixed test mixture probability. Test
-extraction runs only selected `K`, reuses any neighbor forecasts already
-cached during fitting, and computes only newly selected neighbor forecasts.
+each eligible candidate `K`. A trial is one eligible adaptation-training
+window; `C` wins when its per-window MSSE is below `V`, and a tie contributes
+one half. Adaptation validation compares the resulting frozen mixtures and
+selects the Bayesian `K`, or virtual vanilla, by MSSE. The selected Beta(1,1)
+posterior mean is the fixed test mixture probability. Test extraction runs only
+selected `K`, reuses any neighbor forecasts already cached during fitting, and
+computes only newly selected neighbor forecasts.
 The prediction artifact contains `V`, hard `C`, `(1-p)V+pC`, and full Ridge;
 each adaptation branch falls back to cached `V` on an ineligible test row.
 
@@ -68,19 +70,18 @@ The combined submission order is:
 
 ```text
 prepare
+  -> Seasonal Naive
   -> vanilla test pass
-  -> fit-grid extraction
-  -> Ridge and Bayesian fit
-  -> selected-K test extraction
-  -> four prediction arrays
-  -> four evaluations
-  -> report
+       -> fit-grid extraction -> Ridge and Bayesian fit
+          -> selected-K test extraction -> family predictions/evaluations
+       -> independent TS-RAG extraction/prediction/evaluation
+  -> unified report after both branches succeed
 ```
 
-The separate TS-RAG submission schedules its native pipeline independently.
-When requested, its report accepts an external full-Ridge root only after
-every requested evaluation exactly matches the current identity and scientific
-configuration; this never changes TS-RAG execution.
+The TS-RAG-only submission remains available and schedules its native pipeline
+independently. When requested, its report accepts an external full-Ridge root
+only after every requested evaluation exactly matches the current identity and
+scientific configuration; this never changes TS-RAG execution.
 
 Large series remain in Arrow and large numeric products remain memory-mapped.
 `pipeline/runs.py` owns allocation and exact reuse. `src/timebench/scripts/`
