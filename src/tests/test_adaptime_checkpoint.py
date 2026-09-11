@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import csv
 import importlib.util
 import json
 import sys
@@ -28,7 +29,9 @@ from timebench.adaptime.ridge import (
 )
 from timebench.evaluation.adaptation_data import (
     ADAPTATION_STRIDES,
+    InsufficientAdaptationHistory,
     PreparationConfig,
+    PreparedDataset,
     adaptation_split_lengths,
     adaptation_stride_for_frequency,
     prepare_adaptation_dataset,
@@ -38,6 +41,9 @@ from timebench.pipeline.adaptime_extraction import (
     ExtractionConfig,
     _normalize_extraction_config,
 )
+from timebench.pipeline.runs import allocate_run
+from timebench.pipeline.tsrag_data import TSRAGPreparedDataset
+from timebench.results.adaptation import build_adaptation_comparison
 
 
 def _raises(error_type, function, *args, **kwargs) -> None:
@@ -55,6 +61,67 @@ def _run_slurm_contract() -> None:
     assert spec.loader is not None
     spec.loader.exec_module(module)
     module.main()
+
+
+def _evaluation_run(
+    root: Path,
+    *,
+    model: str = "model_a",
+    config_value: int,
+    mase: float,
+    finite_values: int,
+    total_values: int,
+    policy: str = "overwrite_exact",
+) -> Path:
+    run = allocate_run(
+        root,
+        experiment="adaptime_evaluation",
+        identity={
+            "model": model,
+            "target_mode": "univariate",
+            "dataset": "toy",
+            "frequency": "H",
+            "term": "short",
+        },
+        model_config={"value": config_value},
+        pipeline_config={"prediction_length": 2},
+        runtime_config={"device": "cpu"},
+        experiment_config={"covariate_mode": "none"},
+        policy=policy,
+    )
+    with run:
+        (run.run_dir / "config.json").write_text(
+            json.dumps(
+                {
+                    "dataset_config": "toy/H/short",
+                    "num_series": 1,
+                    "num_windows": 1,
+                    "num_variates": 1,
+                    "prediction_length": 2,
+                    "seasonality": 1,
+                    "target_mode": "univariate",
+                }
+            ),
+            encoding="utf-8",
+        )
+        (run.run_dir / "metrics_summary.json").write_text(
+            json.dumps(
+                {
+                    "dataset_config": "toy/H/short",
+                    "inference_seconds": mase,
+                    "metrics": {
+                        "MASE": {
+                            "mean": mase,
+                            "finite_values": finite_values,
+                            "total_values": total_values,
+                        }
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        run.complete(["config.json", "metrics_summary.json"])
+    return run.run_dir
 
 
 def main() -> None:
@@ -121,6 +188,25 @@ def main() -> None:
             "maximum": 7,
             "balanced_cap": 7,
         }
+    insufficient_datastore = PreparationConfig(
+        **{
+            **preparation.__dict__,
+            "minimum_datastore_dates_per_variate": 8,
+        }
+    )
+    with tempfile.TemporaryDirectory() as temporary:
+        manifest_path = prepare_adaptation_dataset(
+            SyntheticDataset(),
+            insufficient_datastore,
+            temporary,
+            source_path=temporary,
+        )
+        PreparedDataset(manifest_path)
+        _raises(
+            InsufficientAdaptationHistory,
+            TSRAGPreparedDataset,
+            manifest_path,
+        )
 
     clipped = PreparationConfig(
         **{
@@ -185,6 +271,84 @@ def main() -> None:
         seasonality=2,
     )
     assert np.array_equal(seasonal, np.array([[1.0, 3.0, 1.0, 3.0, 1.0]]))
+
+    with tempfile.TemporaryDirectory() as temporary:
+        seasonal_root = Path(temporary) / "evaluations" / "seasonal_naive"
+        _evaluation_run(
+            seasonal_root,
+            model="seasonal_naive",
+            config_value=1,
+            mase=1.0,
+            finite_values=2,
+            total_values=2,
+        )
+        evaluation_root = Path(temporary) / "evaluations" / "model_a"
+        _evaluation_run(
+            evaluation_root,
+            config_value=1,
+            mase=1.0,
+            finite_values=1,
+            total_values=2,
+        )
+        _evaluation_run(
+            evaluation_root,
+            config_value=2,
+            mase=3.0,
+            finite_values=2,
+            total_values=2,
+        )
+        _evaluation_run(
+            evaluation_root,
+            config_value=2,
+            mase=5.0,
+            finite_values=3,
+            total_values=4,
+            policy="new",
+        )
+        distinct_manifest = build_adaptation_comparison(
+            method_results_roots={
+                "seasonal_naive": seasonal_root,
+                "model_a": evaluation_root,
+            },
+            output_dir=Path(temporary) / "distinct",
+            expected_tasks={("toy/H", "short")},
+            config_policy="distinct",
+            repeat_policy="selected",
+        )
+        with distinct_manifest.with_name("comparison.csv").open(
+            newline="", encoding="utf-8"
+        ) as stream:
+            distinct_rows = list(csv.DictReader(stream))
+        candidate_rows = [
+            row for row in distinct_rows if row["base_method"] == "model_a"
+        ]
+        assert len(distinct_rows) == 3
+        assert len(candidate_rows) == 2
+        assert len({row["method"] for row in candidate_rows}) == 2
+
+        average_manifest = build_adaptation_comparison(
+            method_results_roots={
+                "seasonal_naive": seasonal_root,
+                "model_a": evaluation_root,
+            },
+            output_dir=Path(temporary) / "average",
+            expected_tasks={("toy/H", "short")},
+            config_policy="average",
+            repeat_policy="average",
+        )
+        with average_manifest.with_name("comparison.csv").open(
+            newline="", encoding="utf-8"
+        ) as stream:
+            average_rows = list(csv.DictReader(stream))
+        candidate_row = next(
+            row for row in average_rows if row["base_method"] == "model_a"
+        )
+        assert len(average_rows) == 2
+        assert np.isclose(float(candidate_row["MASE"]), 2.5)
+        assert int(candidate_row["MASE_finite_values"]) == 6
+        assert int(candidate_row["MASE_total_values"]) == 8
+        report = json.loads(average_manifest.read_text(encoding="utf-8"))
+        assert len(report["input_manifests"]) == 4
 
     query = np.array([[0.0, 1.0], [np.nan, 1.0]], dtype=np.float32)
     datastore = np.array([[0.0, 1.0], [2.0, 3.0]], dtype=np.float32)
@@ -256,7 +420,9 @@ def main() -> None:
     assert "vanilla_fallback_when_valid_training_windows_are_insufficient" in training
     assert "covariate_win_evidence" in training
     assert '"prior": {"alpha": 1.0, "beta": 1.0}' in training
-    assert '"covariate_better_on_average"' in training
+    assert '"fit_split": "adaptation_train"' in training
+    assert '"selection_split": "adaptation_validation"' in training
+    assert '"fits_by_k"' in training
     assert 'selection_criterion = "default_sparse_validation"' in training
     assert "full_ridge_predict_with_fallback" in prediction
     assert '"bayes_covariate_prediction"' in prediction

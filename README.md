@@ -130,6 +130,17 @@ artifact containing all four forecast arrays. Every method receives its own
 TIME evaluation run. TS-RAG references the same prepared datastore and test
 rows but retains its independent extraction and inference modules. All point
 predictions pass through the TIME evaluator as deterministic median forecasts.
+Shared preparation records the per-variate datastore counts. Before TS-RAG
+representation extraction, its project-owned data adapter rejects a new or
+reused artifact with fewer than 11 dates for any variate. Ridge remains able to
+use its documented vanilla fallback on insufficient retrieval history.
+
+Comparison reports retain each metric's mean plus finite and total value
+counts. Distinct configuration or repeat policies preserve their lifecycle
+labels as separate rows; average policies first combine exact repeats and then
+combine scientific configurations. The report manifest lists every consumed
+evaluation manifest. Finite counts are diagnostic and do not have to match for
+the report to be written.
 
 Runtime logs live below `logs/`. `sync_code_to_selena.sh`,
 `sync_results_to_dgx.sh`, and `publish_job.sh` handle the maintained cluster

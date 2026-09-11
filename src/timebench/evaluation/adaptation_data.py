@@ -480,6 +480,11 @@ def prepare_adaptation_dataset(
             start_tick=start_tick,
         )
 
+    datastore_coverage = {
+        "minimum": int(min(datastore_date_counts)),
+        "maximum": int(max(datastore_date_counts)),
+        "balanced_cap": retained_dates,
+    }
     arrays: dict[str, str] = {}
     counts: dict[str, int] = {}
     for split in ALL_SPLITS:
@@ -519,11 +524,7 @@ def prepare_adaptation_dataset(
         "channel_convention": "-1 denotes the complete multivariate target",
         "interval_convention": "target start inclusive, target stop exclusive",
         "query_period_residues": period_residues,
-        "datastore_dates_per_variate": {
-            "minimum": int(min(datastore_date_counts)),
-            "maximum": int(max(datastore_date_counts)),
-            "balanced_cap": retained_dates,
-        },
+        "datastore_dates_per_variate": datastore_coverage,
         "planned_query_windows_per_item": expected_query_windows,
         "planned_query_rows": planned_query_rows,
         "excluded_fixed_context_rows": {

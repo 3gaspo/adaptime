@@ -753,7 +753,7 @@ def extract_adaptation_eval_features(
     config: ExtractionConfig,
     output_dir: str | Path,
 ) -> Path:
-    """Extract only the selected-K test quantities after fitting is frozen."""
+    """Extract test quantities for the frozen family-selected K values."""
 
     from timebench.pipeline.adaptime_training import open_adaptation_model
     from timebench.pipeline.adaptime_vanilla import open_vanilla_test_forecasts
@@ -778,8 +778,8 @@ def extract_adaptation_eval_features(
         raise ValueError("fit, vanilla, and evaluation forecasters do not match")
     if _normalize_extraction_config(fit_extraction["config"]) != asdict(config):
         raise ValueError("fit and evaluation extraction configurations do not match")
-    selected_value = model["selected"]["k"]
-    selected_k = None if selected_value is None else int(selected_value)
+    selected_ks = tuple(sorted(map(int, model.get("evaluation_k_values", ()))))
+    max_selected_k = max(selected_ks, default=0)
     identity = {
         "schema_version": EVAL_EXTRACTION_SCHEMA,
         "timing_contract": "component_seconds",
@@ -789,7 +789,7 @@ def extract_adaptation_eval_features(
         "vanilla_signature": vanilla["signature"],
         "model": forecaster.model_name,
         "weights_id": forecaster.weights_id,
-        "selected_k": selected_k,
+        "selected_k_values": list(selected_ks),
         "config": asdict(config),
     }
     signature = _canonical_hash(identity)
@@ -818,13 +818,13 @@ def extract_adaptation_eval_features(
     rag_eligible = _memmap(eligible_path, (total,), bool)
     fallback_reason = _memmap(reason_path, (total,), np.uint8)
     rag_eligible[:] = False
-    fallback_reason[:] = 6 if selected_k is None else 4
+    fallback_reason[:] = 6 if not selected_ks else 4
     arrays["test.rag_eligible"] = str(eligible_path.relative_to(root))
     arrays["test.fallback_reason"] = str(reason_path.relative_to(root))
 
     reused_neighbor_forecasts = 0
     computed_neighbor_forecasts = 0
-    if selected_k is not None:
+    if selected_ks:
         fit_arrays = dict(fit_extraction["arrays"])
         datastore_representation = np.load(
             fit_root / fit_arrays["datastore.representation"], mmap_mode="r"
@@ -840,7 +840,6 @@ def extract_adaptation_eval_features(
         finite_fraction_path = root / "test" / "context_finite_fraction.npy"
         distance_path = root / "test" / "neighbor_distance.npy"
         neighbor_path = root / "test" / "neighbor_id.npy"
-        context_path = root / "test" / "context_forecast.npy"
         representation = _memmap(
             representation_path,
             (total, datastore_representation.shape[1]),
@@ -848,18 +847,26 @@ def extract_adaptation_eval_features(
         )
         scale = _memmap(scale_path, (total, 1), np.float32)
         finite_fraction = _memmap(finite_fraction_path, (total,), np.float32)
-        distances = _memmap(distance_path, (total, selected_k), np.float32)
-        neighbor_ids = _memmap(neighbor_path, (total, selected_k), np.int64)
+        distances = _memmap(distance_path, (total, max_selected_k), np.float32)
+        neighbor_ids = _memmap(neighbor_path, (total, max_selected_k), np.int64)
         vanilla_values = np.load(
             vanilla_root / vanilla["arrays"]["predictions"], mmap_mode="r"
         )
-        context_forecast = _memmap(context_path, vanilla_values.shape, np.float32)
+        context_forecasts = {
+            k: _memmap(
+                root / "test" / f"context_forecast_k{k}.npy",
+                vanilla_values.shape,
+                np.float32,
+            )
+            for k in selected_ks
+        }
         representation[:] = np.nan
         scale[:] = np.nan
         finite_fraction[:] = 0.0
         distances[:] = np.inf
         neighbor_ids[:] = -1
-        context_forecast[:] = vanilla_values
+        for context_forecast in context_forecasts.values():
+            context_forecast[:] = vanilla_values
         arrays.update(
             {
                 "test.representation": str(representation_path.relative_to(root)),
@@ -869,7 +876,12 @@ def extract_adaptation_eval_features(
                 ),
                 "test.neighbor_distance": str(distance_path.relative_to(root)),
                 "test.neighbor_id": str(neighbor_path.relative_to(root)),
-                "test.context_forecast": str(context_path.relative_to(root)),
+                **{
+                    f"test.context_forecast_k{k}": str(
+                        (root / "test" / f"context_forecast_k{k}.npy").relative_to(root)
+                    )
+                    for k in selected_ks
+                },
             }
         )
 
@@ -903,7 +915,7 @@ def extract_adaptation_eval_features(
         datastore_positions = np.flatnonzero(datastore_eligible)
         started = perf_counter()
         if len(query_positions) and len(datastore_positions):
-            retrieval_k = min(selected_k, len(datastore_positions))
+            retrieval_k = min(max_selected_k, len(datastore_positions))
             selected_distances, selected_ids = blockwise_topk(
                 representation[query_positions],
                 datastore_representation[datastore_positions],
@@ -930,7 +942,7 @@ def extract_adaptation_eval_features(
             mapped = np.full_like(selected_ids, -1)
             mapped[valid] = datastore_positions[selected_ids[valid]]
             neighbor_ids[query_positions, :retrieval_k] = mapped
-            enough = np.count_nonzero(valid, axis=1) >= selected_k
+            enough = np.count_nonzero(valid, axis=1) >= max_selected_k
             rejected = query_positions[~enough]
             rag_eligible[rejected] = False
             fallback_reason[rejected] = 2
@@ -984,26 +996,29 @@ def extract_adaptation_eval_features(
             query_batch = reader.read(references[positions])
             neighbor_batch = reader.read(datastore_references[ids.reshape(-1)])
             neighbor_context = neighbor_batch.context.reshape(
-                len(positions), selected_k, 1, prepared.context_length
+                len(positions), max_selected_k, 1, prepared.context_length
             )
             neighbor_target = np.asarray(datastore_target[ids])
-            started = perf_counter()
-            retrieval_context = _query_scaled_retrieval_context(
-                query_batch.context, neighbor_context, neighbor_target
-            )
-            _record_seconds(
-                timings,
-                "test.context_construction_seconds",
-                perf_counter() - started,
-            )
-            context_forecast[positions] = _timed_forecast(
-                forecaster,
-                query_batch.context,
-                timings,
-                "test.context_forecast_seconds",
-                horizon=prepared.prediction_length,
-                retrieval_context=retrieval_context,
-            )
+            for k in selected_ks:
+                started = perf_counter()
+                retrieval_context = _query_scaled_retrieval_context(
+                    query_batch.context,
+                    neighbor_context[:, :k],
+                    neighbor_target[:, :k],
+                )
+                _record_seconds(
+                    timings,
+                    "test.context_construction_seconds",
+                    perf_counter() - started,
+                )
+                context_forecasts[k][positions] = _timed_forecast(
+                    forecaster,
+                    query_batch.context,
+                    timings,
+                    "test.context_forecast_seconds",
+                    horizon=prepared.prediction_length,
+                    retrieval_context=retrieval_context,
+                )
 
         for store in (
             representation,
@@ -1011,7 +1026,7 @@ def extract_adaptation_eval_features(
             finite_fraction,
             distances,
             neighbor_ids,
-            context_forecast,
+            *context_forecasts.values(),
             missing_ids,
             missing_values,
         ):

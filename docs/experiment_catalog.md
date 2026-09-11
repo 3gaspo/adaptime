@@ -49,7 +49,8 @@ foundation forecast.
   fitting. Any test row without sufficient fixed context or neighbors uses its
   cached flexible-context vanilla forecast.
 - Evaluation: each deterministic method receives its own standard TIME
-  evaluation artifact and one four-method report joins identical support.
+  evaluation artifact. The four-method report joins identical configured
+  support and exposes each method's finite and total value counts per metric.
 
 No delta, convex, per-horizon, or native-multivariate Ridge ablation belongs to
 this family.
@@ -76,7 +77,8 @@ The optional `ADAPTIME_RIDGE_RESULTS_PATH` is a report-only input for the
 separate TS-RAG submission. An incomplete or scientifically different
 full-Ridge root is rejected in favor of local matching evaluations. It cannot
 suppress or alter TS-RAG. The report compares only tasks whose independently
-evaluated support is identical.
+evaluated configured support is identical and retains method-specific finite
+metric coverage for inspection.
 
 No result is claimed until the complete cluster outputs are synchronized and
 inspected.

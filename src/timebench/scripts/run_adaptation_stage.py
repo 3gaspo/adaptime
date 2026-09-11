@@ -39,7 +39,11 @@ def parse_args() -> argparse.Namespace:
         ),
         required=True,
     )
-    parser.add_argument("--method", choices=("ridge", "tsrag"), required=True)
+    parser.add_argument(
+        "--method",
+        choices=("seasonal_naive", "vanilla", "ridge", "tsrag", "unified"),
+        required=True,
+    )
     parser.add_argument("--datasets", type=_csv, default=("all_datasets",))
     parser.add_argument("--terms", type=_csv)
     parser.add_argument("--config", type=Path)

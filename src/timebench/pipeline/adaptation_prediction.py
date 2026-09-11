@@ -12,7 +12,12 @@ from typing import Any
 
 import numpy as np
 
-from timebench.adaptime.ridge import full_ridge_design, full_ridge_predict_with_fallback
+from timebench.adaptime.ridge import (
+    RIDGE_VARIANTS,
+    full_ridge_design,
+    full_ridge_predict_with_fallback,
+    ridge_feature_indices,
+)
 from timebench.evaluation.adaptation_data import PreparedDataset
 from timebench.pipeline.adaptime_extraction import (
     FALLBACK_REASONS,
@@ -28,7 +33,10 @@ ADAPTATION_METHODS = (
     "vanilla",
     "covariate_prediction",
     "bayes_covariate_prediction",
+    "cov_ridge_shared",
+    "y_ridge_shared",
     "full_ridge_shared",
+    "selected_adaptation",
 )
 
 
@@ -62,14 +70,15 @@ def _memmap(path: Path, shape: tuple[int, ...], dtype: object) -> np.memmap:
 def _inference_timings(
     vanilla: dict[str, object],
     evaluation_extraction: dict[str, object],
-    selected_k: int | None,
+    selected_ks: tuple[int, ...],
+    selected_method: str,
     ridge_seconds: float,
     bayes_seconds: float,
 ) -> tuple[dict[str, float], dict[str, float]]:
     vanilla_seconds = float(
         vanilla["timing_seconds"]["vanilla_model_forecast_seconds"]
     )
-    if selected_k is None:
+    if not selected_ks:
         return (
             {method: vanilla_seconds for method in ADAPTATION_METHODS},
             {"vanilla_model_forecast_seconds": vanilla_seconds},
@@ -96,22 +105,24 @@ def _inference_timings(
             "covariate_model_forecast_seconds",
         )
     )
-    return (
-        {
+    timings = {
             "vanilla": vanilla_seconds,
             "covariate_prediction": vanilla_seconds + context_path,
             "bayes_covariate_prediction": (
                 vanilla_seconds + context_path + bayes_seconds
             ),
-            "full_ridge_shared": (
+            **{
+                method: (
                 vanilla_seconds
                 + context_path
                 + components["neighbor_model_forecast_seconds"]
                 + ridge_seconds
-            ),
-        },
-        components,
-    )
+                )
+                for method in RIDGE_VARIANTS
+            },
+        }
+    timings["selected_adaptation"] = timings.get(selected_method, vanilla_seconds)
+    return timings, components
 
 
 def predict_adaptation_family(
@@ -123,7 +134,7 @@ def predict_adaptation_family(
     config: PredictionConfig,
     output_dir: str | Path,
 ) -> Path:
-    """Produce the four aligned Adaptime comparison forecasts."""
+    """Produce aligned candidate forecasts and the validation-selected forecast."""
 
     config.validate()
     prepared = PreparedDataset(prepared_path)
@@ -181,121 +192,143 @@ def predict_adaptation_family(
     fallback_reason = model.get("fallback_reason")
     ridge_seconds = 0.0
     bayes_seconds = 0.0
+    selected_ks = tuple(map(int, model.get("evaluation_k_values", ())))
+    selected_method = str(model["selected"]["method"])
+    method_selections = dict(model.get("method_selections", {}))
+    probability = 0.0
     if fallback_reason is not None:
         for store in prediction_stores.values():
             store[:] = vanilla
         eligible_store[:] = False
         reason_store[:] = 6
-        selected_k: int | None = None
-        probability = 0.0
     else:
-        selected_k = int(model["selected"]["k"])
         bayes = json.loads(
             (model_root / model["files"]["bayes_mixture"]).read_text(
                 encoding="utf-8"
             )
         )
         probability = float(bayes["probability_covariate_better"])
-        coefficients = np.load(
-            model_root / model["files"]["coefficients"], allow_pickle=False
-        )
+        coefficient_files = dict(model["files"]["coefficients"])
+        coefficients = {
+            method: np.load(model_root / relative, allow_pickle=False)
+            for method, relative in coefficient_files.items()
+        }
         eval_arrays = dict(eval_extraction["arrays"])
-        context = np.load(
-            eval_root / eval_arrays["test.context_forecast"], mmap_mode="r"
-        )
-        neighbor_ids = np.load(
-            eval_root / eval_arrays["test.neighbor_id"], mmap_mode="r"
-        )
         base_eligible = np.load(
             eval_root / eval_arrays["test.rag_eligible"], mmap_mode="r"
         )
         base_reason = np.load(
             eval_root / eval_arrays["test.fallback_reason"], mmap_mode="r"
         )
-        new_forecast_ids = np.load(
-            eval_root / eval_arrays["datastore.selected_forecast_id"], mmap_mode="r"
-        )
-        new_forecast_values = np.load(
-            eval_root / eval_arrays["datastore.selected_forecast"], mmap_mode="r"
-        )
-        forecast_ids = np.concatenate(
-            (np.asarray(arrays.forecast_ids), np.asarray(new_forecast_ids))
-        )
-        forecast_values = np.concatenate(
-            (np.asarray(arrays.forecast_values), np.asarray(new_forecast_values)),
-            axis=0,
-        )
-        order = np.argsort(forecast_ids)
-        forecast_ids = forecast_ids[order]
-        forecast_values = forecast_values[order]
+        if selected_ks:
+            contexts = {
+                k: np.load(
+                    eval_root / eval_arrays[f"test.context_forecast_k{k}"],
+                    mmap_mode="r",
+                )
+                for k in selected_ks
+            }
+            neighbor_ids = np.load(
+                eval_root / eval_arrays["test.neighbor_id"], mmap_mode="r"
+            )
+            new_forecast_ids = np.load(
+                eval_root / eval_arrays["datastore.selected_forecast_id"],
+                mmap_mode="r",
+            )
+            new_forecast_values = np.load(
+                eval_root / eval_arrays["datastore.selected_forecast"],
+                mmap_mode="r",
+            )
+            forecast_ids = np.concatenate(
+                (np.asarray(arrays.forecast_ids), np.asarray(new_forecast_ids))
+            )
+            forecast_values = np.concatenate(
+                (np.asarray(arrays.forecast_values), np.asarray(new_forecast_values)),
+                axis=0,
+            )
+            order = np.argsort(forecast_ids)
+            forecast_ids = forecast_ids[order]
+            forecast_values = forecast_values[order]
+        control_k = int(model["selected"]["k"])
+        if control_k == 0 and selected_ks:
+            bayes_k = int(method_selections["bayes_covariate_prediction"]["k"])
+            control_k = bayes_k if bayes_k > 0 else selected_ks[0]
         for start in range(0, len(vanilla), config.chunk_size):
             stop = min(start + config.chunk_size, len(vanilla))
-            started = perf_counter()
             chunk_vanilla = np.asarray(vanilla[start:stop])
-            selected = np.asarray(neighbor_ids[start:stop, :selected_k])
-            candidate = np.asarray(base_eligible[start:stop], dtype=bool) & np.all(
-                selected >= 0, axis=1
-            )
-            design = np.zeros(
-                (*chunk_vanilla.shape, len(coefficients)), dtype=np.float32
-            )
-            final_eligible = np.zeros(stop - start, dtype=bool)
-            positions = np.flatnonzero(candidate)
-            if len(positions):
-                ids = selected[positions]
-                forecast_positions = np.searchsorted(forecast_ids, ids)
-                if (
-                    np.any(forecast_positions >= len(forecast_ids))
-                    or not np.array_equal(
-                        forecast_ids[forecast_positions], ids
-                    )
-                ):
-                    raise ValueError(
-                        "evaluation extraction is missing a selected neighbor forecast"
-                    )
-                candidate_design, _ = full_ridge_design(
-                    chunk_vanilla[positions],
-                    np.asarray(context[start:stop])[positions],
-                    arrays.datastore_target[ids],
-                    forecast_values[forecast_positions],
-                    np.zeros_like(chunk_vanilla[positions]),
+            chunk_predictions = {
+                method: np.array(chunk_vanilla, copy=True)
+                for method in ADAPTATION_METHODS
+            }
+            chunk_eligible = np.zeros(stop - start, dtype=bool)
+            for k in selected_ks:
+                started = perf_counter()
+                selected_ids = np.asarray(neighbor_ids[start:stop, :k])
+                candidate = np.asarray(base_eligible[start:stop], dtype=bool) & np.all(
+                    selected_ids >= 0, axis=1
                 )
-                complete = np.isfinite(candidate_design).reshape(
-                    len(candidate_design), -1
-                ).all(axis=1)
-                complete &= np.isfinite(chunk_vanilla[positions]).reshape(
-                    len(positions), -1
-                ).all(axis=1)
-                accepted = positions[complete]
-                design[accepted] = candidate_design[complete]
-                final_eligible[accepted] = True
-            ridge_prediction = full_ridge_predict_with_fallback(
-                chunk_vanilla, design, coefficients, final_eligible
+                design = np.zeros(
+                    (*chunk_vanilla.shape, 2 + 2 * k), dtype=np.float32
+                )
+                final_eligible = np.zeros(stop - start, dtype=bool)
+                positions = np.flatnonzero(candidate)
+                if len(positions):
+                    ids = selected_ids[positions]
+                    forecast_positions = np.searchsorted(forecast_ids, ids)
+                    if (
+                        np.any(forecast_positions >= len(forecast_ids))
+                        or not np.array_equal(forecast_ids[forecast_positions], ids)
+                    ):
+                        raise ValueError(
+                            "evaluation extraction is missing a selected neighbor forecast"
+                        )
+                    candidate_design, _ = full_ridge_design(
+                        chunk_vanilla[positions],
+                        np.asarray(contexts[k][start:stop])[positions],
+                        arrays.datastore_target[ids],
+                        forecast_values[forecast_positions],
+                        np.zeros_like(chunk_vanilla[positions]),
+                    )
+                    complete = np.isfinite(candidate_design).reshape(
+                        len(candidate_design), -1
+                    ).all(axis=1)
+                    accepted = positions[complete]
+                    design[accepted] = candidate_design[complete]
+                    final_eligible[accepted] = True
+                chunk_eligible |= final_eligible
+                if k == control_k:
+                    chunk_predictions["covariate_prediction"][final_eligible] = (
+                        np.asarray(contexts[k][start:stop])[final_eligible]
+                    )
+                bayes_selection = method_selections["bayes_covariate_prediction"]
+                if int(bayes_selection["k"]) == k:
+                    bayes_started = perf_counter()
+                    chunk_predictions["bayes_covariate_prediction"][final_eligible] = (
+                        (1.0 - probability) * chunk_vanilla[final_eligible]
+                        + probability
+                        * np.asarray(contexts[k][start:stop])[final_eligible]
+                    )
+                    bayes_seconds += perf_counter() - bayes_started
+                for method in RIDGE_VARIANTS:
+                    selection = method_selections[method]
+                    if int(selection["k"]) != k:
+                        continue
+                    indices = ridge_feature_indices(method, k)
+                    chunk_predictions[method] = full_ridge_predict_with_fallback(
+                        chunk_vanilla,
+                        design[..., indices],
+                        coefficients[method],
+                        final_eligible,
+                    )
+                ridge_seconds += perf_counter() - started
+            chunk_predictions["selected_adaptation"] = np.array(
+                chunk_predictions.get(selected_method, chunk_vanilla), copy=True
             )
-            ridge_seconds += perf_counter() - started
-            covariate_prediction = np.array(chunk_vanilla, copy=True)
-            covariate_prediction[final_eligible] = np.asarray(
-                context[start:stop]
-            )[final_eligible]
-            bayes_started = perf_counter()
-            bayes_prediction = np.array(chunk_vanilla, copy=True)
-            bayes_prediction[final_eligible] = (
-                (1.0 - probability) * chunk_vanilla[final_eligible]
-                + probability * covariate_prediction[final_eligible]
-            )
-            bayes_seconds += perf_counter() - bayes_started
-            prediction_stores["vanilla"][start:stop] = chunk_vanilla
-            prediction_stores["covariate_prediction"][start:stop] = (
-                covariate_prediction
-            )
-            prediction_stores["bayes_covariate_prediction"][start:stop] = (
-                bayes_prediction
-            )
-            prediction_stores["full_ridge_shared"][start:stop] = ridge_prediction
+            for method, values in chunk_predictions.items():
+                prediction_stores[method][start:stop] = values
             final_reason = np.asarray(base_reason[start:stop]).copy()
-            final_reason[np.asarray(base_eligible[start:stop]) & ~candidate] = 2
-            final_reason[candidate & ~final_eligible] = 5
-            eligible_store[start:stop] = final_eligible
+            final_reason[np.asarray(base_eligible[start:stop]) & ~chunk_eligible] = 5
+            eligible_store[start:stop] = chunk_eligible
             reason_store[start:stop] = final_reason
     for store in prediction_stores.values():
         store.flush()
@@ -304,7 +337,8 @@ def predict_adaptation_family(
     inference_seconds, components = _inference_timings(
         vanilla_manifest,
         eval_extraction,
-        selected_k,
+        selected_ks,
+        selected_method,
         ridge_seconds,
         bayes_seconds,
     )
@@ -318,6 +352,8 @@ def predict_adaptation_family(
         "context_policy": "vanilla_flexible_adaptation_fixed",
         "prediction_length": prepared.prediction_length,
         "selected": model["selected"],
+        "method_selections": method_selections,
+        "evaluation_k_values": list(selected_ks),
         "bayes_probability_covariate_better": probability,
         "fallback_reason": fallback_reason,
         "rag_coverage": {

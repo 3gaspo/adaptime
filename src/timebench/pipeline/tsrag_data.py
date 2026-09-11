@@ -9,7 +9,10 @@ from typing import Mapping
 
 import numpy as np
 
-from timebench.evaluation.adaptation_data import PreparedDataset
+from timebench.evaluation.adaptation_data import (
+    PreparedDataset,
+    validate_global_datastore_requirement,
+)
 
 
 TSRAG_CONTEXT_LENGTH = 512
@@ -90,6 +93,7 @@ class TSRAGPreparedDataset:
 
     def __init__(self, path: str | Path) -> None:
         self.shared = PreparedDataset(path)
+        validate_global_datastore_requirement(self.shared.manifest)
         if self.shared.target_mode != "univariate":
             raise ValueError("TS-RAG requires a shared univariate Adaptime datastore")
         if self.shared.context_length < TSRAG_CONTEXT_LENGTH:

@@ -11,9 +11,11 @@ from pathlib import Path
 import numpy as np
 
 from timebench.adaptime.ridge import (
+    RIDGE_VARIANTS,
     FullRidgeStatistics,
     full_ridge_design,
-    full_ridge_feature_names,
+    ridge_feature_indices,
+    ridge_feature_names,
 )
 from timebench.evaluation.adaptation_data import PreparedDataset
 from timebench.pipeline.adaptime_extraction import open_extraction
@@ -262,7 +264,7 @@ def fit_full_ridge(
     config: RidgeTrainingConfig,
     output_dir: str | Path,
 ) -> Path:
-    """Fit on adaptation-train, select on validation, and freeze coefficients."""
+    """Fit train-only candidates, select on validation, and freeze the family."""
 
     config.validate()
     prepared = PreparedDataset(prepared_path)
@@ -280,13 +282,15 @@ def fit_full_ridge(
     identity = {
         "schema_version": ADAPTATION_MODEL_SCHEMA,
         "extraction_signature": extraction_manifest["signature"],
-        "method": "full_ridge_shared",
+        "method": "adaptime_validation_selector",
         "config": asdict(config),
         "bayes_covariate_protocol": {
-            "evidence": "paired_train_validation_window_msse_wins",
+            "fit_evidence": "paired_adaptation_train_window_msse_wins",
+            "selection_evidence": "adaptation_validation_msse",
             "tie_weight": 0.5,
             "prior": {"alpha": 1.0, "beta": 1.0},
         },
+        "selection_methods": ["vanilla", "bayes_covariate_prediction", *RIDGE_VARIANTS],
     }
     signature = _canonical_hash(identity)
     root = Path(output_dir).expanduser().resolve()
@@ -299,7 +303,11 @@ def fit_full_ridge(
             and existing.get("status") == "completed"
             and files.get("selection")
             and files.get("bayes_mixture")
-            and all((root / relative).is_file() for relative in files.values())
+            and all(
+                (root / relative).is_file()
+                for value in files.values()
+                for relative in (value.values() if isinstance(value, dict) else (value,))
+            )
         ):
             return manifest_path
         raise FileExistsError(f"training directory already contains a different run: {root}")
@@ -307,7 +315,6 @@ def fit_full_ridge(
 
     arrays = ExtractionArrays(extraction_root, extraction_manifest)
     selection_rows: list[dict[str, object]] = []
-    best: tuple[float, int, float, np.ndarray] | None = None
     train_by_k, train_coverage = split_statistics_grid(
         arrays,
         "adaptation_train",
@@ -354,6 +361,11 @@ def fit_full_ridge(
                         validation_coverage[default_k]["adapted_windows"]
                     ),
                 },
+                "method_selections": {
+                    method: {"method": "vanilla", "k": 0, "alpha": None, "validation_msse": None}
+                    for method in ("bayes_covariate_prediction", *RIDGE_VARIANTS)
+                },
+                "selected": {"method": "vanilla", "k": 0, "alpha": None, "validation_msse": None},
                 "candidates": [],
             },
         )
@@ -362,7 +374,7 @@ def fit_full_ridge(
             {
                 "method": "bayes_covariate_prediction",
                 "status": "vanilla_fallback",
-                "selected_k": None,
+                "selected_k": 0,
                 "prior": {"alpha": 1.0, "beta": 1.0},
                 "trials": 0,
                 "covariate_wins_including_half_ties": 0.0,
@@ -376,7 +388,12 @@ def fit_full_ridge(
             "signature": signature,
             "status": "completed",
             "protocol": "vanilla_fallback_when_valid_training_windows_are_insufficient",
-            "selected": {"k": None, "alpha": None, "validation_msse": None},
+            "selected": {"method": "vanilla", "k": 0, "alpha": None, "validation_msse": None},
+            "method_selections": {
+                method: {"method": "vanilla", "k": 0, "alpha": None, "validation_msse": None}
+                for method in ("bayes_covariate_prediction", *RIDGE_VARIANTS)
+            },
+            "evaluation_k_values": [],
             "fallback_reason": reason,
             "primary_configuration": {"k": default_k, "alpha": default_alpha},
             "window_support": {
@@ -384,7 +401,7 @@ def fit_full_ridge(
                 "minimum_training_windows_exclusive": training_window_limit,
                 "minimum_validation_windows_exclusive": validation_window_limit,
             },
-            "feature_names": [],
+            "feature_names": {method: [] for method in RIDGE_VARIANTS},
             "coverage": {
                 "adaptation_train": {
                     str(k): value for k, value in train_coverage.items()
@@ -401,124 +418,181 @@ def fit_full_ridge(
         _atomic_json(manifest_path, model)
         return manifest_path
 
-    default_validation_windows = int(
-        validation_coverage[default_k]["adapted_windows"]
-    )
+    default_validation_windows = int(validation_coverage[default_k]["adapted_windows"])
+    candidate_ks = [
+        int(k)
+        for k in config.k_values
+        if int(train_coverage[k]["adapted_windows"]) > training_window_limit
+        and int(validation_coverage[k]["adapted_windows"]) > validation_window_limit
+    ]
+    bayes_by_k: dict[int, dict[str, object]] = {}
+    for k in config.k_values:
+        if int(train_coverage[k]["adapted_windows"]) <= training_window_limit:
+            continue
+        evidence = covariate_win_evidence(
+            arrays, "adaptation_train", int(k), config.chunk_size
+        )
+        trials = int(evidence["trials"])
+        wins = float(evidence["covariate_wins_including_half_ties"])
+        posterior_alpha = 1.0 + wins
+        posterior_beta = 1.0 + trials - wins
+        bayes_by_k[int(k)] = {
+            "training": evidence,
+            "posterior": {"alpha": posterior_alpha, "beta": posterior_beta},
+            "probability_covariate_better": posterior_alpha
+            / (posterior_alpha + posterior_beta),
+        }
+
+    coefficients_by_method: dict[str, np.ndarray] = {}
     if default_validation_windows <= validation_window_limit:
-        selected_k = default_k
-        selected_alpha = default_alpha
-        validation_msse: float | None = None
-        coefficients = train_by_k[selected_k].solve(selected_alpha)
         selection_criterion = "default_sparse_validation"
-        selection_rows.append(
-            {
-                "k": selected_k,
-                "alpha": selected_alpha,
+        method_selections: dict[str, dict[str, object]] = {}
+        for method in RIDGE_VARIANTS:
+            statistics = train_by_k[default_k].select_features(
+                ridge_feature_indices(method, default_k)
+            )
+            coefficients_by_method[method] = statistics.solve(default_alpha)
+            method_selections[method] = {
+                "method": method,
+                "k": default_k,
+                "alpha": default_alpha,
                 "validation_msse": None,
             }
-        )
+        method_selections["bayes_covariate_prediction"] = {
+            "method": "bayes_covariate_prediction",
+            "k": default_k,
+            "alpha": None,
+            "validation_msse": None,
+        }
+        selected = dict(method_selections["full_ridge_shared"])
+        selection_rows = [dict(value) for value in method_selections.values()]
     else:
-        selection_criterion = "adaptation_validation_msse"
-        candidate_ks = [
-            k
-            for k in config.k_values
-            if int(train_coverage[k]["adapted_windows"]) > training_window_limit
-            and int(validation_coverage[k]["adapted_windows"]) > validation_window_limit
-        ]
+        selection_criterion = "adaptation_validation_msse_with_virtual_k0"
+        vanilla_msse = validation_by_k[default_k].mean_squared_error(
+            np.zeros(validation_by_k[default_k].features, dtype=np.float64)
+        )
+        vanilla_candidate: dict[str, object] = {
+            "method": "vanilla",
+            "k": 0,
+            "alpha": None,
+            "validation_msse": float(vanilla_msse),
+        }
+        selection_rows.append(vanilla_candidate)
+        best_by_method: dict[str, tuple[dict[str, object], np.ndarray | None]] = {
+            method: (dict(vanilla_candidate), None)
+            for method in ("bayes_covariate_prediction", *RIDGE_VARIANTS)
+        }
         for k in candidate_ks:
-            train_statistics = train_by_k[k]
-            validation_statistics = validation_by_k[k]
-            for alpha in config.alpha_values:
-                candidate_coefficients = train_statistics.solve(alpha)
-                candidate_msse = validation_statistics.mean_squared_error(
-                    candidate_coefficients
+            full_validation = validation_by_k[k]
+            bayes = bayes_by_k[k]
+            probability = float(bayes["probability_covariate_better"])
+            mixture_coefficients = np.zeros(full_validation.features, dtype=np.float64)
+            mixture_coefficients[0] = -probability
+            mixture_coefficients[1] = probability
+            bayes_msse = full_validation.mean_squared_error(mixture_coefficients)
+            bayes_candidate = {
+                "method": "bayes_covariate_prediction",
+                "k": k,
+                "alpha": None,
+                "validation_msse": float(bayes_msse),
+                "probability_covariate_better": probability,
+            }
+            selection_rows.append(bayes_candidate)
+            current = best_by_method["bayes_covariate_prediction"][0]
+            if float(bayes_msse) < float(current["validation_msse"]):
+                best_by_method["bayes_covariate_prediction"] = (
+                    bayes_candidate,
+                    None,
                 )
-                selection_rows.append(
-                    {
-                        "k": int(k),
+            for method in RIDGE_VARIANTS:
+                indices = ridge_feature_indices(method, k)
+                train_statistics = train_by_k[k].select_features(indices)
+                validation_statistics = full_validation.select_features(indices)
+                for alpha in config.alpha_values:
+                    candidate_coefficients = train_statistics.solve(alpha)
+                    candidate_msse = validation_statistics.mean_squared_error(
+                        candidate_coefficients
+                    )
+                    candidate = {
+                        "method": method,
+                        "k": k,
                         "alpha": float(alpha),
                         "validation_msse": float(candidate_msse),
                     }
-                )
-                candidate = (
-                    float(candidate_msse),
-                    int(k),
-                    float(alpha),
-                    candidate_coefficients,
-                )
-                if best is None or candidate[:3] < best[:3]:
-                    best = candidate
-        assert best is not None
-        validation_msse, selected_k, selected_alpha, coefficients = best
+                    selection_rows.append(candidate)
+                    current = best_by_method[method][0]
+                    current_key = (
+                        float(current["validation_msse"]),
+                        int(current["k"]),
+                        -1.0 if current["alpha"] is None else float(current["alpha"]),
+                    )
+                    candidate_key = (float(candidate_msse), k, float(alpha))
+                    if candidate_key < current_key:
+                        best_by_method[method] = (candidate, candidate_coefficients)
+        method_selections = {
+            method: dict(candidate) for method, (candidate, _) in best_by_method.items()
+        }
+        coefficients_by_method = {
+            method: coefficients
+            for method, (candidate, coefficients) in best_by_method.items()
+            if candidate["method"] != "vanilla" and coefficients is not None
+        }
+        selected = dict(vanilla_candidate)
+        for method in ("bayes_covariate_prediction", *RIDGE_VARIANTS):
+            candidate = method_selections[method]
+            if float(candidate["validation_msse"]) < float(selected["validation_msse"]):
+                selected = dict(candidate)
 
-    coefficient_path = root / "coefficients.npy"
-    with coefficient_path.open("wb") as stream:
-        np.save(stream, coefficients, allow_pickle=False)
-    train_evidence = covariate_win_evidence(
-        arrays, "adaptation_train", selected_k, config.chunk_size
-    )
-    validation_evidence = covariate_win_evidence(
-        arrays, "adaptation_validation", selected_k, config.chunk_size
-    )
-    trials = int(train_evidence["trials"]) + int(validation_evidence["trials"])
-    wins = float(train_evidence["covariate_wins_including_half_ties"]) + float(
-        validation_evidence["covariate_wins_including_half_ties"]
-    )
-    posterior_alpha = 1.0 + wins
-    posterior_beta = 1.0 + trials - wins
-    probability = posterior_alpha / (posterior_alpha + posterior_beta)
-    vanilla_msse = (
-        float(train_evidence["vanilla_msse_sum"])
-        + float(validation_evidence["vanilla_msse_sum"])
-    ) / trials
-    covariate_msse = (
-        float(train_evidence["covariate_msse_sum"])
-        + float(validation_evidence["covariate_msse_sum"])
-    ) / trials
+    coefficient_files: dict[str, str] = {}
+    for method, coefficients in coefficients_by_method.items():
+        coefficient_path = root / f"{method}_coefficients.npy"
+        with coefficient_path.open("wb") as stream:
+            np.save(stream, coefficients, allow_pickle=False)
+        coefficient_files[method] = coefficient_path.name
+
+    selected_bayes = method_selections["bayes_covariate_prediction"]
+    selected_bayes_k = int(selected_bayes["k"])
+    selected_bayes_fit = bayes_by_k.get(selected_bayes_k)
     _atomic_json(
         root / "bayes_mixture.json",
         {
             "method": "bayes_covariate_prediction",
-            "status": "fitted",
-            "selected_k": selected_k,
+            "status": "vanilla_selected" if selected_bayes_k == 0 else "fitted",
+            "selected_k": selected_bayes_k,
             "loss": "paired_per_window_msse",
             "success": "covariate_prediction_msse_below_vanilla_msse",
             "tie_weight": 0.5,
             "prior": {"alpha": 1.0, "beta": 1.0},
-            "posterior": {
-                "alpha": posterior_alpha,
-                "beta": posterior_beta,
-            },
-            "training": train_evidence,
-            "validation": validation_evidence,
-            "trials": trials,
-            "covariate_wins_including_half_ties": wins,
-            "mean_msse": {
-                "vanilla": vanilla_msse,
-                "covariate_prediction": covariate_msse,
-            },
-            "covariate_better_on_average": covariate_msse < vanilla_msse,
-            "probability_covariate_better": probability,
+            "fit_split": "adaptation_train",
+            "selection_split": "adaptation_validation",
+            "posterior": None if selected_bayes_fit is None else selected_bayes_fit["posterior"],
+            "training": None if selected_bayes_fit is None else selected_bayes_fit["training"],
+            "probability_covariate_better": 0.0
+            if selected_bayes_fit is None
+            else selected_bayes_fit["probability_covariate_better"],
+            "validation_msse": selected_bayes["validation_msse"],
+            "fits_by_k": {str(k): value for k, value in bayes_by_k.items()},
         },
+    )
+    evaluation_k_values = sorted(
+        {
+            int(value["k"])
+            for value in method_selections.values()
+            if int(value["k"]) > 0
+        }
     )
     _atomic_json(
         root / "selection.json",
         {
             "criterion": selection_criterion,
-            "selected_k": selected_k,
-            "selected_alpha": selected_alpha,
-            "selected_validation_msse": validation_msse,
+            "selected": selected,
+            "method_selections": method_selections,
+            "evaluation_k_values": evaluation_k_values,
             "primary_configuration": {"k": default_k, "alpha": default_alpha},
             "window_support": {
                 "test_windows": test_windows,
                 "minimum_training_windows_exclusive": training_window_limit,
                 "minimum_validation_windows_exclusive": validation_window_limit,
-                "selected_k_training_windows": int(
-                    train_coverage[selected_k]["adapted_windows"]
-                ),
-                "selected_k_validation_windows": int(
-                    validation_coverage[selected_k]["adapted_windows"]
-                ),
             },
             "candidates": selection_rows,
         },
@@ -530,21 +604,23 @@ def fit_full_ridge(
         "signature": signature,
         "status": "completed",
         "protocol": (
-            "fit_once_valid_adaptation_train_select_when_validation_sufficient_"
-            "otherwise_use_default_freeze_before_time_test"
+            "fit_on_adaptation_train_select_method_k_alpha_against_virtual_"
+            "vanilla_on_validation_freeze_before_time_test"
         ),
-        "selected": {
-            "k": selected_k,
-            "alpha": selected_alpha,
-            "validation_msse": validation_msse,
-        },
+        "selected": selected,
+        "method_selections": method_selections,
+        "evaluation_k_values": evaluation_k_values,
         "primary_configuration": {"k": default_k, "alpha": default_alpha},
         "window_support": {
             "test_windows": test_windows,
             "minimum_training_windows_exclusive": training_window_limit,
             "minimum_validation_windows_exclusive": validation_window_limit,
         },
-        "feature_names": full_ridge_feature_names(selected_k),
+        "feature_names": {
+            method: ([] if selection["method"] == "vanilla" else ridge_feature_names(method, int(selection["k"])))
+            for method, selection in method_selections.items()
+            if method in RIDGE_VARIANTS
+        },
         "coverage": {
             "adaptation_train": {str(k): value for k, value in train_coverage.items()},
             "adaptation_validation": {
@@ -552,7 +628,7 @@ def fit_full_ridge(
             },
         },
         "files": {
-            "coefficients": coefficient_path.name,
+            "coefficients": coefficient_files,
             "selection": "selection.json",
             "bayes_mixture": "bayes_mixture.json",
         },

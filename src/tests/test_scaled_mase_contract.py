@@ -22,6 +22,7 @@ SPEC.loader.exec_module(METRICS)
 
 PIPELINE = types.ModuleType("timebench.pipeline")
 PIPELINE.select_completed_runs = lambda *args, **kwargs: []
+PIPELINE.parse_config_filters = lambda values: {}
 sys.modules.setdefault("timebench", types.ModuleType("timebench"))
 sys.modules["timebench.pipeline"] = PIPELINE
 PERFORMANCE_PATH = PROJECT_ROOT / "src/timebench/feature/performance.py"
@@ -31,6 +32,17 @@ PERFORMANCE_SPEC = importlib.util.spec_from_file_location(
 assert PERFORMANCE_SPEC is not None and PERFORMANCE_SPEC.loader is not None
 PERFORMANCE = importlib.util.module_from_spec(PERFORMANCE_SPEC)
 PERFORMANCE_SPEC.loader.exec_module(PERFORMANCE)
+
+PATHS = types.ModuleType("timebench.paths")
+PATHS.foundation_experiment_root = lambda: Path(".")
+sys.modules["timebench.paths"] = PATHS
+SUMMARY_PATH = PROJECT_ROOT / "scripts/compute_foundation_summary.py"
+SUMMARY_SPEC = importlib.util.spec_from_file_location(
+    "timebench_foundation_summary", SUMMARY_PATH
+)
+assert SUMMARY_SPEC is not None and SUMMARY_SPEC.loader is not None
+SUMMARY = importlib.util.module_from_spec(SUMMARY_SPEC)
+SUMMARY_SPEC.loader.exec_module(SUMMARY)
 
 
 def main() -> None:
@@ -47,8 +59,30 @@ def main() -> None:
     )
     assert "scaled_MASE" in summary
     assert "geometric_mean_over_tasks" in summary
+    assert "MASE_finite_values" in summary
     assert "--seasonal-naive-results-dir" in channel
     ast.parse(summary)
+
+    repeated_cells = [
+        {
+            "model": "model_a",
+            "base_model": "model_a",
+            "target_mode": "univariate",
+            "dataset_id": "toy/H",
+            "horizon": "short",
+            "MASE": mase,
+            "MASE_finite_values": finite,
+            "MASE_total_values": total,
+            "inference_seconds": 1.0,
+            "scientific_config": {"value": 1},
+        }
+        for mase, finite, total in ((1.0, 2, 3), (3.0, 3, 4))
+    ]
+    effective = SUMMARY._effective_cells(repeated_cells)
+    assert len(effective) == 1
+    assert effective[0]["MASE"] == 2.0
+    assert effective[0]["MASE_finite_values"] == 5
+    assert effective[0]["MASE_total_values"] == 7
 
     frame = pd.DataFrame(
         {

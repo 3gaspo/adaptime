@@ -7,6 +7,13 @@ import warnings
 import numpy as np
 
 
+RIDGE_VARIANTS = (
+    "cov_ridge_shared",
+    "y_ridge_shared",
+    "full_ridge_shared",
+)
+
+
 def full_ridge_feature_names(k: int) -> list[str]:
     if int(k) <= 0:
         raise ValueError("k must be positive")
@@ -16,6 +23,27 @@ def full_ridge_feature_names(k: int) -> list[str]:
         *(f"Y_{index + 1}" for index in range(int(k))),
         *(f"N_{index + 1}" for index in range(int(k))),
     ]
+
+
+def ridge_feature_indices(method: str, k: int) -> np.ndarray:
+    """Select a nested Ridge design from ``[V,C,Y_1..Y_K,N_1..N_K]``."""
+
+    if int(k) <= 0:
+        raise ValueError("k must be positive")
+    if method == "cov_ridge_shared":
+        indices = (0, 1)
+    elif method == "y_ridge_shared":
+        indices = (0, *range(2, 2 + int(k)))
+    elif method == "full_ridge_shared":
+        indices = tuple(range(2 + 2 * int(k)))
+    else:
+        raise ValueError(f"unknown Ridge variant: {method}")
+    return np.asarray(indices, dtype=np.int64)
+
+
+def ridge_feature_names(method: str, k: int) -> list[str]:
+    names = full_ridge_feature_names(k)
+    return [names[index] for index in ridge_feature_indices(method, k)]
 
 
 def full_ridge_design(
@@ -121,6 +149,23 @@ class FullRidgeStatistics:
         self.y_sum_squares += other.y_sum_squares
         self.windows += other.windows
         self.observations += other.observations
+
+    def select_features(self, indices: np.ndarray) -> "FullRidgeStatistics":
+        """Return exact sufficient statistics for a subset of design columns."""
+
+        selected = np.asarray(indices, dtype=np.int64)
+        if selected.ndim != 1 or not len(selected):
+            raise ValueError("feature indices must be a non-empty vector")
+        if np.any(selected < 0) or np.any(selected >= self.features):
+            raise ValueError("feature index is outside the full Ridge design")
+        result = FullRidgeStatistics(len(selected))
+        result.windows = self.windows
+        result.observations = self.observations
+        result.feature_sum_squares = self.feature_sum_squares[selected].copy()
+        result.xtx = self.xtx[np.ix_(selected, selected)].copy()
+        result.xty = self.xty[selected].copy()
+        result.y_sum_squares = self.y_sum_squares
+        return result
 
     def solve(self, alpha: float) -> np.ndarray:
         if self.observations == 0:

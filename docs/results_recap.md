@@ -2,69 +2,72 @@
 
 ## Current partial Adaptime evidence
 
-The current synchronized run attempted the 98-task, Chronos-2 univariate
-`full_ridge_shared` workflow under the window-proportional, 8192-context,
-MSSE-fitting, and Seasonal-Naive-scaled-MASE contract. It allocated 62 tasks
-before failing: 61 completed, one was interrupted, and the remaining 36 were
-never allocated.
+The 2026-09-09 Selena chain ran the 98-task, Chronos-2 univariate Ridge family
+under the window-proportional, 8192-context, MSSE-fitting, and deterministic
+Seasonal-Naive-scaled-MASE contract. Preparation, all 98 selected-K evaluation
+extractions, and all 98 four-method prediction bundles completed. Common TIME
+evaluation then completed the same 18-task execution-order prefix for
+`vanilla`, `covariate_prediction`, `bayes_covariate_prediction`, and
+`full_ridge_shared` before failing on the nineteenth task.
 
-Of the 61 completed tasks, 44 correctly exercised the configured
-vanilla-only fallback because their histories could not supply the requested
-chronological adaptation regions and context. Seventeen tasks fitted and
-evaluated a ridge adaptor. Across only those 17 fitted-ridge tasks:
+The 18 completed tasks cover all three `Water_Quality_Darwin` terms and all 15
+`current_velocity` frequency/term combinations. Six fitted a Ridge adaptor and
+12 used the documented vanilla fallback. Across all 18 aligned tasks:
 
-| Method | Scaled MASE (geometric mean) | Test-time seconds |
-|---|---:|---:|
-| Seasonal Naive | 1.000000 | -- |
-| Vanilla Chronos-2 | 0.758386 | 15.566 |
-| Retrieval-covariate Chronos-2 | 0.775540 | 1225.309 |
-| Adaptime `full_ridge_shared` | 0.775212 | 1241.391 |
+| Method | Scaled MASE (geometric mean) | Ratio to vanilla | Wins/ties vs vanilla | Test-time seconds |
+|---|---:|---:|---:|---:|
+| Vanilla Chronos-2 | 0.749478 | 1.000000 | -- | 170.372 |
+| Retrieval covariate | 0.753696 | 1.005628 | 2 / 12 | 323.124 |
+| Bayesian covariate | 0.747726 | 0.997662 | 5 / 12 | 323.124 |
+| Adaptime `full_ridge_shared` | 0.760756 | 1.015048 | 3 / 12 | 341.173 |
 
-Adaptime is 2.22% worse than vanilla in geometric mean on this partial fitted
-subset. It wins 7 of 17 task aggregates, with a median Adaptime/vanilla ratio
-of 1.0044, a best ratio of 0.9812, and a worst ratio of 1.2706. The raw
-retrieval-covariate branch is 2.26% worse than vanilla and wins one task.
-Adaptime takes 0.369 seconds per test window versus 0.00463 for vanilla, about
-79.8 times longer, before separately accounting for the precomputed extraction
-stage.
+Fallback tasks make all four methods identical and do not provide adaptation
+evidence. Across only the six fitted tasks:
 
-Retrieval is eligible for every test window on 15 fitted tasks and one third
-of test windows on each of the two Australia Solar tasks, giving an unweighted
-mean task eligibility of 92.2%. Validation selected `K=1` for 9 tasks, `K=10`
-for 3, and `K=15` for 5; it never selected `K=5`. It selected alpha `1e-3` for
-6 tasks, `1e-2` for 4, and `1e-1` for 7. This spread does not indicate one
-stable global ridge configuration.
+| Method | Scaled MASE (geometric mean) | Ratio to vanilla | Wins vs vanilla | Test-time seconds |
+|---|---:|---:|---:|---:|
+| Vanilla Chronos-2 | 0.848132 | 1.000000 | -- | 9.939 |
+| Retrieval covariate | 0.862532 | 1.016979 | 2/6 | 162.691 |
+| Bayesian covariate | 0.842196 | 0.993002 | 5/6 | 162.692 |
+| Adaptime `full_ridge_shared` | 0.886998 | 1.045826 | 3/6 | 180.740 |
 
-Including the 44 vanilla-only fallbacks, the incomplete 61-task prefix scores
-0.707292 for vanilla, 0.711715 for the covariate branch, and 0.711631 for
-Adaptime. Those fallback tasks make all three methods identical and therefore
-do not provide adaptation evidence. The fitted subset is also execution-order
-selected rather than a complete TIME sample. The current partial evidence does
-not support the hypothesis that `full_ridge_shared` improves vanilla
-Chronos-2, but it is not a final benchmark conclusion.
+Bayesian covariate prediction is 0.70% better than vanilla on this fitted
+prefix and wins five of six tasks. Raw covariate prediction is 1.70% worse;
+full Ridge is 4.58% worse and reaches its worst ratio, 1.2706, on
+`current_velocity/5T/medium`. All 45,024 MASE values are finite for every
+method. Because this is a small execution-order-selected prefix rather than a
+complete TIME sample, it is diagnostic evidence only: it suggests the Bayesian
+mixture is more stable than full Ridge, but supports no final benchmark claim.
 
 ## Failure diagnosis
 
-The interrupted task is `SG_Carpark/15T/medium`. Its prepared manifest contains
-4,956 adaptation-training, 2,478 validation, 2,478 test, and 217,002 datastore
-windows. The extraction manifest rejects every datastore window for a
-non-finite future target, leaving zero eligible train, validation, or test
-retrieval rows. Ridge fitting therefore receives empty sufficient statistics
-and raises `cannot solve empty ridge statistics`. The lightweight publication
-does not include the source arrays needed to identify the exact non-finite
-dates or channels.
+Pipeline job `3241621` failed during the vanilla evaluation of
+`CPHL/15T/short`. CPHL has target dimension one and two already-univariate
+series. The common `evaluate_point_predictions` path nevertheless constructs
+the dataset with unconditional multivariate-to-univariate conversion. That
+conversion iterates the one-dimensional target and turns each time series into
+scalar targets; GluonTS then accesses `target.shape[-1]` and raises
+`IndexError: tuple index out of range`.
 
-The current protocol classifies this case as a vanilla-only fallback whenever
-the primary `K=10` has no more valid training dates than official test dates.
-The repair changes the scientific identity, so the old 61-task prefix is
-evidence for the superseded run only; the current Ridge workflow requires a
-fresh evaluation.
+This is a common evaluator shape bug, not a Ridge, extraction, prediction, or
+saving-path failure. It may affect later datasets that are also natively
+univariate. Evaluation should apply multivariate-to-univariate expansion only
+when the source target dimension exceeds one. After that repair, the workflow
+can reuse all completed preparation, fit extraction, frozen adaptation,
+selected-K extraction, and prediction artifacts, resume the interrupted and
+remaining 79 evaluation task groups, and then run the dependency-held report.
 
-## TS-RAG status
+## Saving-path and evidence boundary
 
-The matched TS-RAG run produced no result. It started while the Adaptime run
-was still running and immediately required a selected completed ridge for
-`Water_Quality_Darwin/15T/short`, which was instead a valid vanilla-only
-fallback. The replacement workflow makes TS-RAG independent of Ridge and
-evaluates both wrappers through the same TIME evaluator. A complete rerun is
-the next evidence needed.
+The submitted run used the deployed layout, including vanilla artifacts under
+`vanilla/shared/...` and Ridge prediction bundles under `predictions/ridge`.
+The later local saving-path rewrite changes where future vanilla artifacts are
+written but does not move or scientifically invalidate the submitted results.
+Automatic reuse across the old and new vanilla roots must nevertheless be
+handled explicitly; payloads should not be copied or merged between layouts.
+
+The synchronized lightweight publication contains manifests, compact task
+summaries, workflow records, and logs, but not the heavy prediction arrays.
+The partial metrics above are verified at task-summary level. Report job
+`3241622` did not run because `afterok:3241621` was not satisfied. TS-RAG was a
+separate workflow and was not part of these submitted jobs.

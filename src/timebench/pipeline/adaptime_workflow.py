@@ -46,6 +46,7 @@ from timebench.pipeline.adaptime_extraction import (
 from timebench.pipeline.adaptime_training import RidgeTrainingConfig, fit_full_ridge
 from timebench.pipeline.adaptime_vanilla import (
     VanillaConfig,
+    extract_seasonal_naive_test_forecasts,
     extract_vanilla_test_forecasts,
 )
 from timebench.pipeline.runs import allocate_run, select_completed_runs
@@ -68,7 +69,7 @@ from timebench.pipeline.tsrag_fallback import (
 from timebench.results.adaptation import build_adaptation_comparison
 
 
-METHODS = ("ridge", "tsrag")
+METHODS = ("seasonal_naive", "vanilla", "ridge", "tsrag", "unified")
 STAGES = (
     "prepare",
     "vanilla",
@@ -139,7 +140,7 @@ class AdaptimeWorkflowConfig:
                 arrow_cache_items=self.arrow_cache_items,
             ).validate()
             self.ridge_training.validate()
-        else:
+        elif method == "tsrag":
             self.tsrag_runtime.validate()
 
     @property
@@ -307,6 +308,8 @@ def _extraction_config(workflow: AdaptimeWorkflowConfig) -> ExtractionConfig:
 
 
 def _stage_root(root: Path, stage: str, method: str, task: AdaptimeTask) -> Path:
+    if stage == "vanilla":
+        return root / stage / task.preparation.target_mode / task.dataset / task.term
     return (
         root
         / stage
@@ -350,6 +353,35 @@ def _spec(
             {"data_config": data_config},
             {"phase": "unconditional_official_test_vanilla"},
         )
+    if method == "seasonal_naive" and stage in {"predictions", "evaluations"}:
+        return (
+            f"adaptime_{stage[:-1]}",
+            _task_identity(task, "seasonal_naive"),
+            {
+                "method": "seasonal_naive",
+                "seasonality": task.preparation.seasonality,
+                "forecast_type": "point",
+            },
+            {"data_config": data_config},
+            (
+                {"phase": "seasonal_naive_prediction"}
+                if stage == "predictions"
+                else {
+                    "phase": "evaluation",
+                    "quantile_levels": [0.5],
+                    "metrics": [
+                        "MSE",
+                        "MAE",
+                        "RMSE",
+                        "MAPE",
+                        "sMAPE",
+                        "MASE",
+                        "ND",
+                        "CRPS",
+                    ],
+                }
+            ),
+        )
     ridge_family = method == "ridge" or method in ADAPTATION_METHODS
     if ridge_family:
         method_name = "full_ridge_shared"
@@ -382,13 +414,21 @@ def _spec(
             "adaptime_adaptation",
             _task_identity(task, method_name),
             {
-                "method": method_name,
+                "method": "adaptime_validation_selector",
                 **asdict(workflow.ridge_training),
                 "bayes_covariate_protocol": {
-                    "evidence": "paired_train_validation_window_msse_wins",
+                    "fit_evidence": "paired_adaptation_train_window_msse_wins",
+                    "selection_evidence": "adaptation_validation_msse",
                     "tie_weight": 0.5,
                     "prior": "beta_1_1",
                 },
+                "selection_methods": [
+                    "vanilla",
+                    "bayes_covariate_prediction",
+                    "cov_ridge_shared",
+                    "y_ridge_shared",
+                    "full_ridge_shared",
+                ],
             },
             {
                 "data_config": data_config,
@@ -407,7 +447,7 @@ def _spec(
                 "adaptation": asdict(workflow.ridge_training),
                 "vanilla_context_policy": "all_available_history_capped_at_model_limit",
             },
-            {"phase": "selected_k_official_test_extraction"},
+            {"phase": "selected_k_values_official_test_extraction"},
         )
     if stage == "predictions":
         model_config: dict[str, object] = {
@@ -420,7 +460,7 @@ def _spec(
             model_config["methods"] = list(ADAPTATION_METHODS)
             model_config["adaptation"] = asdict(workflow.ridge_training)
             model_config["prediction_protocol"] = (
-                "unconditional_vanilla_plus_selected_k_covariate_bayes_and_ridge"
+                "individual_candidates_plus_validation_selected_adaptation"
             )
         else:
             model_config["checkpoint"] = "released_tsrag_arm"
@@ -443,7 +483,7 @@ def _spec(
             prediction_science["methods"] = list(ADAPTATION_METHODS)
             prediction_science["adaptation"] = asdict(workflow.ridge_training)
             prediction_science["prediction_protocol"] = (
-                "unconditional_vanilla_plus_selected_k_covariate_bayes_and_ridge"
+                "individual_candidates_plus_validation_selected_adaptation"
             )
         else:
             prediction_science["checkpoint"] = "released_tsrag_arm"
@@ -550,8 +590,8 @@ def _data_manifest(
 def _vanilla_manifest(
     artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
 ) -> Path:
-    root = _stage_root(artifact_root, "vanilla", "shared", task)
-    run = _completed_run(root, _spec(task, workflow, "vanilla", "shared"))
+    root = _stage_root(artifact_root, "vanilla", "vanilla", task)
+    run = _completed_run(root, _spec(task, workflow, "vanilla", "vanilla"))
     return run / "vanilla" / "manifest.json"
 
 
@@ -608,7 +648,7 @@ def _run_vanilla(
         task,
         workflow,
         "vanilla",
-        "shared",
+        "vanilla",
         runtime_config={
             "device": workflow.device,
             "model_path": None if workflow.model_path is None else str(workflow.model_path),
@@ -642,6 +682,37 @@ def _run_vanilla(
                 "vanilla/predictions.npy",
                 "vanilla/context_length.npy",
             ]
+        )
+    return manifest
+
+
+def _run_seasonal_naive(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "predictions",
+        "seasonal_naive",
+        runtime_config={"arrow_cache_items": workflow.arrow_cache_items},
+        provenance={"data_manifest": str(prepared)},
+    )
+    manifest = run.run_dir / "prediction" / "prediction_manifest.json"
+    if not run.should_run:
+        return manifest
+    with run:
+        manifest = extract_seasonal_naive_test_forecasts(
+            prepared,
+            VanillaConfig(
+                model_batch_size=workflow.model_batch_size,
+                arrow_cache_items=workflow.arrow_cache_items,
+            ),
+            run.run_dir / "prediction",
+        )
+        run.complete(
+            ["prediction/prediction_manifest.json", "prediction/predictions.npy"]
         )
     return manifest
 
@@ -772,8 +843,12 @@ def _run_fit(
             "model/selection.json",
             "model/bayes_mixture.json",
         ]
-        if "coefficients" in json.loads(manifest.read_text(encoding="utf-8"))["files"]:
-            required.append("model/coefficients.npy")
+        coefficient_files = dict(
+            json.loads(manifest.read_text(encoding="utf-8"))["files"].get(
+                "coefficients", {}
+            )
+        )
+        required.extend(f"model/{relative}" for relative in coefficient_files.values())
         run.complete(required)
     return manifest
 
@@ -1009,10 +1084,24 @@ def run_adaptation_stage(
     if method not in METHODS:
         raise ValueError(f"method must be one of {METHODS}")
     workflow.validate(method)
-    if stage in {"vanilla", "fit", "extract_eval"} and method != "ridge":
+    if method == "vanilla" and stage not in {"prepare", "vanilla", "all"}:
+        raise ValueError("the vanilla method supports only prepare, vanilla, and all")
+    if method == "seasonal_naive" and stage not in {
+        "prepare",
+        "predict",
+        "evaluate",
+        "pipeline",
+        "all",
+    }:
+        raise ValueError("Seasonal Naive supports prepare, predict, evaluate, pipeline, and all")
+    if method == "unified" and stage != "report":
+        raise ValueError("the unified method is only a five-method report")
+    if stage == "vanilla" and method != "vanilla":
+        raise ValueError("the vanilla stage requires method=vanilla")
+    if stage in {"fit", "extract_eval"} and method != "ridge":
         raise ValueError(
-            "vanilla, fit, and extract_eval are Ridge phases; "
-            "TS-RAG retains its native frozen pipeline"
+            "fit and extract_eval are Ridge phases; TS-RAG retains its native "
+            "frozen pipeline"
         )
     dataset_config = load_dataset_config(dataset_config_path)
     artifact_root = (output_root or outputs_root() / "adaptime").expanduser().resolve()
@@ -1036,12 +1125,15 @@ def run_adaptation_stage(
         launch_id = os.environ.get("TIME_LAUNCH_ID") or "manual"
         if method == "ridge":
             roots = {
-                comparison_method: artifact_root
-                / "evaluations"
-                / comparison_method
-                for comparison_method in ADAPTATION_METHODS
+                "seasonal_naive": artifact_root / "evaluations" / "seasonal_naive",
+                **{
+                    comparison_method: artifact_root
+                    / "evaluations"
+                    / comparison_method
+                    for comparison_method in ADAPTATION_METHODS
+                },
             }
-        else:
+        elif method == "tsrag":
             ridge_root = (
                 ridge_results_path.expanduser().resolve()
                 if matched_ridge_runs is not None and ridge_results_path is not None
@@ -1054,8 +1146,19 @@ def run_adaptation_stage(
                     flush=True,
                 )
             roots = {
+                "seasonal_naive": artifact_root / "evaluations" / "seasonal_naive",
                 "full_ridge_shared": ridge_root,
                 "tsrag": artifact_root / "evaluations" / "tsrag",
+            }
+        else:
+            roots = {
+                "seasonal_naive": artifact_root / "evaluations" / "seasonal_naive",
+                **{
+                    comparison_method: artifact_root
+                    / "evaluations"
+                    / comparison_method
+                    for comparison_method in (*ADAPTATION_METHODS, "tsrag")
+                },
             }
         report = build_adaptation_comparison(
             method_results_roots=roots,
@@ -1066,28 +1169,21 @@ def run_adaptation_stage(
         )
         print(report, flush=True)
         return [report]
+    pipeline_stages = {
+        "seasonal_naive": ("predict", "evaluate"),
+        "vanilla": ("vanilla",),
+        "ridge": ("extract", "fit", "extract_eval", "predict", "evaluate"),
+        "tsrag": ("extract", "predict", "evaluate"),
+    }
+    all_stages = {
+        "seasonal_naive": ("prepare", *pipeline_stages["seasonal_naive"]),
+        "vanilla": ("prepare", "vanilla"),
+        "ridge": ("prepare", "vanilla", *pipeline_stages["ridge"]),
+        "tsrag": ("prepare", "vanilla", *pipeline_stages["tsrag"]),
+    }
     stages = {
-        "pipeline": (
-            "vanilla",
-            "extract",
-            "fit",
-            "extract_eval",
-            "predict",
-            "evaluate",
-        )
-        if method == "ridge"
-        else ("extract", "predict", "evaluate"),
-        "all": (
-            "prepare",
-            "vanilla",
-            "extract",
-            "fit",
-            "extract_eval",
-            "predict",
-            "evaluate",
-        )
-        if method == "ridge"
-        else ("prepare", "extract", "predict", "evaluate"),
+        "pipeline": pipeline_stages[method],
+        "all": all_stages[method],
     }.get(stage, (stage,))
 
     retriever: TSRAGRetriever | None = None
@@ -1095,7 +1191,7 @@ def run_adaptation_stage(
     if method == "tsrag" and any(value in stages for value in ("extract", "predict")):
         if "prepare" not in stages:
             for task in tasks:
-                _data_manifest(artifact_root, task, workflow)
+                prepared = _data_manifest(artifact_root, task, workflow)
                 if "predict" in stages and "extract" not in stages:
                     _artifact_manifest(
                         artifact_root,
@@ -1105,6 +1201,8 @@ def run_adaptation_stage(
                         "tsrag",
                         "extraction/manifest.json",
                     )
+                if "predict" in stages and tsrag_task_fallback(prepared) is not None:
+                    _vanilla_manifest(artifact_root, task, workflow)
         base_path, retriever_path, checkpoint_path = _tsrag_paths(workflow)
         retriever = TSRAGRetriever(
             retriever_path,
@@ -1121,6 +1219,8 @@ def run_adaptation_stage(
                 result = _run_prepare(artifact_root, task, workflow)
             elif current == "vanilla":
                 result = _run_vanilla(artifact_root, task, workflow)
+            elif current == "predict" and method == "seasonal_naive":
+                result = _run_seasonal_naive(artifact_root, task, workflow)
             elif current == "extract" and method == "ridge":
                 result = _run_ridge_extraction(artifact_root, task, workflow)
             elif current == "extract":
@@ -1150,10 +1250,12 @@ def run_adaptation_stage(
                     outputs.append(result)
                     print(result, flush=True)
                 continue
-            else:
+            elif current == "evaluate":
                 result = _run_evaluation(
                     artifact_root, task, workflow, method
                 )
+            else:
+                raise ValueError(f"unsupported method stage {method}/{current}")
             outputs.append(result)
             print(result, flush=True)
     return outputs

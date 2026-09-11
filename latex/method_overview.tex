@@ -57,7 +57,12 @@ query.
 
 By default every eligible earlier datastore date is accessible. An optional
 global window cap is divided evenly across variates, rounded down, and retains
-the most recent dates; every variate must retain at least $P$ datastore dates.
+the most recent dates. TS-RAG requires every variate to retain at least 11
+datastore dates. Shared preparation records these counts; before TS-RAG
+representation extraction, its project-owned data adapter checks the minimum
+globally, including when a previously completed artifact is reused. Generic
+preparation remains available to the Ridge family, whose insufficient-history
+path is the vanilla fallback described below.
 An early training or validation origin that cannot supply the fixed history is
 excluded from fitting, but no official test origin is removed. If too few
 valid fixed-context training windows remain, no ridge is fitted: every method
@@ -133,7 +138,10 @@ TIME evaluation artifact on identical official windows. The evaluator retains
 MSE, MAE, RMSE, MAPE, sMAPE, MASE, ND, and CRPS. Seasonal Naive remains the
 inherited external baseline used by broader TIME summaries. Missing dates are
 never removed or shifted: forecast errors skip non-finite target dates and
-MASE scales count only finite lagged pairs at their original timestamps.
+MASE scales count only finite lagged pairs at their original timestamps. The
+comparison reports each metric mean together with its finite and total value
+counts; unequal finite coverage remains visible rather than preventing report
+construction.
 Conclusions require completed and inspected cluster artifacts.
 
 Eligibility arrays, reason codes, effective training counts, and test RAG

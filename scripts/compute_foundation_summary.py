@@ -34,7 +34,7 @@ def load_result_cells(
     config_policy: str = "error",
     repeat_policy: str = "selected",
 ) -> list[dict]:
-    """Load one selected completed manifest per dataset/frequency/horizon cell."""
+    """Load selected completed manifests for dataset/frequency/horizon cells."""
     cells = []
     selected = select_completed_runs(
         root,
@@ -51,7 +51,8 @@ def load_result_cells(
         config_path = summary_path.with_name("config.json")
         config = json.loads(config_path.read_text(encoding="utf-8"))
         summary = json.loads(summary_path.read_text(encoding="utf-8"))
-        mase = summary.get("metrics", {}).get("MASE", {}).get("mean")
+        mase_summary = summary.get("metrics", {}).get("MASE", {})
+        mase = mase_summary.get("mean")
         if mase is None:
             continue
         mase = float(mase)
@@ -68,6 +69,8 @@ def load_result_cells(
                 "dataset_id": f"{identity['dataset']}/{identity['frequency']}",
                 "horizon": identity["term"],
                 "MASE": mase,
+                "MASE_finite_values": int(mase_summary["finite_values"]),
+                "MASE_total_values": int(mase_summary["total_values"]),
                 "inference_seconds": inference_seconds,
                 "manifest_path": str(run_dir / "manifest.json"),
                 "scientific_config": selection.get(
@@ -113,6 +116,12 @@ def _effective_cells(cells: list[dict]) -> list[dict]:
                 "dataset_id": key[3],
                 "horizon": key[4],
                 "MASE": float(np.mean([cell["MASE"] for cell in repeats])),
+                "MASE_finite_values": sum(
+                    cell["MASE_finite_values"] for cell in repeats
+                ),
+                "MASE_total_values": sum(
+                    cell["MASE_total_values"] for cell in repeats
+                ),
                 "inference_seconds": (
                     float(np.mean(timed)) if len(timed) == len(repeats) else None
                 ),
@@ -141,6 +150,12 @@ def _effective_cells(cells: list[dict]) -> list[dict]:
                 "dataset_id": key[3],
                 "horizon": key[4],
                 "MASE": float(np.mean([cell["MASE"] for cell in configs])),
+                "MASE_finite_values": sum(
+                    cell["MASE_finite_values"] for cell in configs
+                ),
+                "MASE_total_values": sum(
+                    cell["MASE_total_values"] for cell in configs
+                ),
                 "inference_seconds": (
                     float(np.mean(timed)) if len(timed) == len(configs) else None
                 ),
@@ -207,6 +222,12 @@ def summarize_cells(cells: list[dict], seasonal_naive_cells: list[dict]) -> list
                 "datasets": len(datasets),
                 "tasks": len(model_cells),
                 "timed_tasks": len(timed),
+                "MASE_finite_values": sum(
+                    cell["MASE_finite_values"] for cell in model_cells
+                ),
+                "MASE_total_values": sum(
+                    cell["MASE_total_values"] for cell in model_cells
+                ),
             }
         )
 
@@ -266,6 +287,8 @@ def add_model_status(
                     "datasets": 0,
                     "tasks": 0,
                     "timed_tasks": 0,
+                    "MASE_finite_values": 0,
+                    "MASE_total_values": 0,
                 }
             )
     for row in rows:
@@ -299,6 +322,8 @@ def write_csv(rows: list[dict], path: Path) -> None:
         "datasets",
         "tasks",
         "timed_tasks",
+        "MASE_finite_values",
+        "MASE_total_values",
     ]
     with path.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fieldnames)
@@ -316,8 +341,8 @@ def write_markdown(rows: list[dict], path: Path) -> None:
         "Inference seconds are summed over the same test forecasting tasks; "
         "a blank total means at least one task lacks timing metadata.",
         "",
-        "| Model | Target mode | State | Exit | Scaled MASE (GM) | Inference seconds | Datasets | Tasks | Timed tasks |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|",
+        "| Model | Target mode | State | Exit | Scaled MASE (GM) | Inference seconds | Datasets | Tasks | Timed tasks | MASE finite/total |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in rows:
         seconds = row["inference_seconds"]
@@ -326,7 +351,8 @@ def write_markdown(rows: list[dict], path: Path) -> None:
             f"| {row['model']} | {row['target_modes']} | {row['state']} | {row['exit_code']} | "
             f"{'' if mase is None else f'{mase:.6f}'} | "
             f"{'' if seconds is None else f'{seconds:.3f}'} | "
-            f"{row['datasets']} | {row['tasks']} | {row['timed_tasks']} |"
+            f"{row['datasets']} | {row['tasks']} | {row['timed_tasks']} | "
+            f"{row['MASE_finite_values']}/{row['MASE_total_values']} |"
         )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -526,7 +552,8 @@ def main() -> None:
             f"state={row['state'] or 'unknown'}  "
             f"scaled_MASE={mase_text}  "
             f"inference={seconds_text}  "
-            f"coverage={row['timed_tasks']}/{row['tasks']} timed tasks"
+            f"coverage={row['timed_tasks']}/{row['tasks']} timed tasks, "
+            f"{row['MASE_finite_values']}/{row['MASE_total_values']} finite MASE values"
         )
 
 

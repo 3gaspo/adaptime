@@ -25,10 +25,13 @@ TIME saved-Arrow dataset + dataset configuration
 these phases. The main family and TS-RAG read the same prepared datastore and
 official test references, while TS-RAG retains separate extraction and
 prediction roots. TS-RAG never loads an Adaptime extraction or fitted model.
-The shared datastore retains enough future support for `max(H,64)` and at
-least 11 dates per variate so TS-RAG top-10 retrieval remains possible. Ridge
-separately applies its `max_k` eligibility gate and becomes vanilla-only when
-too few dates survive that gate.
+The shared datastore retains enough future support for `max(H,64)`. TS-RAG
+admits it only when every variate has at least 11 dates, so top-10 retrieval
+remains possible. Ridge separately applies its `max_k` eligibility gate and
+becomes vanilla-only when too few dates survive that gate. Shared preparation
+records the global minimum; the project-owned TS-RAG data adapter validates it
+for both new and reused manifests before TS-RAG representation extraction.
+Generic preparation and the Ridge fallback path remain method-neutral.
 
 Fit extraction materializes bounded `.npy` arrays for fixed-context
 representations, ordered neighbors and distances, forecasts, targets, scales,
@@ -84,3 +87,8 @@ Large series remain in Arrow and large numeric products remain memory-mapped.
 contains explicit phase entry points; `src/slurm/run_adaptime_comparison.sh`
 is the common DGX/Selena implementation; root `scripts/` compose scheduler
 dependencies; `slurm/` contains the concise submit-ready fronts.
+
+`results/adaptation.py` preserves lifecycle-provided labels for distinct runs
+and applies repeat-then-configuration averaging when requested. Its comparison
+CSV retains every metric mean and the corresponding finite and total value
+counts; those coverage counts are reported without being forced to match.

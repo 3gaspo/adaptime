@@ -7,6 +7,7 @@ import json
 import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import numpy as np
@@ -162,3 +163,65 @@ def open_vanilla_test_forecasts(path: str | Path) -> tuple[Path, dict[str, Any]]
     ):
         raise ValueError("not a completed Adaptime vanilla test artifact")
     return manifest_path.parent, manifest
+
+
+def extract_seasonal_naive_test_forecasts(
+    prepared_path: str | Path,
+    config: VanillaConfig,
+    output_dir: str | Path,
+) -> Path:
+    """Write Improved-compatible Seasonal Naive point predictions."""
+
+    config.validate()
+    prepared = PreparedDataset(prepared_path)
+    references = prepared.indices("test")
+    identity = {
+        "schema_version": VANILLA_SCHEMA,
+        "prepared_signature": prepared.signature,
+        "method": "seasonal_naive",
+        "forecast_type": "point",
+        "seasonality": prepared.seasonality,
+        "config": asdict(config),
+    }
+    signature = _canonical_hash(identity)
+    root = Path(output_dir).expanduser().resolve()
+    manifest_path = root / "prediction_manifest.json"
+    if manifest_path.is_file():
+        existing = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if (
+            existing.get("signature") == signature
+            and existing.get("status") == "completed"
+            and (root / "predictions.npy").is_file()
+        ):
+            return manifest_path
+        raise FileExistsError(f"Seasonal Naive prediction directory differs: {root}")
+
+    predictions = _memmap(
+        root / "predictions.npy",
+        (len(references), 1, prepared.prediction_length),
+        np.float32,
+    )
+    reader = prepared.reader(cache_items=config.arrow_cache_items)
+    started = perf_counter()
+    for start in range(0, len(references), config.model_batch_size):
+        stop = min(start + config.model_batch_size, len(references))
+        predictions[start:stop] = reader.seasonal_naive_forecast(
+            references[start:stop]
+        )
+    forecast_seconds = perf_counter() - started
+    predictions.flush()
+    _atomic_json(
+        manifest_path,
+        {
+            **identity,
+            "format": "adaptime_point_predictions",
+            "signature": signature,
+            "status": "completed",
+            "context_length": prepared.context_length,
+            "context_policy": "all_available_history",
+            "prediction_length": prepared.prediction_length,
+            "inference_seconds": float(forecast_seconds),
+            "files": {"predictions": "predictions.npy"},
+        },
+    )
+    return manifest_path
