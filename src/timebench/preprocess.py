@@ -8,6 +8,8 @@ import pandas as pd
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.tsa.stattools import adfuller
 
+from timebench.paths import data_root
+
 
 FREQ_MIN_LENGTH = {
     "S": 3600 * 24 * 3,
@@ -706,7 +708,7 @@ def main():
     parser.add_argument("--dataset", type=str, help="Dataset name")
     parser.add_argument("--freq", type=str, default=None, help="Time series frequency (e.g., '5T')")
     parser.add_argument("--missing_rate_thresh", type=float, default=0.3)
-    parser.add_argument("--output_dir", type=str, default="./data")
+    parser.add_argument("--output_dir", type=str, default=str(data_root()))
 
     # Cleanup arguments
     parser.add_argument("--remove_variate", type=str, default=None, help="Comma-separated variates to remove")

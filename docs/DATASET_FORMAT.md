@@ -8,7 +8,7 @@ This document provides detailed specifications for time series dataset formats a
 
 By default, the processed CSV files follow the directory structure below. The feature extraction tool (`features_runner.py`) takes the path to `{dataset_name}/{freq}` as input:
 ```
-data/
+${TIME_DATA_ROOT}/
 └── processed_csv/
     └── {dataset_name}/
         └── {freq}/
@@ -79,15 +79,17 @@ The resulting dataset can be loaded directly using the `Dataset` class from `tim
 ## Usage Examples
  It is strongly recommended to explicitly provide the `--freq` parameter, as pandas frequency inference (`pd.infer_freq`) may be unreliable.
 
-Additionally, ensure your `--output-path` matches the `TIME_DATASET` variable in your `.env` file
+Additionally, place each `--output-path` below the `TIME_DATASET` root used by
+the evaluator. The local defaults are `TIME_DATA_ROOT=./datasets` and
+`TIME_DATASET=./datasets/hf_dataset`.
 
 * Example 1: Multiple CSVs, Each is a UTS
 
 
 ```bash
 python -m timebench.evaluation.dataset_builder \
-  --csv-dir data/processed_csv/CPHL/30T \
-  --output-path data/hf_dataset/CPHL/30T \
+  --csv-dir datasets/processed_csv/CPHL/30T \
+  --output-path datasets/hf_dataset/CPHL/30T \
   --freq 30T \
   --to-univariate
 ```
@@ -98,8 +100,8 @@ python -m timebench.evaluation.dataset_builder \
 ```bash
 # Example: 7 series, each has 6 variates
 python -m timebench.evaluation.dataset_builder \
-  --csv-dir data/processed_csv/Water_Quality_Darwin/15T \
-  --output-path data/hf_dataset/Water_Quality_Darwin/15T \
+  --csv-dir datasets/processed_csv/Water_Quality_Darwin/15T \
+  --output-path datasets/hf_dataset/Water_Quality_Darwin/15T \
   --freq 15T
 ```
 
@@ -108,7 +110,7 @@ python -m timebench.evaluation.dataset_builder \
 ```bash
 # Example: 1 series with 5 variates
 python -m timebench.evaluation.dataset_builder \
-  --csv-dir data/processed_csv/SG_PM25/H \
-  --output-path data/hf_dataset/SG_PM25/H \
+  --csv-dir datasets/processed_csv/SG_PM25/H \
+  --output-path datasets/hf_dataset/SG_PM25/H \
   --freq H
 ```

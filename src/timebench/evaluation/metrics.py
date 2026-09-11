@@ -17,6 +17,77 @@ Supported metrics:
 import numpy as np
 
 
+def fill_missing_history(context: np.ndarray) -> np.ndarray:
+    """Apply the maintained TIME forward-fill policy along the time axis."""
+
+    values = np.asarray(context).copy()
+    for history in values.reshape(-1, values.shape[-1]):
+        if not np.isnan(history).any():
+            continue
+        missing = np.isnan(history)
+        indexes = np.where(~missing, np.arange(len(missing)), 0)
+        np.maximum.accumulate(indexes, out=indexes)
+        history[:] = history[indexes]
+        if np.isnan(history).any():
+            observed = history[~np.isnan(history)]
+            first_observed = observed[0] if len(observed) else 0
+            history[:] = np.nan_to_num(history, nan=first_observed)
+    return values
+
+
+def seasonal_naive_point_forecast(
+    context: np.ndarray,
+    prediction_length: int,
+    seasonality: int,
+) -> np.ndarray:
+    """Repeat the last season after Improved's missing-history preparation."""
+
+    values = fill_missing_history(context)
+    period = min(int(seasonality), values.shape[-1])
+    if period <= 0:
+        raise ValueError("seasonality and context length must be positive")
+    repeats = int(np.ceil(int(prediction_length) / period))
+    return np.tile(values[..., -period:], (*([1] * (values.ndim - 1)), repeats))[
+        ..., : int(prediction_length)
+    ]
+
+
+def seasonal_naive_scale(
+    context: np.ndarray,
+    seasonality: int,
+    *,
+    squared: bool = False,
+) -> np.ndarray:
+    """Return a finite-pair seasonal scale without collapsing missing dates.
+
+    The final axis is time. A seasonal difference contributes only when both
+    observations exist at their original timestamps. ``squared=False`` returns
+    the MASE denominator; ``squared=True`` returns its RMS analogue for MSSE.
+    """
+
+    values = np.asarray(context, dtype=np.float64)
+    period = int(seasonality)
+    if period <= 0:
+        raise ValueError("seasonality must be positive")
+    result_shape = values.shape[:-1]
+    if values.shape[-1] <= period:
+        return np.full(result_shape, np.nan, dtype=np.float64)
+    left = values[..., :-period]
+    right = values[..., period:]
+    valid = np.isfinite(left) & np.isfinite(right)
+    differences = np.where(valid, right - left, 0.0)
+    contributions = np.square(differences) if squared else np.abs(differences)
+    counts = valid.sum(axis=-1)
+    mean = np.divide(
+        contributions.sum(axis=-1, dtype=np.float64),
+        counts,
+        out=np.full(result_shape, np.nan, dtype=np.float64),
+        where=counts > 0,
+    )
+    scale = np.sqrt(mean) if squared else mean
+    return np.where(scale > 0, scale, np.nan)
+
+
 # Default quantile levels for CRPS computation (aligned with GluonTS)
 DEFAULT_QUANTILE_LEVELS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
@@ -84,13 +155,12 @@ def compute_per_window_metrics_from_quantiles(
                 q_preds = predictions_quantiles[s, w, :, v]  # (num_quantiles, pred_len)
                 gt = ground_truth[s, w, v]  # (pred_len,)
                 ctx = context[s, w, v]  # (max_ctx_len,)
-                ctx = ctx[~np.isnan(ctx)]  # Remove NaN padding
 
                 # Compute median (0.5 quantile) forecast - used for most metrics
                 median_pred = q_preds[median_idx]  # (pred_len,)
 
                 # Create valid mask to handle potential NaN padding in ground truth
-                valid_mask = ~np.isnan(gt)
+                valid_mask = np.isfinite(gt)
                 if not np.any(valid_mask):
                     # No valid timesteps - set all metrics to NaN
                     mse[s, w, v] = mae[s, w, v] = rmse[s, w, v] = np.nan
@@ -120,24 +190,23 @@ def compute_per_window_metrics_from_quantiles(
                 with np.errstate(divide="ignore", invalid="ignore"):
                     mape_vals = abs_error / np.abs(gt)
                     mape_vals = np.where(np.isfinite(mape_vals), mape_vals, np.nan)
-                    mape[s, w, v] = np.nanmean(mape_vals)
+                    finite_mape = mape_vals[np.isfinite(mape_vals)]
+                    mape[s, w, v] = (
+                        np.mean(finite_mape) if finite_mape.size else np.nan
+                    )
 
                 # sMAPE (using median forecast, range [0, 2])
                 with np.errstate(divide="ignore", invalid="ignore"):
                     smape_vals = 2 * abs_error / (np.abs(gt) + np.abs(median_pred))
                     smape_vals = np.where(np.isfinite(smape_vals), smape_vals, np.nan)
-                    smape[s, w, v] = np.nanmean(smape_vals)
+                    finite_smape = smape_vals[np.isfinite(smape_vals)]
+                    smape[s, w, v] = (
+                        np.mean(finite_smape) if finite_smape.size else np.nan
+                    )
 
                 # MASE (Mean Absolute Scaled Error, using median forecast)
-                if len(ctx) > seasonality:
-                    naive_errors = np.abs(ctx[seasonality:] - ctx[:-seasonality])
-                    seasonal_error = np.mean(naive_errors) if len(naive_errors) > 0 else 1.0
-                    if seasonal_error > 0:
-                        mase[s, w, v] = mae[s, w, v] / seasonal_error
-                    else:
-                        mase[s, w, v] = np.nan
-                else:
-                    mase[s, w, v] = np.nan
+                seasonal_error = seasonal_naive_scale(ctx, seasonality)
+                mase[s, w, v] = mae[s, w, v] / seasonal_error
 
                 # ND (Normalized Deviation, using median forecast)
                 abs_label_sum = np.sum(np.abs(gt))

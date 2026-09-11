@@ -4,9 +4,10 @@ Prediction saving utilities for per-window evaluation.
 Output structure:
     output_dir/
         {dataset_config}/
-            predictions.npz  # Contains predictions and ground truth
+            predictions.npz  # Contains quantile predictions and levels
             metrics.npz      # Contains per-window metrics
-            config.json    # Contains dataset config
+            metrics_summary.json  # Contains lightweight aggregate metrics
+            config.json     # Contains dataset config
 """
 
 import json
@@ -27,6 +28,8 @@ def save_window_predictions(
     seasonality: int = 1,
     model_hyperparams: dict = None,
     quantile_levels: list[float] = None,
+    inference_seconds: float | None = None,
+    task_output_dir: str | None = None,
 ) -> dict:
     """
     Save predictions and metrics for each test window.
@@ -48,6 +51,11 @@ def save_window_predictions(
         seasonality: Seasonal period length for MASE computation
         model_hyperparams: Dictionary of model hyperparameters to save in config
         quantile_levels: Quantile levels for output (default: [0.1, 0.2, ..., 0.9])
+        inference_seconds: Accelerator-synchronized wall time for the complete
+            test forecasting loop. Model loading, dataset construction, metric
+            computation, and result saving must be excluded.
+        task_output_dir: Optional exact task leaf. When omitted, preserve the
+            upstream TIME ``output_base_dir/ds_config`` behavior.
 
     Output files:
         predictions.npz:
@@ -57,8 +65,11 @@ def save_window_predictions(
         metrics.npz:
             - Each metric array with shape (num_series, num_windows, num_variates)
 
+        metrics_summary.json:
+            - Finite mean and coverage counts for each metric
+
         config.json:
-            - Dataset configuration and config (without shapes and metric_shape)
+            - Dataset, forecast-shape, metric, and model configuration
 
     Returns:
         config: Dictionary containing dataset config
@@ -71,7 +82,7 @@ def save_window_predictions(
     num_quantiles = len(quantile_levels_list)
 
     # Create output directory for this dataset config
-    ds_output_dir = os.path.join(output_base_dir, ds_config)
+    ds_output_dir = task_output_dir or os.path.join(output_base_dir, ds_config)
     os.makedirs(ds_output_dir, exist_ok=True)
 
     test_data = dataset.test_data
@@ -81,6 +92,11 @@ def save_window_predictions(
 
     # Count number of series during experiment (test_data contains num_series_exp * num_windows instances)
     num_total_instances = fc_quantiles.shape[0]
+    if num_total_instances % num_windows != 0:
+        raise ValueError(
+            f"Forecast instance count ({num_total_instances}) must be divisible "
+            f"by the configured number of windows ({num_windows})."
+        )
     num_series_exp = num_total_instances // num_windows  # != num_series in original dataset if to_univariate is True
 
     print(f"    Total instances: {num_total_instances}, Series during experiment: {num_series_exp}, Windows: {num_windows}")
@@ -228,6 +244,7 @@ def save_window_predictions(
         "num_series": num_series,
         "num_windows": num_windows,
         "num_variates": num_variates,
+        "num_model_inputs": num_total_instances,
         "prediction_length": prediction_length,
         "num_quantiles": num_quantiles,
         "quantile_levels": quantile_levels_list,
@@ -236,7 +253,18 @@ def save_window_predictions(
         "context_length": context_len,
         "metric_names": list(metrics.keys()),
         "prediction_scale_factor": prediction_scale_factor,  # For float16 overflow prevention
+        "metrics_summary_file": "metrics_summary.json",
     }
+
+    launch_id = os.environ.get("TIME_LAUNCH_ID")
+    if launch_id:
+        config["launch_id"] = launch_id
+
+    if inference_seconds is not None:
+        inference_seconds = float(inference_seconds)
+        if not np.isfinite(inference_seconds) or inference_seconds < 0:
+            raise ValueError("inference_seconds must be finite and non-negative")
+        config["inference_seconds"] = inference_seconds
 
     # Add model hyperparameters if provided
     if model_hyperparams:
@@ -247,10 +275,35 @@ def save_window_predictions(
         json.dump(config, f, indent=2)
     print(f"    Saved config to {config_path}")
 
+    metric_summaries = {}
+    for metric_name, metric_values in metrics.items():
+        finite_values = metric_values[np.isfinite(metric_values)]
+        metric_summaries[metric_name] = {
+            "mean": float(np.mean(finite_values)) if finite_values.size else None,
+            "finite_values": int(finite_values.size),
+            "total_values": int(metric_values.size),
+        }
+    metrics_summary = {
+        "dataset_config": ds_config,
+        "aggregation": "mean over finite series/window/variate metric values",
+        "metrics": metric_summaries,
+    }
+    if launch_id:
+        metrics_summary["launch_id"] = launch_id
+    if model_hyperparams and "model" in model_hyperparams:
+        metrics_summary["model"] = model_hyperparams["model"]
+    if inference_seconds is not None:
+        metrics_summary["inference_seconds"] = inference_seconds
+
+    metrics_summary_path = os.path.join(ds_output_dir, "metrics_summary.json")
+    with open(metrics_summary_path, "w") as f:
+        json.dump(metrics_summary, f, indent=2)
+    print(f"    Saved aggregate metrics to {metrics_summary_path}")
+
     # Print average metrics summary
     print("    Metrics summary (averaged over all series/windows/variates):")
     for metric_name, metric_values in metrics.items():
-        mean_val = np.nanmean(metric_values)
-        print(f"      {metric_name}: {mean_val:.4f}")
+        mean_val = metric_summaries[metric_name]["mean"]
+        print(f"      {metric_name}: {'undefined' if mean_val is None else f'{mean_val:.4f}'}")
 
     return config

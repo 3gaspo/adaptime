@@ -13,8 +13,8 @@
 #     prediction_length: <int>
 #
 # windows and val_windows are automatically calculated, no manual setting required
-# windows = ceil(test_length / prediction_length)
-# val_windows = ceil(val_length / prediction_length)
+# windows = floor(test_length / prediction_length)
+# val_windows = floor(val_length / prediction_length), or 0 when val_length is 0
 # This ensures different terms are evaluated on the same test/val intervals, ensuring fair comparison
 # =============================================================================
 
@@ -156,11 +156,11 @@ datasets:
     test_length: 366
     val_length: 366
     short:
-      prediction_length: 3  # 3 days; ceil(365/3) = 122 windows
+      prediction_length: 3  # 3 days; floor(366/3) = 122 windows
     medium:
-      prediction_length: 7  # 7 days; ceil(365/7) = 53 windows
+      prediction_length: 7  # 7 days; floor(366/7) = 52 windows
     long:
-      prediction_length: 14  # 14 days is the limit for weather forecasting; ceil(365/14) = 27 windows
+      prediction_length: 14  # 14-day limit; floor(366/14) = 26 windows
 
   SG_PM25/H:
     test_length: 2208  # 3 months, 92 days; 2025.03.01 - 2025.05.31
