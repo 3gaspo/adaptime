@@ -1,9 +1,12 @@
 {
-  "completed_at": "2026-09-08T15:00:16.406333+00:00",
+  "completed_at": "2026-09-14T19:51:31.044355+00:00",
   "experiment": "adaptime_data",
   "experiment_config": {
     "consumers": [
       "full_ridge_shared",
+      "full_ridge_per_variate",
+      "bayes_past_targets_prediction",
+      "rolling_y_ridge_horizon",
       "tsrag"
     ],
     "splits": [
@@ -25,40 +28,19 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_adaptime_3227290",
-        "launched_at": "2026-09-08T15:00:16.385690+00:00",
+        "launch_id": "selena_rolling_ridge_20260914T195051Z_27613_prepare",
+        "launched_at": "2026-09-14T19:51:31.024407+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3227290"
-      },
-      {
-        "action": "reuse",
-        "launch_id": "selena_adaptime_3241620",
-        "launched_at": "2026-09-09T09:27:10.532939+00:00",
-        "slurm_array_task_id": null,
-        "slurm_job_id": "3241620"
-      },
-      {
-        "action": "reuse",
-        "launch_id": "selena_adaptime_3275020",
-        "launched_at": "2026-09-09T13:14:52.556931+00:00",
-        "slurm_array_task_id": null,
-        "slurm_job_id": "3275020"
-      },
-      {
-        "action": "reuse",
-        "launch_id": "selena_tsrag_3275044",
-        "launched_at": "2026-09-09T13:15:01.739755+00:00",
-        "slurm_array_task_id": null,
-        "slurm_job_id": "3275044"
+        "slurm_job_id": "3426868"
       }
     ],
-    "launch_id": "selena_adaptime_3227290",
-    "launched_at": "2026-09-08T15:00:16.385690+00:00",
-    "slurm_job_id": "3227290"
+    "launch_id": "selena_rolling_ridge_20260914T195051Z_27613_prepare",
+    "launched_at": "2026-09-14T19:51:31.024407+00:00",
+    "slurm_job_id": "3426868"
   },
   "model_config": {
     "artifact": "shared_global_datastore",
-    "query_window_contract": "fixed_context_fit_rows_complete_official_test"
+    "query_window_contract": "fixed_retrieval_context_fit_rows_variable_model_context_official_test"
   },
   "pipeline_config": {
     "adaptation_stride": 5,
@@ -68,10 +50,15 @@
     "dataset": "Vehicle_Supply/M",
     "dataset_fingerprint": "f5c510290744c157",
     "datastore_prediction_length": 64,
+    "datastore_scope": "all",
     "datastore_stride": 12,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 12,
+    "reference_context_length": 512,
+    "retrieval_context_length": 12,
     "retrieval_period": 12,
     "seasonality": 12,
     "target_mode": "univariate",
@@ -89,7 +76,7 @@
   ],
   "runtime_config": {},
   "schema_version": 1,
-  "started_at": "2026-09-08T15:00:16.385690+00:00",
+  "started_at": "2026-09-14T19:51:31.024407+00:00",
   "status": "completed",
-  "updated_at": "2026-09-09T13:15:01.739755+00:00"
+  "updated_at": "2026-09-14T19:51:31.044355+00:00"
 }

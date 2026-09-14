@@ -1,0 +1,12 @@
+workflow=adaptime
+launch_id=selena_rolling_ridge_20260914T195051Z_27613_prepare
+task=vanilla_prepare
+state=completed
+stage=none
+active_task=none
+launched_at=2026-09-14T19:51:11Z
+updated_at=2026-09-14T19:51:35Z
+exit_code=0
+slurm_job_id=3426868
+slurm_array_job_id=none
+slurm_array_task_id=none

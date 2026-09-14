@@ -1,0 +1,623 @@
+{
+  "chunks": [
+    {
+      "kind": "forecast",
+      "references": "chunks/000000_references.npy",
+      "rows": 64,
+      "values": "chunks/000000_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000001_references.npy",
+      "rows": 64,
+      "values": "chunks/000001_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000002_references.npy",
+      "rows": 64,
+      "values": "chunks/000002_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000003_references.npy",
+      "rows": 64,
+      "values": "chunks/000003_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000004_references.npy",
+      "rows": 64,
+      "values": "chunks/000004_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000005_references.npy",
+      "rows": 64,
+      "values": "chunks/000005_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000006_references.npy",
+      "rows": 64,
+      "values": "chunks/000006_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000007_references.npy",
+      "rows": 64,
+      "values": "chunks/000007_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000008_references.npy",
+      "rows": 64,
+      "values": "chunks/000008_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000009_references.npy",
+      "rows": 64,
+      "values": "chunks/000009_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000010_references.npy",
+      "rows": 64,
+      "values": "chunks/000010_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000011_references.npy",
+      "rows": 64,
+      "values": "chunks/000011_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000012_references.npy",
+      "rows": 64,
+      "values": "chunks/000012_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000013_references.npy",
+      "rows": 64,
+      "values": "chunks/000013_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000014_references.npy",
+      "rows": 64,
+      "values": "chunks/000014_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000015_references.npy",
+      "rows": 64,
+      "values": "chunks/000015_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000016_references.npy",
+      "rows": 64,
+      "values": "chunks/000016_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000017_references.npy",
+      "rows": 64,
+      "values": "chunks/000017_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000018_references.npy",
+      "rows": 64,
+      "values": "chunks/000018_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000019_references.npy",
+      "rows": 64,
+      "values": "chunks/000019_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000020_references.npy",
+      "rows": 64,
+      "values": "chunks/000020_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000021_references.npy",
+      "rows": 64,
+      "values": "chunks/000021_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000022_references.npy",
+      "rows": 64,
+      "values": "chunks/000022_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000023_references.npy",
+      "rows": 64,
+      "values": "chunks/000023_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000024_references.npy",
+      "rows": 64,
+      "values": "chunks/000024_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000025_references.npy",
+      "rows": 64,
+      "values": "chunks/000025_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000026_references.npy",
+      "rows": 64,
+      "values": "chunks/000026_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000027_references.npy",
+      "rows": 64,
+      "values": "chunks/000027_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000028_references.npy",
+      "rows": 64,
+      "values": "chunks/000028_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000029_references.npy",
+      "rows": 64,
+      "values": "chunks/000029_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000030_references.npy",
+      "rows": 64,
+      "values": "chunks/000030_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000031_references.npy",
+      "rows": 64,
+      "values": "chunks/000031_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000032_references.npy",
+      "rows": 64,
+      "values": "chunks/000032_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000033_references.npy",
+      "rows": 64,
+      "values": "chunks/000033_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000034_references.npy",
+      "rows": 64,
+      "values": "chunks/000034_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000035_references.npy",
+      "rows": 64,
+      "values": "chunks/000035_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000036_references.npy",
+      "rows": 64,
+      "values": "chunks/000036_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000037_references.npy",
+      "rows": 64,
+      "values": "chunks/000037_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000038_references.npy",
+      "rows": 64,
+      "values": "chunks/000038_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000039_references.npy",
+      "rows": 64,
+      "values": "chunks/000039_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000040_references.npy",
+      "rows": 64,
+      "values": "chunks/000040_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000041_references.npy",
+      "rows": 64,
+      "values": "chunks/000041_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000042_references.npy",
+      "rows": 64,
+      "values": "chunks/000042_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000043_references.npy",
+      "rows": 64,
+      "values": "chunks/000043_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000044_references.npy",
+      "rows": 64,
+      "values": "chunks/000044_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000045_references.npy",
+      "rows": 64,
+      "values": "chunks/000045_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000046_references.npy",
+      "rows": 64,
+      "values": "chunks/000046_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000047_references.npy",
+      "rows": 64,
+      "values": "chunks/000047_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000048_references.npy",
+      "rows": 64,
+      "values": "chunks/000048_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000049_references.npy",
+      "rows": 64,
+      "values": "chunks/000049_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000050_references.npy",
+      "rows": 64,
+      "values": "chunks/000050_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000051_references.npy",
+      "rows": 64,
+      "values": "chunks/000051_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000052_references.npy",
+      "rows": 64,
+      "values": "chunks/000052_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000053_references.npy",
+      "rows": 64,
+      "values": "chunks/000053_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000054_references.npy",
+      "rows": 64,
+      "values": "chunks/000054_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000055_references.npy",
+      "rows": 64,
+      "values": "chunks/000055_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000056_references.npy",
+      "rows": 64,
+      "values": "chunks/000056_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000057_references.npy",
+      "rows": 64,
+      "values": "chunks/000057_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000058_references.npy",
+      "rows": 64,
+      "values": "chunks/000058_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000059_references.npy",
+      "rows": 64,
+      "values": "chunks/000059_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000060_references.npy",
+      "rows": 64,
+      "values": "chunks/000060_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000061_references.npy",
+      "rows": 64,
+      "values": "chunks/000061_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000062_references.npy",
+      "rows": 64,
+      "values": "chunks/000062_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000063_references.npy",
+      "rows": 64,
+      "values": "chunks/000063_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000064_references.npy",
+      "rows": 64,
+      "values": "chunks/000064_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000065_references.npy",
+      "rows": 64,
+      "values": "chunks/000065_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000066_references.npy",
+      "rows": 64,
+      "values": "chunks/000066_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000067_references.npy",
+      "rows": 64,
+      "values": "chunks/000067_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000068_references.npy",
+      "rows": 64,
+      "values": "chunks/000068_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000069_references.npy",
+      "rows": 64,
+      "values": "chunks/000069_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000070_references.npy",
+      "rows": 64,
+      "values": "chunks/000070_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000071_references.npy",
+      "rows": 64,
+      "values": "chunks/000071_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000072_references.npy",
+      "rows": 64,
+      "values": "chunks/000072_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000073_references.npy",
+      "rows": 64,
+      "values": "chunks/000073_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000074_references.npy",
+      "rows": 64,
+      "values": "chunks/000074_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000075_references.npy",
+      "rows": 64,
+      "values": "chunks/000075_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000076_references.npy",
+      "rows": 64,
+      "values": "chunks/000076_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000077_references.npy",
+      "rows": 64,
+      "values": "chunks/000077_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000078_references.npy",
+      "rows": 64,
+      "values": "chunks/000078_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000079_references.npy",
+      "rows": 64,
+      "values": "chunks/000079_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000080_references.npy",
+      "rows": 64,
+      "values": "chunks/000080_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000081_references.npy",
+      "rows": 64,
+      "values": "chunks/000081_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000082_references.npy",
+      "rows": 64,
+      "values": "chunks/000082_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000083_references.npy",
+      "rows": 64,
+      "values": "chunks/000083_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000084_references.npy",
+      "rows": 64,
+      "values": "chunks/000084_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000085_references.npy",
+      "rows": 64,
+      "values": "chunks/000085_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000086_references.npy",
+      "rows": 64,
+      "values": "chunks/000086_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000087_references.npy",
+      "rows": 64,
+      "values": "chunks/000087_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000088_references.npy",
+      "rows": 64,
+      "values": "chunks/000088_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000089_references.npy",
+      "rows": 64,
+      "values": "chunks/000089_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000090_references.npy",
+      "rows": 64,
+      "values": "chunks/000090_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000091_references.npy",
+      "rows": 64,
+      "values": "chunks/000091_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000092_references.npy",
+      "rows": 64,
+      "values": "chunks/000092_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000093_references.npy",
+      "rows": 64,
+      "values": "chunks/000093_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000094_references.npy",
+      "rows": 64,
+      "values": "chunks/000094_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000095_references.npy",
+      "rows": 64,
+      "values": "chunks/000095_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000096_references.npy",
+      "rows": 64,
+      "values": "chunks/000096_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000097_references.npy",
+      "rows": 64,
+      "values": "chunks/000097_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000098_references.npy",
+      "rows": 64,
+      "values": "chunks/000098_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000099_references.npy",
+      "rows": 64,
+      "values": "chunks/000099_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000100_references.npy",
+      "rows": 64,
+      "values": "chunks/000100_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000101_references.npy",
+      "rows": 16,
+      "values": "chunks/000101_values.npy"
+    }
+  ],
+  "format": "adaptime_shared_window_cache",
+  "model": "chronos2",
+  "prediction_length": 36,
+  "prepared_signature": "863be13667ea258a5095f523e8e9482df022c8ab6c131862dc284c4471cb7fa3",
+  "schema_version": 1,
+  "signature": "76e48db2376c36a6b73ea128ca90db493968d762ab1ad7b40746aa2b1c4d6759",
+  "weights_id": "chronos2"
+}

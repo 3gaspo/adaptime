@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Vehicle_Sales/M",
     "datastore_prediction_length": 64,
+    "datastore_scope": "all",
     "datastore_stride": 12,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 12,
+    "reference_context_length": 512,
+    "retrieval_context_length": 12,
     "retrieval_period": 12,
     "seasonality": 12,
     "target_mode": "univariate",
@@ -31,7 +36,7 @@
   },
   "counts": {
     "adaptation_train": 0,
-    "adaptation_validation": 0,
+    "adaptation_validation": 30,
     "datastore": 0,
     "test": 50
   },
@@ -43,8 +48,9 @@
   },
   "excluded_fixed_context_rows": {
     "adaptation_train": 100,
-    "adaptation_validation": 50
+    "adaptation_validation": 20
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -58,16 +64,22 @@
     "test": 5
   },
   "query_period_residues": [
-    8
+    3,
+    8,
+    10
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "7e33b4894e1dd0af82bccd23b450736a2a87eba05b69e05bb75a3e1e4f8e198c",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Vehicle_Sales/M"
+  "signature": "4df22b77dd033950a6e27d9108079c5d493a982131b41b263818beb5b72445f6",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Vehicle_Sales/M",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

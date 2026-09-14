@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Water_Quality_Darwin/15T",
     "datastore_prediction_length": 64,
+    "datastore_scope": "all",
     "datastore_stride": 96,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 16,
+    "reference_context_length": 672,
+    "retrieval_context_length": 672,
     "retrieval_period": 96,
     "seasonality": 96,
     "target_mode": "univariate",
@@ -30,8 +35,8 @@
     "test_length": 1440
   },
   "counts": {
-    "adaptation_train": 0,
-    "adaptation_validation": 1908,
+    "adaptation_train": 936,
+    "adaptation_validation": 3414,
     "datastore": 0,
     "test": 3780
   },
@@ -42,9 +47,10 @@
     "minimum": 0
   },
   "excluded_fixed_context_rows": {
-    "adaptation_train": 7560,
-    "adaptation_validation": 1872
+    "adaptation_train": 6624,
+    "adaptation_validation": 366
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -156,13 +162,17 @@
     95
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "a9c331d7893bec6280914b611587d6408f980e11debc698a2b004a2ce2f6e9f8",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Water_Quality_Darwin/15T"
+  "signature": "6dc83952f92cdc87853a5791a83381339f8fd0cd9285410833c355bcdfb5b411",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Water_Quality_Darwin/15T",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

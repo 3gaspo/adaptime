@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Global_Influenza/W",
     "datastore_prediction_length": 64,
+    "datastore_scope": "all",
     "datastore_stride": 1,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 13,
+    "reference_context_length": 512,
+    "retrieval_context_length": 13,
     "retrieval_period": 1,
     "seasonality": 1,
     "target_mode": "univariate",
@@ -45,6 +50,7 @@
     "adaptation_train": 480,
     "adaptation_validation": 240
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -61,13 +67,17 @@
     0
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "805ac9c428bb4e765462f549cdc3b2c9f1f914566723d6adbbc38c5538e7a26b",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Global_Influenza/W"
+  "signature": "4be6264a6dfab5ba849093858f8ea3340690829987b40a64b45e694a3611e7f7",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Global_Influenza/W",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

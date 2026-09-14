@@ -1,0 +1,95 @@
+{
+  "chunks": [
+    {
+      "kind": "forecast",
+      "references": "chunks/000000_references.npy",
+      "rows": 6,
+      "values": "chunks/000000_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000001_references.npy",
+      "rows": 6,
+      "values": "chunks/000001_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000002_references.npy",
+      "rows": 6,
+      "values": "chunks/000002_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000003_references.npy",
+      "rows": 6,
+      "values": "chunks/000003_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000004_references.npy",
+      "rows": 6,
+      "values": "chunks/000004_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000005_references.npy",
+      "rows": 6,
+      "values": "chunks/000005_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000006_references.npy",
+      "rows": 6,
+      "values": "chunks/000006_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000007_references.npy",
+      "rows": 6,
+      "values": "chunks/000007_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000008_references.npy",
+      "rows": 6,
+      "values": "chunks/000008_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000009_references.npy",
+      "rows": 6,
+      "values": "chunks/000009_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000010_references.npy",
+      "rows": 64,
+      "values": "chunks/000010_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000011_references.npy",
+      "rows": 64,
+      "values": "chunks/000011_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000012_references.npy",
+      "rows": 64,
+      "values": "chunks/000012_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000013_references.npy",
+      "rows": 48,
+      "values": "chunks/000013_values.npy"
+    }
+  ],
+  "format": "adaptime_shared_window_cache",
+  "model": "chronos2",
+  "prediction_length": 432,
+  "prepared_signature": "f59b5c37cd1928014360f27b30ed21701949f2c504ddcaa2883c3188913b7491",
+  "schema_version": 1,
+  "signature": "b63d748abe546cf55313da0c9662d19f0c485b5ee500f26dca8f9f83f743608e",
+  "weights_id": "chronos2"
+}

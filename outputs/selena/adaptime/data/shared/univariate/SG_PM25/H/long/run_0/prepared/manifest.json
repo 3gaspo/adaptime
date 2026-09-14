@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "SG_PM25/H",
     "datastore_prediction_length": 168,
+    "datastore_scope": "all",
     "datastore_stride": 24,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 168,
+    "reference_context_length": 512,
+    "retrieval_context_length": 168,
     "retrieval_period": 24,
     "seasonality": 24,
     "target_mode": "univariate",
@@ -32,19 +37,20 @@
   "counts": {
     "adaptation_train": 130,
     "adaptation_validation": 65,
-    "datastore": 115430,
+    "datastore": 153830,
     "test": 65
   },
   "dataset_fingerprint": "94eec71f4bc34596",
   "datastore_dates_per_variate": {
     "balanced_cap": null,
-    "maximum": 23086,
-    "minimum": 23086
+    "maximum": 30766,
+    "minimum": 30766
   },
   "excluded_fixed_context_rows": {
     "adaptation_train": 0,
     "adaptation_validation": 0
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -84,13 +90,17 @@
     23
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "b99f18c3017505b7c69fb8f7818b84e98a7a260bb5f45693be1de40141b93bed",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/SG_PM25/H"
+  "signature": "5a55225506862117665f4a388f0a2d7e8cda35838c448d0617896c1cc96f0640",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/SG_PM25/H",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

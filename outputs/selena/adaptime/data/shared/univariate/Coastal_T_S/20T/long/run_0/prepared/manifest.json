@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Coastal_T_S/20T",
     "datastore_prediction_length": 216,
+    "datastore_scope": "all",
     "datastore_stride": 72,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 216,
+    "reference_context_length": 512,
+    "retrieval_context_length": 504,
     "retrieval_period": 72,
     "seasonality": 72,
     "target_mode": "univariate",
@@ -30,21 +35,22 @@
     "test_length": 1080
   },
   "counts": {
-    "adaptation_train": 0,
-    "adaptation_validation": 0,
-    "datastore": 0,
+    "adaptation_train": 30,
+    "adaptation_validation": 15,
+    "datastore": 2511,
     "test": 15
   },
   "dataset_fingerprint": "b21a604c3414e224",
   "datastore_dates_per_variate": {
     "balanced_cap": null,
-    "maximum": 0,
-    "minimum": 0
+    "maximum": 837,
+    "minimum": 837
   },
   "excluded_fixed_context_rows": {
-    "adaptation_train": 30,
-    "adaptation_validation": 15
+    "adaptation_train": 0,
+    "adaptation_validation": 0
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -58,16 +64,33 @@
     "test": 5
   },
   "query_period_residues": [
-    50
+    4,
+    8,
+    12,
+    21,
+    25,
+    29,
+    38,
+    42,
+    46,
+    50,
+    55,
+    59,
+    63,
+    67
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "01f7b6e53751a4b7c4c5ea389f0c2788d3d700f0d411c854a50ddb67cde03cf4",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Coastal_T_S/20T"
+  "signature": "8aa0f2c148757bc50a9159114c0c757e72cf681e353dc073bb0bc07f62e077bc",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Coastal_T_S/20T",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

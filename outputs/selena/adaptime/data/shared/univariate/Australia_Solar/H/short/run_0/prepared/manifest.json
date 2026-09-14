@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Australia_Solar/H",
     "datastore_prediction_length": 64,
+    "datastore_scope": "all",
     "datastore_stride": 24,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 24,
+    "reference_context_length": 512,
+    "retrieval_context_length": 168,
     "retrieval_period": 24,
     "seasonality": 24,
     "target_mode": "univariate",
@@ -30,7 +35,7 @@
     "test_length": 2520
   },
   "counts": {
-    "adaptation_train": 261,
+    "adaptation_train": 441,
     "adaptation_validation": 315,
     "datastore": 0,
     "test": 315
@@ -42,9 +47,10 @@
     "minimum": 0
   },
   "excluded_fixed_context_rows": {
-    "adaptation_train": 369,
+    "adaptation_train": 189,
     "adaptation_validation": 0
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -84,13 +90,17 @@
     23
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "c6edd5b7fcbd98e94d062006e7617546799cc4d4acd1a5bc57dbf2eb71e62c6d",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Australia_Solar/H"
+  "signature": "f065ff373255263472bfa97aab33c0a369ffdff063fb969b4c5e7729acb8e8d8",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Australia_Solar/H",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

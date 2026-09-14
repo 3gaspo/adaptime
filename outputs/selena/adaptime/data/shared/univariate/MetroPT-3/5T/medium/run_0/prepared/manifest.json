@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "MetroPT-3/5T",
     "datastore_prediction_length": 288,
+    "datastore_scope": "all",
     "datastore_stride": 288,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 288,
+    "reference_context_length": 2016,
+    "retrieval_context_length": 2016,
     "retrieval_period": 288,
     "seasonality": 288,
     "target_mode": "univariate",
@@ -32,19 +37,20 @@
   "counts": {
     "adaptation_train": 72,
     "adaptation_validation": 36,
-    "datastore": 1770,
+    "datastore": 3954,
     "test": 36
   },
   "dataset_fingerprint": "63ef7572e9c9e1db",
   "datastore_dates_per_variate": {
     "balanced_cap": null,
-    "maximum": 295,
-    "minimum": 295
+    "maximum": 659,
+    "minimum": 659
   },
   "excluded_fixed_context_rows": {
     "adaptation_train": 0,
     "adaptation_validation": 0
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -77,13 +83,17 @@
     284
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "af18552664c5ab4eec55e9d494efdd4eeaf9d96389bd9215a54844e4d8c10f85",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/MetroPT-3/5T"
+  "signature": "6bb71d7f31010aa6b904012f43d96fc5b6d39926b03c8f361297698bb6faf786",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/MetroPT-3/5T",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

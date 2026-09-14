@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Water_Quality_Darwin/15T",
     "datastore_prediction_length": 96,
+    "datastore_scope": "all",
     "datastore_stride": 96,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 96,
+    "reference_context_length": 672,
+    "retrieval_context_length": 672,
     "retrieval_period": 96,
     "seasonality": 96,
     "target_mode": "univariate",
@@ -30,21 +35,22 @@
     "test_length": 1440
   },
   "counts": {
-    "adaptation_train": 900,
-    "adaptation_validation": 504,
-    "datastore": 57750,
+    "adaptation_train": 1260,
+    "adaptation_validation": 630,
+    "datastore": 309516,
     "test": 630
   },
   "dataset_fingerprint": "e54e1205e93152bd",
   "datastore_dates_per_variate": {
     "balanced_cap": null,
-    "maximum": 3379,
-    "minimum": 0
+    "maximum": 11125,
+    "minimum": 802
   },
   "excluded_fixed_context_rows": {
-    "adaptation_train": 360,
-    "adaptation_validation": 126
+    "adaptation_train": 0,
+    "adaptation_validation": 0
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -58,8 +64,10 @@
     "test": 15
   },
   "query_period_residues": [
+    0,
     1,
     2,
+    3,
     4,
     5,
     6,
@@ -87,8 +95,10 @@
     28,
     29,
     30,
+    31,
     32,
     33,
+    34,
     35,
     36,
     37,
@@ -116,8 +126,10 @@
     59,
     60,
     61,
+    62,
     63,
     64,
+    65,
     66,
     67,
     68,
@@ -150,13 +162,17 @@
     95
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "e2041e02edde54112ec983d11605ad08be547631b91c37b9189805700bae478e",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Water_Quality_Darwin/15T"
+  "signature": "7cc6a7a2621275e934bf6336a26483f85369e7a647f733ed7832912f5775ed13",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Water_Quality_Darwin/15T",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

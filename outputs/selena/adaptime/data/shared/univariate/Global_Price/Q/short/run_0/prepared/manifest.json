@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Global_Price/Q",
     "datastore_prediction_length": 64,
+    "datastore_scope": "all",
     "datastore_stride": 4,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 4,
+    "reference_context_length": 512,
+    "retrieval_context_length": 4,
     "retrieval_period": 4,
     "seasonality": 4,
     "target_mode": "univariate",
@@ -45,6 +50,7 @@
     "adaptation_train": 600,
     "adaptation_validation": 300
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -61,13 +67,17 @@
     2
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "972bd8725d6ca9942f2a45ffd8ca0ed919c6e37bb318644c859efb7589c22f8d",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Global_Price/Q"
+  "signature": "47eba1c9380229c8f798fd3dd1a4a0da02c8bf6f303766f5cc3c88ae4272c41b",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Global_Price/Q",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

@@ -1,0 +1,20 @@
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:   9%|▉         | 15/170 [00:00<00:01, 146.04it/s]Loading weights:  23%|██▎       | 39/170 [00:00<00:00, 188.97it/s]Loading weights:  41%|████      | 70/170 [00:00<00:00, 240.48it/s]Loading weights:  56%|█████▋    | 96/170 [00:00<00:00, 247.37it/s]Loading weights:  76%|███████▌  | 129/170 [00:00<00:00, 276.42it/s]Loading weights:  94%|█████████▍| 160/170 [00:00<00:00, 284.53it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 264.39it/s]
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 3426869.0 ON sean0015 CANCELLED AT 2026-09-14T21:57:53 ***
+slurmstepd: error: *** JOB 3426869 ON sean0015 CANCELLED AT 2026-09-14T21:57:53 ***
+2026-09-14 21:57:53 | task TIME-wide Adaptime method=vanilla stage=vanilla completed status=failed exit_code=0
+2026-09-14 21:57:53 | stage vanilla completed status=failed exit_code=0
+srun: error: sean0015: task 0: Exited with exit code 143
+TIME interrupted-launch recovery launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla tasks=1 root=/scratch/users/h61084/codes/adaptime/outputs/adaptime
+  interrupted /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/short/run_0
+2026-09-14 21:57:54 | workflow adaptime completed status=failed exit_code=0

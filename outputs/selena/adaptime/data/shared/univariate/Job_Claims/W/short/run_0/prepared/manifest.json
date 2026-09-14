@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "Job_Claims/W",
     "datastore_prediction_length": 64,
+    "datastore_scope": "all",
     "datastore_stride": 1,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 13,
+    "reference_context_length": 512,
+    "retrieval_context_length": 13,
     "retrieval_period": 1,
     "seasonality": 1,
     "target_mode": "univariate",
@@ -45,6 +50,7 @@
     "adaptation_train": 16,
     "adaptation_validation": 8
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -61,13 +67,17 @@
     0
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "06b46338f5a3ffe91b9f3ed768daa8e91403d6776f228e216692fd62cc47b1fa",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Job_Claims/W"
+  "signature": "37be9d163645531571299ee96f4a878350ff1a001460c3c1b50a11b1ae518c03",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/Job_Claims/W",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

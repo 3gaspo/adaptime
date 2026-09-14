@@ -1,0 +1,124 @@
+2026-09-14 21:52:03 | workflow adaptime started launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla task=vanilla_vanilla slurm_job_id=3426869 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-14 21:52:03 | stage vanilla started
+2026-09-14 21:52:03 | task TIME-wide Adaptime method=vanilla stage=vanilla started
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:52:09.655367+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:52:40.039196+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:52:43.047677+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:52:44.137652+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:52:47.481207+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:52:47.942225+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:52:48.145928+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:53:22.202591+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:53:26.547385+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:53:28.132827+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:53:42.072230+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:53:43.989600+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/20T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:53:44.676559+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/20T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/20T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:13.796606+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/20T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/20T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:24.748791+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/20T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:28.435425+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:40.633072+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:42.528815+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:43.507298+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:44.629015+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:44.798785+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:44.883012+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:46.009250+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:46.306269+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:46.431698+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:48.199215+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:48.494277+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/5T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:55:48.682978+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/5T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/5T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:18.808360+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/5T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/5T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:22.922154+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/5T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:24.487283+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:32.858031+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:33.965696+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:34.382487+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:37.231148+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:37.620267+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:37.776690+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:50.931139+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:52.836858+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:53.845309+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:56:59.684602+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:02.195876+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:03.465806+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:05.635853+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:06.360911+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:06.726566+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:07.500275+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:07.750806+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:07.883868+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:09.359659+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:09.871335+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:10.122605+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:12.588838+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:13.435545+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:13.844507+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:21.674044+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:23.687268+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:24.425525+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/medium/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:27.069084+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/long/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:27.762104+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/short/run_0 launch_id=selena_rolling_ridge_20260914T195051Z_27613_vanilla slurm_job_id=3426869 launched_at=2026-09-14T19:57:27.909353+00:00

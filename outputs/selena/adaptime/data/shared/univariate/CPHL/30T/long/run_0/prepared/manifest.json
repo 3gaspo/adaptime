@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "CPHL/30T",
     "datastore_prediction_length": 144,
+    "datastore_scope": "all",
     "datastore_stride": 48,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 144,
+    "reference_context_length": 512,
+    "retrieval_context_length": 336,
     "retrieval_period": 48,
     "seasonality": 48,
     "target_mode": "univariate",
@@ -30,21 +35,22 @@
     "test_length": 1440
   },
   "counts": {
-    "adaptation_train": 26,
+    "adaptation_train": 40,
     "adaptation_validation": 20,
-    "datastore": 3537,
+    "datastore": 15676,
     "test": 20
   },
   "dataset_fingerprint": "38f16d3cc3efe62d",
   "datastore_dates_per_variate": {
     "balanced_cap": null,
-    "maximum": 3537,
-    "minimum": 0
+    "maximum": 10417,
+    "minimum": 5259
   },
   "excluded_fixed_context_rows": {
-    "adaptation_train": 14,
+    "adaptation_train": 0,
     "adaptation_validation": 0
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -103,13 +109,17 @@
     47
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "759c99f2e7a4d9d051c126db765764ad46f82dc8e94fa84eee10027a3b2e081d",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/CPHL/30T"
+  "signature": "19a583495d3f021467f6124af32770b81160cabd4a062cb4b5216c4b924da954",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/CPHL/30T",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }

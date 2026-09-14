@@ -19,10 +19,15 @@
     "context_length": 8192,
     "dataset": "current_velocity/5T",
     "datastore_prediction_length": 288,
+    "datastore_scope": "all",
     "datastore_stride": 288,
+    "fitting_window_scope": "all",
     "max_datastore_windows": null,
+    "max_fitting_windows": null,
     "minimum_datastore_dates_per_variate": 11,
     "prediction_length": 288,
+    "reference_context_length": 2016,
+    "retrieval_context_length": 2016,
     "retrieval_period": 288,
     "seasonality": 288,
     "target_mode": "univariate",
@@ -32,19 +37,20 @@
   "counts": {
     "adaptation_train": 180,
     "adaptation_validation": 90,
-    "datastore": 7020,
+    "datastore": 12678,
     "test": 90
   },
   "dataset_fingerprint": "56dc61161be7a25f",
   "datastore_dates_per_variate": {
     "balanced_cap": null,
-    "maximum": 1170,
-    "minimum": 1170
+    "maximum": 2113,
+    "minimum": 2113
   },
   "excluded_fixed_context_rows": {
     "adaptation_train": 0,
     "adaptation_validation": 0
   },
+  "fitting_dates_per_variate": null,
   "format": "adaptime_shared_windows",
   "interval_convention": "target start inclusive, target stop exclusive",
   "planned_query_rows": {
@@ -104,13 +110,17 @@
     281
   ],
   "query_window_contract": "training and validation retain only fixed-context rows; test retains every official TIME row",
-  "query_window_contract_id": "fixed_context_fit_rows_complete_official_test",
+  "query_window_contract_id": "fixed_retrieval_context_fit_rows_variable_model_context_official_test",
   "reference_columns": [
     "item",
     "channel",
     "origin"
   ],
   "schema_version": 1,
-  "signature": "221c5a118eb20fdccc679180d7dca13f18948e9abf4cc84834bd94c6281f03cd",
-  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/current_velocity/5T"
+  "signature": "dfd14bcdd5520a358be7fd43348fe2f544f714e0fb07328ab974ae5875c12b92",
+  "source_path": "/fslarge/scratch/users/h61084/datasets/hf_dataset/current_velocity/5T",
+  "window_cap_removed_rows": {
+    "adaptation_train": 0,
+    "adaptation_validation": 0
+  }
 }
