@@ -40,6 +40,8 @@ class RidgeTrainingConfig:
     default_k: int = PRIMARY_K
     default_alpha: float = PRIMARY_ALPHA
     fitting_scopes: tuple[str, ...] = ("all", "same_series")
+    bootstrap_replications: int = 1000
+    bootstrap_block_length: int | None = None
 
     def validate(self) -> None:
         if not self.k_values or any(int(k) <= 0 for k in self.k_values):
@@ -52,6 +54,13 @@ class RidgeTrainingConfig:
             raise ValueError("alpha_values must be unique")
         if int(self.chunk_size) <= 0:
             raise ValueError("chunk_size must be positive")
+        if int(self.bootstrap_replications) < 2:
+            raise ValueError("bootstrap_replications must be at least two")
+        if (
+            self.bootstrap_block_length is not None
+            and int(self.bootstrap_block_length) <= 0
+        ):
+            raise ValueError("bootstrap_block_length must be positive when supplied")
         if float(self.minimum_training_window_ratio) < 0:
             raise ValueError("minimum_training_window_ratio must be non-negative")
         if float(self.minimum_validation_window_ratio) < 0:
@@ -326,31 +335,119 @@ def past_target_win_evidence(
     }
 
 
-def past_target_validation_msse(
+def validation_date_msse(
     arrays: ExtractionArrays,
-    split: str,
-    probability: float,
-    chunk_size: int,
-) -> float:
+    prepared: PreparedDataset,
+    config: RidgeTrainingConfig,
+    *,
+    method: str,
+    k: int = 0,
+    coefficients: np.ndarray | None = None,
+    probability: float = 0.0,
+    per_variate_coefficients: dict[tuple[int, int], np.ndarray] | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return one fallback-aware MSSE value per ordered validation date."""
+
+    split = "adaptation_validation"
+    date_ticks = np.asarray(prepared.calendar_ticks(split), dtype=np.int64)
+    unique_dates, date_index = np.unique(date_ticks, return_inverse=True)
+    loss_sum = np.zeros(len(unique_dates), dtype=np.float64)
+    loss_count = np.zeros(len(unique_dates), dtype=np.int64)
     vanilla = arrays.open(f"{split}.vanilla")
-    candidate = arrays.open(f"{split}.past_target_covariate_forecast")
-    available = arrays.open(f"{split}.past_target_covariate_available")
     target = arrays.open(f"{split}.target")
     scale = arrays.open(f"{split}.msse_scale")
-    squared_error = 0.0
-    observations = 0
-    for start in range(0, len(target), int(chunk_size)):
-        stop = min(start + int(chunk_size), len(target))
+    references = np.asarray(prepared.indices(split), dtype=np.int64)
+
+    context = None
+    neighbor_ids = None
+    rag_eligible = None
+    if int(k) > 0:
+        context = arrays.open(f"{split}.context_forecast_k{int(k)}")
+        neighbor_ids = arrays.open(f"{split}.neighbor_id")
+        rag_eligible = arrays.open(f"{split}.rag_eligible")
+    past_forecast = None
+    past_available = None
+    if method == "bayes_past_targets_prediction":
+        past_forecast = arrays.open(f"{split}.past_target_covariate_forecast")
+        past_available = arrays.open(f"{split}.past_target_covariate_available")
+
+    for start in range(0, len(target), int(config.chunk_size)):
+        stop = min(start + int(config.chunk_size), len(target))
         chunk_vanilla = np.asarray(vanilla[start:stop], dtype=np.float64)
-        prediction = np.array(chunk_vanilla, copy=True)
-        usable = np.asarray(available[start:stop], dtype=bool)
-        prediction[usable] = (
-            (1.0 - float(probability)) * chunk_vanilla[usable]
-            + float(probability)
-            * np.asarray(candidate[start:stop], dtype=np.float64)[usable]
-        )
         chunk_target = np.asarray(target[start:stop], dtype=np.float64)
         chunk_scale = np.asarray(scale[start:stop], dtype=np.float64)
+        prediction = np.array(chunk_vanilla, copy=True)
+
+        if method == "bayes_past_targets_prediction":
+            assert past_forecast is not None and past_available is not None
+            candidate = np.asarray(past_forecast[start:stop], dtype=np.float64)
+            usable = (
+                np.asarray(past_available[start:stop], dtype=bool)
+                & np.isfinite(candidate).reshape(stop - start, -1).all(axis=1)
+            )
+            prediction[usable] = (
+                (1.0 - float(probability)) * chunk_vanilla[usable]
+                + float(probability) * candidate[usable]
+            )
+        elif method != "vanilla":
+            assert context is not None and neighbor_ids is not None and rag_eligible is not None
+            selected = np.asarray(neighbor_ids[start:stop, : int(k)])
+            candidate_rows = (
+                np.asarray(rag_eligible[start:stop], dtype=bool)
+                & np.all(selected >= 0, axis=1)
+            )
+            positions = np.flatnonzero(candidate_rows)
+            if len(positions):
+                ids = selected[positions]
+                design, _ = full_ridge_design(
+                    chunk_vanilla[positions],
+                    np.asarray(context[start:stop], dtype=np.float64)[positions],
+                    arrays.datastore_target[ids],
+                    arrays.neighbor_forecast(ids),
+                    np.zeros_like(chunk_vanilla[positions]),
+                )
+                complete = np.isfinite(design).reshape(len(design), -1).all(axis=1)
+                accepted = positions[complete]
+                accepted_design = design[complete]
+                if method == "bayes_covariate_prediction":
+                    candidate_context = np.asarray(
+                        context[start:stop], dtype=np.float64
+                    )[accepted]
+                    prediction[accepted] = (
+                        (1.0 - float(probability)) * chunk_vanilla[accepted]
+                        + float(probability) * candidate_context
+                    )
+                else:
+                    indices = ridge_feature_indices(method, int(k))
+                    if method == PER_VARIATE_RIDGE:
+                        fitted = per_variate_coefficients or {}
+                        chunk_refs = references[start:stop]
+                        for key, series_coefficients in fitted.items():
+                            series_rows = (
+                                (chunk_refs[accepted, 0] == int(key[0]))
+                                & (chunk_refs[accepted, 1] == int(key[1]))
+                            )
+                            if np.any(series_rows):
+                                selected_rows = accepted[series_rows]
+                                prediction[selected_rows] = (
+                                    chunk_vanilla[selected_rows]
+                                    + np.einsum(
+                                        "...f,f->...",
+                                        accepted_design[series_rows][..., indices],
+                                        series_coefficients,
+                                    )
+                                )
+                    else:
+                        assert coefficients is not None
+                        prediction[accepted] = (
+                            chunk_vanilla[accepted]
+                            + np.einsum(
+                                "...f,f->...",
+                                accepted_design[..., indices],
+                                coefficients,
+                            )
+                        )
+
         valid = (
             np.isfinite(prediction).reshape(stop - start, -1).all(axis=1)
             & np.isfinite(chunk_target).reshape(stop - start, -1).all(axis=1)
@@ -360,11 +457,124 @@ def past_target_validation_msse(
             residual = (prediction[valid] - chunk_target[valid]) / np.maximum(
                 chunk_scale[valid], 1e-8
             )[..., None]
-            squared_error += float(np.square(residual).sum(dtype=np.float64))
-            observations += int(residual.size)
-    if observations == 0:
-        raise ValueError("cannot score empty past-target covariate validation data")
-    return squared_error / observations
+            row_loss = np.mean(np.square(residual), axis=(1, 2))
+            positions = date_index[start:stop][valid]
+            np.add.at(loss_sum, positions, row_loss)
+            np.add.at(loss_count, positions, 1)
+
+    valid_dates = loss_count > 0
+    if not np.any(valid_dates):
+        raise ValueError("cannot score empty validation dates")
+    return unique_dates[valid_dates], loss_sum[valid_dates] / loss_count[valid_dates]
+
+
+def _selection_rank(candidate: dict[str, object]) -> tuple[object, ...]:
+    alpha = candidate.get("alpha")
+    return (
+        0 if candidate["method"] == "vanilla" else 1,
+        int(candidate.get("k", 0)),
+        -(float(alpha) if alpha is not None else 0.0),
+        str(candidate["method"]),
+    )
+
+
+def select_with_block_bootstrap(
+    candidates: list[tuple[dict[str, object], np.ndarray, np.ndarray]],
+    config: RidgeTrainingConfig,
+    *,
+    prediction_length: int,
+    fitting_stride: int,
+    seed_offset: int,
+) -> tuple[dict[str, object], dict[str, object]]:
+    """Apply a paired moving-block-bootstrap one-standard-error rule."""
+
+    if not candidates:
+        raise ValueError("bootstrap selection requires at least one candidate")
+    dates = np.asarray(candidates[0][1], dtype=np.int64)
+    for _, candidate_dates, candidate_loss in candidates:
+        if not np.array_equal(dates, np.asarray(candidate_dates, dtype=np.int64)):
+            raise ValueError("bootstrap candidates do not share validation dates")
+        if len(candidate_loss) != len(dates) or not np.isfinite(candidate_loss).all():
+            raise ValueError("bootstrap candidate losses must be finite and date-aligned")
+
+    for candidate, _, loss in candidates:
+        candidate["validation_msse"] = float(np.mean(loss, dtype=np.float64))
+    observed_best, _, best_loss = min(
+        candidates,
+        key=lambda value: (
+            float(value[0]["validation_msse"]),
+            _selection_rank(value[0]),
+        ),
+    )
+    n_dates = len(dates)
+    fallback_reason: str | None = None
+    if n_dates < 2:
+        block_length = 1
+        blocks = 0
+        fallback_reason = "fewer_than_two_validation_dates"
+    else:
+        overlap = max(
+            1,
+            int(np.ceil(int(prediction_length) / int(fitting_stride))),
+        )
+        automatic = max(1, int(round(n_dates ** (1.0 / 3.0))), overlap)
+        requested = int(config.bootstrap_block_length or automatic)
+        block_length = min(requested, n_dates - 1)
+        blocks = int(np.ceil(n_dates / block_length))
+
+    admissible: list[dict[str, object]] = []
+    for candidate, _, loss in candidates:
+        differences = np.asarray(loss, dtype=np.float64) - np.asarray(
+            best_loss, dtype=np.float64
+        )
+        difference = float(np.mean(differences, dtype=np.float64))
+        standard_error = 0.0
+        if blocks:
+            rng = np.random.default_rng(int(config.seed) + int(seed_offset))
+            bootstrap_sums = np.zeros(
+                int(config.bootstrap_replications), dtype=np.float64
+            )
+            remaining = n_dates
+            offsets = np.arange(block_length, dtype=np.int64)
+            while remaining:
+                width = min(block_length, remaining)
+                starts = rng.integers(
+                    0,
+                    n_dates - block_length + 1,
+                    size=int(config.bootstrap_replications),
+                )
+                bootstrap_sums += np.sum(
+                    differences[starts[:, None] + offsets[None, :width]],
+                    axis=1,
+                )
+                remaining -= width
+            standard_error = float(
+                np.std(bootstrap_sums / n_dates, ddof=1)
+            )
+        within = difference <= standard_error + 1e-12
+        candidate["validation_difference_from_best"] = difference
+        candidate["bootstrap_standard_error"] = standard_error
+        candidate["within_one_standard_error"] = within
+        if within:
+            admissible.append(candidate)
+    selected = min(admissible, key=_selection_rank)
+    return selected, {
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "replications": int(config.bootstrap_replications),
+        "validation_dates": n_dates,
+        "block_length": block_length,
+        "block_length_source": (
+            "configured" if config.bootstrap_block_length is not None else "automatic"
+        ),
+        "automatic_block_length_rule": (
+            "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))"
+        ),
+        "fallback_reason": fallback_reason,
+        "observed_best": dict(observed_best),
+        "preference_within_threshold": (
+            "vanilla_then_lowest_k_then_highest_alpha_then_method_name"
+        ),
+    }
 
 
 def _series_positions(references: np.ndarray, key: tuple[int, int]) -> np.ndarray:
@@ -382,6 +592,7 @@ def fit_per_variate_full_ridge(
     np.ndarray,
     dict[str, object],
     list[dict[str, object]],
+    dict[str, object],
 ]:
     """Select one K/alpha globally while fitting one coefficient vector per variate."""
 
@@ -450,13 +661,13 @@ def fit_per_variate_full_ridge(
             vanilla_observations += validation.observations
     if vanilla_observations == 0:
         raise ValueError("per-variate Ridge has no complete validation observations")
-    best: dict[str, object] = {
+    vanilla_candidate: dict[str, object] = {
         "method": "vanilla",
         "k": 0,
         "alpha": None,
         "validation_msse": vanilla_error / vanilla_observations,
     }
-    candidates.append(dict(best))
+    candidates.append(vanilla_candidate)
     fitted_by_candidate: dict[tuple[int, float], dict[tuple[int, int], np.ndarray]] = {}
     for k in config.k_values:
         indices = ridge_feature_indices(PER_VARIATE_RIDGE, int(k))
@@ -503,29 +714,58 @@ def fit_per_variate_full_ridge(
             }
             candidates.append(candidate)
             fitted_by_candidate[(int(k), float(alpha))] = fitted
-            if not fitted_series:
-                continue
-            candidate_key = (
-                float(candidate["validation_msse"]),
-                int(candidate["k"]),
-                float(candidate["alpha"]),
+
+    bootstrap_candidates: list[
+        tuple[dict[str, object], np.ndarray, np.ndarray]
+    ] = []
+    for candidate in candidates:
+        if candidate["method"] == "vanilla":
+            dates, losses = validation_date_msse(
+                arrays, prepared, config, method="vanilla"
             )
-            best_key = (
-                float(best["validation_msse"]),
-                int(best["k"]),
-                -1.0 if best["alpha"] is None else float(best["alpha"]),
+        else:
+            fitted = fitted_by_candidate[
+                (int(candidate["k"]), float(candidate["alpha"]))
+            ]
+            dates, losses = validation_date_msse(
+                arrays,
+                prepared,
+                config,
+                method=PER_VARIATE_RIDGE,
+                k=int(candidate["k"]),
+                per_variate_coefficients=fitted,
             )
-            if candidate_key < best_key:
-                best = candidate
+        bootstrap_candidates.append((candidate, dates, losses))
+    best, bootstrap = select_with_block_bootstrap(
+        bootstrap_candidates,
+        config,
+        prediction_length=prepared.prediction_length,
+        fitting_stride=int(prepared.config["adaptation_stride"]),
+        seed_offset=401,
+    )
 
     if best["method"] == "vanilla":
-        return best, np.empty((0, 2), np.int64), np.empty((0, 0), np.float64), coverage, candidates
+        return (
+            best,
+            np.empty((0, 2), np.int64),
+            np.empty((0, 0), np.float64),
+            coverage,
+            candidates,
+            bootstrap,
+        )
     selected_fits = fitted_by_candidate[(int(best["k"]), float(best["alpha"]))]
     selected_keys = np.asarray(sorted(selected_fits), dtype=np.int64).reshape(-1, 2)
     selected_coefficients = np.stack(
         [selected_fits[tuple(map(int, key))] for key in selected_keys]
     )
-    return best, selected_keys, selected_coefficients, coverage, candidates
+    return (
+        best,
+        selected_keys,
+        selected_coefficients,
+        coverage,
+        candidates,
+        bootstrap,
+    )
 
 
 def fit_full_ridge(
@@ -564,10 +804,15 @@ def fit_full_ridge(
         "config": asdict(config),
         "bayes_covariate_protocol": {
             "fit_evidence": "paired_adaptation_train_window_msse_wins",
-            "selection_evidence": "adaptation_validation_msse",
+            "selection_evidence": (
+                "adaptation_validation_date_msse_with_paired_block_bootstrap"
+            ),
             "tie_weight": 0.5,
             "prior": {"alpha": 1.0, "beta": 1.0},
         },
+        "validation_selection_protocol": (
+            "paired_moving_date_block_bootstrap_one_standard_error"
+        ),
         "selection_methods": selection_methods,
     }
     signature = _canonical_hash(identity)
@@ -627,6 +872,9 @@ def fit_full_ridge(
         method: (dict(vanilla_candidate), None)
         for method in ("bayes_covariate_prediction", *RIDGE_VARIANTS)
     }
+    ridge_coefficients_by_candidate: dict[
+        tuple[str, int, float], np.ndarray
+    ] = {}
 
     candidate_ks = [
         int(k)
@@ -663,11 +911,6 @@ def fit_full_ridge(
             "probability_covariate_better": probability,
         }
         selection_rows.append(bayes_candidate)
-        if float(bayes_msse) < float(
-            best_by_method["bayes_covariate_prediction"][0]["validation_msse"]
-        ):
-            best_by_method["bayes_covariate_prediction"] = (bayes_candidate, None)
-
         for method in RIDGE_VARIANTS:
             indices = ridge_feature_indices(method, k)
             train_statistics = train_by_k[k].select_features(indices)
@@ -684,13 +927,67 @@ def fit_full_ridge(
                     "validation_msse": float(candidate_msse),
                 }
                 selection_rows.append(candidate)
-                current = best_by_method[method][0]
-                if (float(candidate_msse), k, float(alpha)) < (
-                    float(current["validation_msse"]),
-                    int(current["k"]),
-                    -1.0 if current["alpha"] is None else float(current["alpha"]),
-                ):
-                    best_by_method[method] = (candidate, candidate_coefficients)
+                ridge_coefficients_by_candidate[
+                    (method, int(k), float(alpha))
+                ] = candidate_coefficients
+
+    vanilla_dates, vanilla_date_losses = validation_date_msse(
+        arrays, prepared, config, method="vanilla"
+    )
+    vanilla_candidate["validation_msse"] = float(
+        np.mean(vanilla_date_losses, dtype=np.float64)
+    )
+    selection_rows[0]["validation_msse"] = vanilla_candidate["validation_msse"]
+    bootstrap_by_method: dict[str, dict[str, object]] = {}
+    for method_index, method in enumerate(
+        ("bayes_covariate_prediction", *RIDGE_VARIANTS), start=1
+    ):
+        family: list[tuple[dict[str, object], np.ndarray, np.ndarray]] = [
+            (dict(vanilla_candidate), vanilla_dates, vanilla_date_losses)
+        ]
+        for candidate in selection_rows:
+            if candidate["method"] != method:
+                continue
+            if method == "bayes_covariate_prediction":
+                dates, losses = validation_date_msse(
+                    arrays,
+                    prepared,
+                    config,
+                    method=method,
+                    k=int(candidate["k"]),
+                    probability=float(candidate["probability_covariate_better"]),
+                )
+            else:
+                candidate_coefficients = ridge_coefficients_by_candidate[
+                    (method, int(candidate["k"]), float(candidate["alpha"]))
+                ]
+                dates, losses = validation_date_msse(
+                    arrays,
+                    prepared,
+                    config,
+                    method=method,
+                    k=int(candidate["k"]),
+                    coefficients=candidate_coefficients,
+                )
+            family.append((candidate, dates, losses))
+        selected_family, bootstrap = select_with_block_bootstrap(
+            family,
+            config,
+            prediction_length=prepared.prediction_length,
+            fitting_stride=int(prepared.config["adaptation_stride"]),
+            seed_offset=100 * method_index,
+        )
+        bootstrap_by_method[method] = bootstrap
+        selected_coefficients = None
+        if selected_family["method"] != "vanilla" and method in RIDGE_VARIANTS:
+            selected_coefficients = ridge_coefficients_by_candidate[
+                (
+                    method,
+                    int(selected_family["k"]),
+                    float(selected_family["alpha"]),
+                )
+            ]
+        best_by_method[method] = (selected_family, selected_coefficients)
 
     method_selections = {
         method: dict(candidate) for method, (candidate, _) in best_by_method.items()
@@ -702,7 +999,14 @@ def fit_full_ridge(
     }
 
     if "same_series" in config.fitting_scopes:
-        per_selection, per_keys, per_coefficients, per_coverage, per_candidates = (
+        (
+            per_selection,
+            per_keys,
+            per_coefficients,
+            per_coverage,
+            per_candidates,
+            per_bootstrap,
+        ) = (
             fit_per_variate_full_ridge(arrays, prepared, config)
         )
     else:
@@ -711,7 +1015,11 @@ def fit_full_ridge(
         per_coefficients = np.empty((0, 0), dtype=np.float64)
         per_coverage = {}
         per_candidates = []
+        per_bootstrap = {
+            "fallback_reason": "same_series_fitting_scope_disabled"
+        }
     method_selections[PER_VARIATE_RIDGE] = dict(per_selection)
+    bootstrap_by_method[PER_VARIATE_RIDGE] = per_bootstrap
     selection_rows.extend(
         {**candidate, "selection_family": PER_VARIATE_RIDGE}
         for candidate in per_candidates
@@ -727,16 +1035,7 @@ def fit_full_ridge(
     past_probability = (
         (1.0 + past_wins) / (2.0 + past_trials) if past_trials else 0.0
     )
-    past_msse = (
-        past_target_validation_msse(
-            arrays,
-            "adaptation_validation",
-            past_probability,
-            config.chunk_size,
-        )
-        if past_trials
-        else float(vanilla_msse)
-    )
+    past_msse = float(vanilla_candidate["validation_msse"])
     past_candidate = {
         "method": "bayes_past_targets_prediction",
         "k": 0,
@@ -745,13 +1044,33 @@ def fit_full_ridge(
         "probability_past_targets_better": past_probability,
     }
     selection_rows.append(past_candidate)
-    method_selections["bayes_past_targets_prediction"] = (
-        past_candidate
-        if float(past_msse) < float(vanilla_msse)
-        else dict(vanilla_candidate)
+    past_dates, past_date_losses = validation_date_msse(
+        arrays,
+        prepared,
+        config,
+        method="bayes_past_targets_prediction",
+        probability=past_probability,
     )
+    past_selection, past_bootstrap = select_with_block_bootstrap(
+        [
+            (dict(vanilla_candidate), vanilla_dates, vanilla_date_losses),
+            (past_candidate, past_dates, past_date_losses),
+        ],
+        config,
+        prediction_length=prepared.prediction_length,
+        fitting_stride=int(prepared.config["adaptation_stride"]),
+        seed_offset=601,
+    )
+    method_selections["bayes_past_targets_prediction"] = dict(past_selection)
+    bootstrap_by_method["bayes_past_targets_prediction"] = past_bootstrap
 
-    selected = dict(vanilla_candidate)
+    overall_candidates: list[
+        tuple[dict[str, object], np.ndarray, np.ndarray]
+    ] = [(dict(vanilla_candidate), vanilla_dates, vanilla_date_losses)]
+    selected_per_variate_fits = {
+        tuple(map(int, key)): np.asarray(coefficients)
+        for key, coefficients in zip(per_keys, per_coefficients, strict=True)
+    }
     for method in (
         "bayes_covariate_prediction",
         "bayes_past_targets_prediction",
@@ -759,8 +1078,45 @@ def fit_full_ridge(
         PER_VARIATE_RIDGE,
     ):
         candidate = method_selections[method]
-        if float(candidate["validation_msse"]) < float(selected["validation_msse"]):
-            selected = dict(candidate)
+        if candidate["method"] == "vanilla":
+            continue
+        if method == "bayes_covariate_prediction":
+            dates, losses = validation_date_msse(
+                arrays,
+                prepared,
+                config,
+                method=method,
+                k=int(candidate["k"]),
+                probability=float(candidate["probability_covariate_better"]),
+            )
+        elif method == "bayes_past_targets_prediction":
+            dates, losses = past_dates, past_date_losses
+        elif method == PER_VARIATE_RIDGE:
+            dates, losses = validation_date_msse(
+                arrays,
+                prepared,
+                config,
+                method=method,
+                k=int(candidate["k"]),
+                per_variate_coefficients=selected_per_variate_fits,
+            )
+        else:
+            dates, losses = validation_date_msse(
+                arrays,
+                prepared,
+                config,
+                method=method,
+                k=int(candidate["k"]),
+                coefficients=coefficients_by_method[method],
+            )
+        overall_candidates.append((dict(candidate), dates, losses))
+    selected, overall_bootstrap = select_with_block_bootstrap(
+        overall_candidates,
+        config,
+        prediction_length=prepared.prediction_length,
+        fitting_stride=int(prepared.config["adaptation_stride"]),
+        seed_offset=701,
+    )
 
     coefficient_files: dict[str, str] = {}
     for method, coefficients in coefficients_by_method.items():
@@ -833,7 +1189,9 @@ def fit_full_ridge(
             if method != "bayes_past_targets_prediction" and int(value["k"]) > 0
         }
     )
-    selection_criterion = "adaptation_validation_msse_with_virtual_k0"
+    selection_criterion = (
+        "adaptation_validation_date_msse_paired_moving_block_bootstrap_one_se"
+    )
     _atomic_json(
         root / "selection.json",
         {
@@ -846,6 +1204,10 @@ def fit_full_ridge(
                 "test_windows": test_windows,
                 "minimum_training_windows_exclusive": training_window_limit,
                 "minimum_validation_windows_exclusive": validation_window_limit,
+            },
+            "bootstrap": {
+                "overall": overall_bootstrap,
+                "by_method": bootstrap_by_method,
             },
             "candidates": selection_rows,
         },
@@ -866,8 +1228,9 @@ def fit_full_ridge(
         "signature": signature,
         "status": "completed",
         "protocol": (
-            "fit_on_adaptation_train_select_every_family_against_virtual_"
-            "vanilla_on_validation_freeze_before_time_test"
+            "fit_on_adaptation_train_select_every_family_with_paired_date_"
+            "block_bootstrap_one_se_against_virtual_vanilla_on_validation_"
+            "freeze_before_time_test"
         ),
         "selected": selected,
         "method_selections": method_selections,
@@ -877,6 +1240,10 @@ def fit_full_ridge(
             "test_windows": test_windows,
             "minimum_training_windows_exclusive": training_window_limit,
             "minimum_validation_windows_exclusive": validation_window_limit,
+        },
+        "bootstrap": {
+            "overall": overall_bootstrap,
+            "by_method": bootstrap_by_method,
         },
         "feature_names": {
             method: (

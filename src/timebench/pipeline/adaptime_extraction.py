@@ -9,7 +9,7 @@ import warnings
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from time import perf_counter
-from typing import Protocol
+from typing import Any, Protocol
 
 import numpy as np
 
@@ -173,6 +173,43 @@ def _timed_forecast(
     return values
 
 
+def _forecast_references(
+    prepared: PreparedDataset,
+    references: np.ndarray,
+    reader: Any,
+    forecaster: AdaptimeForecaster,
+    timings: dict[str, float],
+    name: str,
+    *,
+    shared_cache: SharedWindowCache | None = None,
+) -> np.ndarray:
+    """Forecast references with all history available up to the model limit."""
+
+    refs = np.asarray(references, dtype=np.int64).reshape(-1, 3)
+    lengths = np.minimum(refs[:, 2], prepared.context_length)
+    result: np.ndarray | None = None
+    for length in np.unique(lengths):
+        positions = np.flatnonzero(lengths == length)
+        batch = reader.read(refs[positions], context_length=int(length))
+        if shared_cache is None:
+            values = _timed_forecast(
+                forecaster,
+                batch.context,
+                timings,
+                name,
+                horizon=prepared.prediction_length,
+            )
+        else:
+            values, seconds = shared_cache.forecasts(refs[positions], batch.context)
+            _record_seconds(timings, name, seconds)
+        if result is None:
+            result = np.empty((len(refs), *values.shape[1:]), dtype=np.float32)
+        result[positions] = values
+    if result is None:
+        raise ValueError("cannot forecast an empty reference collection")
+    return result
+
+
 def _represent(
     forecaster: AdaptimeForecaster,
     context: np.ndarray,
@@ -268,7 +305,10 @@ def _materialize_source_rows(
     reader = prepared.reader(cache_items=config.arrow_cache_items)
     representation_key = f"{split}.representation_seconds"
     if first_stop:
-        first = reader.read(references[:first_stop])
+        first = reader.read(
+            references[:first_stop],
+            context_length=prepared.retrieval_context_length,
+        )
         if shared_cache is None:
             first_representation = _timed_represent(
                 forecaster,
@@ -289,9 +329,11 @@ def _materialize_source_rows(
             np.asarray(prepared.hf_dataset[0]["target"]).shape[0]
         )
         if config.representation in {"raw", "instance"}:
-            representation_width = channels * prepared.context_length
+            representation_width = channels * prepared.retrieval_context_length
         else:
-            probe = np.zeros((1, channels, prepared.context_length), dtype=np.float32)
+            probe = np.zeros(
+                (1, channels, prepared.retrieval_context_length), dtype=np.float32
+            )
             representation_width = int(
                 _timed_represent(
                     forecaster,
@@ -377,22 +419,21 @@ def _materialize_source_rows(
         seasonal_naive[:first_stop] = reader.seasonal_naive_forecast(
             references[:first_stop]
         )
-        if shared_cache is None:
-            vanilla[:first_stop] = _timed_forecast(
-                forecaster,
-                first.context,
-                timings,
-                f"{split}.vanilla_forecast_seconds",
-                horizon=horizon,
-            )
-        else:
-            vanilla[:first_stop], seconds = shared_cache.forecasts(
-                references[:first_stop], first.context
-            )
-            _record_seconds(timings, f"{split}.vanilla_forecast_seconds", seconds)
+        vanilla[:first_stop] = _forecast_references(
+            prepared,
+            references[:first_stop],
+            reader,
+            forecaster,
+            timings,
+            f"{split}.vanilla_forecast_seconds",
+            shared_cache=shared_cache,
+        )
     for start in range(first_stop, len(references), config.model_batch_size):
         stop = min(start + config.model_batch_size, len(references))
-        batch = reader.read(references[start:stop])
+        batch = reader.read(
+            references[start:stop],
+            context_length=prepared.retrieval_context_length,
+        )
         target[start:stop] = batch.target
         if shared_cache is None:
             representation[start:stop] = _timed_represent(
@@ -427,21 +468,15 @@ def _materialize_source_rows(
             seasonal_naive[start:stop] = reader.seasonal_naive_forecast(
                 references[start:stop]
             )
-            if shared_cache is None:
-                vanilla[start:stop] = _timed_forecast(
-                    forecaster,
-                    batch.context,
-                    timings,
-                    f"{split}.vanilla_forecast_seconds",
-                    horizon=horizon,
-                )
-            else:
-                vanilla[start:stop], seconds = shared_cache.forecasts(
-                    references[start:stop], batch.context
-                )
-                _record_seconds(
-                    timings, f"{split}.vanilla_forecast_seconds", seconds
-                )
+            vanilla[start:stop] = _forecast_references(
+                prepared,
+                references[start:stop],
+                reader,
+                forecaster,
+                timings,
+                f"{split}.vanilla_forecast_seconds",
+                shared_cache=shared_cache,
+            )
     target.flush()
     representation.flush()
     scale.flush()
@@ -500,31 +535,38 @@ def _materialize_past_target_forecasts(
             continue
         item_positions = np.flatnonzero(
             (np.asarray(references[:, 0], dtype=np.int64) == int(item))
-            & (np.asarray(references[:, 2], dtype=np.int64) >= prepared.context_length)
+            & (np.asarray(references[:, 2], dtype=np.int64) > 0)
         )
-        for start in range(0, len(item_positions), config.model_batch_size):
-            positions = item_positions[start : start + config.model_batch_size]
-            batch = reader.read(references[positions])
-            covariates = reader.read_other_variates_as_past_covariates(
-                references[positions]
-            )
-            complete = (
-                np.isfinite(batch.context).reshape(len(positions), -1).all(axis=1)
-                & np.isfinite(covariates).reshape(len(positions), -1).all(axis=1)
-            )
-            accepted = positions[complete]
-            if len(accepted):
-                values = _timed_forecast(
-                    forecaster,
-                    batch.context[complete],
-                    timings,
-                    f"{split}.past_target_covariate_forecast_seconds",
-                    horizon=prepared.prediction_length,
-                    past_covariates=covariates[complete],
+        item_lengths = np.minimum(references[item_positions, 2], prepared.context_length)
+        for length in np.unique(item_lengths):
+            length_positions = item_positions[item_lengths == length]
+            for start in range(0, len(length_positions), config.model_batch_size):
+                positions = length_positions[start : start + config.model_batch_size]
+                batch = reader.read(references[positions], context_length=int(length))
+                covariates = reader.read_other_variates_as_past_covariates(
+                    references[positions], context_length=int(length)
                 )
-                finite = np.isfinite(values).reshape(len(values), -1).all(axis=1)
-                forecasts[accepted[finite]] = values[finite]
-                available[accepted[finite]] = True
+                complete = (
+                    np.isfinite(batch.context)
+                    .reshape(len(positions), -1)
+                    .all(axis=1)
+                    & np.isfinite(covariates)
+                    .reshape(len(positions), -1)
+                    .all(axis=1)
+                )
+                accepted = positions[complete]
+                if len(accepted):
+                    values = _timed_forecast(
+                        forecaster,
+                        batch.context[complete],
+                        timings,
+                        f"{split}.past_target_covariate_forecast_seconds",
+                        horizon=prepared.prediction_length,
+                        past_covariates=covariates[complete],
+                    )
+                    finite = np.isfinite(values).reshape(len(values), -1).all(axis=1)
+                    forecasts[accepted[finite]] = values[finite]
+                    available[accepted[finite]] = True
     forecasts.flush()
     available.flush()
     return forecasts, available
@@ -637,20 +679,15 @@ def _materialize_unique_neighbor_forecasts(
     ids[:] = selected
     for start in range(0, len(selected), config.model_batch_size):
         stop = min(start + config.model_batch_size, len(selected))
-        batch = reader.read(datastore_refs[selected[start:stop]])
-        if shared_cache is None:
-            forecasts[start:stop] = _timed_forecast(
-                forecaster,
-                batch.context,
-                timings,
-                "offline.neighbor_forecast_seconds",
-                horizon=prepared.prediction_length,
-            )
-        else:
-            forecasts[start:stop], seconds = shared_cache.forecasts(
-                datastore_refs[selected[start:stop]], batch.context
-            )
-            _record_seconds(timings, "offline.neighbor_forecast_seconds", seconds)
+        forecasts[start:stop] = _forecast_references(
+            prepared,
+            datastore_refs[selected[start:stop]],
+            reader,
+            forecaster,
+            timings,
+            "offline.neighbor_forecast_seconds",
+            shared_cache=shared_cache,
+        )
     forecasts.flush()
     ids.flush()
     arrays["datastore.selected_forecast"] = str(values_path.relative_to(root))
@@ -699,35 +736,49 @@ def _materialize_context_forecasts(
             positions = np.flatnonzero(eligible) + start
             if not len(positions):
                 continue
-            selected_ids = np.asarray(neighbor_ids[positions, :k])
-            query_batch = reader.read(query_refs[positions])
-            flat_neighbor_batch = reader.read(datastore_refs[selected_ids.reshape(-1)])
-            neighbor_context = flat_neighbor_batch.context.reshape(
-                len(positions),
-                k,
-                channels,
-                prepared.context_length,
+            model_lengths = np.minimum(
+                query_refs[positions, 2], prepared.context_length
             )
-            neighbor_target = np.asarray(datastore_target[selected_ids])
-            started = perf_counter()
-            retrieval_context = _query_scaled_retrieval_context(
-                query_batch.context,
-                neighbor_context,
-                neighbor_target,
-            )
-            _record_seconds(
-                timings,
-                f"{split}.context_construction_k{k}_seconds",
-                perf_counter() - started,
-            )
-            stores[k][positions] = _timed_forecast(
-                forecaster,
-                query_batch.context,
-                timings,
-                f"{split}.context_forecast_k{k}_seconds",
-                horizon=prepared.prediction_length,
-                retrieval_context=retrieval_context,
-            )
+            for model_length in np.unique(model_lengths):
+                model_positions = positions[model_lengths == model_length]
+                selected_ids = np.asarray(neighbor_ids[model_positions, :k])
+                query_batch = reader.read(
+                    query_refs[model_positions], context_length=int(model_length)
+                )
+                query_retrieval_batch = reader.read(
+                    query_refs[model_positions],
+                    context_length=prepared.retrieval_context_length,
+                )
+                flat_neighbor_batch = reader.read(
+                    datastore_refs[selected_ids.reshape(-1)],
+                    context_length=prepared.retrieval_context_length,
+                )
+                neighbor_context = flat_neighbor_batch.context.reshape(
+                    len(model_positions),
+                    k,
+                    channels,
+                    prepared.retrieval_context_length,
+                )
+                neighbor_target = np.asarray(datastore_target[selected_ids])
+                started = perf_counter()
+                retrieval_context = _query_scaled_retrieval_context(
+                    query_retrieval_batch.context,
+                    neighbor_context,
+                    neighbor_target,
+                )
+                _record_seconds(
+                    timings,
+                    f"{split}.context_construction_k{k}_seconds",
+                    perf_counter() - started,
+                )
+                stores[k][model_positions] = _timed_forecast(
+                    forecaster,
+                    query_batch.context,
+                    timings,
+                    f"{split}.context_forecast_k{k}_seconds",
+                    horizon=prepared.prediction_length,
+                    retrieval_context=retrieval_context,
+                )
     for store in stores.values():
         store.flush()
 
@@ -1040,12 +1091,16 @@ def extract_adaptation_eval_features(
 
         reader = prepared.reader(cache_items=config.arrow_cache_items)
         fixed_positions = np.flatnonzero(
-            np.asarray(references[:, 2], dtype=np.int64) >= prepared.context_length
+            np.asarray(references[:, 2], dtype=np.int64)
+            >= prepared.retrieval_context_length
         )
         timings["test.representation_seconds"] = 0.0
         for start in range(0, len(fixed_positions), config.model_batch_size):
             positions = fixed_positions[start : start + config.model_batch_size]
-            batch = reader.read(references[positions])
+            batch = reader.read(
+                references[positions],
+                context_length=prepared.retrieval_context_length,
+            )
             if shared_cache is None:
                 representation[positions] = _timed_represent(
                     forecaster,
@@ -1131,20 +1186,15 @@ def extract_adaptation_eval_features(
         datastore_references = prepared.indices("datastore")
         for start in range(0, len(missing), config.model_batch_size):
             stop = min(start + config.model_batch_size, len(missing))
-            batch = reader.read(datastore_references[missing[start:stop]])
-            if shared_cache is None:
-                missing_values[start:stop] = _timed_forecast(
-                    forecaster,
-                    batch.context,
-                    timings,
-                    "test.neighbor_forecast_seconds",
-                    horizon=prepared.prediction_length,
-                )
-            else:
-                missing_values[start:stop], seconds = shared_cache.forecasts(
-                    datastore_references[missing[start:stop]], batch.context
-                )
-                _record_seconds(timings, "test.neighbor_forecast_seconds", seconds)
+            missing_values[start:stop] = _forecast_references(
+                prepared,
+                datastore_references[missing[start:stop]],
+                reader,
+                forecaster,
+                timings,
+                "test.neighbor_forecast_seconds",
+                shared_cache=shared_cache,
+            )
         arrays["datastore.selected_forecast_id"] = str(
             missing_id_path.relative_to(root)
         )
@@ -1157,33 +1207,48 @@ def extract_adaptation_eval_features(
         eligible_positions = np.flatnonzero(rag_eligible)
         for start in range(0, len(eligible_positions), config.model_batch_size):
             positions = eligible_positions[start : start + config.model_batch_size]
-            ids = np.asarray(neighbor_ids[positions])
-            query_batch = reader.read(references[positions])
-            neighbor_batch = reader.read(datastore_references[ids.reshape(-1)])
-            neighbor_context = neighbor_batch.context.reshape(
-                len(positions), max_selected_k, 1, prepared.context_length
-            )
-            neighbor_target = np.asarray(datastore_target[ids])
-            for k in selected_ks:
-                started = perf_counter()
-                retrieval_context = _query_scaled_retrieval_context(
-                    query_batch.context,
-                    neighbor_context[:, :k],
-                    neighbor_target[:, :k],
+            model_lengths = np.minimum(references[positions, 2], prepared.context_length)
+            for model_length in np.unique(model_lengths):
+                model_positions = positions[model_lengths == model_length]
+                ids = np.asarray(neighbor_ids[model_positions])
+                query_batch = reader.read(
+                    references[model_positions], context_length=int(model_length)
                 )
-                _record_seconds(
-                    timings,
-                    "test.context_construction_seconds",
-                    perf_counter() - started,
+                query_retrieval_batch = reader.read(
+                    references[model_positions],
+                    context_length=prepared.retrieval_context_length,
                 )
-                context_forecasts[k][positions] = _timed_forecast(
-                    forecaster,
-                    query_batch.context,
-                    timings,
-                    "test.context_forecast_seconds",
-                    horizon=prepared.prediction_length,
-                    retrieval_context=retrieval_context,
+                neighbor_batch = reader.read(
+                    datastore_references[ids.reshape(-1)],
+                    context_length=prepared.retrieval_context_length,
                 )
+                neighbor_context = neighbor_batch.context.reshape(
+                    len(model_positions),
+                    max_selected_k,
+                    1,
+                    prepared.retrieval_context_length,
+                )
+                neighbor_target = np.asarray(datastore_target[ids])
+                for k in selected_ks:
+                    started = perf_counter()
+                    retrieval_context = _query_scaled_retrieval_context(
+                        query_retrieval_batch.context,
+                        neighbor_context[:, :k],
+                        neighbor_target[:, :k],
+                    )
+                    _record_seconds(
+                        timings,
+                        "test.context_construction_seconds",
+                        perf_counter() - started,
+                    )
+                    context_forecasts[k][model_positions] = _timed_forecast(
+                        forecaster,
+                        query_batch.context,
+                        timings,
+                        "test.context_forecast_seconds",
+                        horizon=prepared.prediction_length,
+                        retrieval_context=retrieval_context,
+                    )
 
         for store in (
             representation,

@@ -63,6 +63,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--target-mode", choices=("univariate",), default="univariate")
     parser.add_argument("--adaptation-stride", type=int)
     parser.add_argument("--retrieval-period", type=int)
+    parser.add_argument("--retrieval-context-length", type=int)
     parser.add_argument("--datastore-stride-multiple", type=int, default=1)
     parser.add_argument("--max-datastore-windows", type=int)
     parser.add_argument("--max-fitting-windows", type=int)
@@ -79,6 +80,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--datastore-block-size", type=int, default=4096)
     parser.add_argument("--arrow-cache-items", type=int, default=2)
     parser.add_argument("--ridge-chunk-size", type=int, default=1024)
+    parser.add_argument("--bootstrap-replications", type=int, default=1000)
+    parser.add_argument("--bootstrap-block-length", type=int)
     parser.add_argument(
         "--fitting-scope",
         nargs="+",
@@ -128,6 +131,7 @@ def main() -> None:
             target_mode=args.target_mode,
             adaptation_stride=args.adaptation_stride,
             retrieval_period=args.retrieval_period,
+            retrieval_context_length=args.retrieval_context_length,
             datastore_stride_multiple=args.datastore_stride_multiple,
             max_datastore_windows=args.max_datastore_windows,
             max_fitting_windows=args.max_fitting_windows,
@@ -144,6 +148,8 @@ def main() -> None:
             datastore_block_size=args.datastore_block_size,
             arrow_cache_items=args.arrow_cache_items,
             ridge_chunk_size=args.ridge_chunk_size,
+            bootstrap_replications=args.bootstrap_replications,
+            bootstrap_block_length=args.bootstrap_block_length,
             fitting_scopes=tuple(args.fitting_scope),
             rolling_k=args.rolling_k,
             rolling_alpha=args.rolling_alpha,

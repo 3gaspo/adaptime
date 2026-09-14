@@ -21,12 +21,14 @@ def main() -> None:
         "adaptime_comparison.slurm",
         "dataset_diagnostics.slurm",
         "foundation_summary.slurm",
+        "time_inference.slurm",
         "tsrag_comparison.slurm",
     ]
     assert sorted(path.name for path in selena.glob("*.slurm")) == [
         "adaptime_comparison_selena.slurm",
         "dataset_diagnostics_selena.slurm",
         "foundation_summary_selena.slurm",
+        "time_inference.slurm",
         "tsrag_comparison_selena.slurm",
     ]
     assert sorted(path.name for path in dgx_models.glob("*.slurm")) == [

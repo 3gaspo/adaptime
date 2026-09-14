@@ -63,6 +63,15 @@ def _run_slurm_contract() -> None:
     module.main()
 
 
+def _run_time_inference_contract() -> None:
+    path = PROJECT_ROOT / "src/tests/test_time_inference_contract.py"
+    spec = importlib.util.spec_from_file_location("adaptime_timing_contract", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    module.main()
+
+
 def _evaluation_run(
     root: Path,
     *,
@@ -162,6 +171,8 @@ def main() -> None:
         dataset="synthetic",
         term="short",
         context_length=10,
+        retrieval_context_length=10,
+        reference_context_length=10,
         prediction_length=4,
         test_length=8,
         adaptation_train_length=train_length,
@@ -212,6 +223,8 @@ def main() -> None:
         **{
             **preparation.__dict__,
             "context_length": 140,
+            "retrieval_context_length": 140,
+            "reference_context_length": 140,
             "max_datastore_windows": None,
         }
     )
@@ -236,7 +249,7 @@ def main() -> None:
             "query_window_contract"
         ]
         assert manifest["query_window_contract_id"] == (
-            "fixed_context_fit_rows_complete_official_test"
+            "fixed_retrieval_context_fit_rows_variable_model_context_official_test"
         )
 
     vanilla = np.array([[[10.0, 11.0]], [[20.0, 21.0]]])
@@ -428,9 +441,9 @@ def main() -> None:
     assert '"fit_split": "adaptation_train"' in training
     assert '"selection_split": "adaptation_validation"' in training
     assert '"fits_by_k"' in training
-    assert (
-        'selection_criterion = "adaptation_validation_msse_with_virtual_k0"' in training
-    )
+    assert "select_with_block_bootstrap(" in training
+    assert "paired_moving_date_block_bootstrap_one_standard_error" in training
+    assert "bootstrap_replications: int = 1000" in training
     assert "full_ridge_predict_with_fallback" in prediction
     assert '"bayes_covariate_prediction"' in prediction
     assert "(1.0 - probability) * chunk_vanilla" in prediction
@@ -466,6 +479,8 @@ def main() -> None:
     assert "training and validation retain only fixed-context rows" in adaptation_data
     assert '"query_window_contract": QUERY_WINDOW_CONTRACT' in adaptation_data
     assert '"query_window_contract": QUERY_WINDOW_CONTRACT' in adaptime_workflow
+    assert 'dataset_config.get("adaptime_tasks", {})' in adaptime_workflow
+    assert "retrieval_context_length" in adaptime_workflow
     assert "return self.shared.indices(split)" in tsrag_data
     assert "PreparedDataset(path)" in tsrag_data
     assert "independently evaluated Adaptime wrappers" in result_builder
@@ -477,6 +492,7 @@ def main() -> None:
     assert (PROJECT_ROOT / "scripts/submit_rolling_ridge.sh").is_file()
 
     _run_slurm_contract()
+    _run_time_inference_contract()
     print("Adaptime split, fallback, datastore, and Slurm contracts passed.")
 
 

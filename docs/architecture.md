@@ -36,10 +36,14 @@ records the global minimum; the project-owned TS-RAG data adapter validates it
 for both new and reused manifests before TS-RAG representation extraction.
 Generic preparation and the Ridge fallback path remain method-neutral.
 
-Fit extraction materializes bounded `.npy` arrays for fixed-context
+Fit extraction materializes bounded `.npy` arrays for fixed-retrieval-context
 representations, ordered neighbors and distances, forecasts, targets, scales,
 eligibility, and timing. Training and validation rows without the complete
-backbone context are excluded; official test rows are never excluded.
+configured retrieval context are excluded; foundation predictions independently
+use the history available at each origin up to the backbone limit. Official
+test rows are never excluded. Task-specific alignment, fitting/datastore
+strides, rolling strides, and retrieval lookbacks are resolved from
+`adaptime_tasks` in the dataset configuration.
 Neighbor search runs once at `max_k`; every candidate consumes an ordered
 prefix on common max-K support, while each `C(K)` remains a distinct backbone
 forecast. Closed-form fitting streams float64 sufficient statistics.
@@ -54,9 +58,12 @@ eligible positive `K`. A trial is one eligible adaptation-training
 window; `C` wins when its per-window MSSE is below `V`, and a tie contributes
 one half. Adaptation validation compares the resulting frozen mixtures and
 selects the Bayesian `K`, or virtual vanilla, by MSSE. The selected Beta(1,1)
-posterior mean is the fixed test mixture probability. Test extraction runs only
-selected `K`, reuses any neighbor forecasts already cached during fitting, and
-computes only newly selected neighbor forecasts.
+posterior mean is the fixed test mixture probability. Candidate losses are
+averaged by validation date across variates, then a paired moving-date-block
+bootstrap applies a one-standard-error rule. Statistically indistinguishable
+candidates prefer vanilla, then lower `K`, then stronger regularization. Test
+extraction runs only selected `K`, reuses any neighbor forecasts already cached
+during fitting, and computes only newly selected neighbor forecasts.
 The prediction artifact contains `V`, hard `C`, both Bayesian candidates,
 `V+C`, `V+Y_1..Y_K`, shared and per-variate full Ridge, and the overall
 validation-selected method. Each branch falls back to cached `V` when vanilla
@@ -111,3 +118,10 @@ dependencies; `slurm/` contains the concise submit-ready fronts.
 and applies repeat-then-configuration averaging when requested. Its comparison
 CSV retains every metric mean and the corresponding finite and total value
 counts; those coverage counts are reported without being forced to match.
+
+`src/timebench/scripts/time_inference.py` is a separate measurement path. Its parent process
+selects shared random test references and launches a fresh child process for
+each method/example pair. Children may load frozen fitted or datastore state,
+but recompute all query-side work and never consume test prediction, neighbor,
+or representation caches. `src/slurm/time_inference.sh` owns the common cluster
+command used by the identically named DGX and Selena fronts.

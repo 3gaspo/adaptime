@@ -22,7 +22,9 @@ PREPARATION_SCHEMA = 1
 FIT_QUERY_SPLITS = ("adaptation_train", "adaptation_validation")
 QUERY_SPLITS = (*FIT_QUERY_SPLITS, "test")
 ALL_SPLITS = ("datastore", *QUERY_SPLITS)
-QUERY_WINDOW_CONTRACT = "fixed_context_fit_rows_complete_official_test"
+QUERY_WINDOW_CONTRACT = (
+    "fixed_retrieval_context_fit_rows_variable_model_context_official_test"
+)
 
 ADAPTATION_STRIDES = {
     "intraday": 127,
@@ -121,6 +123,8 @@ class PreparationConfig:
     dataset: str
     term: str
     context_length: int
+    retrieval_context_length: int
+    reference_context_length: int
     prediction_length: int
     test_length: int
     adaptation_train_length: int
@@ -150,6 +154,8 @@ class PreparationConfig:
     def validate(self) -> None:
         positive = {
             "context_length": self.context_length,
+            "retrieval_context_length": self.retrieval_context_length,
+            "reference_context_length": self.reference_context_length,
             "prediction_length": self.prediction_length,
             "test_length": self.test_length,
             "adaptation_train_length": self.adaptation_train_length,
@@ -166,6 +172,16 @@ class PreparationConfig:
             raise ValueError(f"positive preparation settings required: {', '.join(invalid)}")
         if self.query_stride <= 1:
             raise ValueError("adaptation_stride must be greater than one")
+        if self.retrieval_context_length > self.context_length:
+            raise ValueError("retrieval_context_length must not exceed context_length")
+        if not (
+            self.retrieval_context_length
+            <= self.reference_context_length
+            <= self.context_length
+        ):
+            raise ValueError(
+                "reference_context_length must cover retrieval context within the model limit"
+            )
         if self.target_mode not in {"univariate", "multivariate"}:
             raise ValueError("target_mode must be univariate or multivariate")
         if self.test_length < self.prediction_length:
@@ -441,13 +457,13 @@ def prepare_adaptation_dataset(
         split_origins = {
             "adaptation_train": _query_origins(
                 intervals["adaptation_train"],
-                context_length=config.context_length,
+                context_length=config.reference_context_length,
                 horizon=config.prediction_length,
                 stride=config.query_stride,
             ),
             "adaptation_validation": _query_origins(
                 intervals["adaptation_validation"],
-                context_length=config.context_length,
+                context_length=config.reference_context_length,
                 horizon=config.prediction_length,
                 stride=config.query_stride,
             ),
@@ -510,7 +526,7 @@ def prepare_adaptation_dataset(
         ]
         origins = _phase_origins(
             intervals["datastore"],
-            context_length=config.context_length,
+            context_length=config.reference_context_length,
             horizon=config.datastore_horizon,
             stride=config.datastore_stride,
             phases=phases,
@@ -826,6 +842,14 @@ class PreparedDataset:
     @property
     def context_length(self) -> int:
         return int(self.config["context_length"])
+
+    @property
+    def retrieval_context_length(self) -> int:
+        return int(self.config["retrieval_context_length"])
+
+    @property
+    def reference_context_length(self) -> int:
+        return int(self.config["reference_context_length"])
 
     @property
     def prediction_length(self) -> int:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 from pathlib import Path
 
 import datasets
@@ -35,6 +36,24 @@ def _prediction_length(dataset: str, term: str, configured: int | None, freq: st
     return int(base * Term(term).multiplier)
 
 
+def _task_protocol(
+    dataset: str, term: str, config: dict[str, object]
+) -> dict[str, int]:
+    task = dict(dict(config.get("adaptime_tasks", {})).get(dataset, {}))
+    ranges = dict(task.pop("ranges", {}))
+    return {
+        name: int(value)
+        for name, value in {**task, **dict(ranges.get(term, {}))}.items()
+        if name
+        in {
+            "alignment_period",
+            "datastore_stride",
+            "fitting_stride",
+            "retrieval_context_length",
+        }
+    }
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Prepare leakage-free, Arrow-backed Adaptime window indices"
@@ -48,6 +67,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--terms", nargs="+", choices=("short", "medium", "long"))
     parser.add_argument("--config", type=Path)
     parser.add_argument("--context-length", type=int, required=True)
+    parser.add_argument(
+        "--retrieval-context-length",
+        type=int,
+        help="Fixed retrieval lookback; task YAML then horizon/period fallback",
+    )
     parser.add_argument(
         "--adaptation-stride",
         type=int,
@@ -125,12 +149,17 @@ def main() -> None:
         freq = str(hf_dataset[0]["freq"])
         native_target = np.asarray(hf_dataset[0]["target"])
         native_channels = int(native_target.shape[0]) if native_target.ndim > 1 else 1
-        period = int(args.retrieval_period or get_seasonality(freq))
         terms = list(args.terms or get_available_terms(dataset_name, config))
         if not terms:
             raise ValueError(f"no terms configured for {dataset_name!r}")
 
         for term in terms:
+            protocol = _task_protocol(dataset_name, term, config)
+            period = int(
+                args.retrieval_period
+                or protocol.get("alignment_period")
+                or get_seasonality(freq)
+            )
             settings = get_dataset_settings(dataset_name, term, config)
             prediction_length = _prediction_length(
                 dataset_name,
@@ -139,8 +168,22 @@ def main() -> None:
                 freq,
             )
             adaptation_stride = int(
-                args.adaptation_stride or adaptation_stride_for_frequency(freq)
+                args.adaptation_stride
+                or protocol.get("fitting_stride")
+                or adaptation_stride_for_frequency(freq)
             )
+            retrieval_context_length = int(
+                args.retrieval_context_length
+                or protocol.get("retrieval_context_length")
+                or min(
+                    args.context_length,
+                    period * math.ceil(prediction_length / period),
+                )
+            )
+            if retrieval_context_length > args.context_length:
+                raise ValueError(
+                    f"{dataset_name}/{term} retrieval context exceeds context_length"
+                )
             train_length, validation_length, _ = adaptation_split_lengths(
                 int(settings["test_length"]),
                 prediction_length,
@@ -154,6 +197,10 @@ def main() -> None:
                     dataset=dataset_name,
                     term=term,
                     context_length=args.context_length,
+                    retrieval_context_length=retrieval_context_length,
+                    reference_context_length=max(
+                        retrieval_context_length, min(args.context_length, 512)
+                    ),
                     prediction_length=prediction_length,
                     test_length=int(settings["test_length"]),
                     adaptation_train_length=int(train_length),
@@ -162,7 +209,14 @@ def main() -> None:
                     target_mode=target_mode,
                     adaptation_stride=adaptation_stride,
                     retrieval_period=period,
-                    datastore_stride=period * args.datastore_stride_multiple,
+                    datastore_stride=int(
+                        (
+                            period
+                            if args.retrieval_period is not None
+                            else protocol.get("datastore_stride", period)
+                        )
+                        * args.datastore_stride_multiple
+                    ),
                     max_datastore_windows=args.max_datastore_windows,
                     max_fitting_windows=args.max_fitting_windows,
                     datastore_scope=args.retrieval_scope,

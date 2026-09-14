@@ -37,13 +37,14 @@ on $H$: 127 for intraday/hourly, 27 for business-daily/daily, 11 for weekly,
 5 for monthly, and 3 for quarterly data. The remaining earlier observations
 form the datastore.
 
-The ridge history length is the same as in the inherited vanilla TIME run for
-its backbone: 8192 for Chronos-2, 4096 for TS-ICL, and 2048 for Chronos-Bolt.
+Each task and range declares an alignment period, fixed and rolling strides,
+and a bounded retrieval lookback in the dataset configuration. Adaptation
+training and validation retain only rows with this complete retrieval history,
+so distances compare equal-width representations. Foundation forecasts remain
+separate: they use all history available at an origin, capped at the backbone
+limit (8192 for Chronos-2, 4096 for TS-ICL, and 2048 for Chronos-Bolt).
 TS-RAG retains its separate native length of 512 when used as an external
-control. Adaptation training and validation retain only rows with this complete
-fixed-length history, so their retrieval distances always compare equal-width
-representations. The vanilla test pass instead uses every official window with
-all history available at that date, capped at the backbone limit.
+control. Every official test window remains present.
 
 For a query time $t$, let $d_{\max}$ be the fixed datastore endpoint and $P$
 the dataset period. The latest eligible neighbor date is
@@ -115,6 +116,14 @@ virtual $K=0$. The nested \texttt{cov\_ridge\_shared} design uses $[V,C]$;
 separate coefficient vector from each variate's training windows. All designs
 retain the outer vanilla term $V$ in $V+X\beta$. Delta, convex, and native
 multivariate variants are outside the current protocol.
+
+Validation first averages each candidate's MSSE across variates at every
+date. A paired moving-date-block bootstrap estimates the standard error of
+each candidate's loss difference from the observed best. The selected set is
+all candidates within one standard error; its deterministic preference is
+vanilla, then lower $K$, then larger $\alpha$. The automatic block length is
+$\max(\operatorname{round}(T^{1/3}),\lceil H/s_f\rceil)$ for $T$ validation
+dates, capped below $T$; 1000 replications are used by default.
 
 Ridge fitting uses complete adaptation-training rows only; it never applies an
 element-wise NaN mean to the normal equations. During validation and test, an

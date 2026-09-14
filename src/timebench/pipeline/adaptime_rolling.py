@@ -306,7 +306,7 @@ def predict_rolling_ridge(
             period=period,
             stride=fitting_stride,
             count=config.n_fitting_dates,
-            context_length=prepared.context_length,
+            context_length=prepared.reference_context_length,
             horizon=prepared.prediction_length,
         )
         fitting_by_test.append(
@@ -364,7 +364,7 @@ def predict_rolling_ridge(
                 period=period,
                 stride=datastore_stride,
                 count=max_dates_per_variate,
-                context_length=prepared.context_length,
+                context_length=prepared.reference_context_length,
                 horizon=prepared.prediction_length,
             )
             datastore_capacity = min(datastore_capacity, len(available))
@@ -400,14 +400,19 @@ def predict_rolling_ridge(
     for start in range(0, total_retrieval, config.model_batch_size):
         stop = min(start + config.model_batch_size, total_retrieval)
         selected_refs = retrieval_refs[start:stop]
-        batch = reader.read(selected_refs)
-        values, seconds = shared_cache.forecasts(selected_refs, batch.context)
+        retrieval_batch = reader.read(
+            selected_refs,
+            context_length=prepared.retrieval_context_length,
+        )
+        values, seconds = shared_cache.forecasts_for_references(
+            selected_refs, reader=reader
+        )
         vanilla_rows[start:stop] = values
         cache_forecast_seconds += seconds
-        target_rows[start:stop] = batch.target
-        scale_rows[start:stop] = query_scale(batch.context)[:, 0]
+        target_rows[start:stop] = retrieval_batch.target
+        scale_rows[start:stop] = query_scale(retrieval_batch.context)[:, 0]
         values, seconds = shared_cache.representations(
-            selected_refs, batch.context, config.representation
+            selected_refs, retrieval_batch.context, config.representation
         )
         if query_representations is None:
             query_representations = np.empty(
@@ -431,7 +436,7 @@ def predict_rolling_ridge(
                 period=period,
                 stride=datastore_stride,
                 count=datastore_capacity,
-                context_length=prepared.context_length,
+                context_length=prepared.reference_context_length,
                 horizon=horizon,
             )
             candidates.extend(_reference(candidate_series, origin) for origin in origins)
@@ -470,7 +475,9 @@ def predict_rolling_ridge(
         valid = positions[0] >= 0
         if np.count_nonzero(valid) == config.k:
             selected = candidate_refs[positions[0]]
-            targets = reader.read(selected).target
+            targets = reader.read(
+                selected, context_length=prepared.retrieval_context_length
+            ).target
             if np.isfinite(targets).all():
                 neighbor_refs[row] = selected
                 neighbor_distance[row] = distances[0]
@@ -505,7 +512,10 @@ def predict_rolling_ridge(
 
     def features(row: int) -> np.ndarray:
         if row not in feature_cache:
-            selected_targets = reader.read(np.asarray(neighbor_refs[row])).target[:, 0]
+            selected_targets = reader.read(
+                np.asarray(neighbor_refs[row]),
+                context_length=prepared.retrieval_context_length,
+            ).target[:, 0]
             vanilla_value = np.asarray(vanilla_rows[row, 0], dtype=np.float64)
             feature_cache[row] = np.column_stack(
                 (vanilla_value, selected_targets.T)

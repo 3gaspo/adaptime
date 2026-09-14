@@ -204,18 +204,23 @@ class SharedWindowCache:
         reader: Any,
     ) -> tuple[np.ndarray, float]:
         refs = np.asarray(references, dtype=np.int64).reshape(-1, 3)
-        cache_refs = np.column_stack(
-            (
-                refs,
-                np.full(len(refs), self.prepared.context_length, dtype=np.int64),
-            )
-        )
-
-        def build(positions: np.ndarray) -> np.ndarray:
-            contexts = reader.read(refs[positions]).context
-            return np.asarray(self.forecaster.forecast(contexts), dtype=np.float32)
-
-        return self._values("forecast", cache_refs, build)
+        if not len(refs):
+            raise ValueError("cannot forecast an empty reference collection")
+        lengths = np.minimum(refs[:, 2], self.prepared.context_length)
+        result: np.ndarray | None = None
+        compute_seconds = 0.0
+        for length in np.unique(lengths):
+            positions = np.flatnonzero(lengths == length)
+            contexts = reader.read(
+                refs[positions], context_length=int(length)
+            ).context
+            values, seconds = self.forecasts(refs[positions], contexts)
+            if result is None:
+                result = np.empty((len(refs), *values.shape[1:]), dtype=np.float32)
+            result[positions] = values
+            compute_seconds += seconds
+        assert result is not None
+        return result, compute_seconds
 
     def representations_for_references(
         self,
@@ -225,15 +230,18 @@ class SharedWindowCache:
         mode: str,
     ) -> tuple[np.ndarray, float]:
         refs = np.asarray(references, dtype=np.int64).reshape(-1, 3)
+        context_length = self.prepared.retrieval_context_length
         cache_refs = np.column_stack(
             (
                 refs,
-                np.full(len(refs), self.prepared.context_length, dtype=np.int64),
+                np.full(len(refs), context_length, dtype=np.int64),
             )
         )
 
         def build(positions: np.ndarray) -> np.ndarray:
-            contexts = reader.read(refs[positions]).context
+            contexts = reader.read(
+                refs[positions], context_length=context_length
+            ).context
             return (
                 np.asarray(self.forecaster.represent(contexts), dtype=np.float32)
                 if mode == "model"

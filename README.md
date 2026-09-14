@@ -89,7 +89,11 @@ and adds a TS-RAG versus full-Ridge report only when
 
 The fixed selector always includes virtual `K=0`, which is scored as vanilla
 without fitting. Its positive grid is `K in {1,5,10,15}` and
-`alpha in {1e-3,1e-2,1e-1}`. A query is RAG-eligible only when retrieval
+`alpha in {1e-3,1e-2,1e-1}`. Validation MSSE is first averaged across
+variates for each date. A paired moving-date-block bootstrap then applies a
+one-standard-error rule, preferring vanilla, smaller `K`, and stronger
+regularization among statistically indistinguishable candidates. A query is
+RAG-eligible only when retrieval
 returns `max_k` valid neighbors (`15` by default). Every candidate `K` is
 trained and selected on this common query support, using the first `K`
 neighbors from the same ordered list. A query with fewer than `max_k` valid
@@ -115,7 +119,11 @@ candidates isolate `V+C`, `V+Y_1..Y_K`, the full design, and a per-variate full
 design. Each method competes with virtual vanilla and uses vanilla whenever
 selected `K=0` or its test window is ineligible. Optional datastore and fitting
 caps retain the most recent stride-aligned dates and divide cross-variate caps
-evenly.
+evenly. The `adaptime_tasks` section of `src/timebench/config/datasets.yaml`
+sets task-specific alignment periods, fixed-fitting and datastore strides,
+rolling strides, and retrieval lookbacks. Retrieval uses that bounded lookback
+while foundation forecasts may use all available history up to the backbone
+limit.
 
 The rolling method fixes `K=15` and `alpha=1`, uses up to 100 fitting dates
 from the query variate at the same retrieval-period phase, and requires at
@@ -129,6 +137,16 @@ The inherited foundation benchmark is launched through
 `scripts/dataset_diagnostics.sh`.
 The foundation launcher runs Seasonal Naive first, releases the three learned
 models after that baseline succeeds, and summarizes all four after they end.
+
+Independent inference latency uses one fresh process per random official test
+example and method, so no test-time cache is shared:
+
+```bash
+sbatch slurm/dgx/time_inference.slurm
+```
+
+Defaults are `SG_Weather/D`, `short`, and 30 samples; positional arguments
+override them. JSON is under `outputs/adaptime/time_inference/`, logs in `logs/`.
 
 ## Outputs and cluster operations
 

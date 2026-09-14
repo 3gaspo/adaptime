@@ -431,3 +431,386 @@ datasets:
       prediction_length: 288
     long:
       prediction_length: 576
+
+# Adaptime-only task protocol. The dataset/range values below define the
+# retrieval comparison window independently from each foundation model's
+# maximum context. Rolling strides remain separate because their fitting dates
+# are aligned to each query rather than cycled across alignment phases.
+adaptime_tasks:
+  Water_Quality_Darwin/15T:
+    alignment_period: 96
+    datastore_stride: 96
+    fitting_stride: 127
+    rolling_fitting_stride: 96
+    rolling_datastore_stride: 96
+    retrieval_context_length: 672
+
+  current_velocity/5T:
+    alignment_period: 288
+    datastore_stride: 288
+    fitting_stride: 127
+    rolling_fitting_stride: 288
+    rolling_datastore_stride: 288
+    retrieval_context_length: 2016
+  current_velocity/10T:
+    alignment_period: 144
+    datastore_stride: 144
+    fitting_stride: 127
+    rolling_fitting_stride: 144
+    rolling_datastore_stride: 144
+    retrieval_context_length: 1008
+  current_velocity/15T:
+    alignment_period: 96
+    datastore_stride: 96
+    fitting_stride: 127
+    rolling_fitting_stride: 96
+    rolling_datastore_stride: 96
+    retrieval_context_length: 672
+  current_velocity/20T:
+    alignment_period: 72
+    datastore_stride: 72
+    fitting_stride: 127
+    rolling_fitting_stride: 72
+    rolling_datastore_stride: 72
+    retrieval_context_length: 504
+  current_velocity/H:
+    alignment_period: 24
+    datastore_stride: 24
+    fitting_stride: 127
+    rolling_fitting_stride: 24
+    rolling_datastore_stride: 24
+    ranges:
+      short:
+        retrieval_context_length: 168
+      medium:
+        retrieval_context_length: 168
+      long:
+        retrieval_context_length: 336
+
+  CPHL/15T:
+    alignment_period: 96
+    datastore_stride: 96
+    fitting_stride: 127
+    rolling_fitting_stride: 96
+    rolling_datastore_stride: 96
+    retrieval_context_length: 672
+  CPHL/30T:
+    alignment_period: 48
+    datastore_stride: 48
+    fitting_stride: 127
+    rolling_fitting_stride: 48
+    rolling_datastore_stride: 48
+    retrieval_context_length: 336
+  CPHL/H:
+    alignment_period: 24
+    datastore_stride: 24
+    fitting_stride: 127
+    rolling_fitting_stride: 24
+    rolling_datastore_stride: 24
+    ranges:
+      short:
+        retrieval_context_length: 168
+      medium:
+        retrieval_context_length: 168
+      long:
+        retrieval_context_length: 336
+
+  Coastal_T_S/5T:
+    alignment_period: 288
+    datastore_stride: 288
+    fitting_stride: 127
+    rolling_fitting_stride: 288
+    rolling_datastore_stride: 288
+    retrieval_context_length: 2016
+  Coastal_T_S/15T:
+    alignment_period: 96
+    datastore_stride: 96
+    fitting_stride: 127
+    rolling_fitting_stride: 96
+    rolling_datastore_stride: 96
+    retrieval_context_length: 672
+  Coastal_T_S/20T:
+    alignment_period: 72
+    datastore_stride: 72
+    fitting_stride: 127
+    rolling_fitting_stride: 72
+    rolling_datastore_stride: 72
+    retrieval_context_length: 504
+  Coastal_T_S/H:
+    alignment_period: 24
+    datastore_stride: 24
+    fitting_stride: 127
+    rolling_fitting_stride: 24
+    rolling_datastore_stride: 24
+    ranges:
+      short:
+        retrieval_context_length: 168
+      medium:
+        retrieval_context_length: 168
+      long:
+        retrieval_context_length: 336
+
+  SG_Weather/D:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 27
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    ranges:
+      short:
+        retrieval_context_length: 7
+      medium:
+        retrieval_context_length: 7
+      long:
+        retrieval_context_length: 14
+  SG_PM25/H:
+    alignment_period: 24
+    datastore_stride: 24
+    fitting_stride: 127
+    rolling_fitting_stride: 24
+    rolling_datastore_stride: 24
+    retrieval_context_length: 168
+  NE_China_Wind/H:
+    alignment_period: 24
+    datastore_stride: 24
+    fitting_stride: 127
+    rolling_fitting_stride: 24
+    rolling_datastore_stride: 24
+    retrieval_context_length: 168
+
+  Australia_Solar/H:
+    alignment_period: 24
+    datastore_stride: 24
+    fitting_stride: 127
+    rolling_fitting_stride: 24
+    rolling_datastore_stride: 24
+    retrieval_context_length: 168
+  epf_electricity_price/H:
+    alignment_period: 168
+    datastore_stride: 168
+    fitting_stride: 127
+    rolling_fitting_stride: 168
+    rolling_datastore_stride: 168
+    retrieval_context_length: 168
+  OpenElectricity_NEM/5T:
+    alignment_period: 2016
+    datastore_stride: 2016
+    fitting_stride: 127
+    rolling_fitting_stride: 2016
+    rolling_datastore_stride: 2016
+    retrieval_context_length: 2016
+  EWELD_Load/15T:
+    alignment_period: 672
+    datastore_stride: 672
+    fitting_stride: 127
+    rolling_fitting_stride: 672
+    rolling_datastore_stride: 672
+    retrieval_context_length: 672
+
+  SG_Carpark/15T:
+    alignment_period: 672
+    datastore_stride: 672
+    fitting_stride: 127
+    rolling_fitting_stride: 672
+    rolling_datastore_stride: 672
+    retrieval_context_length: 672
+  Finland_Traffic/15T:
+    alignment_period: 672
+    datastore_stride: 672
+    fitting_stride: 127
+    rolling_fitting_stride: 672
+    rolling_datastore_stride: 672
+    retrieval_context_length: 672
+  Port_Activity/D:
+    alignment_period: 7
+    datastore_stride: 7
+    fitting_stride: 27
+    rolling_fitting_stride: 7
+    rolling_datastore_stride: 7
+    retrieval_context_length: 35
+  Port_Activity/W:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 11
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    retrieval_context_length: 13
+
+  ECDC_COVID/D:
+    alignment_period: 7
+    datastore_stride: 7
+    fitting_stride: 27
+    rolling_fitting_stride: 7
+    rolling_datastore_stride: 7
+    retrieval_context_length: 35
+  ECDC_COVID/W:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 11
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    retrieval_context_length: 13
+  Global_Influenza/W:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 11
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    retrieval_context_length: 13
+
+  Crypto/D:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 27
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    retrieval_context_length: 30
+  US_Term_Structure/B:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 27
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    retrieval_context_length: 20
+  Oil_Price/B:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 27
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    retrieval_context_length: 20
+
+  Job_Claims/W:
+    alignment_period: 1
+    datastore_stride: 1
+    fitting_stride: 11
+    rolling_fitting_stride: 1
+    rolling_datastore_stride: 1
+    retrieval_context_length: 13
+  Economic_Uncertainty/M:
+    alignment_period: 12
+    datastore_stride: 12
+    fitting_stride: 5
+    rolling_fitting_stride: 12
+    rolling_datastore_stride: 12
+    retrieval_context_length: 12
+  Marriages_Divorces/M:
+    alignment_period: 12
+    datastore_stride: 12
+    fitting_stride: 5
+    rolling_fitting_stride: 12
+    rolling_datastore_stride: 12
+    retrieval_context_length: 12
+  Monthly_Australia/M:
+    alignment_period: 12
+    datastore_stride: 12
+    fitting_stride: 5
+    rolling_fitting_stride: 12
+    rolling_datastore_stride: 12
+    retrieval_context_length: 12
+  Personal_Income_Expenditure/M:
+    alignment_period: 12
+    datastore_stride: 12
+    fitting_stride: 5
+    rolling_fitting_stride: 12
+    rolling_datastore_stride: 12
+    retrieval_context_length: 12
+  Monthly_USA/M:
+    alignment_period: 12
+    datastore_stride: 12
+    fitting_stride: 5
+    rolling_fitting_stride: 12
+    rolling_datastore_stride: 12
+    retrieval_context_length: 12
+  Market_Index/Q:
+    alignment_period: 4
+    datastore_stride: 4
+    fitting_stride: 3
+    rolling_fitting_stride: 4
+    rolling_datastore_stride: 4
+    retrieval_context_length: 4
+  Economic_Indicators/Q:
+    alignment_period: 4
+    datastore_stride: 4
+    fitting_stride: 3
+    rolling_fitting_stride: 4
+    rolling_datastore_stride: 4
+    retrieval_context_length: 4
+  Tourism_Quarterly/Q:
+    alignment_period: 4
+    datastore_stride: 4
+    fitting_stride: 3
+    rolling_fitting_stride: 4
+    rolling_datastore_stride: 4
+    retrieval_context_length: 4
+
+  Vehicle_Sales/M:
+    alignment_period: 12
+    datastore_stride: 12
+    fitting_stride: 5
+    rolling_fitting_stride: 12
+    rolling_datastore_stride: 12
+    retrieval_context_length: 12
+  Online_Retail_2_UCI/D:
+    alignment_period: 7
+    datastore_stride: 7
+    fitting_stride: 27
+    rolling_fitting_stride: 7
+    rolling_datastore_stride: 7
+    retrieval_context_length: 35
+  Supply_Chain_Customer/D:
+    alignment_period: 7
+    datastore_stride: 7
+    fitting_stride: 27
+    rolling_fitting_stride: 7
+    rolling_datastore_stride: 7
+    retrieval_context_length: 35
+  Supply_Chain_Location/D:
+    alignment_period: 7
+    datastore_stride: 7
+    fitting_stride: 27
+    rolling_fitting_stride: 7
+    rolling_datastore_stride: 7
+    retrieval_context_length: 35
+
+  azure2019_D/5T:
+    alignment_period: 2016
+    datastore_stride: 2016
+    fitting_stride: 127
+    rolling_fitting_stride: 2016
+    rolling_datastore_stride: 2016
+    retrieval_context_length: 2016
+  azure2019_I/5T:
+    alignment_period: 2016
+    datastore_stride: 2016
+    fitting_stride: 127
+    rolling_fitting_stride: 2016
+    rolling_datastore_stride: 2016
+    retrieval_context_length: 2016
+  azure2019_U/5T:
+    alignment_period: 2016
+    datastore_stride: 2016
+    fitting_stride: 127
+    rolling_fitting_stride: 2016
+    rolling_datastore_stride: 2016
+    retrieval_context_length: 2016
+  Smart_Manufacturing/H:
+    alignment_period: 168
+    datastore_stride: 168
+    fitting_stride: 127
+    rolling_fitting_stride: 168
+    rolling_datastore_stride: 168
+    ranges:
+      short:
+        retrieval_context_length: 168
+      medium:
+        retrieval_context_length: 168
+      long:
+        retrieval_context_length: 336
+  MetroPT-3/5T:
+    alignment_period: 288
+    datastore_stride: 288
+    fitting_stride: 127
+    rolling_fitting_stride: 288
+    rolling_datastore_stride: 288
+    retrieval_context_length: 2016

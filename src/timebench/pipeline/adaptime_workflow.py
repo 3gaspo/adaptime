@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -106,6 +107,7 @@ class AdaptimeWorkflowConfig:
     target_mode: str = "univariate"
     adaptation_stride: int | None = None
     retrieval_period: int | None = None
+    retrieval_context_length: int | None = None
     datastore_stride_multiple: int = 1
     max_datastore_windows: int | None = None
     max_fitting_windows: int | None = None
@@ -122,6 +124,8 @@ class AdaptimeWorkflowConfig:
     datastore_block_size: int = 4096
     arrow_cache_items: int = 2
     ridge_chunk_size: int = 1024
+    bootstrap_replications: int = 1000
+    bootstrap_block_length: int | None = None
     fitting_scopes: tuple[str, ...] = ("all", "same_series")
     rolling_k: int = 15
     rolling_alpha: float = 1.0
@@ -147,6 +151,11 @@ class AdaptimeWorkflowConfig:
             raise ValueError("datastore_stride_multiple must be positive")
         if self.adaptation_stride is not None and int(self.adaptation_stride) <= 1:
             raise ValueError("adaptation_stride must be greater than one when supplied")
+        if (
+            self.retrieval_context_length is not None
+            and int(self.retrieval_context_length) <= 0
+        ):
+            raise ValueError("retrieval_context_length must be positive when supplied")
         if self.max_datastore_windows is not None and int(self.max_datastore_windows) <= 0:
             raise ValueError("max_datastore_windows must be positive when supplied")
         if self.max_fitting_windows is not None and int(self.max_fitting_windows) <= 0:
@@ -184,6 +193,8 @@ class AdaptimeWorkflowConfig:
             chunk_size=self.ridge_chunk_size,
             seed=self.seed,
             fitting_scopes=self.fitting_scopes,
+            bootstrap_replications=self.bootstrap_replications,
+            bootstrap_block_length=self.bootstrap_block_length,
         )
 
     @property
@@ -201,6 +212,8 @@ class AdaptimeTask:
     frequency: str
     source_path: Path
     preparation: PreparationConfig
+    rolling_fitting_stride: int
+    rolling_datastore_stride: int
     minimum_series_length: int
     dataset_fingerprint: str
 
@@ -211,6 +224,47 @@ def _prediction_length(dataset: str, term: str, configured: int | None, freq: st
     normalized = norm_freq_str(to_offset(freq).name)
     base = M4_PRED_LENGTH_MAP[normalized] if "m4" in dataset else PRED_LENGTH_MAP[normalized]
     return int(base * Term(term).multiplier)
+
+
+def _task_protocol(
+    dataset: str,
+    term: str,
+    dataset_config: dict[str, object],
+) -> dict[str, int]:
+    """Return explicit Adaptime settings for one dataset/range when present."""
+
+    tasks = dict(dataset_config.get("adaptime_tasks", {}))
+    task = dict(tasks.get(dataset, {}))
+    ranges = dict(task.pop("ranges", {}))
+    resolved = {**task, **dict(ranges.get(term, {}))}
+    integer_fields = (
+        "alignment_period",
+        "datastore_stride",
+        "fitting_stride",
+        "retrieval_context_length",
+        "rolling_fitting_stride",
+        "rolling_datastore_stride",
+    )
+    result: dict[str, int] = {}
+    for name in integer_fields:
+        if name not in resolved:
+            continue
+        value = int(resolved[name])
+        if value <= 0:
+            raise ValueError(f"{dataset}/{term} has non-positive Adaptime {name}")
+        result[name] = value
+    return result
+
+
+def _fallback_retrieval_context_length(
+    horizon: int,
+    alignment_period: int,
+    model_context_limit: int,
+) -> int:
+    """Round one horizon up to complete alignment periods within the model cap."""
+
+    rounded = int(alignment_period) * math.ceil(int(horizon) / int(alignment_period))
+    return min(int(model_context_limit), rounded)
 
 
 def _selected_datasets(
@@ -254,7 +308,6 @@ def workflow_tasks(
             raise ValueError(f"empty TIME dataset: {dataset_name}")
         frequency = str(source[0]["freq"])
         seasonality = int(get_seasonality(frequency))
-        period = int(workflow.retrieval_period or seasonality)
         minimum_length = min(
             int(np.asarray(source[index]["target"]).shape[-1])
             for index in range(len(source))
@@ -266,9 +319,47 @@ def workflow_tasks(
             horizon = _prediction_length(
                 dataset_name, term, settings.get("prediction_length"), frequency
             )
+            protocol = _task_protocol(dataset_name, term, dataset_config)
+            period = int(
+                workflow.retrieval_period
+                or protocol.get("alignment_period")
+                or seasonality
+            )
             stride = int(
                 workflow.adaptation_stride
+                or protocol.get("fitting_stride")
                 or adaptation_stride_for_frequency(frequency)
+            )
+            retrieval_context_length = int(
+                workflow.retrieval_context_length
+                or protocol.get("retrieval_context_length")
+                or _fallback_retrieval_context_length(
+                    horizon, period, context_length
+                )
+            )
+            if retrieval_context_length > context_length:
+                raise ValueError(
+                    f"{dataset_name}/{term} retrieval_context_length="
+                    f"{retrieval_context_length} exceeds {workflow.model}'s "
+                    f"context limit {context_length}"
+                )
+            datastore_stride = int(
+                (
+                    period
+                    if workflow.retrieval_period is not None
+                    else protocol.get("datastore_stride", period)
+                )
+                * int(workflow.datastore_stride_multiple)
+            )
+            rolling_fitting_stride = int(
+                period
+                if workflow.retrieval_period is not None
+                else protocol.get("rolling_fitting_stride", period)
+            )
+            rolling_datastore_stride = int(
+                period
+                if workflow.retrieval_period is not None
+                else protocol.get("rolling_datastore_stride", period)
             )
             train_length, validation_length, _ = adaptation_split_lengths(
                 int(settings["test_length"]), horizon, stride
@@ -279,12 +370,18 @@ def workflow_tasks(
                     term=term,
                     frequency=frequency,
                     source_path=source_path,
+                    rolling_fitting_stride=rolling_fitting_stride,
+                    rolling_datastore_stride=rolling_datastore_stride,
                     minimum_series_length=minimum_length,
                     dataset_fingerprint=str(source._fingerprint),
                     preparation=PreparationConfig(
                         dataset=dataset_name,
                         term=term,
                         context_length=context_length,
+                        retrieval_context_length=retrieval_context_length,
+                        reference_context_length=max(
+                            retrieval_context_length, TSRAG_CONTEXT_LENGTH
+                        ),
                         prediction_length=horizon,
                         test_length=int(settings["test_length"]),
                         adaptation_train_length=train_length,
@@ -293,9 +390,7 @@ def workflow_tasks(
                         target_mode=workflow.target_mode,
                         adaptation_stride=stride,
                         retrieval_period=period,
-                        datastore_stride=(
-                            period * int(workflow.datastore_stride_multiple)
-                        ),
+                        datastore_stride=datastore_stride,
                         max_datastore_windows=workflow.max_datastore_windows,
                         max_fitting_windows=workflow.max_fitting_windows,
                         datastore_scope=workflow.retrieval_scope,
@@ -351,15 +446,20 @@ def _extraction_config(workflow: AdaptimeWorkflowConfig) -> ExtractionConfig:
 def _rolling_config(
     task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
 ) -> RollingRidgeConfig:
-    period = int(task.preparation.retrieval_period)
     return RollingRidgeConfig(
         k=workflow.rolling_k,
         alpha=workflow.rolling_alpha,
         n_fitting_dates=workflow.rolling_n_fitting_dates,
         minimum_fitting_dates=workflow.rolling_minimum_fitting_dates,
-        fitting_stride=period * int(workflow.rolling_fitting_stride_multiple),
+        fitting_stride=(
+            int(task.rolling_fitting_stride)
+            * int(workflow.rolling_fitting_stride_multiple)
+        ),
         max_datastore_windows=workflow.rolling_max_datastore_windows,
-        datastore_stride=period * int(workflow.rolling_datastore_stride_multiple),
+        datastore_stride=(
+            int(task.rolling_datastore_stride)
+            * int(workflow.rolling_datastore_stride_multiple)
+        ),
         representation=workflow.representation,
         distance_metric=workflow.distance_metric,
         minimum_overlap_fraction=workflow.minimum_overlap_fraction,

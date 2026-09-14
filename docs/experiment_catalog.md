@@ -24,14 +24,14 @@ foundation forecast.
   Python stages remain independently callable.
 - Data: one method-neutral datastore, adaptation-training and validation
   references, and unchanged official TIME test references.
-- Context: the selected foundation model's normal TIME limit; 8192 for the
-  primary Chronos-2 configuration.
+- Context: retrieval uses the task-specific bounded lookback in
+  `adaptime_tasks`; foundation forecasts independently use all history
+  available at an origin up to the selected backbone's TIME limit.
 - Retrieval: instance-normalized exact Euclidean search by default, with
   configurable finite-content and overlap gates.
-- Fit representation: training and validation require the complete backbone
-  context; the primary Chronos-2 representation therefore has fixed
-  `L=8192`. Official test windows retain all available context and are never
-  removed.
+- Fit representation: training and validation require the complete configured
+  retrieval lookback. Official test windows retain all available model context
+  and are never removed.
 - Eligibility: a fit query must have `max_k` valid neighbors (`15` by default).
   Every `K` candidate uses the same eligible rows and takes its first `K`
   neighbors; fewer than `max_k` valid neighbors makes the query ineligible for
@@ -41,7 +41,9 @@ foundation forecast.
   designs isolate `V+C` and `V+Y_1..Y_K`.
 - Selection: virtual vanilla `K=0`, positive `K in {1,5,10,15}`, and
   `alpha in {1e-3,1e-2,1e-1}`; primary/default values are `K=10` and
-  `alpha=1e-2`.
+  `alpha=1e-2`. Candidate MSSE is averaged across variates per validation
+  date. A paired moving-date-block bootstrap applies a one-standard-error
+  rule, preferring vanilla, lower `K`, and higher alpha within the threshold.
 - Bayesian baseline: for each candidate `K`, eligible training windows provide
   paired MSSE wins of `C` over `V`; ties count one half and a Beta(1,1) prior
   yields `p`. Validation selects the frozen mixture's `K`, or virtual vanilla,
@@ -52,6 +54,9 @@ foundation forecast.
 - Caps and scope: optional maximum datastore and fitting-window counts retain
   the latest stride-aligned dates. Cross-variate caps are divided evenly;
   fitting may be global or same-variate.
+- Task schedule: `adaptime_tasks` in the dataset configuration explicitly
+  resolves alignment periods, fixed-fitting and datastore strides, rolling
+  strides, and retrieval lookbacks per dataset and range.
 - Training fallback: primary-`K` valid training windows must exceed official
   test windows; otherwise all four methods use cached vanilla predictions.
 - Validation fallback: primary-`K` valid validation windows must exceed 10% of
@@ -105,6 +110,19 @@ full-Ridge root is rejected in favor of local matching evaluations. It cannot
 suppress or alter TS-RAG. The report compares only tasks whose independently
 evaluated configured support is identical and retains method-specific finite
 metric coverage for inspection.
+
+## Inference timing
+
+`slurm/{dgx,selena}/time_inference.slurm` benchmarks the five headline methods
+on the same seeded random official test examples. The default task is
+`SG_Weather/D`, `short`, with 30 samples; positional arguments override dataset,
+term, and sample count. Every method/example pair runs in a fresh process and
+recomputes its query-side representation, retrieval, foundation forecasts, and
+adaptation inference without reading cached test predictions, representations,
+or neighbors. Frozen fitted state and the TS-RAG datastore representations are
+inputs, while TS-RAG rebuilds its FAISS index per example. The resulting JSON
+under `outputs/adaptime/time_inference/` contains raw component timings and
+mean, median, p95, minimum, and maximum summaries. It does not produce plots.
 
 No result is claimed until the complete cluster outputs are synchronized and
 inspected.

@@ -51,6 +51,7 @@ run_adaptime() {
         --datastore-block-size "${ADAPTIME_DATASTORE_BLOCK_SIZE:-4096}"
         --arrow-cache-items "${ADAPTIME_ARROW_CACHE_ITEMS:-2}"
         --ridge-chunk-size "${ADAPTIME_RIDGE_CHUNK_SIZE:-1024}"
+        --bootstrap-replications "${ADAPTIME_BOOTSTRAP_REPLICATIONS:-1000}"
         --fitting-scope "${fitting_scopes[@]}"
         --rolling-k "${ADAPTIME_ROLLING_K:-15}"
         --rolling-alpha "${ADAPTIME_ROLLING_ALPHA:-1.0}"
@@ -70,6 +71,8 @@ run_adaptime() {
     [ -z "${ADAPTIME_WEIGHTS_ID:-}" ] || command+=(--weights-id "$ADAPTIME_WEIGHTS_ID")
     [ -z "${ADAPTIME_ADAPTATION_STRIDE:-}" ] || command+=(--adaptation-stride "$ADAPTIME_ADAPTATION_STRIDE")
     [ -z "${ADAPTIME_RETRIEVAL_PERIOD:-}" ] || command+=(--retrieval-period "$ADAPTIME_RETRIEVAL_PERIOD")
+    [ -z "${ADAPTIME_RETRIEVAL_CONTEXT_LENGTH:-}" ] || command+=(--retrieval-context-length "$ADAPTIME_RETRIEVAL_CONTEXT_LENGTH")
+    [ -z "${ADAPTIME_BOOTSTRAP_BLOCK_LENGTH:-}" ] || command+=(--bootstrap-block-length "$ADAPTIME_BOOTSTRAP_BLOCK_LENGTH")
     [ -z "${ADAPTIME_MAX_DATASTORE_WINDOWS:-}" ] || command+=(--max-datastore-windows "$ADAPTIME_MAX_DATASTORE_WINDOWS")
     [ -z "${ADAPTIME_MAX_FITTING_WINDOWS:-}" ] || command+=(--max-fitting-windows "$ADAPTIME_MAX_FITTING_WINDOWS")
     [ -z "${TSRAG_CHRONOS_BOLT_PATH:-}" ] || command+=(--tsrag-chronos-bolt-path "$TSRAG_CHRONOS_BOLT_PATH")
