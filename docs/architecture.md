@@ -10,11 +10,14 @@ TIME saved-Arrow dataset + dataset configuration
        shared datastore, train/validation references, official test references
   -> pipeline/adaptime_vanilla.py
        flexible-context vanilla forecast for every official test row
-  -> Adaptime family                       -> independent TS-RAG control
-       fit-grid extraction                      pipeline/tsrag.py extraction
-       Ridge selection + Bayesian evidence      external_models/tsrag + loader
-       selected-K test extraction               pipeline/tsrag.py inference
-       aligned family prediction bundle
+  -> pipeline/adaptime_cache.py
+       exact-window vanilla forecasts and representations shared by adaptors
+  -> fixed Adaptime family
+       fit-grid extraction -> Ridge/Bayesian selection -> selected-K prediction
+  -> rolling horizon Ridge
+       causal datastore -> incremental per-variate/per-horizon fit
+  -> independent TS-RAG control
+       pipeline/tsrag.py extraction -> external ARM inference
   -> evaluation/adaptation.py
        one standard TIME evaluation per method
   -> results/adaptation.py
@@ -45,16 +48,27 @@ artifact records a whole-task vanilla fallback. Sparse validation uses the
 primary `K=10`, `alpha=1e-2` without selection when valid validation windows do
 not exceed 10% of test windows.
 
-The fitted artifact stores Ridge coefficients and Beta-Bernoulli evidence for
-each eligible candidate `K`. A trial is one eligible adaptation-training
+The fitted artifact always includes virtual vanilla (`K=0`) and stores global
+or per-variate Ridge coefficients plus Beta-Bernoulli evidence for each
+eligible positive `K`. A trial is one eligible adaptation-training
 window; `C` wins when its per-window MSSE is below `V`, and a tie contributes
 one half. Adaptation validation compares the resulting frozen mixtures and
 selects the Bayesian `K`, or virtual vanilla, by MSSE. The selected Beta(1,1)
 posterior mean is the fixed test mixture probability. Test extraction runs only
 selected `K`, reuses any neighbor forecasts already cached during fitting, and
 computes only newly selected neighbor forecasts.
-The prediction artifact contains `V`, hard `C`, `(1-p)V+pC`, and full Ridge;
-each adaptation branch falls back to cached `V` on an ineligible test row.
+The prediction artifact contains `V`, hard `C`, both Bayesian candidates,
+`V+C`, `V+Y_1..Y_K`, shared and per-variate full Ridge, and the overall
+validation-selected method. Each branch falls back to cached `V` when vanilla
+wins validation or its test row is ineligible.
+
+`pipeline/adaptime_rolling.py` owns the independent
+`rolling_y_ridge_horizon` method. At each official query it uses 64--100
+same-variate fitting dates aligned to the query's retrieval-period phase and a
+fixed-size causal datastore balanced across variates. Incremental sufficient
+statistics fit one `V+Y_1..Y_K` coefficient vector per variate and horizon;
+unsupported queries remain vanilla. This method has fixed `K` and alpha and no
+validation pass.
 
 TS-RAG owns its Chronos-T5 embedding/FAISS extraction and released ARM
 inference. Its reader projects native 512-step contexts and 64-step neighbor
@@ -84,6 +98,10 @@ only after every requested evaluation exactly matches the current identity and
 scientific configuration; this never changes TS-RAG execution.
 
 Large series remain in Arrow and large numeric products remain memory-mapped.
+The append-only shared window cache is keyed by prepared signature, backbone,
+weights, horizon, exact source reference, context length, and representation
+mode. It shares only computations with identical semantics; rolling and fixed
+neighbor tables remain separate.
 `pipeline/runs.py` owns allocation and exact reuse. `src/timebench/scripts/`
 contains explicit phase entry points; `src/slurm/run_adaptime_comparison.sh`
 is the common DGX/Selena implementation; root `scripts/` compose scheduler

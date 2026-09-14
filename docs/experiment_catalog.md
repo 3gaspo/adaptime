@@ -15,7 +15,9 @@ soft gate, and the complete frozen Ridge adaptor against the same vanilla
 foundation forecast.
 
 - Methods: `vanilla`, `covariate_prediction`,
-  `bayes_covariate_prediction`, and `full_ridge_shared`.
+  `bayes_covariate_prediction`, `bayes_past_targets_prediction`,
+  `cov_ridge_shared`, `y_ridge_shared`, `full_ridge_shared`,
+  `full_ridge_per_variate`, and `selected_adaptation`.
 - Entry point: `scripts/submit_adaptime_comparison.sh` schedules this family
   alongside the independent TS-RAG control before one unified report. The
   explicit `prepare|vanilla|extract|fit|extract_eval|predict|evaluate|pipeline`
@@ -34,15 +36,22 @@ foundation forecast.
   Every `K` candidate uses the same eligible rows and takes its first `K`
   neighbors; fewer than `max_k` valid neighbors makes the query ineligible for
   all candidates.
-- Fit: shared no-intercept `V + X beta`, trained with complete valid-neighbor
-  windows under MSSE.
-- Selection: `K in {1,5,10,15}` and
+- Fit: no-intercept `V + X beta`, trained with complete valid-neighbor windows
+  under MSSE. The full design is fitted globally and per variate; nested
+  designs isolate `V+C` and `V+Y_1..Y_K`.
+- Selection: virtual vanilla `K=0`, positive `K in {1,5,10,15}`, and
   `alpha in {1e-3,1e-2,1e-1}`; primary/default values are `K=10` and
   `alpha=1e-2`.
 - Bayesian baseline: for each candidate `K`, eligible training windows provide
   paired MSSE wins of `C` over `V`; ties count one half and a Beta(1,1) prior
   yields `p`. Validation selects the frozen mixture's `K`, or virtual vanilla,
   by MSSE. Test prediction is `(1-p)V+pC`.
+- Past-only Bayesian baseline: Chronos-2 receives all other variates as
+  past-only covariates; training estimates its Beta-smoothed win probability
+  over vanilla and validation retains the mixture only when it improves MSSE.
+- Caps and scope: optional maximum datastore and fitting-window counts retain
+  the latest stride-aligned dates. Cross-variate caps are divided evenly;
+  fitting may be global or same-variate.
 - Training fallback: primary-`K` valid training windows must exceed official
   test windows; otherwise all four methods use cached vanilla predictions.
 - Validation fallback: primary-`K` valid validation windows must exceed 10% of
@@ -56,8 +65,20 @@ foundation forecast.
   the Seasonal Naive scaling baseline on identical configured support. It
   exposes each method's finite and total value counts per metric.
 
-No delta, convex, per-horizon, or native-multivariate Ridge ablation belongs to
-this family.
+No delta, convex, or native-multivariate Ridge ablation belongs to this family.
+
+## Rolling horizon Ridge
+
+`scripts/submit_rolling_ridge.sh` runs an independently evaluated causal
+adaptation without a validation phase. For every official test query it fits
+one Ridge per variate and horizon using `V+Y_1..Y_K`, with default `K=15` and
+`alpha=1`. Fitting dates come only from that variate, share the query's
+retrieval-period phase, retain the latest 100 dates, and require at least 64.
+The datastore is cross-variate, causal at every fitting and query date, capped
+at 10,000 windows, divided evenly across variates, and held to one common size
+over adapted dates. Unsupported queries use vanilla. Exact-window vanilla
+forecasts and representations are shared with the fixed pipeline, but rolling
+neighbor selections are not.
 
 ## TS-RAG external control
 

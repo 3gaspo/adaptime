@@ -17,6 +17,7 @@ from timebench.adaptime.retrieval import blockwise_topk, context_representation
 from timebench.adaptime.ridge import query_scale
 from timebench.evaluation.adaptation_data import FIT_QUERY_SPLITS, PreparedDataset
 from timebench.evaluation.timing import EvaluationTimer
+from timebench.pipeline.adaptime_cache import SharedWindowCache
 
 
 EXTRACTION_SCHEMA = 1
@@ -44,12 +45,14 @@ class AdaptimeForecaster(Protocol):
     weights_id: str
     supports_multivariate: bool
     supports_retrieval_context: bool
+    supports_past_covariates: bool
 
     def forecast(
         self,
         context: np.ndarray,
         *,
         retrieval_context: np.ndarray | None = None,
+        past_covariates: np.ndarray | None = None,
     ) -> np.ndarray: ...
 
     def represent(self, context: np.ndarray) -> np.ndarray: ...
@@ -64,6 +67,7 @@ class ExtractionConfig:
     minimum_query_finite_fraction: float = 0.8
     max_k: int = 15
     context_k: tuple[int, ...] = (1, 5, 10, 15)
+    past_target_covariates: bool = True
     model_batch_size: int = 64
     query_block_size: int = 256
     datastore_block_size: int = 4096
@@ -125,9 +129,15 @@ def _forecast(
     *,
     horizon: int,
     retrieval_context: np.ndarray | None = None,
+    past_covariates: np.ndarray | None = None,
 ) -> np.ndarray:
+    kwargs: dict[str, np.ndarray] = {}
+    if retrieval_context is not None:
+        kwargs["retrieval_context"] = retrieval_context
+    if past_covariates is not None:
+        kwargs["past_covariates"] = past_covariates
     values = np.asarray(
-        forecaster.forecast(context, retrieval_context=retrieval_context),
+        forecaster.forecast(context, **kwargs),
         dtype=np.float32,
     )
     expected = (context.shape[0], context.shape[1], int(horizon))
@@ -148,6 +158,7 @@ def _timed_forecast(
     *,
     horizon: int,
     retrieval_context: np.ndarray | None = None,
+    past_covariates: np.ndarray | None = None,
 ) -> np.ndarray:
     timer = EvaluationTimer()
     timer.start()
@@ -156,6 +167,7 @@ def _timed_forecast(
         context,
         horizon=horizon,
         retrieval_context=retrieval_context,
+        past_covariates=past_covariates,
     )
     _record_seconds(timings, name, timer.stop())
     return values
@@ -249,6 +261,7 @@ def _materialize_source_rows(
     timings: dict[str, float],
     *,
     include_vanilla: bool = False,
+    shared_cache: SharedWindowCache | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     references = prepared.indices(split)
     first_stop = min(len(references), config.model_batch_size)
@@ -256,13 +269,19 @@ def _materialize_source_rows(
     representation_key = f"{split}.representation_seconds"
     if first_stop:
         first = reader.read(references[:first_stop])
-        first_representation = _timed_represent(
-            forecaster,
-            first.context,
-            config.representation,
-            timings,
-            representation_key,
-        )
+        if shared_cache is None:
+            first_representation = _timed_represent(
+                forecaster,
+                first.context,
+                config.representation,
+                timings,
+                representation_key,
+            )
+        else:
+            first_representation, seconds = shared_cache.representations(
+                references[:first_stop], first.context, config.representation
+            )
+            _record_seconds(timings, representation_key, seconds)
         channels = int(first.context.shape[1])
         representation_width = int(first_representation.shape[1])
     else:
@@ -358,24 +377,36 @@ def _materialize_source_rows(
         seasonal_naive[:first_stop] = reader.seasonal_naive_forecast(
             references[:first_stop]
         )
-        vanilla[:first_stop] = _timed_forecast(
-            forecaster,
-            first.context,
-            timings,
-            f"{split}.vanilla_forecast_seconds",
-            horizon=horizon,
-        )
+        if shared_cache is None:
+            vanilla[:first_stop] = _timed_forecast(
+                forecaster,
+                first.context,
+                timings,
+                f"{split}.vanilla_forecast_seconds",
+                horizon=horizon,
+            )
+        else:
+            vanilla[:first_stop], seconds = shared_cache.forecasts(
+                references[:first_stop], first.context
+            )
+            _record_seconds(timings, f"{split}.vanilla_forecast_seconds", seconds)
     for start in range(first_stop, len(references), config.model_batch_size):
         stop = min(start + config.model_batch_size, len(references))
         batch = reader.read(references[start:stop])
         target[start:stop] = batch.target
-        representation[start:stop] = _timed_represent(
-            forecaster,
-            batch.context,
-            config.representation,
-            timings,
-            representation_key,
-        )
+        if shared_cache is None:
+            representation[start:stop] = _timed_represent(
+                forecaster,
+                batch.context,
+                config.representation,
+                timings,
+                representation_key,
+            )
+        else:
+            representation[start:stop], seconds = shared_cache.representations(
+                references[start:stop], batch.context, config.representation
+            )
+            _record_seconds(timings, representation_key, seconds)
         scale[start:stop] = query_scale(batch.context)
         batch_fraction, batch_eligible, batch_reason = _source_eligibility(
             batch.context,
@@ -396,13 +427,21 @@ def _materialize_source_rows(
             seasonal_naive[start:stop] = reader.seasonal_naive_forecast(
                 references[start:stop]
             )
-            vanilla[start:stop] = _timed_forecast(
-                forecaster,
-                batch.context,
-                timings,
-                f"{split}.vanilla_forecast_seconds",
-                horizon=horizon,
-            )
+            if shared_cache is None:
+                vanilla[start:stop] = _timed_forecast(
+                    forecaster,
+                    batch.context,
+                    timings,
+                    f"{split}.vanilla_forecast_seconds",
+                    horizon=horizon,
+                )
+            else:
+                vanilla[start:stop], seconds = shared_cache.forecasts(
+                    references[start:stop], batch.context
+                )
+                _record_seconds(
+                    timings, f"{split}.vanilla_forecast_seconds", seconds
+                )
     target.flush()
     representation.flush()
     scale.flush()
@@ -416,6 +455,79 @@ def _materialize_source_rows(
         msse_scale.flush()
         seasonal_naive.flush()
     return target, representation
+
+
+def _materialize_past_target_forecasts(
+    prepared: PreparedDataset,
+    split: str,
+    forecaster: AdaptimeForecaster,
+    config: ExtractionConfig,
+    root: Path,
+    arrays: dict[str, str],
+    timings: dict[str, float],
+    vanilla_values: np.ndarray,
+    *,
+    enabled: bool = True,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Forecast each target from its own history plus all other past variates."""
+
+    references = prepared.indices(split)
+    forecast_path = root / split / "past_target_covariate_forecast.npy"
+    available_path = root / split / "past_target_covariate_available.npy"
+    forecasts = _memmap(forecast_path, vanilla_values.shape, np.float32)
+    available = _memmap(available_path, (len(references),), bool)
+    forecasts[:] = vanilla_values
+    available[:] = False
+    arrays[f"{split}.past_target_covariate_forecast"] = str(
+        forecast_path.relative_to(root)
+    )
+    arrays[f"{split}.past_target_covariate_available"] = str(
+        available_path.relative_to(root)
+    )
+    timings.setdefault(f"{split}.past_target_covariate_forecast_seconds", 0.0)
+    if (
+        not enabled
+        or prepared.target_mode != "univariate"
+        or not getattr(forecaster, "supports_past_covariates", False)
+    ):
+        forecasts.flush()
+        available.flush()
+        return forecasts, available
+
+    reader = prepared.reader(cache_items=config.arrow_cache_items)
+    for item in np.unique(np.asarray(references[:, 0], dtype=np.int64)):
+        if reader.target_channels(int(item)) < 2:
+            continue
+        item_positions = np.flatnonzero(
+            (np.asarray(references[:, 0], dtype=np.int64) == int(item))
+            & (np.asarray(references[:, 2], dtype=np.int64) >= prepared.context_length)
+        )
+        for start in range(0, len(item_positions), config.model_batch_size):
+            positions = item_positions[start : start + config.model_batch_size]
+            batch = reader.read(references[positions])
+            covariates = reader.read_other_variates_as_past_covariates(
+                references[positions]
+            )
+            complete = (
+                np.isfinite(batch.context).reshape(len(positions), -1).all(axis=1)
+                & np.isfinite(covariates).reshape(len(positions), -1).all(axis=1)
+            )
+            accepted = positions[complete]
+            if len(accepted):
+                values = _timed_forecast(
+                    forecaster,
+                    batch.context[complete],
+                    timings,
+                    f"{split}.past_target_covariate_forecast_seconds",
+                    horizon=prepared.prediction_length,
+                    past_covariates=covariates[complete],
+                )
+                finite = np.isfinite(values).reshape(len(values), -1).all(axis=1)
+                forecasts[accepted[finite]] = values[finite]
+                available[accepted[finite]] = True
+    forecasts.flush()
+    available.flush()
+    return forecasts, available
 
 
 def _materialize_neighbors(
@@ -501,6 +613,7 @@ def _materialize_unique_neighbor_forecasts(
     root: Path,
     arrays: dict[str, str],
     timings: dict[str, float],
+    shared_cache: SharedWindowCache | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     timings.setdefault("offline.neighbor_forecast_seconds", 0.0)
     selected = np.empty(0, dtype=np.int64)
@@ -525,13 +638,19 @@ def _materialize_unique_neighbor_forecasts(
     for start in range(0, len(selected), config.model_batch_size):
         stop = min(start + config.model_batch_size, len(selected))
         batch = reader.read(datastore_refs[selected[start:stop]])
-        forecasts[start:stop] = _timed_forecast(
-            forecaster,
-            batch.context,
-            timings,
-            "offline.neighbor_forecast_seconds",
-            horizon=prepared.prediction_length,
-        )
+        if shared_cache is None:
+            forecasts[start:stop] = _timed_forecast(
+                forecaster,
+                batch.context,
+                timings,
+                "offline.neighbor_forecast_seconds",
+                horizon=prepared.prediction_length,
+            )
+        else:
+            forecasts[start:stop], seconds = shared_cache.forecasts(
+                datastore_refs[selected[start:stop]], batch.context
+            )
+            _record_seconds(timings, "offline.neighbor_forecast_seconds", seconds)
     forecasts.flush()
     ids.flush()
     arrays["datastore.selected_forecast"] = str(values_path.relative_to(root))
@@ -618,6 +737,8 @@ def extract_adaptation_features(
     forecaster: AdaptimeForecaster,
     config: ExtractionConfig,
     output_dir: str | Path,
+    *,
+    shared_cache: SharedWindowCache | None = None,
 ) -> Path:
     """Extract datastore and train/validation quantities for a complete sweep."""
 
@@ -665,6 +786,7 @@ def extract_adaptation_features(
         root,
         arrays,
         timings,
+        shared_cache=shared_cache,
     )
     for split in FIT_QUERY_SPLITS:
         _materialize_source_rows(
@@ -676,6 +798,18 @@ def extract_adaptation_features(
             arrays,
             timings,
             include_vanilla=True,
+            shared_cache=shared_cache,
+        )
+        _materialize_past_target_forecasts(
+            prepared,
+            split,
+            forecaster,
+            config,
+            root,
+            arrays,
+            timings,
+            np.load(root / arrays[f"{split}.vanilla"], mmap_mode="r"),
+            enabled=config.past_target_covariates,
         )
         _materialize_neighbors(
             prepared,
@@ -687,7 +821,7 @@ def extract_adaptation_features(
             timings,
         )
     unique_forecast, _ = _materialize_unique_neighbor_forecasts(
-        prepared, forecaster, config, root, arrays, timings
+        prepared, forecaster, config, root, arrays, timings, shared_cache
     )
     for split in FIT_QUERY_SPLITS:
         _materialize_context_forecasts(
@@ -752,6 +886,8 @@ def extract_adaptation_eval_features(
     forecaster: AdaptimeForecaster,
     config: ExtractionConfig,
     output_dir: str | Path,
+    *,
+    shared_cache: SharedWindowCache | None = None,
 ) -> Path:
     """Extract test quantities for the frozen family-selected K values."""
 
@@ -813,6 +949,26 @@ def extract_adaptation_eval_features(
     total = int(len(references))
     arrays: dict[str, str] = {}
     timings: dict[str, float] = {}
+    vanilla_values = np.load(
+        vanilla_root / vanilla["arrays"]["predictions"], mmap_mode="r"
+    )
+    past_target_selection = dict(model.get("method_selections", {})).get(
+        "bayes_past_targets_prediction", {"method": "vanilla"}
+    )
+    _materialize_past_target_forecasts(
+        prepared,
+        "test",
+        forecaster,
+        config,
+        root,
+        arrays,
+        timings,
+        vanilla_values,
+        enabled=(
+            config.past_target_covariates
+            and past_target_selection.get("method") != "vanilla"
+        ),
+    )
     eligible_path = root / "test" / "rag_eligible.npy"
     reason_path = root / "test" / "fallback_reason.npy"
     rag_eligible = _memmap(eligible_path, (total,), bool)
@@ -849,9 +1005,6 @@ def extract_adaptation_eval_features(
         finite_fraction = _memmap(finite_fraction_path, (total,), np.float32)
         distances = _memmap(distance_path, (total, max_selected_k), np.float32)
         neighbor_ids = _memmap(neighbor_path, (total, max_selected_k), np.int64)
-        vanilla_values = np.load(
-            vanilla_root / vanilla["arrays"]["predictions"], mmap_mode="r"
-        )
         context_forecasts = {
             k: _memmap(
                 root / "test" / f"context_forecast_k{k}.npy",
@@ -893,13 +1046,19 @@ def extract_adaptation_eval_features(
         for start in range(0, len(fixed_positions), config.model_batch_size):
             positions = fixed_positions[start : start + config.model_batch_size]
             batch = reader.read(references[positions])
-            representation[positions] = _timed_represent(
-                forecaster,
-                batch.context,
-                config.representation,
-                timings,
-                "test.representation_seconds",
-            )
+            if shared_cache is None:
+                representation[positions] = _timed_represent(
+                    forecaster,
+                    batch.context,
+                    config.representation,
+                    timings,
+                    "test.representation_seconds",
+                )
+            else:
+                representation[positions], seconds = shared_cache.representations(
+                    references[positions], batch.context, config.representation
+                )
+                _record_seconds(timings, "test.representation_seconds", seconds)
             scale[positions] = query_scale(batch.context)
             fraction, eligible, reason = _source_eligibility(
                 batch.context,
@@ -973,13 +1132,19 @@ def extract_adaptation_eval_features(
         for start in range(0, len(missing), config.model_batch_size):
             stop = min(start + config.model_batch_size, len(missing))
             batch = reader.read(datastore_references[missing[start:stop]])
-            missing_values[start:stop] = _timed_forecast(
-                forecaster,
-                batch.context,
-                timings,
-                "test.neighbor_forecast_seconds",
-                horizon=prepared.prediction_length,
-            )
+            if shared_cache is None:
+                missing_values[start:stop] = _timed_forecast(
+                    forecaster,
+                    batch.context,
+                    timings,
+                    "test.neighbor_forecast_seconds",
+                    horizon=prepared.prediction_length,
+                )
+            else:
+                missing_values[start:stop], seconds = shared_cache.forecasts(
+                    datastore_references[missing[start:stop]], batch.context
+                )
+                _record_seconds(timings, "test.neighbor_forecast_seconds", seconds)
         arrays["datastore.selected_forecast_id"] = str(
             missing_id_path.relative_to(root)
         )

@@ -23,9 +23,10 @@ export TIME_WORKFLOW_NAME TIME_TASK_NAME TIME_STATUS_NAME TIME_LAUNCH_ID TIME_RE
 source "$PROJECT_ROOT/src/slurm/workflow_common.sh"
 
 run_adaptime() {
-    local -a k_values alpha_values command
+    local -a k_values alpha_values fitting_scopes command
     read -r -a k_values <<< "${ADAPTIME_K_VALUES:-1 5 10 15}"
     read -r -a alpha_values <<< "${ADAPTIME_ALPHA_VALUES:-0.001 0.01 0.1}"
+    read -r -a fitting_scopes <<< "${ADAPTIME_FITTING_SCOPES:-all same_series}"
     command=(
         uv run --no-sync python -m timebench.scripts.run_adaptation_stage
         --stage "$ADAPTIME_STAGE_VALUE"
@@ -50,6 +51,15 @@ run_adaptime() {
         --datastore-block-size "${ADAPTIME_DATASTORE_BLOCK_SIZE:-4096}"
         --arrow-cache-items "${ADAPTIME_ARROW_CACHE_ITEMS:-2}"
         --ridge-chunk-size "${ADAPTIME_RIDGE_CHUNK_SIZE:-1024}"
+        --fitting-scope "${fitting_scopes[@]}"
+        --rolling-k "${ADAPTIME_ROLLING_K:-15}"
+        --rolling-alpha "${ADAPTIME_ROLLING_ALPHA:-1.0}"
+        --rolling-n-fitting-dates "${ADAPTIME_ROLLING_N_FITTING_DATES:-100}"
+        --rolling-minimum-fitting-dates "${ADAPTIME_ROLLING_MINIMUM_FITTING_DATES:-64}"
+        --rolling-fitting-stride-multiple "${ADAPTIME_ROLLING_FITTING_STRIDE_MULTIPLE:-1}"
+        --rolling-max-datastore-windows "${ADAPTIME_ROLLING_MAX_DATASTORE_WINDOWS:-10000}"
+        --rolling-datastore-stride-multiple "${ADAPTIME_ROLLING_DATASTORE_STRIDE_MULTIPLE:-1}"
+        --rolling-datastore-block-size "${ADAPTIME_ROLLING_DATASTORE_BLOCK_SIZE:-512}"
         --seed "${ADAPTIME_SEED:-1}"
         --tsrag-model-batch-size "${TSRAG_MODEL_BATCH_SIZE:-256}"
         --config-policy "${ADAPTIME_CONFIG_POLICY:-error}"
@@ -61,6 +71,7 @@ run_adaptime() {
     [ -z "${ADAPTIME_ADAPTATION_STRIDE:-}" ] || command+=(--adaptation-stride "$ADAPTIME_ADAPTATION_STRIDE")
     [ -z "${ADAPTIME_RETRIEVAL_PERIOD:-}" ] || command+=(--retrieval-period "$ADAPTIME_RETRIEVAL_PERIOD")
     [ -z "${ADAPTIME_MAX_DATASTORE_WINDOWS:-}" ] || command+=(--max-datastore-windows "$ADAPTIME_MAX_DATASTORE_WINDOWS")
+    [ -z "${ADAPTIME_MAX_FITTING_WINDOWS:-}" ] || command+=(--max-fitting-windows "$ADAPTIME_MAX_FITTING_WINDOWS")
     [ -z "${TSRAG_CHRONOS_BOLT_PATH:-}" ] || command+=(--tsrag-chronos-bolt-path "$TSRAG_CHRONOS_BOLT_PATH")
     [ -z "${TSRAG_RETRIEVER_PATH:-}" ] || command+=(--tsrag-retriever-path "$TSRAG_RETRIEVER_PATH")
     [ -z "${TSRAG_CHECKPOINT_PATH:-}" ] || command+=(--tsrag-checkpoint-path "$TSRAG_CHECKPOINT_PATH")

@@ -13,6 +13,7 @@ from typing import Any
 import numpy as np
 
 from timebench.adaptime.ridge import (
+    PER_VARIATE_RIDGE,
     RIDGE_VARIANTS,
     full_ridge_design,
     full_ridge_predict_with_fallback,
@@ -33,9 +34,11 @@ ADAPTATION_METHODS = (
     "vanilla",
     "covariate_prediction",
     "bayes_covariate_prediction",
+    "bayes_past_targets_prediction",
     "cov_ridge_shared",
     "y_ridge_shared",
     "full_ridge_shared",
+    "full_ridge_per_variate",
     "selected_adaptation",
 )
 
@@ -78,21 +81,19 @@ def _inference_timings(
     vanilla_seconds = float(
         vanilla["timing_seconds"]["vanilla_model_forecast_seconds"]
     )
-    if not selected_ks:
-        return (
-            {method: vanilla_seconds for method in ADAPTATION_METHODS},
-            {"vanilla_model_forecast_seconds": vanilla_seconds},
-        )
     measured = dict(evaluation_extraction["timing_seconds"])
     components: dict[str, float] = {
-        "query_representation_seconds": float(measured["test.representation_seconds"]),
-        "retrieval_seconds": float(measured["test.retrieval_seconds"]),
-        "context_construction_seconds": float(measured["test.context_construction_seconds"]),
+        "query_representation_seconds": float(measured.get("test.representation_seconds", 0.0)),
+        "retrieval_seconds": float(measured.get("test.retrieval_seconds", 0.0)),
+        "context_construction_seconds": float(measured.get("test.context_construction_seconds", 0.0)),
         "vanilla_model_forecast_seconds": vanilla_seconds,
         "neighbor_model_forecast_seconds": float(
-            measured["test.neighbor_forecast_seconds"]
+            measured.get("test.neighbor_forecast_seconds", 0.0)
         ),
-        "covariate_model_forecast_seconds": float(measured["test.context_forecast_seconds"]),
+        "covariate_model_forecast_seconds": float(measured.get("test.context_forecast_seconds", 0.0)),
+        "past_target_covariate_model_forecast_seconds": float(
+            measured.get("test.past_target_covariate_forecast_seconds", 0.0)
+        ),
         "ridge_design_and_adjustment_seconds": float(ridge_seconds),
         "bayes_mixture_seconds": float(bayes_seconds),
     }
@@ -106,21 +107,30 @@ def _inference_timings(
         )
     )
     timings = {
-            "vanilla": vanilla_seconds,
-            "covariate_prediction": vanilla_seconds + context_path,
-            "bayes_covariate_prediction": (
-                vanilla_seconds + context_path + bayes_seconds
-            ),
-            **{
-                method: (
+        "vanilla": vanilla_seconds,
+        "covariate_prediction": vanilla_seconds + context_path,
+        "bayes_covariate_prediction": vanilla_seconds + context_path + bayes_seconds,
+        "bayes_past_targets_prediction": (
+            vanilla_seconds
+            + components["past_target_covariate_model_forecast_seconds"]
+            + bayes_seconds
+        ),
+        **{
+            method: (
                 vanilla_seconds
                 + context_path
                 + components["neighbor_model_forecast_seconds"]
                 + ridge_seconds
-                )
-                for method in RIDGE_VARIANTS
-            },
-        }
+            )
+            for method in RIDGE_VARIANTS
+        },
+    }
+    timings[PER_VARIATE_RIDGE] = (
+        vanilla_seconds
+        + context_path
+        + components["neighbor_model_forecast_seconds"]
+        + ridge_seconds
+    )
     timings["selected_adaptation"] = timings.get(selected_method, vanilla_seconds)
     return timings, components
 
@@ -196,6 +206,8 @@ def predict_adaptation_family(
     selected_method = str(model["selected"]["method"])
     method_selections = dict(model.get("method_selections", {}))
     probability = 0.0
+    past_probability = 0.0
+    past_available_windows = 0
     if fallback_reason is not None:
         for store in prediction_stores.values():
             store[:] = vanilla
@@ -208,12 +220,42 @@ def predict_adaptation_family(
             )
         )
         probability = float(bayes["probability_covariate_better"])
+        past_bayes = json.loads(
+            (model_root / model["files"]["bayes_past_targets_mixture"]).read_text(
+                encoding="utf-8"
+            )
+        )
+        past_probability = float(past_bayes["probability_past_targets_better"])
         coefficient_files = dict(model["files"]["coefficients"])
         coefficients = {
             method: np.load(model_root / relative, allow_pickle=False)
             for method, relative in coefficient_files.items()
         }
+        per_variate_coefficients: dict[tuple[int, int], np.ndarray] = {}
+        per_selection = method_selections[PER_VARIATE_RIDGE]
+        if per_selection["method"] != "vanilla":
+            per_keys = np.load(
+                model_root / model["files"]["per_variate_series"], allow_pickle=False
+            )
+            per_values = np.load(
+                model_root / model["files"]["per_variate_coefficients"],
+                allow_pickle=False,
+            )
+            per_variate_coefficients = {
+                tuple(map(int, key)): np.asarray(value)
+                for key, value in zip(per_keys, per_values)
+            }
         eval_arrays = dict(eval_extraction["arrays"])
+        past_forecast = np.load(
+            eval_root / eval_arrays["test.past_target_covariate_forecast"],
+            mmap_mode="r",
+        )
+        past_available = np.load(
+            eval_root / eval_arrays["test.past_target_covariate_available"],
+            mmap_mode="r",
+        )
+        past_available_windows = int(np.count_nonzero(past_available))
+        test_references = prepared.indices("test")
         base_eligible = np.load(
             eval_root / eval_arrays["test.rag_eligible"], mmap_mode="r"
         )
@@ -261,6 +303,16 @@ def predict_adaptation_family(
                 for method in ADAPTATION_METHODS
             }
             chunk_eligible = np.zeros(stop - start, dtype=bool)
+            past_selection = method_selections["bayes_past_targets_prediction"]
+            if past_selection["method"] != "vanilla":
+                past_usable = np.asarray(past_available[start:stop], dtype=bool)
+                bayes_started = perf_counter()
+                chunk_predictions["bayes_past_targets_prediction"][past_usable] = (
+                    (1.0 - past_probability) * chunk_vanilla[past_usable]
+                    + past_probability
+                    * np.asarray(past_forecast[start:stop])[past_usable]
+                )
+                bayes_seconds += perf_counter() - bayes_started
             for k in selected_ks:
                 started = perf_counter()
                 selected_ids = np.asarray(neighbor_ids[start:stop, :k])
@@ -320,6 +372,29 @@ def predict_adaptation_family(
                         coefficients[method],
                         final_eligible,
                     )
+                if (
+                    per_selection["method"] != "vanilla"
+                    and int(per_selection["k"]) == k
+                ):
+                    indices = ridge_feature_indices(PER_VARIATE_RIDGE, k)
+                    per_prediction = np.array(chunk_vanilla, copy=True)
+                    chunk_references = np.asarray(test_references[start:stop])
+                    for key, series_coefficients in per_variate_coefficients.items():
+                        series_rows = (
+                            (chunk_references[:, 0] == key[0])
+                            & (chunk_references[:, 1] == key[1])
+                            & final_eligible
+                        )
+                        if np.any(series_rows):
+                            per_prediction[series_rows] = (
+                                chunk_vanilla[series_rows]
+                                + np.einsum(
+                                    "...f,f->...",
+                                    design[series_rows][..., indices],
+                                    series_coefficients,
+                                )
+                            )
+                    chunk_predictions[PER_VARIATE_RIDGE] = per_prediction
                 ridge_seconds += perf_counter() - started
             chunk_predictions["selected_adaptation"] = np.array(
                 chunk_predictions.get(selected_method, chunk_vanilla), copy=True
@@ -355,9 +430,14 @@ def predict_adaptation_family(
         "method_selections": method_selections,
         "evaluation_k_values": list(selected_ks),
         "bayes_probability_covariate_better": probability,
+        "bayes_probability_past_targets_better": past_probability,
         "fallback_reason": fallback_reason,
         "rag_coverage": {
             "eligible_windows": int(np.count_nonzero(eligible_store)),
+            "total_windows": int(len(eligible_store)),
+        },
+        "past_target_covariate_coverage": {
+            "available_windows": past_available_windows,
             "total_windows": int(len(eligible_store)),
         },
         "fallback_reason_codes": {

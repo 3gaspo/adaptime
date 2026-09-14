@@ -12,6 +12,7 @@ RIDGE_VARIANTS = (
     "y_ridge_shared",
     "full_ridge_shared",
 )
+PER_VARIATE_RIDGE = "full_ridge_per_variate"
 
 
 def full_ridge_feature_names(k: int) -> list[str]:
@@ -34,7 +35,7 @@ def ridge_feature_indices(method: str, k: int) -> np.ndarray:
         indices = (0, 1)
     elif method == "y_ridge_shared":
         indices = (0, *range(2, 2 + int(k)))
-    elif method == "full_ridge_shared":
+    elif method in {"full_ridge_shared", PER_VARIATE_RIDGE}:
         indices = tuple(range(2 + 2 * int(k)))
     else:
         raise ValueError(f"unknown Ridge variant: {method}")

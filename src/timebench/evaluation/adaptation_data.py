@@ -131,6 +131,9 @@ class PreparationConfig:
     retrieval_period: int = 1
     datastore_stride: int = 1
     max_datastore_windows: int | None = None
+    max_fitting_windows: int | None = None
+    datastore_scope: str = "all"
+    fitting_window_scope: str = "all"
     datastore_prediction_length: int | None = None
     minimum_datastore_dates_per_variate: int = 1
 
@@ -180,6 +183,12 @@ class PreparationConfig:
             and int(self.max_datastore_windows) <= 0
         ):
             raise ValueError("max_datastore_windows must be positive when supplied")
+        if self.max_fitting_windows is not None and int(self.max_fitting_windows) <= 0:
+            raise ValueError("max_fitting_windows must be positive when supplied")
+        if self.datastore_scope not in {"all", "same_series", "other_series"}:
+            raise ValueError("unsupported datastore_scope")
+        if self.fitting_window_scope not in {"all", "same_series"}:
+            raise ValueError("unsupported fitting_window_scope")
         if self.datastore_stride % self.retrieval_period:
             raise ValueError("datastore_stride must be a multiple of retrieval_period")
         if math.gcd(self.query_stride, self.retrieval_period) != 1:
@@ -303,6 +312,47 @@ def _append_references(
         )
     )
     calendar_ticks.append(int(start_tick) + repeated_origins)
+
+
+def _balanced_recent_window_cap(
+    references: np.ndarray,
+    calendar_ticks: np.ndarray,
+    max_windows: int,
+    *,
+    cross_variate: bool,
+) -> tuple[np.ndarray, np.ndarray, int]:
+    """Apply a shared or per-variate cap to the most-recent strided dates."""
+
+    refs = np.asarray(references, dtype=np.int64).reshape(-1, 3)
+    ticks = np.asarray(calendar_ticks, dtype=np.int64)
+    if not len(refs):
+        raise InsufficientAdaptationHistory(
+            "cannot apply a fitting-window cap to an empty split"
+        )
+    series = np.unique(refs[:, :2], axis=0)
+    positions_by_series = [
+        np.flatnonzero(np.all(refs[:, :2] == key, axis=1)) for key in series
+    ]
+    if cross_variate and len(refs) <= int(max_windows):
+        return refs, ticks, min(map(len, positions_by_series))
+    dates_per_series = int(max_windows) // int(len(series)) if cross_variate else None
+    if cross_variate and int(dates_per_series) <= 0:
+        raise InsufficientAdaptationHistory(
+            f"max_windows={max_windows} cannot retain one date for each of "
+            f"{len(series)} variates"
+        )
+    keep = np.zeros(len(refs), dtype=bool)
+    for positions in positions_by_series:
+        retained = min(
+            int(dates_per_series) if cross_variate else int(max_windows),
+            len(positions),
+        )
+        recent = positions[np.argsort(ticks[positions], kind="stable")[-retained:]]
+        keep[recent] = True
+    retained_dates = min(
+        np.count_nonzero(keep[positions]) for positions in positions_by_series
+    )
+    return refs[keep], ticks[keep], int(retained_dates)
 
 
 def validate_global_datastore_requirement(manifest: Mapping[str, object]) -> None:
@@ -429,7 +479,16 @@ def prepare_adaptation_dataset(
     )
     capped_dates = None
     if config.max_datastore_windows is not None:
-        capped_dates = int(config.max_datastore_windows) // int(variates)
+        capped_dates = (
+            int(config.max_datastore_windows) // int(variates)
+            if config.datastore_scope != "same_series"
+            else int(config.max_datastore_windows)
+        )
+        if capped_dates <= 0:
+            raise InsufficientAdaptationHistory(
+                f"max_datastore_windows={config.max_datastore_windows} cannot retain "
+                f"one date for each of {variates} variates"
+            )
     datastore_end_ticks: list[int] = []
     datastore_origins: list[np.ndarray] = []
     for item, ((channels, _), intervals, start_tick) in enumerate(
@@ -458,17 +517,41 @@ def prepare_adaptation_dataset(
         )
         datastore_origins.append(origins)
 
-    retained_dates = (
-        min(int(capped_dates), *(len(values) for values in datastore_origins))
-        if capped_dates is not None
-        else None
+    cross_variate_datastore = config.datastore_scope != "same_series"
+    uncapped_datastore_windows = sum(
+        len(origins)
+        * (channels if config.target_mode == "univariate" else 1)
+        for (channels, _), origins in zip(target_shapes, datastore_origins)
     )
+    retained_dates = None
+    if capped_dates is not None and (
+        (
+            cross_variate_datastore
+            and uncapped_datastore_windows > int(config.max_datastore_windows)
+        )
+        or (
+            not cross_variate_datastore
+            and any(
+                len(origins) > int(config.max_datastore_windows)
+                for origins in datastore_origins
+            )
+        )
+    ):
+        retained_dates = (
+            min(int(capped_dates), *(len(values) for values in datastore_origins))
+            if cross_variate_datastore
+            else int(capped_dates)
+        )
+    if retained_dates is not None and retained_dates <= 0:
+        raise InsufficientAdaptationHistory(
+            "the datastore window cap cannot retain a complete date per variate"
+        )
     datastore_date_counts: list[int] = []
     for item, ((channels, _), start_tick, origins) in enumerate(
         zip(target_shapes, start_ticks, datastore_origins)
     ):
         if retained_dates is not None:
-            origins = origins[-int(retained_dates) :]
+            origins = origins[-min(int(retained_dates), len(origins)) :]
         datastore_date_counts.append(int(len(origins)))
         _append_references(
             references["datastore"],
@@ -487,6 +570,8 @@ def prepare_adaptation_dataset(
     }
     arrays: dict[str, str] = {}
     counts: dict[str, int] = {}
+    uncapped_counts: dict[str, int] = {}
+    fitting_dates_per_variate: int | None = None
     for split in ALL_SPLITS:
         values = (
             np.concatenate(references[split], axis=0)
@@ -498,6 +583,14 @@ def prepare_adaptation_dataset(
             if calendar_ticks[split]
             else np.empty(0, dtype=np.int64)
         )
+        uncapped_counts[split] = int(len(values))
+        if split == "adaptation_train" and config.max_fitting_windows is not None:
+            values, ticks, fitting_dates_per_variate = _balanced_recent_window_cap(
+                values,
+                ticks,
+                int(config.max_fitting_windows),
+                cross_variate=config.fitting_window_scope == "all",
+            )
         relative = f"indices/{split}.npy"
         calendar_relative = f"indices/{split}_calendar_tick.npy"
         _atomic_npy(root / relative, values)
@@ -525,10 +618,15 @@ def prepare_adaptation_dataset(
         "interval_convention": "target start inclusive, target stop exclusive",
         "query_period_residues": period_residues,
         "datastore_dates_per_variate": datastore_coverage,
+        "fitting_dates_per_variate": fitting_dates_per_variate,
         "planned_query_windows_per_item": expected_query_windows,
         "planned_query_rows": planned_query_rows,
         "excluded_fixed_context_rows": {
-            split: int(planned_query_rows[split] - counts[split])
+            split: int(planned_query_rows[split] - uncapped_counts[split])
+            for split in FIT_QUERY_SPLITS
+        },
+        "window_cap_removed_rows": {
+            split: int(uncapped_counts[split] - counts[split])
             for split in FIT_QUERY_SPLITS
         },
         "query_window_contract": (
@@ -618,6 +716,34 @@ class WindowReader:
             context=np.stack(contexts),
             target=np.stack(targets),
         )
+
+    def read_other_variates_as_past_covariates(
+        self,
+        references: np.ndarray,
+        *,
+        context_length: int | None = None,
+    ) -> np.ndarray:
+        """Return each univariate row's aligned other-target histories."""
+
+        refs = np.asarray(references, dtype=np.int64).reshape(-1, 3)
+        selected_context_length = int(context_length or self.prepared.context_length)
+        covariates: list[np.ndarray] = []
+        for item, channel, origin in refs:
+            if int(channel) < 0:
+                raise ValueError("past-target covariates require univariate references")
+            values = self._target(int(item))
+            if values.shape[0] < 2:
+                raise ValueError("past-target covariates require at least two variates")
+            past = np.delete(values, int(channel), axis=0)[
+                :, int(origin) - selected_context_length : int(origin)
+            ]
+            if past.shape[-1] != selected_context_length:
+                raise ValueError(f"invalid past-covariate reference {(item, channel, origin)}")
+            covariates.append(np.asarray(past))
+        return np.stack(covariates)
+
+    def target_channels(self, item: int) -> int:
+        return int(self._target(int(item)).shape[0])
 
     def seasonal_scales(self, references: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Return full-prefix MASE and RMS seasonal scales per row/channel."""

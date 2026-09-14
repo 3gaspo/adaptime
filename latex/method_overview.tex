@@ -12,10 +12,10 @@
 \maketitle
 
 \begin{abstract}
-Adaptime studies whether a small fitted adaptor can combine a time-series
-foundation model with fixed, calendar-aligned retrieval while preserving the
-official TIME test protocol. This note defines the current univariate
-\texttt{full\_ridge\_shared} formulation; it reports no empirical result.
+Adaptime studies whether small fitted adaptors can combine a time-series
+foundation model with calendar-aligned retrieval while preserving the official
+TIME test protocol. This note defines the fixed validation-selected family and
+the causal rolling per-variate horizon Ridge; it reports no empirical result.
 \end{abstract}
 
 \section{Chronological protocol}
@@ -57,17 +57,20 @@ query.
 
 By default every eligible earlier datastore date is accessible. An optional
 global window cap is divided evenly across variates, rounded down, and retains
-the most recent dates. TS-RAG requires every variate to retain at least 11
+the most recent dates. The fitting set has an analogous optional recent-window
+cap; global fitting and same-variate fitting are explicit alternatives. TS-RAG
+requires every variate to retain at least 11
 datastore dates. Shared preparation records these counts; before TS-RAG
 representation extraction, its project-owned data adapter checks the minimum
 globally, including when a previously completed artifact is reused. Generic
 preparation remains available to the Ridge family, whose insufficient-history
 path is the vanilla fallback described below.
 An early training or validation origin that cannot supply the fixed history is
-excluded from fitting, but no official test origin is removed. If too few
-valid fixed-context training windows remain, no ridge is fitted: every method
-evaluates TIME's unchanged test windows with cached vanilla forecasts and
-records the task-level fallback reason.
+excluded from fitting, but no official test origin is removed. Virtual
+$K=0$ is always admissible and needs no fit. Each positive-$K$ candidate must
+separately exceed the configured training and validation support thresholds;
+when no fitted candidate qualifies, TIME's unchanged test windows use cached
+vanilla forecasts.
 
 Let $q_t$ be the finite fraction of a query history. The default gate requires
 $q_t\geq0.8$ before retrieval. Datastore histories satisfy the same threshold,
@@ -79,7 +82,7 @@ than $K_{\max}$ valid neighbors makes the query ineligible for all candidates.
 After selection is frozen, test extraction retrieves only the selected $K$;
 a test query needs those $K$ neighbors rather than $K_{\max}$.
 
-\section{Full shared ridge}
+\section{Fixed ridge family}
 
 For each query, $V$ is the vanilla foundation forecast and $C$ is the forecast
 obtained when the $K$ retrieved neighbor trajectories are supplied as
@@ -92,8 +95,9 @@ design is
 The paired $Y_i$ and $N_i$ terms expose neighbor residual information. Let
 $s_{t,c}$ be the root mean squared seasonal difference over the complete
 history before query $t$ for channel $c$. Only pairs whose two original dates
-are finite contribute, and their count is the denominator. One no-intercept
-ridge vector is shared across all forecast horizons and fitted by MSSE:
+are finite contribute, and their count is the denominator. For
+\texttt{full\_ridge\_shared}, one no-intercept ridge vector is shared across
+variates and forecast horizons and fitted by MSSE:
 \begin{align}
   \hat\beta_\alpha
     &= \arg\min_\beta \sum_{t,c,h}
@@ -104,8 +108,13 @@ ridge vector is shared across all forecast horizons and fitted by MSSE:
 
 The primary setting is $K=10$, $\alpha=10^{-2}$. Validation searches
 $K\in\{1,5,10,15\}$ and
-$\alpha\in\{10^{-3},10^{-2},10^{-1}\}$. Delta, convex, per-horizon, and
-multivariate Adaptime variants are outside the current protocol.
+$\alpha\in\{10^{-3},10^{-2},10^{-1}\}$ and compares every fitted method to
+virtual $K=0$. The nested \texttt{cov\_ridge\_shared} design uses $[V,C]$;
+\texttt{y\_ridge\_shared} uses $[V,Y_1,\ldots,Y_K]$; and
+\texttt{full\_ridge\_per\_variate} retains the full design while fitting a
+separate coefficient vector from each variate's training windows. All designs
+retain the outer vanilla term $V$ in $V+X\beta$. Delta, convex, and native
+multivariate variants are outside the current protocol.
 
 Ridge fitting uses complete adaptation-training rows only; it never applies an
 element-wise NaN mean to the normal equations. During validation and test, an
@@ -132,13 +141,35 @@ An ineligible test window receives $V$ for both the hard covariate and Bayesian
 branches. A task-level insufficient-training fallback fixes $p=0$ and makes
 all family predictions equal to $V$.
 
+A second Bayesian candidate calls Chronos-2 with every other variate supplied
+as a past-only covariate. The same paired training-win,
+$\operatorname{Beta}(1,1)$ posterior, validation selection, and vanilla
+fallback logic mixes this forecast with $V$. No future covariate value is
+exposed.
+
+\section{Rolling per-variate horizon ridge}
+
+The independent \texttt{rolling\_y\_ridge\_horizon} method has no validation
+selection. At every official test query it fits one coefficient vector per
+variate and horizon with design $[V,Y_1,\ldots,Y_K]$. Defaults are $K=15$ and
+$\alpha=1$. Fitting dates come only from the query variate, are aligned to the
+query's dataset-period phase, retain at most the latest 100 dates, and require
+at least 64. Each fitting target must be fully observed before the test query.
+
+Retrieval uses a causal cross-variate datastore at every fitting and query
+date. Its default 10,000-window cap is divided evenly across variates, and the
+smallest available balanced count fixes one common datastore size over all
+adapted dates. Incremental sufficient statistics remove expired fitting dates
+and add new ones as the test origin advances. A query with insufficient fitting
+dates or retrieval support returns $V$.
+
 \section{Evaluation}
 
-The unified official-test report compares vanilla $V$, hard retrieval-context
-$C$, Bayesian $B$, frozen full Ridge $V'$, and the independently implemented
-TS-RAG control. Nested-Ridge variants and the validation-selected family output
-are retained as diagnostics, while Seasonal Naive supplies the task scaling
-baseline. Each method receives its own standard TIME evaluation artifact on
+The official-test evaluations cover vanilla $V$, hard retrieval-context $C$,
+both Bayesian gates, the nested shared Ridge designs, shared and per-variate
+full Ridge, the validation-selected fixed family, rolling horizon Ridge, and
+the independently implemented TS-RAG control. Seasonal Naive supplies the task
+scaling baseline. Each method receives its own standard TIME artifact on
 identical official windows. The evaluator retains
 MSE, MAE, RMSE, MAPE, sMAPE, MASE, ND, and CRPS. Seasonal Naive remains the
 inherited external baseline used by broader TIME summaries. Missing dates are
@@ -150,10 +181,13 @@ construction.
 Conclusions require completed and inspected cluster artifacts.
 
 Eligibility arrays, reason codes, effective training counts, and test RAG
-coverage, Ridge coefficients, and Bayesian evidence are retained with the task
-artifacts. The resulting adapted estimands are transparent gated hybrids:
+coverage, Ridge coefficients, Bayesian evidence, rolling fitting support, and
+cache identities are retained with the task artifacts. Vanilla forecasts and
+exact-context representations are shared across fixed and rolling methods only
+when prepared data, model, weights, source window, and context length agree;
+neighbor selections remain method-specific. The resulting adapted estimands are transparent gated hybrids:
 their selected method on eligible windows and vanilla otherwise. An
 insufficient-training task is the limiting case with zero eligible Adaptime
-windows and vanilla predictions for all four family branches.
+windows and vanilla predictions for every fixed-family branch.
 
 \end{document}

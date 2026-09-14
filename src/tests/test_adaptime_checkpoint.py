@@ -397,6 +397,8 @@ def main() -> None:
             "src/timebench/pipeline/adaptime_workflow.py",
             "src/timebench/pipeline/tsrag_data.py",
             "src/timebench/results/adaptation.py",
+            "src/timebench/pipeline/adaptime_cache.py",
+            "src/timebench/pipeline/adaptime_rolling.py",
         )
     ]
     for source in (
@@ -417,13 +419,18 @@ def main() -> None:
     assert 'arrays.open(f"{split}.msse_scale")' in training
     assert "minimum_training_window_ratio: float = 1.0" in training
     assert "minimum_validation_window_ratio: float = 0.1" in training
-    assert "vanilla_fallback_when_valid_training_windows_are_insufficient" in training
+    assert "candidate_ks = [" in training
+    assert 'int(train_coverage[k]["adapted_windows"]) > training_window_limit' in training
+    assert "selection_rows: list[dict[str, object]] = [dict(vanilla_candidate)]" in training
+    assert '"status": "vanilla_selected" if selected_bayes_k == 0 else "fitted"' in training
     assert "covariate_win_evidence" in training
     assert '"prior": {"alpha": 1.0, "beta": 1.0}' in training
     assert '"fit_split": "adaptation_train"' in training
     assert '"selection_split": "adaptation_validation"' in training
     assert '"fits_by_k"' in training
-    assert 'selection_criterion = "default_sparse_validation"' in training
+    assert (
+        'selection_criterion = "adaptation_validation_msse_with_virtual_k0"' in training
+    )
     assert "full_ridge_predict_with_fallback" in prediction
     assert '"bayes_covariate_prediction"' in prediction
     assert "(1.0 - probability) * chunk_vanilla" in prediction
@@ -440,8 +447,18 @@ def main() -> None:
     adaptime_workflow = additional_sources[2]
     tsrag_data = additional_sources[3]
     result_builder = additional_sources[4]
+    shared_cache = additional_sources[5]
+    rolling = additional_sources[6]
     assert "save_window_predictions" in evaluator
-    assert '"consumers": ["full_ridge_shared", "tsrag"]' in adaptime_workflow
+    assert '"consumers": [' in adaptime_workflow
+    for consumer in (
+        "full_ridge_shared",
+        "full_ridge_per_variate",
+        "bayes_past_targets_prediction",
+        "tsrag",
+    ):
+        assert f'"{consumer}"' in adaptime_workflow
+    assert "ROLLING_RIDGE_METHOD" in adaptime_workflow
     assert "_matching_evaluation_runs(" in adaptime_workflow
     assert "adaptation_split_lengths(" in adaptime_workflow
     assert "for comparison_method in ADAPTATION_METHODS" in adaptime_workflow
@@ -452,6 +469,12 @@ def main() -> None:
     assert "return self.shared.indices(split)" in tsrag_data
     assert "PreparedDataset(path)" in tsrag_data
     assert "independently evaluated Adaptime wrappers" in result_builder
+    assert "class SharedWindowCache" in shared_cache
+    assert 'f"representation:{mode}"' in shared_cache
+    assert 'ROLLING_RIDGE_METHOD = "rolling_y_ridge_horizon"' in rolling
+    assert "minimum_fitting_dates: int = 64" in rolling
+    assert '"coefficient_scope": "per_series_and_horizon"' in rolling
+    assert (PROJECT_ROOT / "scripts/submit_rolling_ridge.sh").is_file()
 
     _run_slurm_contract()
     print("Adaptime split, fallback, datastore, and Slurm contracts passed.")

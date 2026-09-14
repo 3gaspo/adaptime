@@ -10,6 +10,7 @@ from timebench.pipeline.adaptime_workflow import (
     AdaptimeWorkflowConfig,
     run_adaptation_stage,
 )
+from timebench.pipeline.adaptime_rolling import ROLLING_RIDGE_METHOD
 
 
 def _csv(value: str) -> tuple[str, ...]:
@@ -41,7 +42,14 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--method",
-        choices=("seasonal_naive", "vanilla", "ridge", "tsrag", "unified"),
+        choices=(
+            "seasonal_naive",
+            "vanilla",
+            "ridge",
+            ROLLING_RIDGE_METHOD,
+            "tsrag",
+            "unified",
+        ),
         required=True,
     )
     parser.add_argument("--datasets", type=_csv, default=("all_datasets",))
@@ -57,6 +65,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--retrieval-period", type=int)
     parser.add_argument("--datastore-stride-multiple", type=int, default=1)
     parser.add_argument("--max-datastore-windows", type=int)
+    parser.add_argument("--max-fitting-windows", type=int)
     parser.add_argument("--representation", choices=("raw", "instance", "model"), default="instance")
     parser.add_argument("--distance-metric", choices=("euclidean", "cosine"), default="euclidean")
     parser.add_argument("--retrieval-scope", choices=("all", "same_series", "other_series"), default="all")
@@ -70,6 +79,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--datastore-block-size", type=int, default=4096)
     parser.add_argument("--arrow-cache-items", type=int, default=2)
     parser.add_argument("--ridge-chunk-size", type=int, default=1024)
+    parser.add_argument(
+        "--fitting-scope",
+        nargs="+",
+        choices=("all", "same_series"),
+        default=("all", "same_series"),
+    )
+    parser.add_argument("--rolling-k", type=int, default=15)
+    parser.add_argument("--rolling-alpha", type=float, default=1.0)
+    parser.add_argument("--rolling-n-fitting-dates", type=int, default=100)
+    parser.add_argument("--rolling-minimum-fitting-dates", type=int, default=64)
+    parser.add_argument("--rolling-fitting-stride-multiple", type=int, default=1)
+    parser.add_argument("--rolling-max-datastore-windows", type=int, default=10_000)
+    parser.add_argument("--rolling-datastore-stride-multiple", type=int, default=1)
+    parser.add_argument("--rolling-datastore-block-size", type=int, default=512)
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--tsrag-model-batch-size", type=int, default=256)
     parser.add_argument("--tsrag-chronos-bolt-path", type=Path)
@@ -107,6 +130,7 @@ def main() -> None:
             retrieval_period=args.retrieval_period,
             datastore_stride_multiple=args.datastore_stride_multiple,
             max_datastore_windows=args.max_datastore_windows,
+            max_fitting_windows=args.max_fitting_windows,
             representation=args.representation,
             distance_metric=args.distance_metric,
             retrieval_scope=args.retrieval_scope,
@@ -120,6 +144,15 @@ def main() -> None:
             datastore_block_size=args.datastore_block_size,
             arrow_cache_items=args.arrow_cache_items,
             ridge_chunk_size=args.ridge_chunk_size,
+            fitting_scopes=tuple(args.fitting_scope),
+            rolling_k=args.rolling_k,
+            rolling_alpha=args.rolling_alpha,
+            rolling_n_fitting_dates=args.rolling_n_fitting_dates,
+            rolling_minimum_fitting_dates=args.rolling_minimum_fitting_dates,
+            rolling_fitting_stride_multiple=args.rolling_fitting_stride_multiple,
+            rolling_max_datastore_windows=args.rolling_max_datastore_windows,
+            rolling_datastore_stride_multiple=args.rolling_datastore_stride_multiple,
+            rolling_datastore_block_size=args.rolling_datastore_block_size,
             seed=args.seed,
             model_path=args.model_path,
             weights_id=args.weights_id,

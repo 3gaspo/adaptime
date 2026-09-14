@@ -2,17 +2,19 @@
 
 Adaptime evaluates retrieval-augmented wrappers around time-series foundation
 models on the public [TIME benchmark](https://github.com/zqiao11/TIME). The
-official TIME test windows stay unchanged. The current proposal is the
-univariate `full_ridge_shared` adaptor. Its unified comparison contains
-vanilla, retrieval-covariate, Bayesian retrieval-covariate, and full-Ridge
-forecasts together with the source-adapted TS-RAG ARM from upstream commit
-`73ac807`. TS-RAG remains an independently implemented external control.
+official TIME test windows stay unchanged. The fixed family compares virtual
+vanilla selection, Bayesian gates, nested Ridge designs, and shared versus
+per-variate fitting. A separate rolling method refits a per-variate,
+per-horizon Ridge causally at each test date. The source-adapted TS-RAG ARM
+from upstream commit `73ac807` remains an independently implemented control.
 
 For the Ridge wrapper, `V` is the vanilla forecast, `C` is the forecast with
 retrieved trajectories as covariates, `Y_i` are neighbor futures, and `N_i`
 are vanilla forecasts from neighbor histories. With
-`X=[V,C,Y_1..Y_K,N_1..N_K]`, the fitted forecast is `V + X beta`. One
-no-intercept coefficient vector is shared across horizon positions.
+`X=[V,C,Y_1..Y_K,N_1..N_K]`, the fitted forecast is `V + X beta`. Fixed
+variants either share one no-intercept coefficient vector globally or fit one
+per variate. The rolling horizon variant fits one vector per variate and
+forecast position.
 
 ## Documentation map
 
@@ -24,8 +26,7 @@ no-intercept coefficient vector is shared across horizon positions.
   controls, configurations, and public entry points.
 - [Results recap](docs/results_recap.md): inspected evidence and its limits.
 
-No Adaptime result is claimed until its cluster artifacts are complete and
-inspected.
+No Adaptime result is claimed until its cluster artifacts are complete and inspected.
 
 ## Setup
 
@@ -74,12 +75,20 @@ and finally one unified comparison report after both branches succeed:
 bash scripts/submit_adaptime_comparison.sh dgx
 ```
 
+The independent rolling experiment uses the same preparation, vanilla
+forecast, evaluation, and exact-window cache contracts:
+
+```bash
+bash scripts/submit_rolling_ridge.sh dgx
+```
+
 `scripts/submit_tsrag_comparison.sh` remains available for a TS-RAG-only run.
 It independently schedules shared preparation and the native TS-RAG pipeline,
 and adds a TS-RAG versus full-Ridge report only when
 `ADAPTIME_RIDGE_RESULTS_PATH` supplies exact matching full-Ridge evaluations.
 
-The default Ridge grid is `K in {1,5,10,15}` and
+The fixed selector always includes virtual `K=0`, which is scored as vanilla
+without fitting. Its positive grid is `K in {1,5,10,15}` and
 `alpha in {1e-3,1e-2,1e-1}`. A query is RAG-eligible only when retrieval
 returns `max_k` valid neighbors (`15` by default). Every candidate `K` is
 trained and selected on this common query support, using the first `K`
@@ -100,8 +109,19 @@ candidate `K`, the Bayesian baseline estimates from eligible fixed-context
 training windows a Beta(1,1)-smoothed probability that `C` has lower per-window
 MSSE than `V` (ties count one half). Adaptation validation selects the Bayesian
 `K`, or the virtual vanilla candidate, by MSSE. The resulting frozen test
-prediction is `(1-p)V + pC`. Each adapted method uses the cached vanilla
-forecast whenever its test window is ineligible.
+prediction is `(1-p)V + pC`. A second Bayesian candidate mixes vanilla with a
+Chronos-2 forecast using all other variates as past-only covariates. Ridge
+candidates isolate `V+C`, `V+Y_1..Y_K`, the full design, and a per-variate full
+design. Each method competes with virtual vanilla and uses vanilla whenever
+selected `K=0` or its test window is ineligible. Optional datastore and fitting
+caps retain the most recent stride-aligned dates and divide cross-variate caps
+evenly.
+
+The rolling method fixes `K=15` and `alpha=1`, uses up to 100 fitting dates
+from the query variate at the same retrieval-period phase, and requires at
+least 64. Its causal cross-variate datastore is capped at 10,000 windows with
+one common size across adapted query and fitting dates. Insufficient fitting
+or retrieval support falls back to vanilla for that query.
 
 The inherited foundation benchmark is launched through
 `scripts/submit_foundation_models.sh`; channel controls use
@@ -116,12 +136,16 @@ The current artifact layout below `outputs/adaptime/` is:
 
 ```text
 data/shared/.../run_n/prepared/              shared Arrow-backed references
+window_cache/.../                            shared exact-window computations
 extractions/{ridge,tsrag}/.../run_n/         method-specific retrieval features
 adaptations/ridge/.../run_n/model/           closed-form Ridge fit
-predictions/{ridge,tsrag}/.../run_n/         wrapper point forecasts
+predictions/{ridge,rolling_y_ridge_horizon,
+             tsrag}/.../run_n/               wrapper point forecasts
 evaluations/{vanilla,covariate_prediction,
-             bayes_covariate_prediction,
-             full_ridge_shared,tsrag}/.../   standard TIME evaluation artifacts
+             bayes_covariate_prediction,bayes_past_targets_prediction,
+             cov_ridge_shared,y_ridge_shared,full_ridge_shared,
+             full_ridge_per_variate,rolling_y_ridge_horizon,
+             tsrag}/.../                     standard TIME evaluation artifacts
 reports/<launch>/                            comparison.csv and report manifest
 ```
 
@@ -129,9 +153,13 @@ Each phase has its own schema-1 manifest and exact scientific identity.
 Completed exact phases are reusable; a different configuration receives a new
 `run_n`. The main family shares prepared references, cached test vanilla
 forecasts, fit extraction, selected-K test extraction, and one prediction
-artifact containing the four headline forecasts plus nested-Ridge and
-validation-selected diagnostic forecasts. Every method receives its own TIME
-evaluation run. TS-RAG references the same prepared datastore and test rows but
+artifact containing the complete fixed comparison family and its
+validation-selected forecast. Vanilla forecasts and exact-context
+representations are cached by prepared data, backbone, weights, source window,
+and context length so fixed and rolling methods can reuse them in either run
+order. Neighbor selections remain method-owned because their datastore
+causality differs. Every method receives its own TIME evaluation run. TS-RAG
+references the same prepared datastore and test rows but
 retains its independent extraction and inference modules. The unified report
 joins those independently evaluated branches. All point predictions pass
 through the TIME evaluator as deterministic median forecasts.
@@ -147,16 +175,5 @@ combine scientific configurations. The report manifest lists every consumed
 evaluation manifest. Finite counts are diagnostic and do not have to match for
 the report to be written.
 
-Runtime logs live below `logs/`. `sync_code_to_selena.sh`,
-`sync_results_to_dgx.sh`, and `publish_job.sh` handle the maintained cluster
-workflow without mixing Adaptime artifacts with another project.
-
-## Documentation maintenance
-
-Keep the architecture and experiment catalog aligned with executable package
-and launcher changes. Rebuild `latex/method_overview.pdf` whenever its TeX
-source changes. The TIME benchmark base comes from Qiao et al., *It's TIME:
-Towards the Next Generation of Time Series Forecasting Benchmarks* (ICML
-2026); see the
-[upstream repository](https://github.com/zqiao11/TIME) for data and citation
-details.
+`sync_code_to_selena.sh`, `sync_results_to_dgx.sh`, and `publish_job.sh` handle
+cluster operations without mixing artifacts across projects.

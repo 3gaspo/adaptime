@@ -14,6 +14,7 @@ import numpy as np
 
 from timebench.evaluation.adaptation_data import PreparedDataset
 from timebench.evaluation.timing import EvaluationTimer
+from timebench.pipeline.adaptime_cache import SharedWindowCache
 from timebench.pipeline.adaptime_extraction import AdaptimeForecaster
 
 
@@ -55,6 +56,8 @@ def extract_vanilla_test_forecasts(
     forecaster: AdaptimeForecaster,
     config: VanillaConfig,
     output_dir: str | Path,
+    *,
+    shared_cache: SharedWindowCache | None = None,
 ) -> Path:
     """Forecast all official test rows with as much past context as is available."""
 
@@ -77,6 +80,9 @@ def extract_vanilla_test_forecasts(
         "maximum_context_length": prepared.context_length,
         "context_policy": "all_available_history_capped_at_model_limit",
         "config": asdict(config),
+        "shared_cache_signature": (
+            None if shared_cache is None else shared_cache.signature
+        ),
     }
     signature = _canonical_hash(identity)
     root = Path(output_dir).expanduser().resolve()
@@ -113,13 +119,19 @@ def extract_vanilla_test_forecasts(
             batch = reader.read(
                 references[selected], context_length=int(context_length)
             )
-            timer = EvaluationTimer()
-            timer.start()
-            values = np.asarray(
-                forecaster.forecast(batch.context, retrieval_context=None),
-                dtype=np.float32,
-            )
-            forecast_seconds += timer.stop()
+            if shared_cache is None:
+                timer = EvaluationTimer()
+                timer.start()
+                values = np.asarray(
+                    forecaster.forecast(batch.context, retrieval_context=None),
+                    dtype=np.float32,
+                )
+                forecast_seconds += timer.stop()
+            else:
+                values, seconds = shared_cache.forecasts(
+                    references[selected], batch.context
+                )
+                forecast_seconds += seconds
             if values.shape != predictions[selected].shape:
                 raise ValueError(
                     f"vanilla forecaster returned {values.shape}, expected "

@@ -59,6 +59,11 @@ def parse_args() -> argparse.Namespace:
         help="Global balanced cap; keeps the most recent complete dates per variate",
     )
     parser.add_argument(
+        "--max-fitting-windows",
+        type=int,
+        help="Global balanced training cap; keeps the most recent strided dates per variate",
+    )
+    parser.add_argument(
         "--retrieval-period",
         type=int,
         help="Defaults to the cadence seasonality returned by GluonTS",
@@ -74,6 +79,16 @@ def parse_args() -> argparse.Namespace:
         nargs="+",
         choices=("univariate", "multivariate"),
         default=("univariate", "multivariate"),
+    )
+    parser.add_argument(
+        "--retrieval-scope",
+        choices=("all", "same_series", "other_series"),
+        default="all",
+    )
+    parser.add_argument(
+        "--fitting-window-scope",
+        choices=("all", "same_series"),
+        default="all",
     )
     parser.add_argument(
         "--output-root",
@@ -149,6 +164,9 @@ def main() -> None:
                     retrieval_period=period,
                     datastore_stride=period * args.datastore_stride_multiple,
                     max_datastore_windows=args.max_datastore_windows,
+                    max_fitting_windows=args.max_fitting_windows,
+                    datastore_scope=args.retrieval_scope,
+                    fitting_window_scope=args.fitting_window_scope,
                     datastore_prediction_length=max(
                         prediction_length, args.datastore_prediction_length
                     ),

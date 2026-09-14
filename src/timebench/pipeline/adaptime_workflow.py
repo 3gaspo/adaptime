@@ -15,6 +15,7 @@ from pandas.tseries.frequencies import to_offset
 
 from timebench.evaluation.adaptation import evaluate_point_predictions
 from timebench.evaluation.adaptation_data import (
+    PreparedDataset,
     PreparationConfig,
     QUERY_WINDOW_CONTRACT,
     adaptation_split_lengths,
@@ -38,10 +39,16 @@ from timebench.pipeline.adaptation_prediction import (
     PredictionConfig,
     predict_adaptation_family,
 )
+from timebench.pipeline.adaptime_cache import SharedWindowCache, shared_window_cache_root
 from timebench.pipeline.adaptime_extraction import (
     ExtractionConfig,
     extract_adaptation_eval_features,
     extract_adaptation_features,
+)
+from timebench.pipeline.adaptime_rolling import (
+    ROLLING_RIDGE_METHOD,
+    RollingRidgeConfig,
+    predict_rolling_ridge,
 )
 from timebench.pipeline.adaptime_training import RidgeTrainingConfig, fit_full_ridge
 from timebench.pipeline.adaptime_vanilla import (
@@ -69,7 +76,14 @@ from timebench.pipeline.tsrag_fallback import (
 from timebench.results.adaptation import build_adaptation_comparison
 
 
-METHODS = ("seasonal_naive", "vanilla", "ridge", "tsrag", "unified")
+METHODS = (
+    "seasonal_naive",
+    "vanilla",
+    "ridge",
+    ROLLING_RIDGE_METHOD,
+    "tsrag",
+    "unified",
+)
 STAGES = (
     "prepare",
     "vanilla",
@@ -94,6 +108,7 @@ class AdaptimeWorkflowConfig:
     retrieval_period: int | None = None
     datastore_stride_multiple: int = 1
     max_datastore_windows: int | None = None
+    max_fitting_windows: int | None = None
     representation: str = "instance"
     distance_metric: str = "euclidean"
     retrieval_scope: str = "all"
@@ -107,6 +122,15 @@ class AdaptimeWorkflowConfig:
     datastore_block_size: int = 4096
     arrow_cache_items: int = 2
     ridge_chunk_size: int = 1024
+    fitting_scopes: tuple[str, ...] = ("all", "same_series")
+    rolling_k: int = 15
+    rolling_alpha: float = 1.0
+    rolling_n_fitting_dates: int = 100
+    rolling_minimum_fitting_dates: int = 64
+    rolling_fitting_stride_multiple: int = 1
+    rolling_max_datastore_windows: int = 10_000
+    rolling_datastore_stride_multiple: int = 1
+    rolling_datastore_block_size: int = 512
     seed: int = 1
     model_path: Path | None = None
     weights_id: str | None = None
@@ -125,6 +149,15 @@ class AdaptimeWorkflowConfig:
             raise ValueError("adaptation_stride must be greater than one when supplied")
         if self.max_datastore_windows is not None and int(self.max_datastore_windows) <= 0:
             raise ValueError("max_datastore_windows must be positive when supplied")
+        if self.max_fitting_windows is not None and int(self.max_fitting_windows) <= 0:
+            raise ValueError("max_fitting_windows must be positive when supplied")
+        if method == ROLLING_RIDGE_METHOD:
+            for name, value in (
+                ("rolling_fitting_stride_multiple", self.rolling_fitting_stride_multiple),
+                ("rolling_datastore_stride_multiple", self.rolling_datastore_stride_multiple),
+            ):
+                if int(value) <= 0:
+                    raise ValueError(f"{name} must be positive")
         if method == "ridge":
             ExtractionConfig(
                 representation=self.representation,
@@ -150,6 +183,7 @@ class AdaptimeWorkflowConfig:
             alpha_values=self.alpha_values,
             chunk_size=self.ridge_chunk_size,
             seed=self.seed,
+            fitting_scopes=self.fitting_scopes,
         )
 
     @property
@@ -263,6 +297,13 @@ def workflow_tasks(
                             period * int(workflow.datastore_stride_multiple)
                         ),
                         max_datastore_windows=workflow.max_datastore_windows,
+                        max_fitting_windows=workflow.max_fitting_windows,
+                        datastore_scope=workflow.retrieval_scope,
+                        fitting_window_scope=(
+                            "all"
+                            if "all" in workflow.fitting_scopes
+                            else "same_series"
+                        ),
                         datastore_prediction_length=max(
                             horizon, TSRAG_NATIVE_HORIZON
                         ),
@@ -307,6 +348,27 @@ def _extraction_config(workflow: AdaptimeWorkflowConfig) -> ExtractionConfig:
     )
 
 
+def _rolling_config(
+    task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> RollingRidgeConfig:
+    period = int(task.preparation.retrieval_period)
+    return RollingRidgeConfig(
+        k=workflow.rolling_k,
+        alpha=workflow.rolling_alpha,
+        n_fitting_dates=workflow.rolling_n_fitting_dates,
+        minimum_fitting_dates=workflow.rolling_minimum_fitting_dates,
+        fitting_stride=period * int(workflow.rolling_fitting_stride_multiple),
+        max_datastore_windows=workflow.rolling_max_datastore_windows,
+        datastore_stride=period * int(workflow.rolling_datastore_stride_multiple),
+        representation=workflow.representation,
+        distance_metric=workflow.distance_metric,
+        minimum_overlap_fraction=workflow.minimum_overlap_fraction,
+        model_batch_size=workflow.model_batch_size,
+        datastore_block_size=workflow.rolling_datastore_block_size,
+        arrow_cache_items=workflow.arrow_cache_items,
+    )
+
+
 def _stage_root(root: Path, stage: str, method: str, task: AdaptimeTask) -> Path:
     if stage == "vanilla":
         return root / stage / task.preparation.target_mode / task.dataset / task.term
@@ -338,7 +400,13 @@ def _spec(
             data_config,
             {
                 "splits": ["datastore", "adaptation_train", "adaptation_validation", "test"],
-                "consumers": ["full_ridge_shared", "tsrag"],
+                "consumers": [
+                    "full_ridge_shared",
+                    "full_ridge_per_variate",
+                    "bayes_past_targets_prediction",
+                    ROLLING_RIDGE_METHOD,
+                    "tsrag",
+                ],
             },
         )
     if stage == "vanilla":
@@ -365,6 +433,46 @@ def _spec(
             {"data_config": data_config},
             (
                 {"phase": "seasonal_naive_prediction"}
+                if stage == "predictions"
+                else {
+                    "phase": "evaluation",
+                    "quantile_levels": [0.5],
+                    "metrics": [
+                        "MSE",
+                        "MAE",
+                        "RMSE",
+                        "MAPE",
+                        "sMAPE",
+                        "MASE",
+                        "ND",
+                        "CRPS",
+                    ],
+                }
+            ),
+        )
+    if method == ROLLING_RIDGE_METHOD and stage in {"predictions", "evaluations"}:
+        rolling_config = asdict(_rolling_config(task, workflow))
+        prediction_science = {
+            "method": ROLLING_RIDGE_METHOD,
+            "backbone": workflow.model,
+            "weights_id": workflow.weights_id,
+            "rolling": rolling_config,
+        }
+        return (
+            f"adaptime_{stage[:-1]}",
+            _task_identity(task, ROLLING_RIDGE_METHOD),
+            (
+                prediction_science
+                if stage == "predictions"
+                else {"method": ROLLING_RIDGE_METHOD, "forecast_type": "point"}
+            ),
+            {
+                "data_config": data_config,
+                "prediction_config": prediction_science,
+                "vanilla_context_policy": "all_available_history_capped_at_model_limit",
+            },
+            (
+                {"phase": "causal_rolling_fit_and_inference", "forecast_type": "point"}
                 if stage == "predictions"
                 else {
                     "phase": "evaluation",
@@ -425,9 +533,11 @@ def _spec(
                 "selection_methods": [
                     "vanilla",
                     "bayes_covariate_prediction",
+                    "bayes_past_targets_prediction",
                     "cov_ridge_shared",
                     "y_ridge_shared",
                     "full_ridge_shared",
+                    "full_ridge_per_variate",
                 ],
             },
             {
@@ -666,6 +776,12 @@ def _run_vanilla(
         weights_id=workflow.weights_id,
         device=workflow.device,
     )
+    prepared_dataset = PreparedDataset(prepared)
+    shared_cache = SharedWindowCache(
+        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
+        prepared=prepared_dataset,
+        forecaster=forecaster,
+    )
     with run:
         manifest = extract_vanilla_test_forecasts(
             prepared,
@@ -675,6 +791,7 @@ def _run_vanilla(
                 arrow_cache_items=workflow.arrow_cache_items,
             ),
             run.run_dir / "vanilla",
+            shared_cache=shared_cache,
         )
         run.complete(
             [
@@ -744,12 +861,19 @@ def _run_ridge_extraction(
         weights_id=workflow.weights_id,
         device=workflow.device,
     )
+    prepared_dataset = PreparedDataset(prepared)
+    shared_cache = SharedWindowCache(
+        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
+        prepared=prepared_dataset,
+        forecaster=forecaster,
+    )
     with run:
         manifest = extract_adaptation_features(
             prepared,
             forecaster,
             _extraction_config(workflow),
             run.run_dir / "extraction",
+            shared_cache=shared_cache,
         )
         run.complete(["extraction/manifest.json"])
     return manifest
@@ -842,6 +966,7 @@ def _run_fit(
             "model/model_manifest.json",
             "model/selection.json",
             "model/bayes_mixture.json",
+            "model/bayes_past_targets_mixture.json",
         ]
         coefficient_files = dict(
             json.loads(manifest.read_text(encoding="utf-8"))["files"].get(
@@ -849,6 +974,10 @@ def _run_fit(
             )
         )
         required.extend(f"model/{relative}" for relative in coefficient_files.values())
+        model_files = dict(json.loads(manifest.read_text(encoding="utf-8"))["files"])
+        for key in ("per_variate_series", "per_variate_coefficients"):
+            if key in model_files:
+                required.append(f"model/{model_files[key]}")
         run.complete(required)
     return manifest
 
@@ -892,6 +1021,12 @@ def _run_ridge_eval_extraction(
         weights_id=workflow.weights_id,
         device=workflow.device,
     )
+    prepared_dataset = PreparedDataset(prepared)
+    shared_cache = SharedWindowCache(
+        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
+        prepared=prepared_dataset,
+        forecaster=forecaster,
+    )
     with run:
         manifest = extract_adaptation_eval_features(
             prepared,
@@ -901,6 +1036,7 @@ def _run_ridge_eval_extraction(
             forecaster,
             _extraction_config(workflow),
             run.run_dir / "extraction",
+            shared_cache=shared_cache,
         )
         run.complete(["extraction/manifest.json"])
     return manifest
@@ -962,6 +1098,62 @@ def _run_ridge_prediction(
                 ),
                 "prediction/rag_eligible.npy",
                 "prediction/fallback_reason.npy",
+            ]
+        )
+    return manifest
+
+
+def _run_rolling_ridge_prediction(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> Path:
+    prepared = _data_manifest(artifact_root, task, workflow)
+    vanilla = _vanilla_manifest(artifact_root, task, workflow)
+    config = _rolling_config(task, workflow)
+    run = _allocation(
+        artifact_root,
+        task,
+        workflow,
+        "predictions",
+        ROLLING_RIDGE_METHOD,
+        runtime_config={
+            "device": workflow.device,
+            "model_path": None if workflow.model_path is None else str(workflow.model_path),
+        },
+        provenance={
+            "data_manifest": str(prepared),
+            "vanilla_manifest": str(vanilla),
+        },
+    )
+    manifest = run.run_dir / "prediction" / "prediction_manifest.json"
+    if not run.should_run:
+        return manifest
+    forecaster = load_adaptime_forecaster(
+        workflow.model,
+        horizon=task.preparation.prediction_length,
+        period=task.preparation.retrieval_period,
+        model_path=workflow.model_path,
+        weights_id=workflow.weights_id,
+        device=workflow.device,
+    )
+    prepared_dataset = PreparedDataset(prepared)
+    shared_cache = SharedWindowCache(
+        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
+        prepared=prepared_dataset,
+        forecaster=forecaster,
+    )
+    with run:
+        manifest = predict_rolling_ridge(
+            prepared,
+            vanilla,
+            shared_cache,
+            config,
+            run.run_dir / "prediction",
+        )
+        files = dict(json.loads(manifest.read_text(encoding="utf-8"))["files"])
+        run.complete(
+            [
+                "prediction/prediction_manifest.json",
+                *(f"prediction/{relative}" for relative in files.values()),
             ]
         )
     return manifest
@@ -1094,6 +1286,16 @@ def run_adaptation_stage(
         "all",
     }:
         raise ValueError("Seasonal Naive supports prepare, predict, evaluate, pipeline, and all")
+    if method == ROLLING_RIDGE_METHOD and stage not in {
+        "prepare",
+        "predict",
+        "evaluate",
+        "pipeline",
+        "all",
+    }:
+        raise ValueError(
+            "rolling horizon Ridge supports prepare, predict, evaluate, pipeline, and all"
+        )
     if method == "unified" and stage != "report":
         raise ValueError("the unified method is only a five-method report")
     if stage == "vanilla" and method != "vanilla":
@@ -1173,12 +1375,18 @@ def run_adaptation_stage(
         "seasonal_naive": ("predict", "evaluate"),
         "vanilla": ("vanilla",),
         "ridge": ("extract", "fit", "extract_eval", "predict", "evaluate"),
+        ROLLING_RIDGE_METHOD: ("predict", "evaluate"),
         "tsrag": ("extract", "predict", "evaluate"),
     }
     all_stages = {
         "seasonal_naive": ("prepare", *pipeline_stages["seasonal_naive"]),
         "vanilla": ("prepare", "vanilla"),
         "ridge": ("prepare", "vanilla", *pipeline_stages["ridge"]),
+        ROLLING_RIDGE_METHOD: (
+            "prepare",
+            "vanilla",
+            *pipeline_stages[ROLLING_RIDGE_METHOD],
+        ),
         "tsrag": ("prepare", "vanilla", *pipeline_stages["tsrag"]),
     }
     stages = {
@@ -1234,6 +1442,10 @@ def run_adaptation_stage(
                 result = _run_ridge_eval_extraction(artifact_root, task, workflow)
             elif current == "predict" and method == "ridge":
                 result = _run_ridge_prediction(artifact_root, task, workflow)
+            elif current == "predict" and method == ROLLING_RIDGE_METHOD:
+                result = _run_rolling_ridge_prediction(
+                    artifact_root, task, workflow
+                )
             elif current == "predict":
                 assert retriever is not None and loaded is not None
                 result = _run_tsrag_prediction(

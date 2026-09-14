@@ -52,6 +52,31 @@ def _point_batch(values: Any, *, channels: int, horizon: int) -> np.ndarray:
     return np.stack(normalized)
 
 
+def _align_retrieval_sequence(
+    retrieved: np.ndarray,
+    *,
+    context_length: int,
+    horizon: int,
+) -> np.ndarray:
+    """Align a fixed retrieval lookback to a possibly longer model context."""
+
+    values = np.asarray(retrieved, dtype=np.float32)
+    if values.shape[-1] <= int(horizon):
+        raise ValueError("retrieval context must include a non-empty past window")
+    past = values[..., :-int(horizon)]
+    future = values[..., -int(horizon) :]
+    if past.shape[-1] > int(context_length):
+        past = past[..., -int(context_length) :]
+    elif past.shape[-1] < int(context_length):
+        pad = int(context_length) - past.shape[-1]
+        past = np.pad(
+            past,
+            [(0, 0)] * (past.ndim - 1) + [(pad, 0)],
+            constant_values=np.nan,
+        )
+    return np.concatenate((past, future), axis=-1)
+
+
 class _ChronosAdapter:
     def __init__(
         self,
@@ -69,6 +94,7 @@ class _ChronosAdapter:
         self.weights_id = weights_id
         self.supports_multivariate = supports_multivariate
         self.supports_retrieval_context = supports_retrieval_context
+        self.supports_past_covariates = model_name == "chronos2"
 
     def represent(self, context: np.ndarray) -> np.ndarray:
         raise ValueError(f"{self.model_name} does not expose a stable retrieval representation")
@@ -78,23 +104,45 @@ class _ChronosAdapter:
         context: np.ndarray,
         *,
         retrieval_context: np.ndarray | None = None,
+        past_covariates: np.ndarray | None = None,
     ) -> np.ndarray:
         import torch
 
         context = np.asarray(context, dtype=np.float32)
         if retrieval_context is not None and not self.supports_retrieval_context:
             raise ValueError(f"{self.model_name} does not consume retrieval context")
+        if past_covariates is not None and not self.supports_past_covariates:
+            raise ValueError(f"{self.model_name} does not consume past covariates")
+        if retrieval_context is not None and past_covariates is not None:
+            raise ValueError("retrieval context and past covariates are mutually exclusive")
         inputs: list[Any] = []
         for row, target in enumerate(context):
             target_tensor = torch.from_numpy(
                 target if self.supports_multivariate else target[0]
             )
-            if retrieval_context is None:
+            if retrieval_context is None and past_covariates is None:
                 inputs.append(target_tensor)
                 continue
+            if past_covariates is not None:
+                covariates = np.asarray(past_covariates[row], dtype=np.float32)
+                inputs.append(
+                    {
+                        "target": target_tensor,
+                        "past_covariates": {
+                            f"past_target_{index}": torch.from_numpy(values)
+                            for index, values in enumerate(covariates)
+                        },
+                    }
+                )
+                continue
             retrieved = np.asarray(retrieval_context[row], dtype=np.float32)
-            flattened = retrieved.reshape(-1, retrieved.shape[-1])
             lookback = target.shape[-1]
+            aligned = _align_retrieval_sequence(
+                retrieved,
+                context_length=lookback,
+                horizon=self.horizon,
+            )
+            flattened = aligned.reshape(-1, aligned.shape[-1])
             inputs.append(
                 {
                     "target": target_tensor,
@@ -131,6 +179,7 @@ class _TSICLAdapter:
     model_name = "ts_icl"
     supports_multivariate = False
     supports_retrieval_context = True
+    supports_past_covariates = False
 
     def __init__(self, model: Any, *, horizon: int, device: str, weights_id: str) -> None:
         self.model = model
@@ -146,17 +195,25 @@ class _TSICLAdapter:
         context: np.ndarray,
         *,
         retrieval_context: np.ndarray | None = None,
+        past_covariates: np.ndarray | None = None,
     ) -> np.ndarray:
         import torch
 
         context = np.asarray(context, dtype=np.float32)
         if context.shape[1] != 1:
             raise ValueError("ts_icl extraction requires univariate prepared windows")
+        if past_covariates is not None:
+            raise ValueError("ts_icl does not consume past covariates")
         inputs = torch.from_numpy(np.moveaxis(context, 1, 2))
         kwargs: dict[str, Any] = {}
         if retrieval_context is not None:
             retrieved = np.asarray(retrieval_context, dtype=np.float32)
             flattened = retrieved.reshape(retrieved.shape[0], -1, retrieved.shape[-1])
+            flattened = _align_retrieval_sequence(
+                flattened,
+                context_length=context.shape[-1],
+                horizon=self.horizon,
+            )
             kwargs.update(
                 {
                     "covars": torch.from_numpy(np.moveaxis(flattened, 1, 2)),
@@ -187,6 +244,7 @@ class _SeasonalNaiveAdapter:
     weights_id = "none"
     supports_multivariate = True
     supports_retrieval_context = False
+    supports_past_covariates = False
 
     def __init__(self, *, horizon: int, period: int) -> None:
         self.horizon = int(horizon)
@@ -200,9 +258,10 @@ class _SeasonalNaiveAdapter:
         context: np.ndarray,
         *,
         retrieval_context: np.ndarray | None = None,
+        past_covariates: np.ndarray | None = None,
     ) -> np.ndarray:
-        if retrieval_context is not None:
-            raise ValueError("seasonal_naive does not consume retrieval context")
+        if retrieval_context is not None or past_covariates is not None:
+            raise ValueError("seasonal_naive does not consume covariates")
         return seasonal_naive_point_forecast(
             np.asarray(context, dtype=np.float32),
             self.horizon,
