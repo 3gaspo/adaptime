@@ -1,13 +1,5 @@
 # Experiment catalog
 
-## Inherited controls
-
-`scripts/submit_foundation_models.sh` evaluates `chronos_bolt`, `chronos2`,
-`ts_icl`, and `seasonal_naive` on the official target-only TIME tasks.
-`scripts/channels_comparison.sh` evaluates Chronos-2 with multivariate,
-univariate, and past-target-covariate inputs. These are controls rather than
-Adaptime results.
-
 ## Adaptime family
 
 The main experiment separates the value of retrieval covariates, a Bayesian

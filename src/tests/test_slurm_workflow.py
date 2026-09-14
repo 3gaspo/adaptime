@@ -343,28 +343,6 @@ def main() -> None:
         in runtime
     )
 
-    submit = (PROJECT_ROOT / "scripts/submit_foundation_models.sh").read_text(
-        encoding="utf-8"
-    )
-    assert "dgx|selena" in submit
-    assert 'for model in "${FOUNDATION_MODELS[@]}"' in submit
-    assert submit.index('seasonal_job="$(') < submit.index(
-        'for model in "${FOUNDATION_MODELS[@]}"'
-    )
-    assert '[ "$model" != seasonal_naive ] || continue' in submit
-    assert '--dependency="afterok:$seasonal_job"' in submit
-    assert 'dependency="$(IFS=:; echo "${model_jobs[*]}")"' in submit
-    assert '--dependency="afterany:$dependency"' in submit
-    assert 'TIME_LAUNCH_ID=$launch_id' in submit
-
-    channels_submit = (
-        PROJECT_ROOT / "scripts/channels_comparison.sh"
-    ).read_text(encoding="utf-8")
-    assert "dgx|selena" in channels_submit
-    assert "comparisons=(multivariate univariate covariate)" in channels_submit
-    assert 'TIME_LAUNCH_ID=$launch_id' in channels_submit
-    assert "chronos2_comparison" in channels_submit
-
     code_sync = (PROJECT_ROOT / "sync_code_to_selena.sh").read_text(encoding="utf-8")
     result_sync = (PROJECT_ROOT / "sync_results_to_dgx.sh").read_text(
         encoding="utf-8"

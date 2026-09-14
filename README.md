@@ -131,12 +131,10 @@ least 64. Its causal cross-variate datastore is capped at 10,000 windows with
 one common size across adapted query and fitting dates. Insufficient fitting
 or retrieval support falls back to vanilla for that query.
 
-The inherited foundation benchmark is launched through
-`scripts/submit_foundation_models.sh`; channel controls use
-`scripts/channels_comparison.sh`; dataset diagnostics use
+Foundation-model grids and channel-comparison experiments belong to the
+independent Evaluating TSFMs project. Adaptime retains only the common model
+adapters needed by its adaptation methods. Dataset diagnostics use
 `scripts/dataset_diagnostics.sh`.
-The foundation launcher runs Seasonal Naive first, releases the three learned
-models after that baseline succeeds, and summarizes all four after they end.
 
 Independent inference latency uses one fresh process per random official test
 example and method, so no test-time cache is shared:
