@@ -63,6 +63,9 @@ finite-coverage repair where that behavior belongs in the common layer.
   aligned package and license metadata with the Apache-2.0 project contract.
 - Corrected dataset-format, feature-output, evaluation-interface, and
   prediction-archive documentation.
+- Kept feature/result joining reusable while leaving executable performance
+  plots to experiment repositories, and made the source-only maintenance check
+  valid in fresh clones where the empty `src/slurm/` directory is absent.
 - Added dependency-light syntax, configuration, split, covariate, metric, and
   run-lifecycle contract checks.
 

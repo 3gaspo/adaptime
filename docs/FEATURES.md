@@ -77,20 +77,7 @@ only binary-valued output: it is `1` when the ADF test rejects a unit root at
 the hard-coded 0.05 threshold and `0` otherwise; the inherited implementation
 falls back to `1` if the test fails.
 
-Dataset-level Seasonal-Naive-scaled MASE can be plotted against explicit
-features or the five with
-the largest mean absolute within-model Spearman correlation:
-
-```bash
-python scripts/plot_feature_performance.py \
-  --features-root "$TIME_METADATA/stl_features" \
-  --results-dir outputs/foundation_models/tasks \
-  --top 5
-```
-
-The SVG is accompanied by the joined per-dataset data and correlation tables.
-Because Seasonal Naive is the scaling reference, its scaled MASE is identically
-one wherever defined. Its within-model correlation is therefore undefined and
-is retained as NaN in the table, but excluded from the mean-absolute
-correlation used to select features. Any other constant model outcome is
-handled the same way.
+The reusable `timebench.feature.performance` module joins dataset features to
+manifest-based result summaries. A concrete plotting command belongs to an
+experiment repository that implements and owns those results; this source-only
+repository exposes no feature-performance plotting command.

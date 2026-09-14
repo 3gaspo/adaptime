@@ -117,7 +117,8 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
         )["project"]["dependencies"]
         self.assertFalse(any("tirex" in dependency.lower() for dependency in dependencies))
         self.assertFalse((PROJECT_ROOT / "slurm").exists())
-        self.assertFalse(any((PROJECT_ROOT / "src/slurm").iterdir()))
+        slurm_source = PROJECT_ROOT / "src/slurm"
+        self.assertTrue(not slurm_source.exists() or not any(slurm_source.iterdir()))
 
 
 if __name__ == "__main__":
