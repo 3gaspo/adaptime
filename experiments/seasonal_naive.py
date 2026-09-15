@@ -48,6 +48,7 @@ from dotenv import load_dotenv
 from gluonts.time_feature import get_seasonality
 
 from timebench.evaluation import save_window_predictions
+from timebench.evaluation.grid import EVALUATION_GRID_DEFINITION, EVALUATION_GRID_FILE
 from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.covariates import COVARIATE_MODES, validate_covariate_mode
 from timebench.evaluation.data import (
@@ -172,6 +173,7 @@ def run_seasonal_naive_experiment(
                 "val_length": val_length,
                 "windows": dataset.windows,
                 "seasonality": season_length,
+                "evaluation_grid": EVALUATION_GRID_DEFINITION,
             },
             runtime_config={"device": "cpu"},
             experiment_config={
@@ -241,9 +243,16 @@ def run_seasonal_naive_experiment(
                 model_hyperparams=model_hyperparams,
                 inference_seconds=inference_seconds,
                 task_output_dir=str(run.run_dir),
+                create_evaluation_grid=True,
             )
             run.complete(
-                ["predictions.npz", "metrics.npz", "config.json", "metrics_summary.json"]
+                [
+                    "predictions.npz",
+                    "metrics.npz",
+                    "config.json",
+                    "metrics_summary.json",
+                    EVALUATION_GRID_FILE,
+                ]
             )
         print(f"  Completed: {metadata['num_series']} series x {metadata['num_windows']} windows")
         print(f"  Output: {run.run_dir}")

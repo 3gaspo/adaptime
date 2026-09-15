@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import json
 import os
 import re
@@ -40,6 +41,21 @@ def _write_manifest(path: Path, manifest: Mapping[str, Any]) -> None:
         encoding="utf-8",
     )
     temporary.replace(path)
+
+
+def _write_interrupted_manifest(path: Path, manifest: Mapping[str, Any]) -> None:
+    """Retain task recovery state when quota prevents an atomic replacement."""
+
+    try:
+        _write_manifest(path, manifest)
+    except OSError as error:
+        if error.errno not in {errno.EDQUOT, errno.ENOSPC}:
+            raise
+        path.with_suffix(path.suffix + ".tmp").unlink(missing_ok=True)
+        path.write_text(
+            json.dumps(dict(manifest), sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
 
 def _run_index(run_dir: Path) -> int:
@@ -236,7 +252,7 @@ def interrupt_launch(root: str | Path, launch_id: str) -> list[Path]:
                 "type": "InterruptedLaunch",
                 "message": f"launch {launch_id} ended before task completion",
             }
-            _write_manifest(manifest_path, manifest)
+            _write_interrupted_manifest(manifest_path, manifest)
             changed.append(manifest_path.parent)
     return changed
 

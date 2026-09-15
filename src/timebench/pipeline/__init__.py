@@ -16,6 +16,7 @@ from .runs import (
     set_selected_run,
     select_completed_runs,
 )
+from .evaluation_grid import resolve_shared_evaluation_grid
 
 __all__ = [
     "CONFIG_POLICIES",
@@ -30,6 +31,7 @@ __all__ = [
     "load_manifest",
     "parse_config_filters",
     "resolve_target_mode",
+    "resolve_shared_evaluation_grid",
     "set_selected_run",
     "select_completed_runs",
 ]

@@ -63,7 +63,7 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
         self.assertIn("math.floor(self._test_length / self.prediction_length)", source)
         self.assertIn("math.floor(self._val_length / self.prediction_length)", source)
 
-    def test_foundation_adapters_are_offline_and_fail_fast(self) -> None:
+    def test_foundation_runners_are_offline_and_fail_fast(self) -> None:
         experiments = {
             "chronos_bolt.py": ("local_files_only=True", "chronos-bolt-{model_size}"),
             "chronos2.py": (
@@ -80,6 +80,43 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
             self.assertNotIn("except Exception", source, name)
             for text in required:
                 self.assertIn(text, source, name)
+
+        runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("export HF_HUB_OFFLINE=1", runtime)
+        self.assertIn("export HF_DATASETS_OFFLINE=1", runtime)
+        self.assertIn("export TRANSFORMERS_OFFLINE=1", runtime)
+
+    def test_reusable_cluster_and_seasonal_contract(self) -> None:
+        producer = (PROJECT_ROOT / "scripts/submit_seasonal_naive.sh").read_text(
+            encoding="utf-8"
+        )
+        runtime = (PROJECT_ROOT / "src/slurm/runtime_paths.sh").read_text(
+            encoding="utf-8"
+        )
+        registry = (
+            PROJECT_ROOT / "src/slurm/foundation_model_runners.sh"
+        ).read_text(encoding="utf-8")
+        summary = (
+            PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"
+        ).read_text(encoding="utf-8")
+        grid_resolver = (
+            PROJECT_ROOT / "src/timebench/pipeline/evaluation_grid.py"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("dgx|selena [shared|project]", producer)
+        self.assertIn("OUTPUTS_ROOT=$TIME_SEASONAL_ROOT", producer)
+        self.assertIn('TIME_SEASONAL_SCOPE="${TIME_SEASONAL_SCOPE:-shared}"', runtime)
+        self.assertIn("default_seasonal_root=\"$TIME_OUTPUTS\"", runtime)
+        self.assertIn("timesfm3", registry)
+        self.assertIn("foundation_model_schedule.sh", registry)
+        self.assertIn(
+            '--seasonal-naive-results-dir "$TIME_SEASONAL_TASKS_ROOT"', summary
+        )
+        self.assertIn("Seasonal Naive task artifacts", grid_resolver)
+        self.assertTrue((PROJECT_ROOT / "scripts/dataset_diagnostics.sh").is_file())
+        self.assertTrue((PROJECT_ROOT / "sync_results_to_dgx.sh").is_file())
 
     def test_seasonal_naive_uses_direct_deterministic_quantiles(self) -> None:
         experiment = (PROJECT_ROOT / "experiments/seasonal_naive.py").read_text(
@@ -116,9 +153,10 @@ class ImprovedMaintenanceContractTest(unittest.TestCase):
             (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
         )["project"]["dependencies"]
         self.assertFalse(any("tirex" in dependency.lower() for dependency in dependencies))
-        self.assertFalse((PROJECT_ROOT / "slurm").exists())
-        slurm_source = PROJECT_ROOT / "src/slurm"
-        self.assertTrue(not slurm_source.exists() or not any(slurm_source.iterdir()))
+        self.assertTrue(
+            (PROJECT_ROOT / "slurm/dgx/foundation_models/seasonal_naive.slurm").is_file()
+        )
+        self.assertTrue((PROJECT_ROOT / "src/slurm/run_foundation_model.sh").is_file())
 
 
 if __name__ == "__main__":

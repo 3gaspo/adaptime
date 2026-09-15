@@ -98,6 +98,8 @@ def compute_per_window_metrics_from_quantiles(
     context: np.ndarray,
     seasonality: int = 1,
     quantile_levels: list[float] = None,
+    target_mask: np.ndarray | None = None,
+    evaluation_mask: np.ndarray | None = None,
 ) -> dict[str, np.ndarray]:
     """
     Compute evaluation metrics for each prediction window from quantile forecasts.
@@ -137,21 +139,43 @@ def compute_per_window_metrics_from_quantiles(
         raise ValueError("quantile_levels must include 0.5 for median-based metrics")
     median_idx = quantile_levels.index(0.5)
 
-    # Initialize metric arrays: (num_series, num_windows, num_variates)
-    mse = np.zeros((num_series, num_windows, num_variates))
-    mae = np.zeros((num_series, num_windows, num_variates))
-    rmse = np.zeros((num_series, num_windows, num_variates))
-    mape = np.zeros((num_series, num_windows, num_variates))
-    smape = np.zeros((num_series, num_windows, num_variates))
-    mase = np.zeros((num_series, num_windows, num_variates))
-    nd = np.zeros((num_series, num_windows, num_variates))
+    target_mask = (
+        np.isfinite(ground_truth)
+        if target_mask is None
+        else np.asarray(target_mask, dtype=bool)
+    )
+    if target_mask.shape != ground_truth.shape:
+        raise ValueError("target_mask must have the same shape as ground_truth")
+    if np.any(target_mask & ~np.isfinite(ground_truth)):
+        raise ValueError("target_mask includes non-finite ground-truth values")
+    metric_shape = (num_series, num_windows, num_variates)
+    evaluation_mask = (
+        target_mask.any(axis=-1)
+        if evaluation_mask is None
+        else np.asarray(evaluation_mask, dtype=bool)
+    )
+    if evaluation_mask.shape != metric_shape:
+        raise ValueError("evaluation_mask has the wrong series/window/variate shape")
+    if np.any(evaluation_mask & ~target_mask.any(axis=-1)):
+        raise ValueError("evaluation_mask includes cells without finite ground truth")
+
+    # Cells outside the shared grid remain absent for every method and metric.
+    mse = np.full(metric_shape, np.nan)
+    mae = np.full(metric_shape, np.nan)
+    rmse = np.full(metric_shape, np.nan)
+    mape = np.full(metric_shape, np.nan)
+    smape = np.full(metric_shape, np.nan)
+    mase = np.full(metric_shape, np.nan)
+    nd = np.full(metric_shape, np.nan)
 
     # CRPS (Continuous Ranked Probability Score) - using weighted quantile loss
-    crps = np.zeros((num_series, num_windows, num_variates))
+    crps = np.full(metric_shape, np.nan)
 
     for s in range(num_series):
         for w in range(num_windows):
             for v in range(num_variates):
+                if not evaluation_mask[s, w, v]:
+                    continue
                 q_preds = predictions_quantiles[s, w, :, v]  # (num_quantiles, pred_len)
                 gt = ground_truth[s, w, v]  # (pred_len,)
                 ctx = context[s, w, v]  # (max_ctx_len,)
@@ -159,19 +183,19 @@ def compute_per_window_metrics_from_quantiles(
                 # Compute median (0.5 quantile) forecast - used for most metrics
                 median_pred = q_preds[median_idx]  # (pred_len,)
 
-                # Create valid mask to handle potential NaN padding in ground truth
-                valid_mask = np.isfinite(gt)
-                if not np.any(valid_mask):
-                    # No valid timesteps - set all metrics to NaN
-                    mse[s, w, v] = mae[s, w, v] = rmse[s, w, v] = np.nan
-                    mape[s, w, v] = smape[s, w, v] = mase[s, w, v] = np.nan
-                    nd[s, w, v] = crps[s, w, v] = np.nan
-                    continue
+                valid_mask = target_mask[s, w, v]
 
                 # Filter to valid timesteps only
-                gt = gt[valid_mask]
-                median_pred = median_pred[valid_mask]
-                q_preds = q_preds[:, valid_mask]  # (num_quantiles, valid_len)
+                gt = np.asarray(gt[valid_mask], dtype=np.float64)
+                median_pred = np.asarray(median_pred[valid_mask], dtype=np.float64)
+                q_preds = np.asarray(
+                    q_preds[:, valid_mask], dtype=np.float64
+                )  # (num_quantiles, valid_len)
+                if not np.isfinite(q_preds).all():
+                    raise ValueError(
+                        "non-finite forecast on shared evaluation grid at "
+                        f"series={s}, window={w}, variate={v}"
+                    )
 
                 # Compute error using median forecast
                 error = gt - median_pred
@@ -187,22 +211,21 @@ def compute_per_window_metrics_from_quantiles(
                 rmse[s, w, v] = np.sqrt(mse[s, w, v])
 
                 # MAPE (using median forecast, returns fraction not percentage)
-                with np.errstate(divide="ignore", invalid="ignore"):
-                    mape_vals = abs_error / np.abs(gt)
-                    mape_vals = np.where(np.isfinite(mape_vals), mape_vals, np.nan)
-                    finite_mape = mape_vals[np.isfinite(mape_vals)]
-                    mape[s, w, v] = (
-                        np.mean(finite_mape) if finite_mape.size else np.nan
+                nonzero_target = np.abs(gt) > 0
+                if np.any(nonzero_target):
+                    mape[s, w, v] = np.mean(
+                        abs_error[nonzero_target] / np.abs(gt[nonzero_target])
                     )
 
                 # sMAPE (using median forecast, range [0, 2])
-                with np.errstate(divide="ignore", invalid="ignore"):
-                    smape_vals = 2 * abs_error / (np.abs(gt) + np.abs(median_pred))
-                    smape_vals = np.where(np.isfinite(smape_vals), smape_vals, np.nan)
-                    finite_smape = smape_vals[np.isfinite(smape_vals)]
-                    smape[s, w, v] = (
-                        np.mean(finite_smape) if finite_smape.size else np.nan
-                    )
+                smape_denominator = np.abs(gt) + np.abs(median_pred)
+                smape_vals = np.divide(
+                    2 * abs_error,
+                    smape_denominator,
+                    out=np.zeros_like(abs_error),
+                    where=smape_denominator > 0,
+                )
+                smape[s, w, v] = np.mean(smape_vals)
 
                 # MASE (Mean Absolute Scaled Error, using median forecast)
                 seasonal_error = seasonal_naive_scale(ctx, seasonality)

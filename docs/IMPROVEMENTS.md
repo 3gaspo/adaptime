@@ -18,6 +18,13 @@ finite-coverage repair where that behavior belongs in the common layer.
 - Added strict optional and required cross-experiment compact-result reuse.
 - Added compact `metrics_summary.json` artifacts with finite and total metric
   counts while retaining raw per-window metrics separately.
+- Added reusable DGX/Selena runtime fronts, project-scoped artifact clearing,
+  code/result synchronization, and publication helpers. Improved TIME owns
+  their source but remains a non-executing parent with no cluster state.
+- Made interruption recovery quota-resilient by marking task manifests before
+  attempting the workflow-status rewrite, falling back to a direct manifest
+  write on quota/full-filesystem errors, and honoring configured artifact roots
+  when clearing Selena outputs.
 - Added accelerator-synchronized inference timing that excludes model loading,
   dataset construction, metric computation, and result saving.
 
@@ -56,6 +63,11 @@ finite-coverage repair where that behavior belongs in the common layer.
   adjacent-value transitions for constant-window detection.
 - Repaired `seasonal_corr` handling and its quadratic pair enumeration while
   preserving variates for which the optional statistic is undefined.
+- Added a Seasonal-defined evaluation-grid contract shared by every model,
+  strict finite-support enforcement, reusable shared or project-owned Seasonal
+  Naive submission, and dataset-diagnostic cluster execution.
+- Added reusable foundation summary, local leaderboard, and
+  feature-performance reporting commands with external Seasonal-root support.
 
 ## Packaging and documentation
 
@@ -63,16 +75,17 @@ finite-coverage repair where that behavior belongs in the common layer.
   aligned package and license metadata with the Apache-2.0 project contract.
 - Corrected dataset-format, feature-output, evaluation-interface, and
   prediction-archive documentation.
-- Kept feature/result joining reusable while leaving executable performance
-  plots to experiment repositories, and made the source-only maintenance check
-  valid in fresh clones where the empty `src/slurm/` directory is absent.
+- Kept feature/result joining and executable performance plots reusable, and
+  made experiment model schedules override the complete parent capability
+  registry without modifying shared execution code.
 - Added dependency-light syntax, configuration, split, covariate, metric, and
   run-lifecycle contract checks.
 
 ## Deliberate downstream ownership
 
-Foundation-model submission grids, Slurm files, cluster synchronization,
-publication helpers, status commands, aggregate tables, feature plots, result
-documents, and all log/output payloads were deliberately moved to
-`evaluating_tsfms`. Improved TIME owns the reusable implementations they call,
-not their scientific execution or evidence.
+Improved TIME owns generic foundation execution, Seasonal Naive, diagnostics,
+evaluation grids, reporting, Slurm runtime, synchronization, publication, and
+status implementations. Downstream repositories own their active scientific
+schedules, comparison-specific launchers and utilities, scheduler resources,
+artifact selections, result documents, conclusions, and all log/output
+payloads. Improved TIME never executes or records those experiments itself.

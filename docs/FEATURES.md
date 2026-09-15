@@ -78,6 +78,7 @@ the hard-coded 0.05 threshold and `0` otherwise; the inherited implementation
 falls back to `1` if the test fails.
 
 The reusable `timebench.feature.performance` module joins dataset features to
-manifest-based result summaries. A concrete plotting command belongs to an
-experiment repository that implements and owns those results; this source-only
-repository exposes no feature-performance plotting command.
+manifest-based result summaries, and `scripts/plot_feature_performance.py`
+provides the generic plotting command. An experiment repository still owns the
+selected models, features, output layout, and conclusions; this source-only
+repository produces no evidence itself.
