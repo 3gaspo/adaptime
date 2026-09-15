@@ -1,0 +1,49 @@
+{
+  "dataset_config": "MetroPT-3/5T/medium",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 36
+    },
+    "MAE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 36
+    },
+    "RMSE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 36
+    },
+    "MAPE": {
+      "mean": 7.0585631579250006,
+      "finite_values": 3,
+      "total_values": 36
+    },
+    "sMAPE": {
+      "mean": 0.3815444540628227,
+      "finite_values": 3,
+      "total_values": 36
+    },
+    "MASE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 36
+    },
+    "ND": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 36
+    },
+    "CRPS": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 36
+    }
+  },
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "model": "tsrag",
+  "inference_seconds": 0.44801719207316637
+}

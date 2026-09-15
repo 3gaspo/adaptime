@@ -1,0 +1,40 @@
+{
+  "arrays": {
+    "datastore.representation": "datastore/representation.npy",
+    "test.neighbor_distance": "test/neighbor_distance.npy",
+    "test.neighbor_id": "test/neighbor_id.npy",
+    "test.representation": "test/representation.npy"
+  },
+  "context_length": 512,
+  "counts": {
+    "datastore": 309516,
+    "test": 630
+  },
+  "datastore_stride": 96,
+  "embedding": "chronos_t5_base_eos",
+  "embedding_batch_size": 512,
+  "embedding_dimension": 768,
+  "fetcher": "raw_same_series_512_plus_64",
+  "format": "adaptime_tsrag_extraction",
+  "index": "faiss.IndexFlatL2_float32",
+  "native_prediction_length": 64,
+  "prepared_signature": "7cc6a7a2621275e934bf6336a26483f85369e7a647f733ed7832912f5775ed13",
+  "retrieval_scope": "same_series",
+  "runtime_config": {
+    "arrow_cache_items": 2,
+    "model_batch_size": 256
+  },
+  "schema_version": 1,
+  "selection": "top_k_plus_one_then_remove_final_result",
+  "signature": "9f529bd927fd06251558702ae2e24e1b8ca70a092724b402a2b643823ac34c43",
+  "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+  "status": "completed",
+  "timing_seconds": {
+    "datastore_index_construction_seconds": 2.018216903321445,
+    "datastore_representation_seconds": 536.6530924458057,
+    "extraction_total_seconds": 539.9598054718226,
+    "test_representation_seconds": 1.1153706833720207,
+    "test_retrieval_seconds": 0.07324266340583563
+  },
+  "top_k": 10
+}

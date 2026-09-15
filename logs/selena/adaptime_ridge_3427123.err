@@ -9,3 +9,12 @@
 /fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
   offset = pd.tseries.frequencies.to_offset(freq)
 Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  15%|█▍        | 25/170 [00:00<00:00, 205.07it/s]Loading weights:  30%|███       | 51/170 [00:00<00:00, 233.09it/s]Loading weights:  53%|█████▎    | 90/170 [00:00<00:00, 291.95it/s]Loading weights:  76%|███████▌  | 129/170 [00:00<00:00, 315.76it/s]Loading weights:  97%|█████████▋| 165/170 [00:00<00:00, 320.43it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 305.43it/s]
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 3427123.0 ON sean0011 CANCELLED AT 2026-09-15T08:52:52 ***
+slurmstepd: error: *** JOB 3427123 ON sean0011 CANCELLED AT 2026-09-15T08:52:52 ***
+2026-09-15 08:52:52 | task TIME-wide Adaptime method=ridge stage=pipeline completed status=failed exit_code=0
+2026-09-15 08:52:52 | stage pipeline completed status=failed exit_code=0
+srun: error: sean0011: task 0: Exited with exit code 143
+TIME interrupted-launch recovery launch_id=selena_adaptime_unified_20260914T204328Z_25264_ridge tasks=1 root=/scratch/users/h61084/codes/adaptime/outputs/adaptime
+  interrupted /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/ridge/univariate/Coastal_T_S/5T/long/run_0
+2026-09-15 08:52:57 | workflow adaptime completed status=failed exit_code=0

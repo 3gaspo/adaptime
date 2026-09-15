@@ -1,0 +1,49 @@
+{
+  "dataset_config": "SG_Carpark/15T/long",
+  "num_series": 354,
+  "num_windows": 1,
+  "num_variates": 1,
+  "num_model_inputs": 354,
+  "prediction_length": 672,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "15T",
+  "seasonality": 96,
+  "context_length": 512,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/SG_Carpark/15T/long/run_0/evaluation_grid.npz",
+    "valid_values": 354,
+    "total_values": 354
+  },
+  "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_tsrag",
+  "inference_seconds": 11.105713721364737,
+  "model": "tsrag",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/tsrag/univariate/SG_Carpark/15T/long/run_1/prediction/prediction_manifest.json",
+  "selected_adaptation": null,
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": null,
+  "nonfinite_prediction_fallback": {
+    "count": 354,
+    "eligible_evaluation_windows": 354,
+    "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+    "mask": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/tsrag/univariate/SG_Carpark/15T/long/run_1/prediction/nonfinite_prediction_fallback.npy"
+  }
+}

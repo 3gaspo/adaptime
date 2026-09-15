@@ -1,0 +1,23 @@
+{
+  "chunks": [
+    {
+      "kind": "forecast",
+      "references": "chunks/000000_references.npy",
+      "rows": 64,
+      "values": "chunks/000000_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000001_references.npy",
+      "rows": 11,
+      "values": "chunks/000001_values.npy"
+    }
+  ],
+  "format": "adaptime_shared_window_cache",
+  "model": "chronos2",
+  "prediction_length": 288,
+  "prepared_signature": "84bcc7bf8ba4df021979c32ca4d19ceb7f4e15bd86abcdae5dd920fb1be15aae",
+  "schema_version": 1,
+  "signature": "6dfc70f592b418db4c070494563e3ed517a6caf8dfc6dde09466d314d69473e1",
+  "weights_id": "chronos2"
+}

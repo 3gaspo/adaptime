@@ -1,0 +1,40 @@
+{
+  "dataset_config": "SG_Weather/D/short",
+  "num_series": 6,
+  "num_windows": 122,
+  "num_variates": 4,
+  "num_model_inputs": 2928,
+  "prediction_length": 3,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "D",
+  "seasonality": 1,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "inference_seconds": 4.654749494977295,
+  "model": "tsrag",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/tsrag/univariate/SG_Weather/D/short/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": null,
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": {
+    "code": "insufficient_global_datastore",
+    "message": "global datastore requires at least 11 dates per variate; the least-covered variate has 0"
+  }
+}

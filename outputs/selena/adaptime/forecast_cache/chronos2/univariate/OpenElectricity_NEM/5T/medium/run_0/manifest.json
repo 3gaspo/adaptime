@@ -1,0 +1,79 @@
+{
+  "config": {
+    "cached_value": "source_window_vanilla_backbone_forecast",
+    "model": "chronos2",
+    "prediction_length": 96,
+    "prepared_artifact": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/OpenElectricity_NEM/5T/medium/run_0/prepared",
+    "prepared_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 10637,
+      "adaptation_validation_length": 5303,
+      "context_length": 8192,
+      "dataset": "OpenElectricity_NEM/5T",
+      "datastore_prediction_length": 96,
+      "datastore_scope": "all",
+      "datastore_stride": 2016,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 96,
+      "reference_context_length": 2016,
+      "retrieval_context_length": 2016,
+      "retrieval_period": 2016,
+      "seasonality": 288,
+      "target_mode": "univariate",
+      "term": "medium",
+      "test_length": 4032
+    },
+    "reference_columns": [
+      "item",
+      "channel",
+      "origin",
+      "context_length"
+    ],
+    "weights_id": "chronos2"
+  },
+  "counts": {
+    "computed_rows": 7621,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 7621,
+    "written_rows": 7621
+  },
+  "format": "adaptime_source_forecast_cache",
+  "launch": {
+    "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_ridge",
+    "slurm_array_task_id": null,
+    "slurm_job_id": "3432398"
+  },
+  "schema_version": 1,
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 7621,
+      "value_shape": [
+        1,
+        96
+      ],
+      "values": "shards/000000_values.npy"
+    }
+  ],
+  "status": "completed",
+  "storage": {
+    "compression": "none",
+    "dtype": "float32",
+    "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 46.191077034920454,
+    "discovery_seconds": 0.0006290655583143234,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.0035204263404011726,
+    "manifest_seconds": 0.001493345946073532,
+    "measured_cache_overhead_seconds": 0.030749577097594738,
+    "measured_operation_seconds": 46.22182661201805,
+    "read_seconds": 0.008292722515761852,
+    "write_seconds": 0.016814016737043858
+  }
+}

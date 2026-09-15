@@ -1,0 +1,37 @@
+{
+  "dataset_config": "SG_Carpark/15T/medium",
+  "num_series": 354,
+  "num_windows": 7,
+  "num_variates": 1,
+  "num_model_inputs": 2478,
+  "prediction_length": 96,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "15T",
+  "seasonality": 96,
+  "context_length": 512,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "inference_seconds": 11.256728960201144,
+  "model": "tsrag",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/tsrag/univariate/SG_Carpark/15T/medium/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": null,
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": null
+}

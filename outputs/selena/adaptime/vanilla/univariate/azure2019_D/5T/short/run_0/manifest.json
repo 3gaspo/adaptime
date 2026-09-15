@@ -1,0 +1,83 @@
+{
+  "completed_at": "2026-09-14T20:52:30.234714+00:00",
+  "experiment": "adaptime_vanilla",
+  "experiment_config": {
+    "phase": "unconditional_official_test_vanilla"
+  },
+  "identity": {
+    "dataset": "azure2019_D",
+    "frequency": "5T",
+    "model": "chronos2",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_vanilla",
+        "launched_at": "2026-09-14T20:51:44.003258+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3427122"
+      },
+      {
+        "action": "reuse",
+        "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_vanilla",
+        "launched_at": "2026-09-15T09:35:23.695125+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3432397"
+      }
+    ],
+    "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_vanilla",
+    "launched_at": "2026-09-14T20:51:44.003258+00:00",
+    "slurm_job_id": "3427122"
+  },
+  "model_config": {
+    "context_policy": "all_available_history_capped_at_model_limit",
+    "model": "chronos2",
+    "weights_id": null
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 923,
+      "adaptation_validation_length": 542,
+      "context_length": 8192,
+      "dataset": "azure2019_D/5T",
+      "dataset_fingerprint": "69c3e2b7548c48dc",
+      "datastore_prediction_length": 288,
+      "datastore_scope": "all",
+      "datastore_stride": 2016,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 288,
+      "reference_context_length": 2016,
+      "retrieval_context_length": 2016,
+      "retrieval_period": 2016,
+      "seasonality": 288,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 864
+    }
+  },
+  "project": "adaptime",
+  "provenance": {
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/azure2019_D/5T/short/run_0/prepared/manifest.json"
+  },
+  "required_artifacts": [
+    "vanilla/manifest.json",
+    "vanilla/predictions.npy",
+    "vanilla/context_length.npy"
+  ],
+  "runtime_config": {
+    "device": "cuda",
+    "model_path": null
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-14T20:51:44.003258+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-15T09:35:23.695125+00:00"
+}

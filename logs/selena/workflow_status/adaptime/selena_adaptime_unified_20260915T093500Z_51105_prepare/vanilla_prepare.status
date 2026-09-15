@@ -1,0 +1,12 @@
+workflow=adaptime
+launch_id=selena_adaptime_unified_20260915T093500Z_51105_prepare
+task=vanilla_prepare
+state=completed
+stage=none
+active_task=none
+launched_at=2026-09-15T09:35:02Z
+updated_at=2026-09-15T09:35:13Z
+exit_code=0
+slurm_job_id=3432396
+slurm_array_job_id=none
+slurm_array_task_id=none

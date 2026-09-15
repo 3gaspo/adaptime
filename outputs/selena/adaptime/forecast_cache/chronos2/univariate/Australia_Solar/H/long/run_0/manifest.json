@@ -1,0 +1,79 @@
+{
+  "config": {
+    "cached_value": "source_window_vanilla_backbone_forecast",
+    "model": "chronos2",
+    "prediction_length": 168,
+    "prepared_artifact": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Australia_Solar/H/long/run_0/prepared",
+    "prepared_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 3851,
+      "adaptation_validation_length": 1946,
+      "context_length": 8192,
+      "dataset": "Australia_Solar/H",
+      "datastore_prediction_length": 168,
+      "datastore_scope": "all",
+      "datastore_stride": 24,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 168,
+      "reference_context_length": 512,
+      "retrieval_context_length": 168,
+      "retrieval_period": 24,
+      "seasonality": 24,
+      "target_mode": "univariate",
+      "term": "long",
+      "test_length": 2520
+    },
+    "reference_columns": [
+      "item",
+      "channel",
+      "origin",
+      "context_length"
+    ],
+    "weights_id": "chronos2"
+  },
+  "counts": {
+    "computed_rows": 796,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 796,
+    "written_rows": 796
+  },
+  "format": "adaptime_source_forecast_cache",
+  "launch": {
+    "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_ridge",
+    "slurm_array_task_id": null,
+    "slurm_job_id": "3432398"
+  },
+  "schema_version": 1,
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 796,
+      "value_shape": [
+        1,
+        168
+      ],
+      "values": "shards/000000_values.npy"
+    }
+  ],
+  "status": "completed",
+  "storage": {
+    "compression": "none",
+    "dtype": "float32",
+    "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 5.268888351507485,
+    "discovery_seconds": 0.0006371065974235535,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.00039178598672151566,
+    "manifest_seconds": 0.0014830054715275764,
+    "measured_cache_overhead_seconds": 0.009572720155119896,
+    "measured_operation_seconds": 5.278461071662605,
+    "read_seconds": 0.0011758916079998016,
+    "write_seconds": 0.005884930491447449
+  }
+}
