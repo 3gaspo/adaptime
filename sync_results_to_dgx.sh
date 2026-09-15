@@ -161,7 +161,3 @@ else
 fi
 
 echo "SUCCESS: $SYNC_SIZE TIME outputs, requested logs, and metadata aggregates were pulled from Selena to DGX."
-<<<<<<< HEAD
-=======
-
->>>>>>> improved/main

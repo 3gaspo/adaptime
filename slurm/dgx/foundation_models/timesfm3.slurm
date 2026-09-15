@@ -17,8 +17,3 @@ export TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"
 export TIME_MODEL=timesfm3
 export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-dgx_${SLURM_JOB_ID}}"
 source "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"
-
-<<<<<<< HEAD
-
-=======
->>>>>>> improved/main

@@ -54,7 +54,4 @@ if [[ "$job_id" =~ ^[0-9]+$ ]] && command -v squeue >/dev/null 2>&1; then
     echo
     squeue -j "$job_id" || true
 fi
-<<<<<<< HEAD
-=======
 
->>>>>>> improved/main

@@ -51,7 +51,4 @@ time_task_complete
 time_stage_complete
 bash "$PROJECT_ROOT/src/slurm/export_dataset_metadata.sh" features
 time_workflow_complete
-<<<<<<< HEAD
-=======
 
->>>>>>> improved/main

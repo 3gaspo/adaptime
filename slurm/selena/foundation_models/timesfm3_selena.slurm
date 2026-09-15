@@ -20,7 +20,3 @@ source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"
 export TIME_MODEL=timesfm3
 export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"
 source "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"
-<<<<<<< HEAD
-
-=======
->>>>>>> improved/main
