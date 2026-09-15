@@ -74,3 +74,7 @@ python experiments/ts_icl.py --dataset "azure2019_U/5T"
 ########################### Industry ###########################
 python experiments/ts_icl.py --dataset "Smart_Manufacturing/H"
 python experiments/ts_icl.py --dataset "MetroPT-3/5T"
+<<<<<<< HEAD
+=======
+
+>>>>>>> improved/main

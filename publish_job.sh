@@ -245,3 +245,7 @@ else
     echo "No new artifact changes; pushing existing local commits."
 fi
 git push origin main
+<<<<<<< HEAD
+=======
+
+>>>>>>> improved/main

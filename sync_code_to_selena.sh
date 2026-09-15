@@ -70,3 +70,7 @@ echo "Selena weights: $SCRATCH_STORAGE_ROOT/weights"
 echo "Selena uv environments: $SCRATCH_STORAGE_ROOT/venvs"
 echo "Selena outputs: $SCRATCH_PROJECT_ROOT/outputs"
 echo "Selena logs: $SCRATCH_PROJECT_ROOT/logs"
+<<<<<<< HEAD
+=======
+
+>>>>>>> improved/main

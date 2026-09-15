@@ -74,3 +74,7 @@ python experiments/chronos2.py --dataset "azure2019_U/5T"
 ########################### Industry ###########################
 python experiments/chronos2.py --dataset "Smart_Manufacturing/H"
 python experiments/chronos2.py --dataset "MetroPT-3/5T"
+<<<<<<< HEAD
+=======
+
+>>>>>>> improved/main
