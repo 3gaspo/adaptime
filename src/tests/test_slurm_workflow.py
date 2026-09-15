@@ -128,11 +128,11 @@ def main() -> None:
     assert "ADAPTIME_STAGE=prepare" in adaptime_submit
     assert "ADAPTIME_METHOD=ridge,ADAPTIME_STAGE=pipeline" in adaptime_submit
     assert "ADAPTIME_METHOD=tsrag,ADAPTIME_STAGE=pipeline" in adaptime_submit
-    assert "ADAPTIME_METHOD=seasonal_naive,ADAPTIME_STAGE=pipeline" in adaptime_submit
+    assert "ADAPTIME_METHOD=seasonal_naive,ADAPTIME_STAGE=pipeline" not in adaptime_submit
     assert "ADAPTIME_METHOD=unified,ADAPTIME_STAGE=report" in adaptime_submit
     assert 'ridge_job="$(sbatch' in adaptime_submit
     assert '--dependency="afterok:$ridge_job:$tsrag_job"' in adaptime_submit
-    assert "prepare=%s seasonal=%s vanilla=%s ridge=%s tsrag=%s report=%s" in adaptime_submit
+    assert "prepare=%s vanilla=%s ridge=%s tsrag=%s report=%s seasonal=shared" in adaptime_submit
     assert 'if [ -n "${ADAPTIME_RIDGE_RESULTS_PATH:-}" ]' not in adaptime_submit
 
     tsrag_submit = (

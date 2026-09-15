@@ -35,6 +35,8 @@ def load_dataset_features(root: Path, split: str = "full") -> pd.DataFrame:
 
 def load_dataset_mase(
     results_root: Path,
+    seasonal_naive_results_root: Path | None = None,
+    seasonal_naive_launch_id: str | None = None,
     models: set[str] | None = None,
     launch_id: str | None = None,
     target_modes: set[str] | None = None,
@@ -84,11 +86,17 @@ def load_dataset_mase(
     if not rows:
         raise FileNotFoundError(f"No finite task MASE summaries found below {results_root}")
     frame = pd.DataFrame(rows)
+    baseline_root = seasonal_naive_results_root or results_root
+    if (
+        seasonal_naive_launch_id is None
+        and baseline_root.resolve() == results_root.resolve()
+    ):
+        seasonal_naive_launch_id = launch_id
     baseline_selected = select_completed_runs(
-        results_root,
+        baseline_root,
         models={"seasonal_naive"},
         target_modes={"univariate"},
-        launch_id=launch_id,
+        launch_id=seasonal_naive_launch_id,
         config_policy=config_policy,
         repeat_policy=repeat_policy,
     )
@@ -133,6 +141,8 @@ def load_dataset_mase(
 def join_features_and_mase(
     features_root: Path,
     results_root: Path,
+    seasonal_naive_results_root: Path | None = None,
+    seasonal_naive_launch_id: str | None = None,
     split: str = "full",
     models: set[str] | None = None,
     launch_id: str | None = None,
@@ -145,6 +155,8 @@ def join_features_and_mase(
     features = load_dataset_features(features_root, split=split)
     mase = load_dataset_mase(
         results_root,
+        seasonal_naive_results_root=seasonal_naive_results_root,
+        seasonal_naive_launch_id=seasonal_naive_launch_id,
         models=models,
         launch_id=launch_id,
         target_modes=target_modes,
@@ -311,6 +323,8 @@ def analyze_feature_performance(
     features_root: Path,
     results_root: Path,
     output_svg: Path,
+    seasonal_naive_results_root: Path | None = None,
+    seasonal_naive_launch_id: str | None = None,
     split: str = "full",
     models: set[str] | None = None,
     launch_id: str | None = None,
@@ -325,6 +339,8 @@ def analyze_feature_performance(
     joined = join_features_and_mase(
         features_root,
         results_root,
+        seasonal_naive_results_root,
+        seasonal_naive_launch_id,
         split,
         models,
         launch_id,

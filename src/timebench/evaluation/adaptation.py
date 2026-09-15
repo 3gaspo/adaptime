@@ -25,6 +25,7 @@ def evaluate_point_predictions(
     output_dir: str | Path,
     *,
     method: str | None = None,
+    evaluation_grid_path: str | Path,
 ) -> dict[str, object]:
     """Evaluate one wrapper through the same saver used by foundation models."""
 
@@ -42,12 +43,53 @@ def evaluate_point_predictions(
         prediction_file = prediction["files"]["predictions"][method]
         inference_seconds = float(prediction["inference_seconds"][method])
         prediction_method = str(method)
+        fallback_record = dict(prediction["nonfinite_prediction_fallback"])
+        fallback_methods = list(fallback_record["methods"])
+        if prediction_method not in fallback_methods:
+            raise ValueError("prediction method is absent from the fallback mask")
+        nonfinite_fallback = {
+            "policy": fallback_record["policy"],
+            "count": int(dict(fallback_record["counts"])[prediction_method]),
+            "eligible_evaluation_windows": int(
+                fallback_record["eligible_evaluation_windows"]
+            ),
+            "mask": str(
+                (
+                    prediction_root
+                    / prediction["files"]["nonfinite_prediction_fallback"]
+                ).resolve()
+            ),
+            "mask_row": fallback_methods.index(prediction_method),
+        }
     else:
         if method is not None and method != prediction["method"]:
             raise ValueError("requested method does not match point predictions")
         prediction_file = prediction["files"]["predictions"]
         inference_seconds = float(prediction["inference_seconds"])
         prediction_method = str(prediction["method"])
+        fallback_record = prediction.get("nonfinite_prediction_fallback")
+        if fallback_record is None:
+            nonfinite_fallback = {
+                "policy": "not_applicable_non_adaptor",
+                "count": 0,
+                "eligible_evaluation_windows": None,
+                "mask": None,
+            }
+        else:
+            fallback_record = dict(fallback_record)
+            nonfinite_fallback = {
+                **fallback_record,
+                "count": int(fallback_record["count"]),
+                "eligible_evaluation_windows": int(
+                    fallback_record["eligible_evaluation_windows"]
+                ),
+                "mask": str(
+                    (
+                        prediction_root
+                        / prediction["files"]["nonfinite_prediction_fallback"]
+                    ).resolve()
+                ),
+            }
     values = np.load(prediction_root / prediction_file, mmap_mode="r")
     expected = (
         len(prepared.indices("test")),
@@ -101,8 +143,10 @@ def evaluate_point_predictions(
                 "bayes_probability_covariate_better"
             ),
             "adaptation_fallback_reason": prediction.get("fallback_reason"),
+            "nonfinite_prediction_fallback": nonfinite_fallback,
         },
         quantile_levels=[0.5],
         inference_seconds=inference_seconds,
         task_output_dir=str(Path(output_dir).expanduser().resolve()),
+        evaluation_grid_path=str(Path(evaluation_grid_path).expanduser().resolve()),
     )

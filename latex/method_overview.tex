@@ -184,17 +184,23 @@ MSE, MAE, RMSE, MAPE, sMAPE, MASE, ND, and CRPS. Seasonal Naive remains the
 inherited external baseline used by broader TIME summaries. Missing dates are
 never removed or shifted: forecast errors skip non-finite target dates and
 MASE scales count only finite lagged pairs at their original timestamps. The
-comparison reports each metric mean together with its finite and total value
-counts; unequal finite coverage remains visible rather than preventing report
-construction.
+selected shared Seasonal artifact fixes the evaluation grid to cells with
+finite target support, finite Seasonal predictions on that support, and finite
+Seasonal MASE. Foundation forecasts and vanilla must be finite wherever that
+grid expects a prediction. If a fixed Adaptime candidate, rolling Ridge, or
+TS-RAG is non-finite there, its complete cell forecast is replaced by vanilla;
+the fallback mask and count are retained. Comparisons require identical grid
+metadata and report finite, grid, and total counts for each metric.
 Conclusions require completed and inspected cluster artifacts.
 
 Eligibility arrays, reason codes, effective training counts, and test RAG
 coverage, Ridge coefficients, Bayesian evidence, rolling fitting support, and
-cache identities are retained with the task artifacts. Vanilla forecasts and
-exact-context representations are shared across fixed and rolling methods only
-when prepared data, model, weights, source window, and context length agree;
-neighbor selections remain method-specific. The resulting adapted estimands are transparent gated hybrids:
+cache identities are retained with the task artifacts. Only reusable
+source-window backbone forecasts are shared across fixed and rolling methods,
+through readable configuration-matched \texttt{run\_n} cache artifacts. Retrieval
+representations are recomputed; canonical test vanilla and composite covariate
+forecasts remain in their phase artifacts. Neighbor selections remain
+method-specific. The resulting adapted estimands are transparent gated hybrids:
 their selected method on eligible windows and vanilla otherwise. An
 insufficient-training task is the limiting case with zero eligible Adaptime
 windows and vanilla predictions for every fixed-family branch.

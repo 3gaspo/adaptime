@@ -20,6 +20,11 @@ from timebench.adaptime.ridge import (
     ridge_feature_indices,
 )
 from timebench.evaluation.adaptation_data import PreparedDataset
+from timebench.evaluation.grid import (
+    EVALUATION_GRID_DEFINITION,
+    flatten_univariate_grid,
+    load_evaluation_grid,
+)
 from timebench.pipeline.adaptime_extraction import (
     FALLBACK_REASONS,
     open_eval_extraction,
@@ -143,6 +148,8 @@ def predict_adaptation_family(
     vanilla_path: str | Path,
     config: PredictionConfig,
     output_dir: str | Path,
+    *,
+    evaluation_grid_path: str | Path,
 ) -> Path:
     """Produce aligned candidate forecasts and the validation-selected forecast."""
 
@@ -168,6 +175,7 @@ def predict_adaptation_family(
         "adaptation_signature": model["signature"],
         "eval_extraction_signature": eval_extraction["signature"],
         "vanilla_signature": vanilla_manifest["signature"],
+        "evaluation_grid": EVALUATION_GRID_DEFINITION,
         "config": asdict(config),
     }
     signature = _canonical_hash(identity)
@@ -193,12 +201,28 @@ def predict_adaptation_family(
     vanilla = np.load(
         vanilla_root / vanilla_manifest["arrays"]["predictions"], mmap_mode="r"
     )
+    grid_targets, grid_cells = flatten_univariate_grid(
+        *load_evaluation_grid(evaluation_grid_path)
+    )
+    if grid_targets.shape != (len(vanilla), prepared.prediction_length):
+        raise ValueError("shared evaluation grid does not match Adaptime test rows")
+    vanilla_finite = np.all(
+        ~grid_targets | np.isfinite(np.asarray(vanilla[:, 0])), axis=1
+    )
+    if np.any(grid_cells & ~vanilla_finite):
+        raise ValueError("vanilla forecast is non-finite on the shared evaluation grid")
     prediction_stores = {
         method: _memmap(root / f"{method}.npy", vanilla.shape, np.float32)
         for method in ADAPTATION_METHODS
     }
     eligible_store = _memmap(root / "rag_eligible.npy", (len(vanilla),), bool)
     reason_store = _memmap(root / "fallback_reason.npy", (len(vanilla),), np.uint8)
+    nonfinite_store = _memmap(
+        root / "nonfinite_prediction_fallback.npy",
+        (len(ADAPTATION_METHODS), len(vanilla)),
+        bool,
+    )
+    nonfinite_store[:] = False
     fallback_reason = model.get("fallback_reason")
     ridge_seconds = 0.0
     bayes_seconds = 0.0
@@ -399,7 +423,15 @@ def predict_adaptation_family(
             chunk_predictions["selected_adaptation"] = np.array(
                 chunk_predictions.get(selected_method, chunk_vanilla), copy=True
             )
-            for method, values in chunk_predictions.items():
+            target_support = grid_targets[start:stop]
+            expected = grid_cells[start:stop]
+            for method_index, (method, values) in enumerate(chunk_predictions.items()):
+                invalid = expected & ~np.all(
+                    ~target_support | np.isfinite(values[:, 0]), axis=1
+                )
+                if np.any(invalid):
+                    values[invalid] = chunk_vanilla[invalid]
+                    nonfinite_store[method_index, start:stop] = invalid
                 prediction_stores[method][start:stop] = values
             final_reason = np.asarray(base_reason[start:stop]).copy()
             final_reason[np.asarray(base_eligible[start:stop]) & ~chunk_eligible] = 5
@@ -409,6 +441,7 @@ def predict_adaptation_family(
         store.flush()
     eligible_store.flush()
     reason_store.flush()
+    nonfinite_store.flush()
     inference_seconds, components = _inference_timings(
         vanilla_manifest,
         eval_extraction,
@@ -432,6 +465,7 @@ def predict_adaptation_family(
         "bayes_probability_covariate_better": probability,
         "bayes_probability_past_targets_better": past_probability,
         "fallback_reason": fallback_reason,
+        "evaluation_grid_source": str(Path(evaluation_grid_path).expanduser().resolve()),
         "rag_coverage": {
             "eligible_windows": int(np.count_nonzero(eligible_store)),
             "total_windows": int(len(eligible_store)),
@@ -443,6 +477,16 @@ def predict_adaptation_family(
         "fallback_reason_codes": {
             str(code): label for code, label in FALLBACK_REASONS.items()
         },
+        "nonfinite_prediction_fallback": {
+            "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+            "methods": list(ADAPTATION_METHODS),
+            "eligible_evaluation_windows": int(np.count_nonzero(grid_cells)),
+            "mask_shape": list(nonfinite_store.shape),
+            "counts": {
+                method: int(np.count_nonzero(nonfinite_store[index]))
+                for index, method in enumerate(ADAPTATION_METHODS)
+            },
+        },
         "inference_seconds": inference_seconds,
         "timing_components": components,
         "files": {
@@ -451,6 +495,7 @@ def predict_adaptation_family(
             },
             "rag_eligible": "rag_eligible.npy",
             "fallback_reason": "fallback_reason.npy",
+            "nonfinite_prediction_fallback": "nonfinite_prediction_fallback.npy",
         },
     }
     _atomic_json(manifest_path, manifest)

@@ -22,6 +22,7 @@ SUPPORT_FIELDS = (
     "prediction_length",
     "seasonality",
     "target_mode",
+    "evaluation_grid",
 )
 
 
@@ -101,11 +102,17 @@ def _combine_cells(cells: list[dict[str, Any]]) -> dict[str, Any]:
             "finite_values": sum(
                 int(dict(value).get("finite_values", 0)) for value in values
             ),
+            "evaluation_values": sum(
+                int(dict(value).get("evaluation_values", 0)) for value in values
+            ),
             "total_values": sum(
                 int(dict(value).get("total_values", 0)) for value in values
             ),
         }
     seconds = [cell["inference_seconds"] for cell in cells]
+    nonfinite_fallback_count = _mean(
+        cell["nonfinite_fallback_count"] for cell in cells
+    )
     fallback_reasons = {
         json.dumps(cell["fallback_reason"], sort_keys=True)
         for cell in cells
@@ -124,6 +131,7 @@ def _combine_cells(cells: list[dict[str, Any]]) -> dict[str, Any]:
             _mean(seconds) if all(value is not None for value in seconds) else None
         ),
         "fallback_reason": cells[0]["fallback_reason"],
+        "nonfinite_fallback_count": nonfinite_fallback_count,
         "manifests": [path for cell in cells for path in cell["manifests"]],
     }
 
@@ -214,6 +222,11 @@ def build_adaptation_comparison(
                         "metrics": dict(summary["metrics"]),
                         "inference_seconds": summary.get("inference_seconds"),
                         "fallback_reason": config.get("adaptation_fallback_reason"),
+                        "nonfinite_fallback_count": int(
+                            dict(
+                                config.get("nonfinite_prediction_fallback") or {}
+                            ).get("count", 0)
+                        ),
                         "manifests": [str(run_dir / "manifest.json")],
                     }
                 )
@@ -298,12 +311,17 @@ def build_adaptation_comparison(
                 if cell["fallback_reason"] is None
                 else json.dumps(cell["fallback_reason"], sort_keys=True)
             ),
+            "nonfinite_fallback": bool(cell["nonfinite_fallback_count"]),
+            "nonfinite_fallback_windows": cell["nonfinite_fallback_count"],
             "scaled_MASE": cell["scaled_MASE"],
         }
         for metric in metric_names:
             values = dict(cell["metrics"]).get(metric, {})
             row[metric] = values.get("mean")
             row[f"{metric}_finite_values"] = values.get("finite_values", 0)
+            row[f"{metric}_evaluation_values"] = values.get(
+                "evaluation_values", 0
+            )
             row[f"{metric}_total_values"] = values.get("total_values", 0)
         rows.append(row)
 
@@ -339,8 +357,20 @@ def build_adaptation_comparison(
                 "datasets": len({cell["dataset"] for cell in method_cells}),
                 "tasks": len(method_cells),
                 "timed_tasks": len(timed),
+                "tasks_with_nonfinite_fallback": sum(
+                    bool(cell["nonfinite_fallback_count"])
+                    for cell in method_cells
+                ),
+                "nonfinite_fallback_windows": sum(
+                    float(cell["nonfinite_fallback_count"] or 0)
+                    for cell in method_cells
+                ),
                 "MASE_finite_values": sum(
                     int(dict(cell["metrics"])["MASE"].get("finite_values", 0))
+                    for cell in method_cells
+                ),
+                "MASE_evaluation_values": sum(
+                    int(dict(cell["metrics"])["MASE"].get("evaluation_values", 0))
                     for cell in method_cells
                 ),
                 "MASE_total_values": sum(
@@ -373,6 +403,7 @@ def build_adaptation_comparison(
                 "mean": "<metric>",
                 "scaled_MASE": "task MASE divided by matching Seasonal Naive MASE",
                 "finite_values": "<metric>_finite_values",
+                "evaluation_values": "<metric>_evaluation_values",
                 "total_values": "<metric>_total_values",
             },
             "aggregation": {
@@ -382,6 +413,8 @@ def build_adaptation_comparison(
             "fallback_columns": {
                 "task_fallback": "whether this method used its task-level fallback",
                 "task_fallback_reason": "recorded fallback reason or an empty string",
+                "nonfinite_fallback": "whether a finite-grid prediction was replaced by vanilla",
+                "nonfinite_fallback_windows": "mean fallback-window count across selected repeats/configurations",
             },
             "input_manifests": [
                 path for cell in cells for path in cell["manifests"]

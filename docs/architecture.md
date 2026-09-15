@@ -11,7 +11,7 @@ TIME saved-Arrow dataset + dataset configuration
   -> pipeline/adaptime_vanilla.py
        flexible-context vanilla forecast for every official test row
   -> pipeline/adaptime_cache.py
-       exact-window vanilla forecasts and representations shared by adaptors
+       reusable source-window backbone forecasts shared by adaptors
   -> fixed Adaptime family
        fit-grid extraction -> Ridge/Bayesian selection -> selected-K prediction
   -> rolling horizon Ridge
@@ -90,9 +90,8 @@ foundation models.
 The combined submission order is:
 
 ```text
-prepare
-  -> Seasonal Naive
-  -> vanilla test pass
+shared Evaluating-TSFMs Seasonal Naive grid (prerequisite)
+  -> prepare -> vanilla test pass
        -> fit-grid extraction -> Ridge and Bayesian fit
           -> selected-K test extraction -> family predictions/evaluations
        -> independent TS-RAG extraction/prediction/evaluation
@@ -105,19 +104,26 @@ only after every requested evaluation exactly matches the current identity and
 scientific configuration; this never changes TS-RAG execution.
 
 Large series remain in Arrow and large numeric products remain memory-mapped.
-The append-only shared window cache is keyed by prepared signature, backbone,
-weights, horizon, exact source reference, context length, and representation
-mode. It shares only computations with identical semantics; rolling and fixed
-neighbor tables remain separate.
+The shared forecast cache uses a readable model/mode/task hierarchy and
+ordinary `run_n` allocation. Completed runs are reused only when their plain
+configuration matches. It stores source-window backbone forecasts in coarse
+uncompressed shards, writes the manifest only at lifecycle boundaries, and
+records discovery, lookup, read, compute, write, and manifest timings.
+Retrieval representations are recomputed, while canonical test vanilla and
+composite covariate forecasts remain in their phase artifacts. Rolling and
+fixed neighbor tables remain separate.
 `pipeline/runs.py` owns allocation and exact reuse. `src/timebench/scripts/`
 contains explicit phase entry points; `src/slurm/run_adaptime_comparison.sh`
 is the common DGX/Selena implementation; root `scripts/` compose scheduler
 dependencies; `slurm/` contains the concise submit-ready fronts.
 
-`results/adaptation.py` preserves lifecycle-provided labels for distinct runs
-and applies repeat-then-configuration averaging when requested. Its comparison
-CSV retains every metric mean and the corresponding finite and total value
-counts; those coverage counts are reported without being forced to match.
+Seasonal Naive defines the common metric grid. Every foundation forecast and
+canonical vanilla must be finite on its expected target steps. A non-finite
+fixed candidate, rolling Ridge, or TS-RAG forecast on that grid is replaced as
+one complete cell by canonical vanilla, and its per-window mask and counts are
+retained. `results/adaptation.py` requires matching grid metadata, preserves
+lifecycle labels, applies repeat-then-configuration averaging when requested,
+and reports finite/grid/total metric counts plus non-finite fallback counts.
 
 `src/timebench/scripts/time_inference.py` is a separate measurement path. Its parent process
 selects shared random test references and launches a fresh child process for

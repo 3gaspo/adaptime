@@ -309,19 +309,13 @@ def _materialize_source_rows(
             references[:first_stop],
             context_length=prepared.retrieval_context_length,
         )
-        if shared_cache is None:
-            first_representation = _timed_represent(
-                forecaster,
-                first.context,
-                config.representation,
-                timings,
-                representation_key,
-            )
-        else:
-            first_representation, seconds = shared_cache.representations(
-                references[:first_stop], first.context, config.representation
-            )
-            _record_seconds(timings, representation_key, seconds)
+        first_representation = _timed_represent(
+            forecaster,
+            first.context,
+            config.representation,
+            timings,
+            representation_key,
+        )
         channels = int(first.context.shape[1])
         representation_width = int(first_representation.shape[1])
     else:
@@ -435,19 +429,13 @@ def _materialize_source_rows(
             context_length=prepared.retrieval_context_length,
         )
         target[start:stop] = batch.target
-        if shared_cache is None:
-            representation[start:stop] = _timed_represent(
-                forecaster,
-                batch.context,
-                config.representation,
-                timings,
-                representation_key,
-            )
-        else:
-            representation[start:stop], seconds = shared_cache.representations(
-                references[start:stop], batch.context, config.representation
-            )
-            _record_seconds(timings, representation_key, seconds)
+        representation[start:stop] = _timed_represent(
+            forecaster,
+            batch.context,
+            config.representation,
+            timings,
+            representation_key,
+        )
         scale[start:stop] = query_scale(batch.context)
         batch_fraction, batch_eligible, batch_reason = _source_eligibility(
             batch.context,
@@ -1101,19 +1089,13 @@ def extract_adaptation_eval_features(
                 references[positions],
                 context_length=prepared.retrieval_context_length,
             )
-            if shared_cache is None:
-                representation[positions] = _timed_represent(
-                    forecaster,
-                    batch.context,
-                    config.representation,
-                    timings,
-                    "test.representation_seconds",
-                )
-            else:
-                representation[positions], seconds = shared_cache.representations(
-                    references[positions], batch.context, config.representation
-                )
-                _record_seconds(timings, "test.representation_seconds", seconds)
+            representation[positions] = _timed_represent(
+                forecaster,
+                batch.context,
+                config.representation,
+                timings,
+                "test.representation_seconds",
+            )
             scale[positions] = query_scale(batch.context)
             fraction, eligible, reason = _source_eligibility(
                 batch.context,

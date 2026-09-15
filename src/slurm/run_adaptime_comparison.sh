@@ -34,6 +34,7 @@ run_adaptime() {
         --datasets "${ADAPTIME_DATASETS:-all_datasets}"
         --config "${ADAPTIME_DATASET_CONFIG:-$PROJECT_ROOT/src/timebench/config/datasets.yaml}"
         --output-root "$ADAPTIME_OUTPUT_ROOT_VALUE"
+        --seasonal-results-path "${ADAPTIME_SEASONAL_RESULTS_PATH:-$TIME_SEASONAL_TASKS_ROOT/seasonal_naive}"
         --model "${ADAPTIME_MODEL:-chronos2}"
         --device "${ADAPTIME_DEVICE:-cuda}"
         --target-mode "${ADAPTIME_TARGET_MODE:-univariate}"

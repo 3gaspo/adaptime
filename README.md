@@ -67,16 +67,25 @@ PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage
   --stage pipeline --method tsrag --datasets SG_Weather/D --terms short
 ```
 
-The main submission front schedules shared preparation and Seasonal Naive,
-then the vanilla pass, the Adaptime family and independent TS-RAG pipelines,
-and finally one unified comparison report after both branches succeed:
+First generate the shared Seasonal Naive store from Evaluating TSFMs. It owns
+the common evaluation grid used by every foundation and Adaptime result:
+
+```bash
+cd ../evaluating_tsfms
+bash scripts/submit_seasonal_naive.sh dgx
+```
+
+After that job completes, the main Adaptime front schedules shared
+preparation, the vanilla pass, the Adaptime family and independent TS-RAG
+pipelines, and finally one unified comparison report after both branches
+succeed:
 
 ```bash
 bash scripts/submit_adaptime_comparison.sh dgx
 ```
 
 The independent rolling experiment uses the same preparation, vanilla
-forecast, evaluation, and exact-window cache contracts:
+forecast, shared evaluation-grid, and source-forecast cache contracts:
 
 ```bash
 bash scripts/submit_rolling_ridge.sh dgx
@@ -152,7 +161,8 @@ The current artifact layout below `outputs/adaptime/` is:
 
 ```text
 data/shared/.../run_n/prepared/              shared Arrow-backed references
-window_cache/.../                            shared exact-window computations
+forecast_cache/<model>/<target_mode>/<dataset>/<frequency>/<term>/run_n/
+                                              shared source-window forecasts
 extractions/{ridge,tsrag}/.../run_n/         method-specific retrieval features
 adaptations/ridge/.../run_n/model/           closed-form Ridge fit
 predictions/{ridge,rolling_y_ridge_horizon,
@@ -167,15 +177,19 @@ reports/<launch>/                            comparison.csv and report manifest
 
 Each phase has its own schema-1 manifest and exact scientific identity.
 Completed exact phases are reusable; a different configuration receives a new
-`run_n`. The main family shares prepared references, cached test vanilla
+`run_n`. The main family shares prepared references, canonical test vanilla
 forecasts, fit extraction, selected-K test extraction, and one prediction
 artifact containing the complete fixed comparison family and its
-validation-selected forecast. Vanilla forecasts and exact-context
-representations are cached by prepared data, backbone, weights, source window,
-and context length so fixed and rolling methods can reuse them in either run
-order. Neighbor selections remain method-owned because their datastore
-causality differs. Every method receives its own TIME evaluation run. TS-RAG
-references the same prepared datastore and test rows but
+validation-selected forecast. Only reusable source-window backbone forecasts
+are cached. Cache identity is a readable hierarchy followed by `run_n`, and
+reuse compares the plain manifest configuration. Retrieval representations
+are recomputed; canonical test vanilla and composite covariate forecasts stay
+in their own existing phase artifacts instead of being duplicated. Cache
+manifests record lookup, read, compute, write, and manifest timings, while
+coarse uncompressed shards avoid per-row manifest rewrites. Neighbor
+selections remain method-owned because their datastore causality differs.
+Every method receives its own TIME evaluation run. TS-RAG references the same
+prepared datastore and test rows but
 retains its independent extraction and inference modules. The unified report
 joins those independently evaluated branches. All point predictions pass
 through the TIME evaluator as deterministic median forecasts.
@@ -184,12 +198,18 @@ representation extraction, its project-owned data adapter rejects a new or
 reused artifact with fewer than 11 dates for any variate. Ridge remains able to
 use its documented vanilla fallback on insufficient retrieval history.
 
-Comparison reports retain each metric's mean plus finite and total value
-counts. Distinct configuration or repeat policies preserve their lifecycle
-labels as separate rows; average policies first combine exact repeats and then
-combine scientific configurations. The report manifest lists every consumed
-evaluation manifest. Finite counts are diagnostic and do not have to match for
-the report to be written.
+The selected shared Seasonal artifact fixes target-step support and the metric
+cell grid: a cell requires finite ground-truth support, finite Seasonal Naive
+predictions on that support, and finite Seasonal Naive MASE. Foundation
+forecasts and canonical vanilla must be finite wherever the grid expects a
+prediction. If an Adaptime candidate, rolling Ridge, or TS-RAG is non-finite
+there, its complete cell forecast is replaced by canonical vanilla. Prediction
+artifacts retain the per-window fallback mask and counts. Comparison reports
+require the same grid and retain each metric's mean plus finite, grid, and total
+value counts, together with non-finite-fallback counts. Distinct configuration
+or repeat policies preserve their lifecycle labels as separate rows; average
+policies first combine exact repeats and then scientific configurations. The
+report manifest lists every consumed evaluation manifest.
 
 `sync_code_to_selena.sh`, `sync_results_to_dgx.sh`, and `publish_job.sh` handle
 cluster operations without mixing artifacts across projects.

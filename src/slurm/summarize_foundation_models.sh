@@ -25,7 +25,9 @@ summary_command=(
     uv run --no-sync python
     "$PROJECT_ROOT/scripts/compute_foundation_summary.py"
     --results-dir "$tasks_root"
+    --seasonal-naive-results-dir "$TIME_SEASONAL_TASKS_ROOT"
     --models "${FOUNDATION_MODELS[@]}"
+    --model-status seasonal_naive=completed,0
     --launch-id "$TIME_LAUNCH_ID"
     --status-dir "$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"
     --config-policy "${TIME_CONFIG_POLICY:-error}"
@@ -45,7 +47,7 @@ time_stage_complete
 
 status_root="$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"
 incomplete_models=()
-for model in "${FOUNDATION_MODELS[@]}"; do
+for model in "${FOUNDATION_LEARNED_MODELS[@]}"; do
     status_file="$status_root/$model.status"
     state=""
     exit_code=""
@@ -58,7 +60,7 @@ for model in "${FOUNDATION_MODELS[@]}"; do
     fi
 done
 if [ "${#incomplete_models[@]}" -gt 0 ]; then
-    echo "Feature plot requires four successful model jobs; incomplete: ${incomplete_models[*]}" >&2
+    echo "Feature plot requires all learned-model jobs to succeed; incomplete: ${incomplete_models[*]}" >&2
     exit 1
 fi
 
@@ -70,8 +72,9 @@ plot_command=(
     "$PROJECT_ROOT/scripts/plot_feature_performance.py"
     --features-root "$TIME_METADATA/stl_features"
     --results-dir "$tasks_root"
+    --seasonal-naive-results-dir "$TIME_SEASONAL_TASKS_ROOT"
     --output "$analysis_root/mase_vs_features.svg"
-    --models "${FOUNDATION_MODELS[@]}"
+    --models "${FOUNDATION_LEARNED_MODELS[@]}"
     --launch-id "$TIME_LAUNCH_ID"
     --config-policy "${TIME_CONFIG_POLICY:-error}"
     --repeat-policy "${TIME_REPEAT_POLICY:-selected}"

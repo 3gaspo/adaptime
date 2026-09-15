@@ -18,6 +18,13 @@ import numpy as np
 from timebench.evaluation.metrics import (
     compute_per_window_metrics_from_quantiles,
 )
+from timebench.evaluation.grid import (
+    EVALUATION_GRID_DEFINITION,
+    EVALUATION_GRID_FILE,
+    build_evaluation_grid,
+    load_evaluation_grid,
+    save_evaluation_grid,
+)
 
 
 def save_window_predictions(
@@ -30,6 +37,8 @@ def save_window_predictions(
     quantile_levels: list[float] = None,
     inference_seconds: float | None = None,
     task_output_dir: str | None = None,
+    evaluation_grid_path: str | None = None,
+    create_evaluation_grid: bool = False,
 ) -> dict:
     """
     Save predictions and metrics for each test window.
@@ -199,11 +208,35 @@ def save_window_predictions(
             ctx_len_actual = ctx.shape[-1]
             context_array[series_idx, window_idx, :, :ctx_len_actual] = ctx
 
+    if create_evaluation_grid:
+        if evaluation_grid_path is not None:
+            raise ValueError("cannot both create and consume an evaluation grid")
+        target_mask, evaluation_mask = build_evaluation_grid(
+            predictions_quantiles,
+            ground_truth,
+            context_array,
+            seasonality,
+            quantile_levels_list,
+        )
+        grid_path = save_evaluation_grid(
+            os.path.join(ds_output_dir, EVALUATION_GRID_FILE),
+            target_mask,
+            evaluation_mask,
+        )
+    else:
+        if evaluation_grid_path is None:
+            raise ValueError("evaluation_grid_path is required for non-Seasonal evaluation")
+        grid_path = os.path.abspath(os.path.expanduser(evaluation_grid_path))
+        target_mask, evaluation_mask = load_evaluation_grid(
+            grid_path, ground_truth=ground_truth
+        )
+
     # Save quantiles to npz file
     # Use float16 to reduce storage (sufficient for visualization purposes)
     # Apply dynamic scaling to prevent float16 overflow (max ~65504)
     FLOAT16_SAFE_MAX = 60000.0  # Leave margin below 65504
-    max_abs_val = np.abs(predictions_quantiles).max()
+    finite_predictions = np.abs(predictions_quantiles[np.isfinite(predictions_quantiles)])
+    max_abs_val = float(finite_predictions.max()) if finite_predictions.size else 0.0
 
     prediction_scale_factor = 1.0
     if max_abs_val > FLOAT16_SAFE_MAX:
@@ -231,6 +264,8 @@ def save_window_predictions(
         context=context_array,
         seasonality=seasonality,
         quantile_levels=quantile_levels_list,
+        target_mask=target_mask,
+        evaluation_mask=evaluation_mask,
     )
 
     # Save metrics to npz file
@@ -254,6 +289,12 @@ def save_window_predictions(
         "metric_names": list(metrics.keys()),
         "prediction_scale_factor": prediction_scale_factor,  # For float16 overflow prevention
         "metrics_summary_file": "metrics_summary.json",
+        "evaluation_grid": {
+            "definition": EVALUATION_GRID_DEFINITION,
+            "source": str(grid_path),
+            "valid_values": int(np.count_nonzero(evaluation_mask)),
+            "total_values": int(evaluation_mask.size),
+        },
     }
 
     launch_id = os.environ.get("TIME_LAUNCH_ID")
@@ -281,11 +322,13 @@ def save_window_predictions(
         metric_summaries[metric_name] = {
             "mean": float(np.mean(finite_values)) if finite_values.size else None,
             "finite_values": int(finite_values.size),
+            "evaluation_values": int(np.count_nonzero(evaluation_mask)),
             "total_values": int(metric_values.size),
         }
     metrics_summary = {
         "dataset_config": ds_config,
-        "aggregation": "mean over finite series/window/variate metric values",
+        "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+        "evaluation_grid": config["evaluation_grid"],
         "metrics": metric_summaries,
     }
     if launch_id:

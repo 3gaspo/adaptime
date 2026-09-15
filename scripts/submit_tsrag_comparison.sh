@@ -23,9 +23,7 @@ mkdir -p "$PROJECT_ROOT/logs"
 cd "$PROJECT_ROOT"
 prepare_job="$(sbatch --parsable --export=ALL,ADAPTIME_METHOD=vanilla,ADAPTIME_STAGE=prepare "$shared_front")"
 prepare_job="${prepare_job%%;*}"
-seasonal_job="$(sbatch --parsable --dependency="afterok:$prepare_job" --export=ALL,ADAPTIME_METHOD=seasonal_naive,ADAPTIME_STAGE=pipeline "$shared_front")"
-seasonal_job="${seasonal_job%%;*}"
-vanilla_job="$(sbatch --parsable --dependency="afterok:$seasonal_job" --export=ALL,ADAPTIME_METHOD=vanilla,ADAPTIME_STAGE=vanilla "$shared_front")"
+vanilla_job="$(sbatch --parsable --dependency="afterok:$prepare_job" --export=ALL,ADAPTIME_METHOD=vanilla,ADAPTIME_STAGE=vanilla "$shared_front")"
 vanilla_job="${vanilla_job%%;*}"
 tsrag_job="$(sbatch --parsable --dependency="afterok:$vanilla_job" --export=ALL,ADAPTIME_STAGE=pipeline "$tsrag_front")"
 tsrag_job="${tsrag_job%%;*}"
@@ -35,5 +33,5 @@ if [ -n "${ADAPTIME_RIDGE_RESULTS_PATH:-}" ]; then
 else
     report_job=not_requested
 fi
-printf 'prepare=%s seasonal=%s vanilla=%s tsrag=%s report=%s\n' \
-    "$prepare_job" "$seasonal_job" "$vanilla_job" "$tsrag_job" "$report_job"
+printf 'prepare=%s vanilla=%s tsrag=%s report=%s seasonal=shared\n' \
+    "$prepare_job" "$vanilla_job" "$tsrag_job" "$report_job"

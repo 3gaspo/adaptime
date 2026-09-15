@@ -31,6 +31,17 @@ def main() -> None:
         help="One manifest-based experiment root",
     )
     parser.add_argument(
+        "--seasonal-naive-results-dir",
+        type=Path,
+        default=None,
+        help="Task root containing the matching Seasonal Naive baseline",
+    )
+    parser.add_argument(
+        "--seasonal-naive-launch-id",
+        default=None,
+        help="Optional launch filter for Seasonal Naive baseline tasks",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=foundation_experiment_root().parent
@@ -76,6 +87,8 @@ def main() -> None:
         features_root=args.features_root,
         results_root=args.results_dir,
         output_svg=args.output,
+        seasonal_naive_results_root=args.seasonal_naive_results_dir,
+        seasonal_naive_launch_id=args.seasonal_naive_launch_id,
         split=args.split,
         models=set(args.models) if args.models else None,
         launch_id=args.launch_id,

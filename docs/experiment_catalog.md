@@ -59,8 +59,10 @@ foundation forecast.
 - Evaluation: each deterministic method receives its own standard TIME
   evaluation artifact. The unified report joins the four headline Adaptime
   methods, retained family diagnostics, the independent TS-RAG control, and
-  the Seasonal Naive scaling baseline on identical configured support. It
-  exposes each method's finite and total value counts per metric.
+  the shared Seasonal Naive scaling baseline on one selected evaluation grid.
+  Any non-finite candidate forecast on expected support is replaced as a whole
+  cell by canonical vanilla and recorded. The report exposes finite/grid/total
+  value counts and non-finite-fallback counts.
 
 No delta, convex, or native-multivariate Ridge ablation belongs to this family.
 
@@ -73,9 +75,10 @@ one Ridge per variate and horizon using `V+Y_1..Y_K`, with default `K=15` and
 retrieval-period phase, retain the latest 100 dates, and require at least 64.
 The datastore is cross-variate, causal at every fitting and query date, capped
 at 10,000 windows, divided evenly across variates, and held to one common size
-over adapted dates. Unsupported queries use vanilla. Exact-window vanilla
-forecasts and representations are shared with the fixed pipeline, but rolling
-neighbor selections are not.
+over adapted dates. Unsupported queries use vanilla. Source-window backbone
+forecasts are shared with the fixed pipeline through the forecast
+cache; retrieval representations are recomputed and rolling neighbor
+selections are not shared.
 
 ## TS-RAG external control
 
@@ -94,14 +97,16 @@ official TIME test support.
 - Independence: TS-RAG has its own extraction and inference modules and never
   resolves or loads a Ridge extraction, model, or prediction.
 - Evaluation: the same standard TIME wrapper evaluator as Ridge and vanilla
-  foundation models.
+  foundation models. If TS-RAG produces a non-finite prediction where the
+  shared Seasonal grid expects one, the complete cell is replaced by canonical
+  vanilla and the fallback mask and count are retained.
 
 The optional `ADAPTIME_RIDGE_RESULTS_PATH` is a report-only input for the
 separate TS-RAG submission. An incomplete or scientifically different
 full-Ridge root is rejected in favor of local matching evaluations. It cannot
-suppress or alter TS-RAG. The report compares only tasks whose independently
-evaluated configured support is identical and retains method-specific finite
-metric coverage for inspection.
+suppress or alter TS-RAG. The report compares only tasks using the same
+selected Seasonal grid and retains finite/grid/total coverage and fallback
+counts for inspection.
 
 ## Inference timing
 

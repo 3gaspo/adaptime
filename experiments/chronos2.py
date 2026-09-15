@@ -25,6 +25,7 @@ from chronos import BaseChronosPipeline
 from gluonts.time_feature import get_seasonality
 
 from timebench.evaluation.saver import save_window_predictions
+from timebench.evaluation.grid import EVALUATION_GRID_DEFINITION
 from timebench.evaluation.timing import EvaluationTimer
 from timebench.evaluation.utils import get_available_terms
 from timebench.evaluation.covariates import (
@@ -44,7 +45,11 @@ from timebench.paths import (
     foundation_identity_root,
     foundation_weight_path,
 )
-from timebench.pipeline import allocate_run, resolve_target_mode
+from timebench.pipeline import (
+    allocate_run,
+    resolve_shared_evaluation_grid,
+    resolve_target_mode,
+)
 
 # Load environment variables
 load_dotenv()
@@ -173,6 +178,9 @@ def run_chronos2_experiment(
 
         season_length = get_seasonality(dataset.freq)
         covariate_channels = dataset.covariate_dim if covariate_mode != "none" else 0
+        evaluation_grid_path = resolve_shared_evaluation_grid(
+            dataset_name, term, resolved_target_mode
+        )
         identity_root = foundation_identity_root(
             output_dir, "chronos2", resolved_target_mode, dataset_name, term
         )
@@ -197,6 +205,7 @@ def run_chronos2_experiment(
                 "val_length": val_length,
                 "windows": dataset.windows,
                 "seasonality": season_length,
+                "evaluation_grid": EVALUATION_GRID_DEFINITION,
             },
             runtime_config={
                 "batch_size": batch_size,
@@ -221,6 +230,7 @@ def run_chronos2_experiment(
             },
             provenance={
                 "dataset_config_path": None if config_path is None else str(config_path),
+                "evaluation_grid": str(evaluation_grid_path),
             },
         )
         if not run.should_run:
@@ -402,6 +412,7 @@ def run_chronos2_experiment(
                 quantile_levels=quantile_levels,
                 inference_seconds=inference_seconds,
                 task_output_dir=str(run.run_dir),
+                evaluation_grid_path=str(evaluation_grid_path),
             )
             run.complete(
                 ["predictions.npz", "metrics.npz", "config.json", "metrics_summary.json"]

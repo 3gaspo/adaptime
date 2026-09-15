@@ -12,9 +12,14 @@ from time import perf_counter
 import numpy as np
 import pandas as pd
 
-from timebench.adaptime.retrieval import blockwise_topk
+from timebench.adaptime.retrieval import blockwise_topk, context_representation
 from timebench.adaptime.ridge import query_scale
 from timebench.evaluation.adaptation_data import PreparedDataset
+from timebench.evaluation.grid import (
+    EVALUATION_GRID_DEFINITION,
+    flatten_univariate_grid,
+    load_evaluation_grid,
+)
 from timebench.pipeline.adaptime_cache import SharedWindowCache
 from timebench.pipeline.adaptime_vanilla import open_vanilla_test_forecasts
 
@@ -86,6 +91,20 @@ def _atomic_json(path: Path, value: dict[str, object]) -> None:
 def _memmap(path: Path, shape: tuple[int, ...], dtype: object) -> np.memmap:
     path.parent.mkdir(parents=True, exist_ok=True)
     return np.lib.format.open_memmap(path, mode="w+", shape=shape, dtype=dtype)
+
+
+def _represent(
+    shared_cache: SharedWindowCache, contexts: np.ndarray, mode: str
+) -> tuple[np.ndarray, float]:
+    """Compute cheap retrieval representations without persisting them."""
+
+    started = perf_counter()
+    values = (
+        np.asarray(shared_cache.forecaster.represent(contexts), dtype=np.float32)
+        if mode == "model"
+        else context_representation(contexts, mode)
+    )
+    return values, perf_counter() - started
 
 
 @dataclass(frozen=True)
@@ -193,6 +212,7 @@ def _write_fallback(
     root: Path,
     identity: dict[str, object],
     vanilla: np.ndarray,
+    evaluation_grid_cells: np.ndarray,
     reason: str,
     *,
     context_length: int,
@@ -201,12 +221,16 @@ def _write_fallback(
 ) -> Path:
     prediction_path = root / "predictions.npy"
     eligibility_path = root / "rolling_eligible.npy"
+    nonfinite_path = root / "nonfinite_prediction_fallback.npy"
     predictions = _memmap(prediction_path, vanilla.shape, np.float32)
     eligibility = _memmap(eligibility_path, (len(vanilla),), bool)
+    nonfinite = _memmap(nonfinite_path, (len(vanilla),), bool)
     predictions[:] = vanilla
     eligibility[:] = False
+    nonfinite[:] = False
     predictions.flush()
     eligibility.flush()
+    nonfinite.flush()
     manifest_path = root / "prediction_manifest.json"
     _atomic_json(
         manifest_path,
@@ -220,9 +244,17 @@ def _write_fallback(
             "inference_seconds": perf_counter() - started,
             "fallback_reason": reason,
             "rolling_coverage": {"eligible_windows": 0, "total_windows": len(vanilla)},
+            "nonfinite_prediction_fallback": {
+                "policy": "not_applicable_task_level_vanilla_fallback",
+                "count": 0,
+                "eligible_evaluation_windows": int(
+                    np.count_nonzero(evaluation_grid_cells)
+                ),
+            },
             "files": {
                 "predictions": prediction_path.name,
                 "rolling_eligible": eligibility_path.name,
+                "nonfinite_prediction_fallback": nonfinite_path.name,
             },
         },
     )
@@ -235,6 +267,8 @@ def predict_rolling_ridge(
     shared_cache: SharedWindowCache,
     config: RollingRidgeConfig,
     output_dir: str | Path,
+    *,
+    evaluation_grid_path: str | Path,
 ) -> Path:
     """Fit one causal horizon Ridge per variate at every official test query."""
 
@@ -250,13 +284,24 @@ def predict_rolling_ridge(
     vanilla = np.load(
         vanilla_root / vanilla_manifest["arrays"]["predictions"], mmap_mode="r"
     )
+    grid_targets, grid_cells = flatten_univariate_grid(
+        *load_evaluation_grid(evaluation_grid_path)
+    )
+    if grid_targets.shape != (len(vanilla), prepared.prediction_length):
+        raise ValueError("shared evaluation grid does not match rolling Ridge test rows")
+    vanilla_finite = np.all(
+        ~grid_targets | np.isfinite(np.asarray(vanilla[:, 0])), axis=1
+    )
+    if np.any(grid_cells & ~vanilla_finite):
+        raise ValueError("vanilla forecast is non-finite on the shared evaluation grid")
     identity = {
         "schema_version": ROLLING_RIDGE_SCHEMA,
         "signature": _canonical_hash(
             {
                 "prepared_signature": prepared.signature,
                 "vanilla_signature": vanilla_manifest["signature"],
-                "shared_cache_signature": shared_cache.signature,
+                "forecast_cache_config": shared_cache.config,
+                "evaluation_grid": EVALUATION_GRID_DEFINITION,
                 "method": ROLLING_RIDGE_METHOD,
                 "config": asdict(config),
                 "resolved_fitting_stride": fitting_stride,
@@ -265,7 +310,11 @@ def predict_rolling_ridge(
         ),
         "prepared_signature": prepared.signature,
         "vanilla_signature": vanilla_manifest["signature"],
-        "shared_cache_signature": shared_cache.signature,
+        "forecast_cache_config": shared_cache.config,
+        "evaluation_grid": EVALUATION_GRID_DEFINITION,
+        "evaluation_grid_source": str(
+            Path(evaluation_grid_path).expanduser().resolve()
+        ),
         "config": asdict(config),
         "resolved_fitting_stride": fitting_stride,
         "resolved_datastore_stride": datastore_stride,
@@ -288,6 +337,7 @@ def predict_rolling_ridge(
             root,
             identity,
             vanilla,
+            grid_cells,
             "no_source_series",
             context_length=prepared.context_length,
             prediction_length=prepared.prediction_length,
@@ -321,6 +371,7 @@ def predict_rolling_ridge(
             root,
             identity,
             vanilla,
+            grid_cells,
             "fewer_than_minimum_period_aligned_fitting_dates",
             context_length=prepared.context_length,
             prediction_length=prepared.prediction_length,
@@ -349,6 +400,7 @@ def predict_rolling_ridge(
             root,
             identity,
             vanilla,
+            grid_cells,
             "datastore_cap_smaller_than_number_of_variates",
             context_length=prepared.context_length,
             prediction_length=prepared.prediction_length,
@@ -373,6 +425,7 @@ def predict_rolling_ridge(
             root,
             identity,
             vanilla,
+            grid_cells,
             "rolling_datastore_cannot_supply_k_neighbors",
             context_length=prepared.context_length,
             prediction_length=prepared.prediction_length,
@@ -395,7 +448,7 @@ def predict_rolling_ridge(
     neighbor_distance[:] = np.inf
     retrieval_eligible[:] = False
     cache_forecast_seconds = 0.0
-    cache_representation_seconds = 0.0
+    representation_seconds = 0.0
     query_representations: np.ndarray | None = None
     for start in range(0, total_retrieval, config.model_batch_size):
         stop = min(start + config.model_batch_size, total_retrieval)
@@ -411,15 +464,15 @@ def predict_rolling_ridge(
         cache_forecast_seconds += seconds
         target_rows[start:stop] = retrieval_batch.target
         scale_rows[start:stop] = query_scale(retrieval_batch.context)[:, 0]
-        values, seconds = shared_cache.representations(
-            selected_refs, retrieval_batch.context, config.representation
+        values, seconds = _represent(
+            shared_cache, retrieval_batch.context, config.representation
         )
         if query_representations is None:
             query_representations = np.empty(
                 (total_retrieval, values.shape[1]), dtype=np.float32
             )
         query_representations[start:stop] = values
-        cache_representation_seconds += seconds
+        representation_seconds += seconds
     assert query_representations is not None
 
     retrieval_seconds = 0.0
@@ -445,13 +498,15 @@ def predict_rolling_ridge(
         representation_parts = []
         for start in range(0, len(candidate_refs), config.datastore_block_size):
             stop = min(start + config.datastore_block_size, len(candidate_refs))
-            values, seconds = shared_cache.representations_for_references(
+            candidate_batch = reader.read(
                 candidate_refs[start:stop],
-                reader=reader,
-                mode=config.representation,
+                context_length=prepared.retrieval_context_length,
+            )
+            values, seconds = _represent(
+                shared_cache, candidate_batch.context, config.representation
             )
             representation_parts.append(values)
-            cache_representation_seconds += seconds
+            representation_seconds += seconds
         candidate_representations = np.concatenate(representation_parts, axis=0)
         retrieval_started = perf_counter()
         distances, positions = blockwise_topk(
@@ -505,8 +560,12 @@ def predict_rolling_ridge(
     )
     predictions = _memmap(root / "predictions.npy", vanilla.shape, np.float32)
     rolling_eligible = _memmap(root / "rolling_eligible.npy", (len(test_refs),), bool)
+    nonfinite_fallback = _memmap(
+        root / "nonfinite_prediction_fallback.npy", (len(test_refs),), bool
+    )
     predictions[:] = vanilla
     rolling_eligible[:] = False
+    nonfinite_fallback[:] = False
     trackers: dict[tuple[int, int, int], tuple[_HorizonStatistics, set[int]]] = {}
     feature_cache: dict[int, np.ndarray] = {}
 
@@ -564,9 +623,14 @@ def predict_rolling_ridge(
             "hf,hf->h", current_x, coefficients
         )
         fit_seconds += perf_counter() - fit_started
-        if np.isfinite(value).all():
+        finite_when_expected = np.all(
+            ~grid_targets[output_row] | np.isfinite(value)
+        )
+        if finite_when_expected:
             predictions[output_row, 0] = value
             rolling_eligible[output_row] = True
+        elif grid_cells[output_row]:
+            nonfinite_fallback[output_row] = True
 
     for store in (
         vanilla_rows,
@@ -577,6 +641,7 @@ def predict_rolling_ridge(
         retrieval_eligible,
         predictions,
         rolling_eligible,
+        nonfinite_fallback,
     ):
         store.flush()
     np.save(root / "retrieval_reference.npy", retrieval_refs, allow_pickle=False)
@@ -612,15 +677,21 @@ def predict_rolling_ridge(
                 "eligible_windows": int(np.count_nonzero(rolling_eligible)),
                 "total_windows": len(test_refs),
             },
+            "nonfinite_prediction_fallback": {
+                "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+                "count": int(np.count_nonzero(nonfinite_fallback)),
+                "eligible_evaluation_windows": int(np.count_nonzero(grid_cells)),
+            },
             "timing_seconds": {
                 "new_vanilla_forecast_seconds": cache_forecast_seconds,
-                "new_representation_seconds": cache_representation_seconds,
+                "representation_seconds": representation_seconds,
                 "retrieval_seconds": retrieval_seconds,
                 "rolling_fit_and_prediction_seconds": fit_seconds,
             },
             "files": {
                 "predictions": "predictions.npy",
                 "rolling_eligible": "rolling_eligible.npy",
+                "nonfinite_prediction_fallback": "nonfinite_prediction_fallback.npy",
                 "retrieval_reference": "retrieval_reference.npy",
                 "retrieval_vanilla": "retrieval_vanilla.npy",
                 "retrieval_target": "retrieval_target.npy",

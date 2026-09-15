@@ -14,6 +14,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--prepared", type=Path, required=True)
     parser.add_argument("--prediction", type=Path, required=True)
+    parser.add_argument("--evaluation-grid", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     return parser.parse_args()
 
@@ -24,6 +25,7 @@ def main() -> None:
         args.prepared,
         args.prediction,
         args.output_dir,
+        evaluation_grid_path=args.evaluation_grid,
     )
     print(args.output_dir / metadata["metrics_summary_file"])
 

@@ -15,6 +15,7 @@ from gluonts.time_feature import get_seasonality, norm_freq_str
 from pandas.tseries.frequencies import to_offset
 
 from timebench.evaluation.adaptation import evaluate_point_predictions
+from timebench.evaluation.grid import EVALUATION_GRID_DEFINITION
 from timebench.evaluation.adaptation_data import (
     PreparedDataset,
     PreparationConfig,
@@ -58,6 +59,7 @@ from timebench.pipeline.adaptime_vanilla import (
     extract_vanilla_test_forecasts,
 )
 from timebench.pipeline.runs import allocate_run, select_completed_runs
+from timebench.pipeline.evaluation_grid import resolve_shared_evaluation_grid
 from timebench.pipeline.tsrag import (
     TSRAG_CONTEXT_LENGTH,
     TSRAG_EMBEDDING_DIMENSION,
@@ -530,7 +532,14 @@ def _spec(
                 "seasonality": task.preparation.seasonality,
                 "forecast_type": "point",
             },
-            {"data_config": data_config},
+            {
+                "data_config": data_config,
+                **(
+                    {"evaluation_grid": EVALUATION_GRID_DEFINITION}
+                    if stage == "evaluations"
+                    else {}
+                ),
+            },
             (
                 {"phase": "seasonal_naive_prediction"}
                 if stage == "predictions"
@@ -557,6 +566,7 @@ def _spec(
             "backbone": workflow.model,
             "weights_id": workflow.weights_id,
             "rolling": rolling_config,
+            "nonfinite_prediction_fallback": "vanilla_on_shared_evaluation_grid",
         }
         return (
             f"adaptime_{stage[:-1]}",
@@ -570,6 +580,7 @@ def _spec(
                 "data_config": data_config,
                 "prediction_config": prediction_science,
                 "vanilla_context_policy": "all_available_history_capped_at_model_limit",
+                "evaluation_grid": EVALUATION_GRID_DEFINITION,
             },
             (
                 {"phase": "causal_rolling_fit_and_inference", "forecast_type": "point"}
@@ -672,13 +683,22 @@ def _spec(
             model_config["prediction_protocol"] = (
                 "individual_candidates_plus_validation_selected_adaptation"
             )
+            model_config["nonfinite_prediction_fallback"] = (
+                "vanilla_on_shared_evaluation_grid"
+            )
         else:
             model_config["checkpoint"] = "released_tsrag_arm"
+            model_config["nonfinite_prediction_fallback"] = (
+                "vanilla_on_shared_evaluation_grid"
+            )
         return (
             "adaptime_prediction",
             _task_identity(task, method_name),
             model_config,
-            {"data_config": data_config},
+            {
+                "data_config": data_config,
+                "evaluation_grid": EVALUATION_GRID_DEFINITION,
+            },
             {"phase": "frozen_inference", "forecast_type": "point"},
         )
     if stage == "evaluations":
@@ -695,8 +715,14 @@ def _spec(
             prediction_science["prediction_protocol"] = (
                 "individual_candidates_plus_validation_selected_adaptation"
             )
+            prediction_science["nonfinite_prediction_fallback"] = (
+                "vanilla_on_shared_evaluation_grid"
+            )
         else:
             prediction_science["checkpoint"] = "released_tsrag_arm"
+            prediction_science["nonfinite_prediction_fallback"] = (
+                "vanilla_on_shared_evaluation_grid"
+            )
         return (
             "adaptime_evaluation",
             _task_identity(task, evaluation_method),
@@ -705,6 +731,7 @@ def _spec(
                 "data_config": data_config,
                 "prediction_config": prediction_science,
                 "evaluator": "timebench.evaluation.saver.save_window_predictions",
+                "evaluation_grid": EVALUATION_GRID_DEFINITION,
             },
             {
                 "phase": "evaluation",
@@ -876,12 +903,6 @@ def _run_vanilla(
         weights_id=workflow.weights_id,
         device=workflow.device,
     )
-    prepared_dataset = PreparedDataset(prepared)
-    shared_cache = SharedWindowCache(
-        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
-        prepared=prepared_dataset,
-        forecaster=forecaster,
-    )
     with run:
         manifest = extract_vanilla_test_forecasts(
             prepared,
@@ -891,7 +912,6 @@ def _run_vanilla(
                 arrow_cache_items=workflow.arrow_cache_items,
             ),
             run.run_dir / "vanilla",
-            shared_cache=shared_cache,
         )
         run.complete(
             [
@@ -962,19 +982,19 @@ def _run_ridge_extraction(
         device=workflow.device,
     )
     prepared_dataset = PreparedDataset(prepared)
-    shared_cache = SharedWindowCache(
-        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
-        prepared=prepared_dataset,
-        forecaster=forecaster,
-    )
     with run:
-        manifest = extract_adaptation_features(
-            prepared,
-            forecaster,
-            _extraction_config(workflow),
-            run.run_dir / "extraction",
-            shared_cache=shared_cache,
-        )
+        with SharedWindowCache(
+            shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
+            prepared=prepared_dataset,
+            forecaster=forecaster,
+        ) as shared_cache:
+            manifest = extract_adaptation_features(
+                prepared,
+                forecaster,
+                _extraction_config(workflow),
+                run.run_dir / "extraction",
+                shared_cache=shared_cache,
+            )
         run.complete(["extraction/manifest.json"])
     return manifest
 
@@ -1122,22 +1142,22 @@ def _run_ridge_eval_extraction(
         device=workflow.device,
     )
     prepared_dataset = PreparedDataset(prepared)
-    shared_cache = SharedWindowCache(
-        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
-        prepared=prepared_dataset,
-        forecaster=forecaster,
-    )
     with run:
-        manifest = extract_adaptation_eval_features(
-            prepared,
-            extraction,
-            adaptation,
-            vanilla,
-            forecaster,
-            _extraction_config(workflow),
-            run.run_dir / "extraction",
-            shared_cache=shared_cache,
-        )
+        with SharedWindowCache(
+            shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
+            prepared=prepared_dataset,
+            forecaster=forecaster,
+        ) as shared_cache:
+            manifest = extract_adaptation_eval_features(
+                prepared,
+                extraction,
+                adaptation,
+                vanilla,
+                forecaster,
+                _extraction_config(workflow),
+                run.run_dir / "extraction",
+                shared_cache=shared_cache,
+            )
         run.complete(["extraction/manifest.json"])
     return manifest
 
@@ -1161,6 +1181,9 @@ def _run_ridge_prediction(
         artifact_root, task, workflow, "adaptations", "ridge", "model/model_manifest.json"
     )
     vanilla = _vanilla_manifest(artifact_root, task, workflow)
+    evaluation_grid = resolve_shared_evaluation_grid(
+        task.dataset, task.term, workflow.target_mode
+    )
     run = _allocation(
         artifact_root,
         task,
@@ -1174,6 +1197,7 @@ def _run_ridge_prediction(
             "eval_extraction_manifest": str(eval_extraction),
             "adaptation_manifest": str(adaptation),
             "vanilla_manifest": str(vanilla),
+            "evaluation_grid": str(evaluation_grid),
         },
     )
     manifest = run.run_dir / "prediction" / "prediction_manifest.json"
@@ -1188,6 +1212,7 @@ def _run_ridge_prediction(
             vanilla,
             PredictionConfig(chunk_size=workflow.ridge_chunk_size),
             run.run_dir / "prediction",
+            evaluation_grid_path=evaluation_grid,
         )
         run.complete(
             [
@@ -1198,6 +1223,7 @@ def _run_ridge_prediction(
                 ),
                 "prediction/rag_eligible.npy",
                 "prediction/fallback_reason.npy",
+                "prediction/nonfinite_prediction_fallback.npy",
             ]
         )
     return manifest
@@ -1208,6 +1234,9 @@ def _run_rolling_ridge_prediction(
 ) -> Path:
     prepared = _data_manifest(artifact_root, task, workflow)
     vanilla = _vanilla_manifest(artifact_root, task, workflow)
+    evaluation_grid = resolve_shared_evaluation_grid(
+        task.dataset, task.term, workflow.target_mode
+    )
     config = _rolling_config(task, workflow)
     run = _allocation(
         artifact_root,
@@ -1222,6 +1251,7 @@ def _run_rolling_ridge_prediction(
         provenance={
             "data_manifest": str(prepared),
             "vanilla_manifest": str(vanilla),
+            "evaluation_grid": str(evaluation_grid),
         },
     )
     manifest = run.run_dir / "prediction" / "prediction_manifest.json"
@@ -1236,19 +1266,20 @@ def _run_rolling_ridge_prediction(
         device=workflow.device,
     )
     prepared_dataset = PreparedDataset(prepared)
-    shared_cache = SharedWindowCache(
-        shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
-        prepared=prepared_dataset,
-        forecaster=forecaster,
-    )
     with run:
-        manifest = predict_rolling_ridge(
-            prepared,
-            vanilla,
-            shared_cache,
-            config,
-            run.run_dir / "prediction",
-        )
+        with SharedWindowCache(
+            shared_window_cache_root(artifact_root, prepared_dataset, forecaster),
+            prepared=prepared_dataset,
+            forecaster=forecaster,
+        ) as shared_cache:
+            manifest = predict_rolling_ridge(
+                prepared,
+                vanilla,
+                shared_cache,
+                config,
+                run.run_dir / "prediction",
+                evaluation_grid_path=evaluation_grid,
+            )
         files = dict(json.loads(manifest.read_text(encoding="utf-8"))["files"])
         run.complete(
             [
@@ -1271,7 +1302,10 @@ def _run_tsrag_prediction(
         artifact_root, task, workflow, "extractions", "tsrag", "extraction/manifest.json"
     )
     fallback = open_tsrag_task_fallback(extraction)
-    vanilla = _vanilla_manifest(artifact_root, task, workflow) if fallback else None
+    vanilla = _vanilla_manifest(artifact_root, task, workflow)
+    evaluation_grid = resolve_shared_evaluation_grid(
+        task.dataset, task.term, workflow.target_mode
+    )
     base_path, retriever_path, checkpoint_path = _tsrag_paths(workflow)
     run = _allocation(
         artifact_root,
@@ -1289,7 +1323,8 @@ def _run_tsrag_prediction(
         provenance={
             "data_manifest": str(prepared),
             "extraction_manifest": str(extraction),
-            **({"vanilla_manifest": str(vanilla)} if vanilla is not None else {}),
+            "vanilla_manifest": str(vanilla),
+            "evaluation_grid": str(evaluation_grid),
         },
     )
     manifest = run.run_dir / "prediction" / "prediction_manifest.json"
@@ -1300,18 +1335,29 @@ def _run_tsrag_prediction(
             manifest = predict_tsrag(
                 prepared,
                 extraction,
+                vanilla,
                 loaded,
                 retriever,
                 workflow.tsrag_runtime,
                 run.run_dir / "prediction",
                 device=workflow.device,
+                evaluation_grid_path=evaluation_grid,
             )
         else:
-            assert vanilla is not None
             manifest = predict_tsrag_vanilla_fallback(
-                prepared, vanilla, fallback, run.run_dir / "prediction"
+                prepared,
+                vanilla,
+                fallback,
+                run.run_dir / "prediction",
+                evaluation_grid_path=evaluation_grid,
             )
-        run.complete(["prediction/prediction_manifest.json", "prediction/predictions.npy"])
+        run.complete(
+            [
+                "prediction/prediction_manifest.json",
+                "prediction/predictions.npy",
+                "prediction/nonfinite_prediction_fallback.npy",
+            ]
+        )
     return manifest
 
 
@@ -1331,6 +1377,9 @@ def _run_evaluation(
         prediction_method,
         "prediction/prediction_manifest.json",
     )
+    evaluation_grid = resolve_shared_evaluation_grid(
+        task.dataset, task.term, workflow.target_mode
+    )
     run = _allocation(
         artifact_root,
         task,
@@ -1341,6 +1390,7 @@ def _run_evaluation(
         provenance={
             "data_manifest": str(prepared),
             "prediction_manifest": str(prediction),
+            "evaluation_grid": str(evaluation_grid),
         },
     )
     if not run.should_run:
@@ -1351,6 +1401,7 @@ def _run_evaluation(
             prediction,
             run.run_dir,
             method=method if method in ADAPTATION_METHODS else None,
+            evaluation_grid_path=evaluation_grid,
         )
         run.complete(["predictions.npz", "metrics.npz", "config.json", "metrics_summary.json"])
     return run.run_dir / "metrics_summary.json"
@@ -1365,6 +1416,7 @@ def run_adaptation_stage(
     datasets_selected: Iterable[str] = ("all_datasets",),
     terms_selected: Iterable[str] | None = None,
     output_root: Path | None = None,
+    seasonal_results_path: Path | None = None,
     ridge_results_path: Path | None = None,
     config_policy: str = "error",
     repeat_policy: str = "selected",
@@ -1425,9 +1477,14 @@ def run_adaptation_stage(
     )
     if stage == "report":
         launch_id = os.environ.get("TIME_LAUNCH_ID") or "manual"
+        seasonal_root = (
+            seasonal_results_path.expanduser().resolve()
+            if seasonal_results_path is not None
+            else artifact_root / "evaluations" / "seasonal_naive"
+        )
         if method == "ridge":
             roots = {
-                "seasonal_naive": artifact_root / "evaluations" / "seasonal_naive",
+                "seasonal_naive": seasonal_root,
                 **{
                     comparison_method: artifact_root
                     / "evaluations"
@@ -1448,13 +1505,13 @@ def run_adaptation_stage(
                     flush=True,
                 )
             roots = {
-                "seasonal_naive": artifact_root / "evaluations" / "seasonal_naive",
+                "seasonal_naive": seasonal_root,
                 "full_ridge_shared": ridge_root,
                 "tsrag": artifact_root / "evaluations" / "tsrag",
             }
         else:
             roots = {
-                "seasonal_naive": artifact_root / "evaluations" / "seasonal_naive",
+                "seasonal_naive": seasonal_root,
                 **{
                     comparison_method: artifact_root
                     / "evaluations"

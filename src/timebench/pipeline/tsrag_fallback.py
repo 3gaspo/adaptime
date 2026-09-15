@@ -15,6 +15,11 @@ from timebench.evaluation.adaptation_data import (
     PreparedDataset,
     validate_global_datastore_requirement,
 )
+from timebench.evaluation.grid import (
+    EVALUATION_GRID_DEFINITION,
+    flatten_univariate_grid,
+    load_evaluation_grid,
+)
 from timebench.pipeline.adaptation_prediction import POINT_PREDICTION_SCHEMA
 from timebench.pipeline.adaptime_vanilla import open_vanilla_test_forecasts
 from timebench.pipeline.tsrag import TSRAG_SOURCE_COMMIT
@@ -112,6 +117,8 @@ def predict_tsrag_vanilla_fallback(
     vanilla_path: str | Path,
     fallback: dict[str, str],
     output_dir: str | Path,
+    *,
+    evaluation_grid_path: str | Path,
 ) -> Path:
     """Copy an existing exact vanilla forecast into a TS-RAG prediction artifact."""
 
@@ -125,6 +132,7 @@ def predict_tsrag_vanilla_fallback(
         "prepared_signature": prepared.signature,
         "source_commit": TSRAG_SOURCE_COMMIT,
         "vanilla_signature": vanilla["signature"],
+        "evaluation_grid": EVALUATION_GRID_DEFINITION,
         "fallback": dict(fallback),
     }
     signature = _canonical_hash(identity)
@@ -137,6 +145,7 @@ def predict_tsrag_vanilla_fallback(
             existing.get("signature") == signature
             and existing.get("status") == "completed"
             and (root / "predictions.npy").is_file()
+            and (root / "nonfinite_prediction_fallback.npy").is_file()
         ):
             return manifest_path
         raise FileExistsError(f"TS-RAG fallback prediction already differs: {root}")
@@ -145,11 +154,26 @@ def predict_tsrag_vanilla_fallback(
     expected = (len(prepared.indices("test")), 1, prepared.prediction_length)
     if source.shape != expected:
         raise ValueError(f"vanilla fallback has shape {source.shape}, expected {expected}")
+    grid_targets, grid_cells = flatten_univariate_grid(
+        *load_evaluation_grid(evaluation_grid_path)
+    )
+    if grid_targets.shape != (len(source), prepared.prediction_length):
+        raise ValueError("shared evaluation grid does not match TS-RAG fallback rows")
+    vanilla_finite = np.all(
+        ~grid_targets | np.isfinite(np.asarray(source[:, 0])), axis=1
+    )
+    if np.any(grid_cells & ~vanilla_finite):
+        raise ValueError("vanilla forecast is non-finite on the shared evaluation grid")
     destination = np.lib.format.open_memmap(
         root / "predictions.npy", mode="w+", shape=source.shape, dtype=np.float32
     )
     destination[:] = source
     destination.flush()
+    np.save(
+        root / "nonfinite_prediction_fallback.npy",
+        np.zeros(len(source), dtype=bool),
+        allow_pickle=False,
+    )
 
     vanilla_seconds = float(
         vanilla["timing_seconds"]["vanilla_model_forecast_seconds"]
@@ -165,7 +189,16 @@ def predict_tsrag_vanilla_fallback(
         "context_policy": "reused_vanilla_all_available_history_capped_at_model_limit",
         "prediction_length": prepared.prediction_length,
         "seasonality": prepared.seasonality,
+        "evaluation_grid_source": str(
+            Path(evaluation_grid_path).expanduser().resolve()
+        ),
         "fallback_reason": dict(fallback),
+        "nonfinite_prediction_fallback": {
+            "policy": "not_applicable_task_level_vanilla_fallback",
+            "count": 0,
+            "task_level_fallback_windows": len(source),
+            "eligible_evaluation_windows": int(np.count_nonzero(grid_cells)),
+        },
         "inference_seconds": vanilla_seconds,
         "timing": {
             "unit": "seconds",
@@ -173,7 +206,10 @@ def predict_tsrag_vanilla_fallback(
             "reused_prediction_artifact": str(Path(vanilla_path).resolve()),
             "vanilla_recomputed": False,
         },
-        "files": {"predictions": "predictions.npy"},
+        "files": {
+            "predictions": "predictions.npy",
+            "nonfinite_prediction_fallback": "nonfinite_prediction_fallback.npy",
+        },
     }
     _atomic_json(manifest_path, manifest)
     return manifest_path

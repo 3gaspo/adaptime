@@ -56,6 +56,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--terms", type=_csv)
     parser.add_argument("--config", type=Path)
     parser.add_argument("--output-root", type=Path)
+    parser.add_argument(
+        "--seasonal-results-path",
+        type=Path,
+        help="Completed shared Seasonal Naive evaluation root used by reports",
+    )
     parser.add_argument("--model", choices=MODEL_ALIASES, default="chronos2")
     parser.add_argument("--model-path", type=Path)
     parser.add_argument("--weights-id")
@@ -172,6 +177,7 @@ def main() -> None:
         datasets_selected=args.datasets,
         terms_selected=args.terms,
         output_root=args.output_root,
+        seasonal_results_path=args.seasonal_results_path,
         ridge_results_path=args.ridge_results_path,
         config_policy=args.config_policy,
         repeat_policy=args.repeat_policy,

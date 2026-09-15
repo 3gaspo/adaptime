@@ -14,6 +14,12 @@ import numpy as np
 import torch
 
 from timebench.evaluation.timing import EvaluationTimer
+from timebench.evaluation.grid import (
+    EVALUATION_GRID_DEFINITION,
+    flatten_univariate_grid,
+    load_evaluation_grid,
+)
+from timebench.pipeline.adaptime_vanilla import open_vanilla_test_forecasts
 from timebench.external_models.tsrag.retriever import TSRAGIndex, TSRAGRetriever
 from timebench.model_loading.tsrag import LoadedTSRAG
 from timebench.pipeline.adaptation_prediction import POINT_PREDICTION_SCHEMA
@@ -357,20 +363,25 @@ def _rollout_tsrag(
 def predict_tsrag(
     prepared_path: str | Path,
     extraction_path: str | Path,
+    vanilla_path: str | Path,
     loaded: LoadedTSRAG,
     retriever: TSRAGRetriever,
     runtime: TSRAGRuntimeConfig,
     output_dir: str | Path,
     *,
     device: str | torch.device = "cuda",
+    evaluation_grid_path: str | Path,
 ) -> Path:
     """Produce TS-RAG point forecasts without owning TIME metric evaluation."""
 
     runtime.validate()
     prepared = TSRAGPreparedDataset(prepared_path)
     extraction_root, extraction = open_tsrag_extraction(extraction_path)
+    vanilla_root, vanilla_manifest = open_vanilla_test_forecasts(vanilla_path)
     if extraction["prepared_signature"] != prepared.signature:
         raise ValueError("TS-RAG extraction and prepared TIME windows do not match")
+    if vanilla_manifest["prepared_signature"] != prepared.signature:
+        raise ValueError("TS-RAG vanilla fallback and prepared TIME windows do not match")
     horizon = prepared.prediction_length
     identity = {
         "schema_version": POINT_PREDICTION_SCHEMA,
@@ -378,6 +389,8 @@ def predict_tsrag(
         "prepared_signature": prepared.signature,
         "extraction_signature": extraction["signature"],
         "source_commit": TSRAG_SOURCE_COMMIT,
+        "vanilla_signature": vanilla_manifest["signature"],
+        "evaluation_grid": EVALUATION_GRID_DEFINITION,
         "rollout": (
             "native_single_call_crop" if horizon <= TSRAG_NATIVE_HORIZON
             else "autoregressive_64_step_reembed_retrieve"
@@ -388,7 +401,20 @@ def predict_tsrag(
     manifest_path = root / "prediction_manifest.json"
     if manifest_path.is_file():
         existing = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if existing.get("signature") == signature and existing.get("status") == "completed":
+        if (
+            existing.get("signature") == signature
+            and existing.get("status") == "completed"
+            and all(
+                (root / str(relative)).is_file()
+                for relative in dict(existing.get("files", {})).values()
+            )
+            and {
+                "predictions.npy",
+                "nonfinite_prediction_fallback.npy",
+            }.issubset(
+                {str(relative) for relative in dict(existing.get("files", {})).values()}
+            )
+        ):
             return manifest_path
         raise FileExistsError(f"TS-RAG prediction already differs: {root}")
 
@@ -406,12 +432,29 @@ def predict_tsrag(
         prepared.indices("datastore"), datastore_representation, retriever
     )
     test_references = prepared.indices("test")
+    vanilla = np.load(
+        vanilla_root / vanilla_manifest["arrays"]["predictions"], mmap_mode="r"
+    )
+    grid_targets, grid_cells = flatten_univariate_grid(
+        *load_evaluation_grid(evaluation_grid_path)
+    )
+    if grid_targets.shape != (len(test_references), horizon):
+        raise ValueError("shared evaluation grid does not match TS-RAG test rows")
+    vanilla_finite = np.all(
+        ~grid_targets | np.isfinite(np.asarray(vanilla[:, 0])), axis=1
+    )
+    if np.any(grid_cells & ~vanilla_finite):
+        raise ValueError("vanilla forecast is non-finite on the shared evaluation grid")
     reader = prepared.reader(cache_items=runtime.arrow_cache_items)
     prediction_store = _memmap(
         root / "predictions.npy",
         (len(test_references), 1, horizon),
         np.float32,
     )
+    fallback_store = _memmap(
+        root / "nonfinite_prediction_fallback.npy", (len(test_references),), bool
+    )
+    fallback_store[:] = False
     timings = {
         "rollout_representation_seconds": 0.0,
         "rollout_retrieval_seconds": 0.0,
@@ -438,9 +481,16 @@ def predict_tsrag(
             torch_device,
             timings,
         )
+        invalid = grid_cells[start:stop] & ~np.all(
+            ~grid_targets[start:stop] | np.isfinite(values), axis=1
+        )
+        if np.any(invalid):
+            values[invalid] = np.asarray(vanilla[start:stop, 0])[invalid]
+            fallback_store[start:stop] = invalid
         prediction_store[start:stop] = values[:, None, :]
 
     prediction_store.flush()
+    fallback_store.flush()
     extraction_timing = dict(extraction["timing_seconds"])
     tsrag_total = (
         float(extraction_timing["test_representation_seconds"])
@@ -491,14 +541,25 @@ def predict_tsrag(
             "native_prediction_length": TSRAG_NATIVE_HORIZON,
             "top_k": TSRAG_TOP_K,
             "seasonality": prepared.seasonality,
+            "evaluation_grid_source": str(
+                Path(evaluation_grid_path).expanduser().resolve()
+            ),
             "parameters": {
                 "trainable_during_evaluation": 0,
                 "released_arm_parameters": loaded.adaptor_parameters,
             },
             "checkpoint": str(loaded.checkpoint),
             "inference_seconds": float(tsrag_total),
+            "nonfinite_prediction_fallback": {
+                "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+                "count": int(np.count_nonzero(fallback_store)),
+                "eligible_evaluation_windows": int(np.count_nonzero(grid_cells)),
+            },
             "timing": timing,
-            "files": {"predictions": "predictions.npy"},
+            "files": {
+                "predictions": "predictions.npy",
+                "nonfinite_prediction_fallback": "nonfinite_prediction_fallback.npy",
+            },
         },
     )
     return manifest_path

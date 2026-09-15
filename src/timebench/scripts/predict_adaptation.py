@@ -20,6 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", type=Path, required=True)
     parser.add_argument("--eval-extraction", type=Path, required=True)
     parser.add_argument("--vanilla", type=Path, required=True)
+    parser.add_argument("--evaluation-grid", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--chunk-size", type=int, default=1024)
     return parser.parse_args()
@@ -35,6 +36,7 @@ def main() -> None:
         args.vanilla,
         PredictionConfig(chunk_size=args.chunk_size),
         args.output_dir,
+        evaluation_grid_path=args.evaluation_grid,
     )
     print(manifest)
 

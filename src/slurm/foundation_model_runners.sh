@@ -8,6 +8,12 @@ FOUNDATION_MODELS=(
     seasonal_naive
 )
 
+FOUNDATION_LEARNED_MODELS=(
+    chronos_bolt
+    chronos2
+    ts_icl
+)
+
 FOUNDATION_RUNNERS=(
     run_chronos_bolt.sh
     run_chronos2.sh

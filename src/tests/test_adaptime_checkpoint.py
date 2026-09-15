@@ -412,6 +412,7 @@ def main() -> None:
             "src/timebench/results/adaptation.py",
             "src/timebench/pipeline/adaptime_cache.py",
             "src/timebench/pipeline/adaptime_rolling.py",
+            "src/timebench/pipeline/evaluation_grid.py",
         )
     ]
     for source in (
@@ -455,6 +456,8 @@ def main() -> None:
     assert '"chronos_bolt": 2048' in window_audit
     assert "extract_tsrag_features" in tsrag_pipeline
     assert "predict_tsrag" in tsrag_pipeline
+    assert '"nonfinite_prediction_fallback"' in tsrag_pipeline
+    assert "values[invalid]" in tsrag_pipeline
     adaptation_data = additional_sources[0]
     evaluator = additional_sources[1]
     adaptime_workflow = additional_sources[2]
@@ -462,6 +465,7 @@ def main() -> None:
     result_builder = additional_sources[4]
     shared_cache = additional_sources[5]
     rolling = additional_sources[6]
+    evaluation_grid = additional_sources[7]
     assert "save_window_predictions" in evaluator
     assert '"consumers": [' in adaptime_workflow
     for consumer in (
@@ -485,7 +489,15 @@ def main() -> None:
     assert "PreparedDataset(path)" in tsrag_data
     assert "independently evaluated Adaptime wrappers" in result_builder
     assert "class SharedWindowCache" in shared_cache
-    assert 'f"representation:{mode}"' in shared_cache
+    assert '"cached_value": "source_window_vanilla_backbone_forecast"' in shared_cache
+    assert 'f"run_{index}"' in shared_cache
+    assert '"write_seconds"' in shared_cache
+    assert "_canonical_hash" not in shared_cache
+    assert "representation:" not in shared_cache
+    assert '"nonfinite_prediction_fallback"' in prediction
+    assert "values[invalid] = chunk_vanilla[invalid]" in prediction
+    assert "TIME_SEASONAL_TASKS_ROOT" in evaluation_grid
+    assert '"evaluation_grid": EVALUATION_GRID_DEFINITION' in adaptime_workflow
     assert 'ROLLING_RIDGE_METHOD = "rolling_y_ridge_horizon"' in rolling
     assert "minimum_fitting_dates: int = 64" in rolling
     assert '"coefficient_scope": "per_series_and_horizon"' in rolling
