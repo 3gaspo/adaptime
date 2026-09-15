@@ -46,4 +46,3 @@ job_id="${job_id%%;*}"
 echo "$seasonal_scope Seasonal Naive submitted job_id=$job_id launch_id=$launch_id"
 echo "Seasonal task root: $TIME_SEASONAL_TASKS_ROOT"
 echo "status: bash scripts/foundation_model_status.sh $cluster $launch_id"
-
