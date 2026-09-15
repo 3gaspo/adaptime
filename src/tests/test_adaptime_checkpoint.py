@@ -13,6 +13,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
+import yaml
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -37,6 +38,7 @@ from timebench.evaluation.adaptation_data import (
     prepare_adaptation_dataset,
 )
 from timebench.evaluation.metrics import seasonal_naive_point_forecast
+from timebench.evaluation.utils import get_available_terms
 from timebench.pipeline.adaptime_extraction import (
     ExtractionConfig,
     _normalize_extraction_config,
@@ -134,6 +136,24 @@ def _evaluation_run(
 
 
 def main() -> None:
+    dataset_config = yaml.safe_load(
+        (PROJECT_ROOT / "src/timebench/config/datasets.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    excluded_datasets = {
+        "Coastal_T_S/5T",
+        "current_velocity/20T",
+        "azure2019_D/5T",
+        "azure2019_I/5T",
+    }
+    included_tasks = sum(
+        len(get_available_terms(dataset, dataset_config))
+        for dataset in dataset_config["datasets"]
+        if dataset not in excluded_datasets
+    )
+    assert included_tasks == 90
+
     extraction_config = ExtractionConfig()
     serialized_config = json.loads(json.dumps(asdict(extraction_config)))
     assert _normalize_extraction_config(serialized_config) == asdict(extraction_config)
@@ -479,6 +499,8 @@ def main() -> None:
     assert "_matching_evaluation_runs(" in adaptime_workflow
     assert "adaptation_split_lengths(" in adaptime_workflow
     assert "for comparison_method in ADAPTATION_METHODS" in adaptime_workflow
+    assert "excluded_datasets" in adaptime_workflow
+    assert "name not in excluded_names" in adaptime_workflow
     assert "max_datastore_windows" in adaptation_data
     assert "training and validation retain only fixed-context rows" in adaptation_data
     assert '"query_window_contract": QUERY_WINDOW_CONTRACT' in adaptation_data
@@ -488,6 +510,7 @@ def main() -> None:
     assert "return self.shared.indices(split)" in tsrag_data
     assert "PreparedDataset(path)" in tsrag_data
     assert "independently evaluated Adaptime wrappers" in result_builder
+    assert '"expected_tasks"' in result_builder
     assert "class SharedWindowCache" in shared_cache
     assert '"cached_value": "source_window_vanilla_backbone_forecast"' in shared_cache
     assert 'f"run_{index}"' in shared_cache

@@ -270,12 +270,21 @@ def _fallback_retrieval_context_length(
 
 
 def _selected_datasets(
-    dataset_config: dict[str, object], selected: Iterable[str]
+    dataset_config: dict[str, object],
+    selected: Iterable[str],
+    excluded: Iterable[str] = (),
 ) -> list[str]:
     values = list(selected)
-    names = list(dataset_config.get("datasets", {})) if values == ["all_datasets"] else values
+    configured_names = list(dataset_config.get("datasets", {}))
+    configured = set(configured_names)
+    excluded_names = set(excluded)
+    unknown = excluded_names - configured
+    if unknown:
+        raise ValueError(f"excluded TIME datasets are not configured: {sorted(unknown)}")
+    names = configured_names if values == ["all_datasets"] else values
+    names = [name for name in names if name not in excluded_names]
     if not names:
-        raise ValueError("no TIME datasets selected")
+        raise ValueError("no TIME datasets selected after exclusions")
     return names
 
 
@@ -296,6 +305,7 @@ def workflow_tasks(
     datasets_selected: Iterable[str],
     terms_selected: Iterable[str] | None,
     workflow: AdaptimeWorkflowConfig,
+    excluded_datasets: Iterable[str] = (),
 ) -> list[AdaptimeTask]:
     """Resolve the same task plan regardless of the consuming method."""
 
@@ -303,7 +313,9 @@ def workflow_tasks(
     context_length = foundation_context_length(workflow.model)
     if context_length < TSRAG_CONTEXT_LENGTH:
         raise ValueError("the shared context must cover TS-RAG's native L=512")
-    for dataset_name in _selected_datasets(dataset_config, datasets_selected):
+    for dataset_name in _selected_datasets(
+        dataset_config, datasets_selected, excluded_datasets
+    ):
         source_path = (dataset_storage_root() / dataset_name).resolve()
         source = datasets.load_from_disk(str(source_path))
         if len(source) == 0:
@@ -1414,6 +1426,7 @@ def run_adaptation_stage(
     *,
     dataset_config_path: Path | None = None,
     datasets_selected: Iterable[str] = ("all_datasets",),
+    excluded_datasets: Iterable[str] = (),
     terms_selected: Iterable[str] | None = None,
     output_root: Path | None = None,
     seasonal_results_path: Path | None = None,
@@ -1460,7 +1473,11 @@ def run_adaptation_stage(
     dataset_config = load_dataset_config(dataset_config_path)
     artifact_root = (output_root or outputs_root() / "adaptime").expanduser().resolve()
     tasks = workflow_tasks(
-        dataset_config, datasets_selected, terms_selected, workflow
+        dataset_config,
+        datasets_selected,
+        terms_selected,
+        workflow,
+        excluded_datasets,
     )
     local_ridge_root = artifact_root / "evaluations" / "full_ridge_shared"
     matched_ridge_runs = (

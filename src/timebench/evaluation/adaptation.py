@@ -61,6 +61,15 @@ def evaluate_point_predictions(
             ),
             "mask_row": fallback_methods.index(prediction_method),
         }
+        vanilla_fallback_record = dict(prediction["fallback_to_vanilla"])
+        vanilla_fallback = {
+            "policy": vanilla_fallback_record["policy"],
+            "count": int(dict(vanilla_fallback_record["counts"])[prediction_method]),
+            "eligible_evaluation_windows": int(
+                vanilla_fallback_record["eligible_evaluation_windows"]
+            ),
+            "rate": dict(vanilla_fallback_record["rates"])[prediction_method],
+        }
     else:
         if method is not None and method != prediction["method"]:
             raise ValueError("requested method does not match point predictions")
@@ -90,6 +99,7 @@ def evaluate_point_predictions(
                     ).resolve()
                 ),
             }
+        vanilla_fallback = None
     values = np.load(prediction_root / prediction_file, mmap_mode="r")
     expected = (
         len(prepared.indices("test")),
@@ -144,6 +154,7 @@ def evaluate_point_predictions(
             ),
             "adaptation_fallback_reason": prediction.get("fallback_reason"),
             "nonfinite_prediction_fallback": nonfinite_fallback,
+            "fallback_to_vanilla": vanilla_fallback,
         },
         quantile_levels=[0.5],
         inference_seconds=inference_seconds,

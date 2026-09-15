@@ -25,6 +25,16 @@ SUPPORT_FIELDS = (
     "evaluation_grid",
 )
 
+VALIDATED_SELECTION_METHODS = (
+    "vanilla",
+    "bayes_covariate_prediction",
+    "bayes_past_targets_prediction",
+    "cov_ridge_shared",
+    "y_ridge_shared",
+    "full_ridge_shared",
+    "full_ridge_per_variate",
+)
+
 
 def _atomic_json(path: Path, value: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -113,12 +123,34 @@ def _combine_cells(cells: list[dict[str, Any]]) -> dict[str, Any]:
     nonfinite_fallback_count = _mean(
         cell["nonfinite_fallback_count"] for cell in cells
     )
+    fallback_to_vanilla_count = _mean(
+        cell["fallback_to_vanilla_count"] for cell in cells
+    )
+    fallback_to_vanilla_eligible = _mean(
+        cell["fallback_to_vanilla_eligible"] for cell in cells
+    )
+    fallback_to_vanilla_rate = _mean(
+        cell["fallback_to_vanilla_rate"] for cell in cells
+    )
     fallback_reasons = {
         json.dumps(cell["fallback_reason"], sort_keys=True)
         for cell in cells
     }
     if len(fallback_reasons) != 1:
         raise ValueError("selected repeats or configurations disagree on task fallback")
+    adaptation_selection_rates: dict[str, float] = defaultdict(float)
+    for cell in cells:
+        cell_rates = dict(cell["adaptation_selection_rates"])
+        for method, rate in cell_rates.items():
+            adaptation_selection_rates[str(method)] += float(rate) / len(cells)
+    adaptation_selections = {
+        json.dumps(cell["adaptation_selection"], sort_keys=True) for cell in cells
+    }
+    adaptation_selection = (
+        cells[0]["adaptation_selection"]
+        if len(adaptation_selections) == 1
+        else None
+    )
     return {
         "dataset": cells[0]["dataset"],
         "term": cells[0]["term"],
@@ -132,6 +164,11 @@ def _combine_cells(cells: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "fallback_reason": cells[0]["fallback_reason"],
         "nonfinite_fallback_count": nonfinite_fallback_count,
+        "adaptation_selection": adaptation_selection,
+        "adaptation_selection_rates": dict(adaptation_selection_rates),
+        "fallback_to_vanilla_count": fallback_to_vanilla_count,
+        "fallback_to_vanilla_eligible": fallback_to_vanilla_eligible,
+        "fallback_to_vanilla_rate": fallback_to_vanilla_rate,
         "manifests": [path for cell in cells for path in cell["manifests"]],
     }
 
@@ -202,6 +239,8 @@ def build_adaptation_comparison(
                     (run_dir / "config.json").read_text(encoding="utf-8")
                 )
                 selection = dict(manifest.get("selection", {}))
+                vanilla_fallback = dict(config.get("fallback_to_vanilla") or {})
+                adaptation_selection = config.get("selected_adaptation")
                 cells.append(
                     {
                         "dataset": requested_key[0],
@@ -222,11 +261,22 @@ def build_adaptation_comparison(
                         "metrics": dict(summary["metrics"]),
                         "inference_seconds": summary.get("inference_seconds"),
                         "fallback_reason": config.get("adaptation_fallback_reason"),
+                        "adaptation_selection": adaptation_selection,
+                        "adaptation_selection_rates": (
+                            {}
+                            if not isinstance(adaptation_selection, dict)
+                            else {str(adaptation_selection["method"]): 1.0}
+                        ),
                         "nonfinite_fallback_count": int(
                             dict(
                                 config.get("nonfinite_prediction_fallback") or {}
                             ).get("count", 0)
                         ),
+                        "fallback_to_vanilla_count": vanilla_fallback.get("count"),
+                        "fallback_to_vanilla_eligible": vanilla_fallback.get(
+                            "eligible_evaluation_windows"
+                        ),
+                        "fallback_to_vanilla_rate": vanilla_fallback.get("rate"),
                         "manifests": [str(run_dir / "manifest.json")],
                     }
                 )
@@ -313,6 +363,23 @@ def build_adaptation_comparison(
             ),
             "nonfinite_fallback": bool(cell["nonfinite_fallback_count"]),
             "nonfinite_fallback_windows": cell["nonfinite_fallback_count"],
+            "selected_validated_method": (
+                ""
+                if cell["adaptation_selection"] is None
+                else dict(cell["adaptation_selection"])["method"]
+            ),
+            "validated_method_selection_rates": (
+                ""
+                if not cell["adaptation_selection_rates"]
+                else json.dumps(
+                    cell["adaptation_selection_rates"], sort_keys=True
+                )
+            ),
+            "fallback_to_vanilla_windows": cell["fallback_to_vanilla_count"],
+            "fallback_to_vanilla_evaluation_windows": cell[
+                "fallback_to_vanilla_eligible"
+            ],
+            "fallback_to_vanilla_rate": cell["fallback_to_vanilla_rate"],
             "scaled_MASE": cell["scaled_MASE"],
         }
         for metric in metric_names:
@@ -335,6 +402,16 @@ def build_adaptation_comparison(
             for cell in method_cells
             if cell["inference_seconds"] is not None
             and math.isfinite(float(cell["inference_seconds"]))
+        ]
+        fallback_counts = [
+            float(cell["fallback_to_vanilla_count"])
+            for cell in method_cells
+            if cell["fallback_to_vanilla_count"] is not None
+        ]
+        fallback_denominators = [
+            float(cell["fallback_to_vanilla_eligible"])
+            for cell in method_cells
+            if cell["fallback_to_vanilla_eligible"] is not None
         ]
         summary_rows.append(
             {
@@ -365,6 +442,14 @@ def build_adaptation_comparison(
                     float(cell["nonfinite_fallback_count"] or 0)
                     for cell in method_cells
                 ),
+                "average_fallback_to_vanilla_rate": _mean(
+                    cell["fallback_to_vanilla_rate"] for cell in method_cells
+                ),
+                "pooled_fallback_to_vanilla_rate": (
+                    sum(fallback_counts) / sum(fallback_denominators)
+                    if fallback_denominators and sum(fallback_denominators) > 0
+                    else None
+                ),
                 "MASE_finite_values": sum(
                     int(dict(cell["metrics"])["MASE"].get("finite_values", 0))
                     for cell in method_cells
@@ -381,9 +466,70 @@ def build_adaptation_comparison(
         )
     summary_rows.sort(key=lambda row: (float(row["scaled_MASE"]), str(row["model"])))
 
+    selected_cells = [
+        cell for cell in effective if cell["base_method"] == "selected_adaptation"
+    ]
+    selection_rows: list[dict[str, object]] = []
+    selection_aggregation: dict[str, object] | None = None
+    if selected_cells:
+        if {
+            (cell["dataset"], cell["term"]) for cell in selected_cells
+        } != expected:
+            raise ValueError("selected_adaptation does not cover every report task")
+        for cell in selected_cells:
+            rates = dict(cell["adaptation_selection_rates"])
+            if not rates or not math.isclose(
+                sum(map(float, rates.values())), 1.0, rel_tol=0.0, abs_tol=1e-12
+            ):
+                raise ValueError("selected_adaptation has invalid selection rates")
+            unknown = set(rates) - set(VALIDATED_SELECTION_METHODS)
+            if unknown:
+                raise ValueError(
+                    f"unknown validated Adaptime methods: {sorted(unknown)}"
+                )
+            if cell["fallback_to_vanilla_rate"] is None:
+                raise ValueError("selected_adaptation is missing vanilla fallback coverage")
+        total_tasks = len(selected_cells)
+        for method in VALIDATED_SELECTION_METHODS:
+            selected_task_equivalents = sum(
+                float(dict(cell["adaptation_selection_rates"]).get(method, 0.0))
+                for cell in selected_cells
+            )
+            selection_rows.append(
+                {
+                    "validated_method": method,
+                    "selected_task_equivalents": selected_task_equivalents,
+                    "total_tasks": total_tasks,
+                    "selection_rate": selected_task_equivalents / total_tasks,
+                }
+            )
+        fallback_counts = [
+            float(cell["fallback_to_vanilla_count"]) for cell in selected_cells
+        ]
+        fallback_denominators = [
+            float(cell["fallback_to_vanilla_eligible"]) for cell in selected_cells
+        ]
+        selection_aggregation = {
+            "tasks": total_tasks,
+            "selection_rates": {
+                row["validated_method"]: row["selection_rate"]
+                for row in selection_rows
+            },
+            "average_fallback_to_vanilla_rate": _mean(
+                cell["fallback_to_vanilla_rate"] for cell in selected_cells
+            ),
+            "pooled_fallback_to_vanilla_rate": (
+                sum(fallback_counts) / sum(fallback_denominators)
+                if sum(fallback_denominators) > 0
+                else None
+            ),
+        }
+
     root = Path(output_dir).expanduser().resolve()
     _atomic_csv(root / "comparison.csv", rows)
     _atomic_csv(root / "adaptation_summary.csv", summary_rows)
+    if selection_rows:
+        _atomic_csv(root / "selection_summary.csv", selection_rows)
     manifest_path = root / "report_manifest.json"
     _atomic_json(
         manifest_path,
@@ -399,6 +545,11 @@ def build_adaptation_comparison(
                 "config_policy": config_policy,
                 "repeat_policy": repeat_policy,
             },
+            "expected_tasks": [
+                {"dataset": dataset, "term": term}
+                for dataset, term in sorted(expected)
+            ],
+            "adaptation_selection": selection_aggregation,
             "metric_columns": {
                 "mean": "<metric>",
                 "scaled_MASE": "task MASE divided by matching Seasonal Naive MASE",
@@ -409,12 +560,24 @@ def build_adaptation_comparison(
             "aggregation": {
                 "scaled_MASE": "geometric_mean_over_tasks",
                 "inference_seconds": "sum_over_tasks_when_all_are_timed",
+                "selection_rate": (
+                    "mean task-level selection indicator after configured repeat "
+                    "and configuration aggregation"
+                ),
+                "average_fallback_to_vanilla_rate": "arithmetic_mean_over_task_rates",
+                "pooled_fallback_to_vanilla_rate": (
+                    "total fallback cells divided by total shared-grid cells"
+                ),
             },
             "fallback_columns": {
                 "task_fallback": "whether this method used its task-level fallback",
                 "task_fallback_reason": "recorded fallback reason or an empty string",
                 "nonfinite_fallback": "whether a finite-grid prediction was replaced by vanilla",
                 "nonfinite_fallback_windows": "mean fallback-window count across selected repeats/configurations",
+                "fallback_to_vanilla_rate": (
+                    "shared-grid cell rate using canonical vanilla after selection, "
+                    "support, and non-finite fallback"
+                ),
             },
             "input_manifests": [
                 path for cell in cells for path in cell["manifests"]
@@ -422,6 +585,11 @@ def build_adaptation_comparison(
             "files": {
                 "comparison": "comparison.csv",
                 "summary": "adaptation_summary.csv",
+                **(
+                    {"selection_summary": "selection_summary.csv"}
+                    if selection_rows
+                    else {}
+                ),
             },
         },
     )

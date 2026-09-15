@@ -176,6 +176,7 @@ def predict_adaptation_family(
         "eval_extraction_signature": eval_extraction["signature"],
         "vanilla_signature": vanilla_manifest["signature"],
         "evaluation_grid": EVALUATION_GRID_DEFINITION,
+        "vanilla_fallback_reporting": "per_method_shared_grid_cell_rate",
         "config": asdict(config),
     }
     signature = _canonical_hash(identity)
@@ -223,6 +224,8 @@ def predict_adaptation_family(
         bool,
     )
     nonfinite_store[:] = False
+    eligible_evaluation_windows = int(np.count_nonzero(grid_cells))
+    vanilla_fallback_counts = {method: 0 for method in ADAPTATION_METHODS}
     fallback_reason = model.get("fallback_reason")
     ridge_seconds = 0.0
     bayes_seconds = 0.0
@@ -237,6 +240,9 @@ def predict_adaptation_family(
             store[:] = vanilla
         eligible_store[:] = False
         reason_store[:] = 6
+        for method in ADAPTATION_METHODS:
+            if method != "vanilla":
+                vanilla_fallback_counts[method] = eligible_evaluation_windows
     else:
         bayes = json.loads(
             (model_root / model["files"]["bayes_mixture"]).read_text(
@@ -326,6 +332,11 @@ def predict_adaptation_family(
                 method: np.array(chunk_vanilla, copy=True)
                 for method in ADAPTATION_METHODS
             }
+            chunk_applied = {
+                method: np.zeros(stop - start, dtype=bool)
+                for method in ADAPTATION_METHODS
+            }
+            chunk_applied["vanilla"][:] = True
             chunk_eligible = np.zeros(stop - start, dtype=bool)
             past_selection = method_selections["bayes_past_targets_prediction"]
             if past_selection["method"] != "vanilla":
@@ -336,6 +347,7 @@ def predict_adaptation_family(
                     + past_probability
                     * np.asarray(past_forecast[start:stop])[past_usable]
                 )
+                chunk_applied["bayes_past_targets_prediction"][past_usable] = True
                 bayes_seconds += perf_counter() - bayes_started
             for k in selected_ks:
                 started = perf_counter()
@@ -376,6 +388,7 @@ def predict_adaptation_family(
                     chunk_predictions["covariate_prediction"][final_eligible] = (
                         np.asarray(contexts[k][start:stop])[final_eligible]
                     )
+                    chunk_applied["covariate_prediction"] |= final_eligible
                 bayes_selection = method_selections["bayes_covariate_prediction"]
                 if int(bayes_selection["k"]) == k:
                     bayes_started = perf_counter()
@@ -384,6 +397,7 @@ def predict_adaptation_family(
                         + probability
                         * np.asarray(contexts[k][start:stop])[final_eligible]
                     )
+                    chunk_applied["bayes_covariate_prediction"] |= final_eligible
                     bayes_seconds += perf_counter() - bayes_started
                 for method in RIDGE_VARIANTS:
                     selection = method_selections[method]
@@ -396,6 +410,7 @@ def predict_adaptation_family(
                         coefficients[method],
                         final_eligible,
                     )
+                    chunk_applied[method] |= final_eligible
                 if (
                     per_selection["method"] != "vanilla"
                     and int(per_selection["k"]) == k
@@ -418,11 +433,16 @@ def predict_adaptation_family(
                                     series_coefficients,
                                 )
                             )
+                            chunk_applied[PER_VARIATE_RIDGE] |= series_rows
                     chunk_predictions[PER_VARIATE_RIDGE] = per_prediction
                 ridge_seconds += perf_counter() - started
             chunk_predictions["selected_adaptation"] = np.array(
                 chunk_predictions.get(selected_method, chunk_vanilla), copy=True
             )
+            if selected_method != "vanilla":
+                chunk_applied["selected_adaptation"] = np.array(
+                    chunk_applied[selected_method], copy=True
+                )
             target_support = grid_targets[start:stop]
             expected = grid_cells[start:stop]
             for method_index, (method, values) in enumerate(chunk_predictions.items()):
@@ -432,7 +452,11 @@ def predict_adaptation_family(
                 if np.any(invalid):
                     values[invalid] = chunk_vanilla[invalid]
                     nonfinite_store[method_index, start:stop] = invalid
+                    chunk_applied[method][invalid] = False
                 prediction_stores[method][start:stop] = values
+                vanilla_fallback_counts[method] += int(
+                    np.count_nonzero(expected & ~chunk_applied[method])
+                )
             final_reason = np.asarray(base_reason[start:stop]).copy()
             final_reason[np.asarray(base_eligible[start:stop]) & ~chunk_eligible] = 5
             eligible_store[start:stop] = chunk_eligible
@@ -480,11 +504,27 @@ def predict_adaptation_family(
         "nonfinite_prediction_fallback": {
             "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
             "methods": list(ADAPTATION_METHODS),
-            "eligible_evaluation_windows": int(np.count_nonzero(grid_cells)),
+            "eligible_evaluation_windows": eligible_evaluation_windows,
             "mask_shape": list(nonfinite_store.shape),
             "counts": {
                 method: int(np.count_nonzero(nonfinite_store[index]))
                 for index, method in enumerate(ADAPTATION_METHODS)
+            },
+        },
+        "fallback_to_vanilla": {
+            "policy": (
+                "count_shared_grid_cells_using_canonical_vanilla_after_selection_"
+                "support_and_nonfinite_fallback"
+            ),
+            "eligible_evaluation_windows": eligible_evaluation_windows,
+            "counts": vanilla_fallback_counts,
+            "rates": {
+                method: (
+                    float(count) / eligible_evaluation_windows
+                    if eligible_evaluation_windows
+                    else None
+                )
+                for method, count in vanilla_fallback_counts.items()
             },
         },
         "inference_seconds": inference_seconds,

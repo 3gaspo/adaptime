@@ -53,6 +53,12 @@ def parse_args() -> argparse.Namespace:
         required=True,
     )
     parser.add_argument("--datasets", type=_csv, default=("all_datasets",))
+    parser.add_argument(
+        "--exclude-datasets",
+        type=_csv,
+        default=(),
+        help="Comma-separated dataset/frequency identifiers omitted from every stage",
+    )
     parser.add_argument("--terms", type=_csv)
     parser.add_argument("--config", type=Path)
     parser.add_argument("--output-root", type=Path)
@@ -175,6 +181,7 @@ def main() -> None:
         ),
         dataset_config_path=args.config,
         datasets_selected=args.datasets,
+        excluded_datasets=args.exclude_datasets,
         terms_selected=args.terms,
         output_root=args.output_root,
         seasonal_results_path=args.seasonal_results_path,

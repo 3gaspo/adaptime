@@ -67,6 +67,13 @@ PYTHONPATH=src uv run --no-sync python -m timebench.scripts.run_adaptation_stage
   --stage pipeline --method tsrag --datasets SG_Weather/D --terms short
 ```
 
+Every stage accepts `--exclude-datasets` as a comma-separated list of exact
+dataset/frequency identifiers. The standard Adaptime launchers exclude
+`Coastal_T_S/5T`, `current_velocity/20T`, `azure2019_D/5T`, and
+`azure2019_I/5T`, leaving 90 tasks. The same filtered task plan governs
+preparation, forecasting, adaptation, evaluation, and reporting, so existing
+artifacts for excluded datasets are not admitted to a new report.
+
 First generate the shared Seasonal Naive store from Evaluating TSFMs. It owns
 the common evaluation grid used by every foundation and Adaptime result:
 
@@ -172,7 +179,8 @@ evaluations/{vanilla,covariate_prediction,
              cov_ridge_shared,y_ridge_shared,full_ridge_shared,
              full_ridge_per_variate,rolling_y_ridge_horizon,
              tsrag}/.../                     standard TIME evaluation artifacts
-reports/<launch>/                            comparison.csv and report manifest
+reports/<launch>/                            comparison, selection summary,
+                                              and report manifest
 ```
 
 Each phase has its own schema-1 manifest and exact scientific identity.
@@ -188,6 +196,14 @@ in their own existing phase artifacts instead of being duplicated. Cache
 manifests record lookup, read, compute, write, and manifest timings, while
 coarse uncompressed shards avoid per-row manifest rewrites. Neighbor
 selections remain method-owned because their datastore causality differs.
+Restarting a standard launcher reuses every completed exact phase among the 90
+included tasks and computes only missing phases; excluded-task artifacts are
+left untouched.
+
+The unified report records each task's validation-selected method and writes
+`selection_summary.csv` with the across-task selection rate of every validated
+candidate. It also reports arithmetic-mean and pooled rates at which each
+method ultimately used canonical vanilla on the shared evaluation grid.
 Every method receives its own TIME evaluation run. TS-RAG references the same
 prepared datastore and test rows but
 retains its independent extraction and inference modules. The unified report

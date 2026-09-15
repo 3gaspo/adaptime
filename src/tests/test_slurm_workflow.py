@@ -108,6 +108,11 @@ def main() -> None:
     assert '--stage "$ADAPTIME_STAGE_VALUE"' in adaptime_workflow
     assert '--method "$ADAPTIME_METHOD_VALUE"' in adaptime_workflow
     assert 'TIME_RESULT_SCOPE="$ADAPTIME_OUTPUT_ROOT_VALUE"' in adaptime_workflow
+    assert (
+        "ADAPTIME_EXCLUDE_DATASETS:-Coastal_T_S/5T,current_velocity/20T,"
+        "azure2019_D/5T,azure2019_I/5T"
+    ) in adaptime_workflow
+    assert '--exclude-datasets "$ADAPTIME_EXCLUDE_DATASETS_VALUE"' in adaptime_workflow
     assert 'time_stage_start "$ADAPTIME_STAGE_VALUE"' in adaptime_workflow
 
     tsrag_fronts = (

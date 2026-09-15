@@ -49,6 +49,12 @@ foundation forecast.
 - Task schedule: `adaptime_tasks` in the dataset configuration explicitly
   resolves alignment periods, fixed-fitting and datastore strides, rolling
   strides, and retrieval lookbacks per dataset and range.
+- Dataset scope: standard Adaptime launches manually exclude every task for
+  `Coastal_T_S/5T`, `current_velocity/20T`, `azure2019_D/5T`, and
+  `azure2019_I/5T`. This removes eight tasks from the configured 98 and leaves
+  90. One exact exclusion list is applied before every computational stage and
+  defines the report's expected task set, including when older excluded-task
+  evaluations remain under the output root.
 - Training fallback: primary-`K` valid training windows must exceed official
   test windows; otherwise all four methods use cached vanilla predictions.
 - Validation fallback: primary-`K` valid validation windows must exceed 10% of
@@ -62,7 +68,9 @@ foundation forecast.
   the shared Seasonal Naive scaling baseline on one selected evaluation grid.
   Any non-finite candidate forecast on expected support is replaced as a whole
   cell by canonical vanilla and recorded. The report exposes finite/grid/total
-  value counts and non-finite-fallback counts.
+  value counts and non-finite-fallback counts, the across-task selection rate
+  of every validated model, and both average and pooled fallback-to-vanilla
+  rates.
 
 No delta, convex, or native-multivariate Ridge ablation belongs to this family.
 
