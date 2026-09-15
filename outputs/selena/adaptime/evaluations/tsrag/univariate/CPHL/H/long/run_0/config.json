@@ -1,0 +1,40 @@
+{
+  "dataset_config": "CPHL/H/long",
+  "num_series": 4,
+  "num_windows": 2,
+  "num_variates": 1,
+  "num_model_inputs": 8,
+  "prediction_length": 336,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "H",
+  "seasonality": 24,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "inference_seconds": 0.10439362656325102,
+  "model": "tsrag",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/tsrag/univariate/CPHL/H/long/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": null,
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": {
+    "code": "insufficient_global_datastore",
+    "message": "global datastore requires at least 11 dates per variate; the least-covered variate has 0"
+  }
+}

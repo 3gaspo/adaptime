@@ -1,0 +1,65 @@
+{
+  "chunks": [
+    {
+      "kind": "forecast",
+      "references": "chunks/000000_references.npy",
+      "rows": 4,
+      "values": "chunks/000000_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000001_references.npy",
+      "rows": 4,
+      "values": "chunks/000001_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000002_references.npy",
+      "rows": 4,
+      "values": "chunks/000002_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000003_references.npy",
+      "rows": 4,
+      "values": "chunks/000003_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000004_references.npy",
+      "rows": 4,
+      "values": "chunks/000004_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000005_references.npy",
+      "rows": 4,
+      "values": "chunks/000005_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000006_references.npy",
+      "rows": 4,
+      "values": "chunks/000006_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000007_references.npy",
+      "rows": 4,
+      "values": "chunks/000007_values.npy"
+    },
+    {
+      "kind": "forecast",
+      "references": "chunks/000008_references.npy",
+      "rows": 4,
+      "values": "chunks/000008_values.npy"
+    }
+  ],
+  "format": "adaptime_shared_window_cache",
+  "model": "chronos2",
+  "prediction_length": 30,
+  "prepared_signature": "ffbbc066eb74549417785d8784e36b8ba04a1ef0a8cb3b75f1445bbb3825e2b5",
+  "schema_version": 1,
+  "signature": "3d96106d4ae0e2a9cb6e23cfb1f98334f18e58fd817a3d14c9037a4d01d64fa7",
+  "weights_id": "chronos2"
+}

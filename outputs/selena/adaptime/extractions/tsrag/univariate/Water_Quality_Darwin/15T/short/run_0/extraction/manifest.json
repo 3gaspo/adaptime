@@ -9,10 +9,10 @@
     "message": "global datastore requires at least 11 dates per variate; the least-covered variate has 0"
   },
   "format": "adaptime_tsrag_task_fallback",
-  "prepared_signature": "a9c331d7893bec6280914b611587d6408f980e11debc698a2b004a2ce2f6e9f8",
+  "prepared_signature": "6dc83952f92cdc87853a5791a83381339f8fd0cd9285410833c355bcdfb5b411",
   "protocol": "skip_native_tsrag_and_reuse_exact_vanilla_task_forecast",
   "schema_version": 1,
-  "signature": "d4e97ed63d1c8201bfbea0a2219ad7f05fb90d42402e9b7c4a2937c45ac28ae6",
+  "signature": "fb9d34e896db3c26263a5bc34dcd7c22dee508d364ec4cb22657f4ad182692fe",
   "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
   "status": "completed",
   "timing_seconds": {

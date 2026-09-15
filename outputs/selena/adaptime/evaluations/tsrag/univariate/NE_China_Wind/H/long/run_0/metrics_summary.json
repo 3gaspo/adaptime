@@ -1,0 +1,49 @@
+{
+  "dataset_config": "NE_China_Wind/H/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 0.3045891800115279,
+      "finite_values": 16,
+      "total_values": 16
+    },
+    "MAE": {
+      "mean": 0.42050402855290614,
+      "finite_values": 16,
+      "total_values": 16
+    },
+    "RMSE": {
+      "mean": 0.5187899147769826,
+      "finite_values": 16,
+      "total_values": 16
+    },
+    "MAPE": {
+      "mean": 1.2194602281741758,
+      "finite_values": 16,
+      "total_values": 16
+    },
+    "sMAPE": {
+      "mean": 0.7797616095231692,
+      "finite_values": 16,
+      "total_values": 16
+    },
+    "MASE": {
+      "mean": 1.1073617844425796,
+      "finite_values": 16,
+      "total_values": 16
+    },
+    "ND": {
+      "mean": 0.5941615113874351,
+      "finite_values": 16,
+      "total_values": 16
+    },
+    "CRPS": {
+      "mean": 0.5941615113874351,
+      "finite_values": 16,
+      "total_values": 16
+    }
+  },
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "model": "tsrag",
+  "inference_seconds": 0.151883814483881
+}

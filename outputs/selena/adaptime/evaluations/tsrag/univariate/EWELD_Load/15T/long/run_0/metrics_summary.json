@@ -1,0 +1,49 @@
+{
+  "dataset_config": "EWELD_Load/15T/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": 1439.655050580944,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "MAE": {
+      "mean": 16.69216505153814,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "RMSE": {
+      "mean": 21.94691643327558,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "MAPE": {
+      "mean": 0.5908617116973953,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "sMAPE": {
+      "mean": 0.3950369908061643,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "MASE": {
+      "mean": 0.8604247306780275,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "ND": {
+      "mean": 0.27136116164810786,
+      "finite_values": 20,
+      "total_values": 20
+    },
+    "CRPS": {
+      "mean": 0.27136116164810786,
+      "finite_values": 20,
+      "total_values": 20
+    }
+  },
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "model": "tsrag",
+  "inference_seconds": 0.589248089119792
+}

@@ -24,7 +24,7 @@
   "status": "completed",
   "test_windows": 3780,
   "timing_seconds": {
-    "vanilla_model_forecast_seconds": 17.62161352718249
+    "vanilla_model_forecast_seconds": 17.406532051041722
   },
   "weights_id": "chronos2"
 }

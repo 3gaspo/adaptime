@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-14T19:51:30.969151+00:00",
+  "completed_at": "2026-09-14T20:43:49.342185+00:00",
   "experiment": "adaptime_data",
   "experiment_config": {
     "consumers": [
@@ -28,15 +28,15 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_rolling_ridge_20260914T195051Z_27613_prepare",
-        "launched_at": "2026-09-14T19:51:30.948920+00:00",
+        "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_prepare",
+        "launched_at": "2026-09-14T20:43:49.322104+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3426868"
+        "slurm_job_id": "3427120"
       }
     ],
-    "launch_id": "selena_rolling_ridge_20260914T195051Z_27613_prepare",
-    "launched_at": "2026-09-14T19:51:30.948920+00:00",
-    "slurm_job_id": "3426868"
+    "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_prepare",
+    "launched_at": "2026-09-14T20:43:49.322104+00:00",
+    "slurm_job_id": "3427120"
   },
   "model_config": {
     "artifact": "shared_global_datastore",
@@ -76,7 +76,7 @@
   ],
   "runtime_config": {},
   "schema_version": 1,
-  "started_at": "2026-09-14T19:51:30.948920+00:00",
+  "started_at": "2026-09-14T20:43:49.322104+00:00",
   "status": "completed",
-  "updated_at": "2026-09-14T19:51:30.969151+00:00"
+  "updated_at": "2026-09-14T20:43:49.342185+00:00"
 }

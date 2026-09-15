@@ -1,0 +1,11 @@
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  15%|█▍        | 25/170 [00:00<00:00, 205.07it/s]Loading weights:  30%|███       | 51/170 [00:00<00:00, 233.09it/s]Loading weights:  53%|█████▎    | 90/170 [00:00<00:00, 291.95it/s]Loading weights:  76%|███████▌  | 129/170 [00:00<00:00, 315.76it/s]Loading weights:  97%|█████████▋| 165/170 [00:00<00:00, 320.43it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 305.43it/s]

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "phase": "unconditional_official_test_vanilla"
+        },
+        "model_config": {
+          "context_policy": "all_available_history_capped_at_model_limit",
+          "model": "chronos2",
+          "weights_id": null
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 47133,
+            "adaptation_validation_length": 23511,
+            "context_length": 8192,
+            "dataset": "Finland_Traffic/15T",
+            "dataset_fingerprint": "e03fee122ed6900d",
+            "datastore_prediction_length": 64,
+            "datastore_scope": "all",
+            "datastore_stride": 672,
+            "fitting_window_scope": "all",
+            "max_datastore_windows": null,
+            "max_fitting_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 16,
+            "reference_context_length": 672,
+            "retrieval_context_length": 672,
+            "retrieval_period": 672,
+            "seasonality": 96,
+            "target_mode": "univariate",
+            "term": "short",
+            "test_length": 2976
+          }
+        }
+      }
+    }
+  ]
+}

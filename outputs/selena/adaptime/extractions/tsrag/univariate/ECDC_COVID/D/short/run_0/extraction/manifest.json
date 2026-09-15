@@ -1,0 +1,25 @@
+{
+  "arrays": {},
+  "counts": {
+    "datastore": 236,
+    "test": 45
+  },
+  "fallback": {
+    "code": "insufficient_global_datastore",
+    "message": "global datastore requires at least 11 dates per variate; the least-covered variate has 0"
+  },
+  "format": "adaptime_tsrag_task_fallback",
+  "prepared_signature": "a99a68ecf144ceb75fe5e24fc378ae6b826cd98cb5be93033ab9815c23d92459",
+  "protocol": "skip_native_tsrag_and_reuse_exact_vanilla_task_forecast",
+  "schema_version": 1,
+  "signature": "4fdfe83d5286866a82ba7d3051b638f7f02352c4337208656ea287ded5e8e74a",
+  "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+  "status": "completed",
+  "timing_seconds": {
+    "datastore_index_construction_seconds": 0.0,
+    "datastore_representation_seconds": 0.0,
+    "extraction_total_seconds": 0.0,
+    "test_representation_seconds": 0.0,
+    "test_retrieval_seconds": 0.0
+  }
+}

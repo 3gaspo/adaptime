@@ -1,0 +1,49 @@
+{
+  "dataset_config": "CPHL/15T/long",
+  "aggregation": "mean over finite series/window/variate metric values",
+  "metrics": {
+    "MSE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 10
+    },
+    "MAE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 10
+    },
+    "RMSE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 10
+    },
+    "MAPE": {
+      "mean": 0.36366052760809986,
+      "finite_values": 7,
+      "total_values": 10
+    },
+    "sMAPE": {
+      "mean": 0.3547855318459426,
+      "finite_values": 7,
+      "total_values": 10
+    },
+    "MASE": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 10
+    },
+    "ND": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 10
+    },
+    "CRPS": {
+      "mean": null,
+      "finite_values": 0,
+      "total_values": 10
+    }
+  },
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "model": "tsrag",
+  "inference_seconds": 0.1992074092850089
+}

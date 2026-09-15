@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "metrics": [
+            "MSE",
+            "MAE",
+            "RMSE",
+            "MAPE",
+            "sMAPE",
+            "MASE",
+            "ND",
+            "CRPS"
+          ],
+          "phase": "evaluation",
+          "quantile_levels": [
+            0.5
+          ]
+        },
+        "model_config": {
+          "forecast_type": "point",
+          "method": "seasonal_naive",
+          "seasonality": 24
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 2485,
+            "adaptation_validation_length": 1215,
+            "context_length": 8192,
+            "dataset": "NE_China_Wind/H",
+            "dataset_fingerprint": "fa5189f0746b013b",
+            "datastore_prediction_length": 72,
+            "datastore_scope": "all",
+            "datastore_stride": 24,
+            "fitting_window_scope": "all",
+            "max_datastore_windows": null,
+            "max_fitting_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 72,
+            "reference_context_length": 512,
+            "retrieval_context_length": 168,
+            "retrieval_period": 24,
+            "seasonality": 24,
+            "target_mode": "univariate",
+            "term": "medium",
+            "test_length": 720
+          }
+        }
+      }
+    }
+  ]
+}

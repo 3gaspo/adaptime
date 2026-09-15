@@ -1,0 +1,82 @@
+{
+  "completed_at": "2026-09-15T00:34:26.275320+00:00",
+  "experiment": "adaptime_extraction",
+  "experiment_config": {
+    "phase": "fit_grid_extraction"
+  },
+  "identity": {
+    "dataset": "Online_Retail_2_UCI",
+    "frequency": "D",
+    "model": "tsrag",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+        "launched_at": "2026-09-15T00:34:26.268118+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3427124"
+      }
+    ],
+    "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+    "launched_at": "2026-09-15T00:34:26.268118+00:00",
+    "slurm_job_id": "3427124"
+  },
+  "model_config": {
+    "context_length": 512,
+    "embedding": "chronos_t5_base_eos",
+    "embedding_dimension": 768,
+    "native_prediction_length": 64,
+    "retrieval_scope": "same_series",
+    "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+    "top_k": 10
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 27,
+      "adaptation_train_length": 327,
+      "adaptation_validation_length": 165,
+      "context_length": 8192,
+      "dataset": "Online_Retail_2_UCI/D",
+      "dataset_fingerprint": "df988130d1ef634e",
+      "datastore_prediction_length": 64,
+      "datastore_scope": "all",
+      "datastore_stride": 7,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 30,
+      "reference_context_length": 512,
+      "retrieval_context_length": 35,
+      "retrieval_period": 7,
+      "seasonality": 1,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 180
+    }
+  },
+  "project": "adaptime",
+  "provenance": {
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Online_Retail_2_UCI/D/short/run_0/prepared/manifest.json",
+    "upstream_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
+    "upstream_repository": "https://github.com/UConn-DSIS/TS-RAG"
+  },
+  "required_artifacts": [
+    "extraction/manifest.json"
+  ],
+  "runtime_config": {
+    "arrow_cache_items": 2,
+    "device": "cuda",
+    "model_batch_size": 256,
+    "retriever_path": "/fslarge/scratch/users/h61084/weights/chronos-t5-base"
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-15T00:34:26.268118+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-15T00:34:26.275320+00:00"
+}

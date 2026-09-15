@@ -10,6 +10,8 @@
     "adaptation_train.msse_scale": "adaptation_train/msse_scale.npy",
     "adaptation_train.neighbor_distance": "adaptation_train/neighbor_distance.npy",
     "adaptation_train.neighbor_id": "adaptation_train/neighbor_id.npy",
+    "adaptation_train.past_target_covariate_available": "adaptation_train/past_target_covariate_available.npy",
+    "adaptation_train.past_target_covariate_forecast": "adaptation_train/past_target_covariate_forecast.npy",
     "adaptation_train.query_scale": "adaptation_train/query_scale.npy",
     "adaptation_train.rag_eligible": "adaptation_train/rag_eligible.npy",
     "adaptation_train.representation": "adaptation_train/representation.npy",
@@ -26,6 +28,8 @@
     "adaptation_validation.msse_scale": "adaptation_validation/msse_scale.npy",
     "adaptation_validation.neighbor_distance": "adaptation_validation/neighbor_distance.npy",
     "adaptation_validation.neighbor_id": "adaptation_validation/neighbor_id.npy",
+    "adaptation_validation.past_target_covariate_available": "adaptation_validation/past_target_covariate_available.npy",
+    "adaptation_validation.past_target_covariate_forecast": "adaptation_validation/past_target_covariate_forecast.npy",
     "adaptation_validation.query_scale": "adaptation_validation/query_scale.npy",
     "adaptation_validation.rag_eligible": "adaptation_validation/rag_eligible.npy",
     "adaptation_validation.representation": "adaptation_validation/representation.npy",
@@ -56,13 +60,14 @@
     "minimum_overlap_fraction": 0.8,
     "minimum_query_finite_fraction": 0.8,
     "model_batch_size": 64,
+    "past_target_covariates": true,
     "query_block_size": 256,
     "representation": "instance",
     "retrieval_scope": "all"
   },
   "counts": {
     "adaptation_train": 0,
-    "adaptation_validation": 11,
+    "adaptation_validation": 129,
     "datastore": 0
   },
   "eligibility": {
@@ -80,17 +85,17 @@
       "total": 0
     },
     "adaptation_validation": {
-      "fallback": 11,
+      "fallback": 129,
       "fallback_reasons": {
         "insufficient_finite_query_context": 0,
         "insufficient_past_context": 0,
         "insufficient_training_support": 0,
-        "insufficient_valid_neighbors": 11,
+        "insufficient_valid_neighbors": 129,
         "nonfinite_adaptation_design": 0,
         "nonfinite_datastore_target": 0
       },
       "rag_eligible": 0,
-      "total": 11
+      "total": 129
     },
     "datastore": {
       "fallback": 0,
@@ -123,9 +128,9 @@
     "N_1..N_K"
   ],
   "model": "chronos2",
-  "prepared_signature": "f8c7b3fd3cd4fd65239a95e2493acfb3a67e67bda6882527b075b1eedc7011c6",
+  "prepared_signature": "f737417692a866136c49effa7e06c065acfcc39a3ac44eb724f9b6f147d62a6f",
   "schema_version": 1,
-  "signature": "ecf40b71a2ef16567feb1e85cea444cf8781c20d45d6b424632a2580279c9337",
+  "signature": "e11199071346a1c7f4dc0a83814a04714e9035b2c7b91a6da10000b2c0d015cd",
   "status": "completed",
   "timing_contract": "component_seconds",
   "timing_seconds": {
@@ -137,7 +142,8 @@
     "adaptation_train.context_forecast_k15_seconds": 0.0,
     "adaptation_train.context_forecast_k1_seconds": 0.0,
     "adaptation_train.context_forecast_k5_seconds": 0.0,
-    "adaptation_train.retrieval_seconds": 0.00041104573756456375,
+    "adaptation_train.past_target_covariate_forecast_seconds": 0.0,
+    "adaptation_train.retrieval_seconds": 0.0008049691095948219,
     "adaptation_validation.context_construction_k10_seconds": 0.0,
     "adaptation_validation.context_construction_k15_seconds": 0.0,
     "adaptation_validation.context_construction_k1_seconds": 0.0,
@@ -146,10 +152,11 @@
     "adaptation_validation.context_forecast_k15_seconds": 0.0,
     "adaptation_validation.context_forecast_k1_seconds": 0.0,
     "adaptation_validation.context_forecast_k5_seconds": 0.0,
-    "adaptation_validation.representation_seconds": 0.0004956768825650215,
-    "adaptation_validation.retrieval_seconds": 0.0011860057711601257,
-    "adaptation_validation.vanilla_forecast_seconds": 0.08567037247121334,
-    "extraction_total_seconds": 0.22665324993431568,
+    "adaptation_validation.past_target_covariate_forecast_seconds": 0.0,
+    "adaptation_validation.representation_seconds": 0.0012796632945537567,
+    "adaptation_validation.retrieval_seconds": 0.001496126875281334,
+    "adaptation_validation.vanilla_forecast_seconds": 1.593688259832561,
+    "extraction_total_seconds": 2.4277465296909213,
     "offline.neighbor_forecast_seconds": 0.0
   },
   "weights_id": "chronos2"

@@ -1,0 +1,37 @@
+{
+  "dataset_config": "Coastal_T_S/15T/short",
+  "num_series": 5,
+  "num_windows": 120,
+  "num_variates": 3,
+  "num_model_inputs": 1800,
+  "prediction_length": 12,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "15T",
+  "seasonality": 96,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_seasonal",
+  "inference_seconds": 0.04306697612628341,
+  "model": "seasonal_naive",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/seasonal_naive/univariate/Coastal_T_S/15T/short/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": null,
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": null
+}
