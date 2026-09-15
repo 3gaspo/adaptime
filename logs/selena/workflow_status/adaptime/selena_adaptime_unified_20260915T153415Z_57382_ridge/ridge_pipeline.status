@@ -1,0 +1,12 @@
+workflow=adaptime
+launch_id=selena_adaptime_unified_20260915T153415Z_57382_ridge
+task=ridge_pipeline
+state=running
+stage=pipeline
+active_task=TIME-wide Adaptime method=ridge stage=pipeline
+launched_at=2026-09-15T15:34:39Z
+updated_at=2026-09-15T15:34:39Z
+exit_code=0
+slurm_job_id=3437179
+slurm_array_job_id=none
+slurm_array_task_id=none

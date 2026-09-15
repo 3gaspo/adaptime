@@ -1,0 +1,57 @@
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:   9%|▉         | 16/170 [00:00<00:00, 156.92it/s]Loading weights:  23%|██▎       | 39/170 [00:00<00:00, 185.95it/s]Loading weights:  41%|████      | 69/170 [00:00<00:00, 233.93it/s]Loading weights:  56%|█████▌    | 95/170 [00:00<00:00, 243.47it/s]Loading weights:  76%|███████▌  | 129/170 [00:00<00:00, 276.07it/s]Loading weights:  94%|█████████▍| 160/170 [00:00<00:00, 282.35it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 263.75it/s]
+Traceback (most recent call last):
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 1091, in _run_fit
+    manifest = fit_full_ridge(
+               ^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_training.py", line 1195, in fit_full_ridge
+    _atomic_json(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_training.py", line 88, in _atomic_json
+    temporary.write_text(json.dumps(value, indent=2, sort_keys=True), encoding="utf-8")
+  File "/software/rd/tools/python/3.12_pypsa/lib/python3.12/pathlib.py", line 1047, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/software/rd/tools/python/3.12_pypsa/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 122] Disk quota exceeded: '/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/adaptations/ridge/univariate/Coastal_T_S/H/short/run_0/model/selection.json.tmp'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 195, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 137, in main
+    run_adaptation_stage(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 1614, in run_adaptation_stage
+    result = _run_fit(artifact_root, task, workflow)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 1090, in _run_fit
+    with run:
+         ^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/runs.py", line 126, in __exit__
+    _write_manifest(self.run_dir / MANIFEST_NAME, self.manifest)
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/runs.py", line 38, in _write_manifest
+    temporary.write_text(
+  File "/software/rd/tools/python/3.12_pypsa/lib/python3.12/pathlib.py", line 1047, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/software/rd/tools/python/3.12_pypsa/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 122] Disk quota exceeded: '/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/adaptations/ridge/univariate/Coastal_T_S/H/short/run_0/manifest.json.tmp'
+srun: error: sean0016: task 0: Exited with exit code 1
+2026-09-15 17:36:53 | task TIME-wide Adaptime method=ridge stage=pipeline completed status=failed exit_code=1
+2026-09-15 17:36:53 | stage pipeline completed status=failed exit_code=1
+/fssmall/home/h61084/codes/adaptime/src/slurm/workflow_common.sh: line 18: /scratch/users/h61084/codes/adaptime/logs/workflow_status/adaptime/selena_adaptime_unified_20260915T153415Z_57382_ridge/ridge_pipeline.status.tmp.7401: Disk quota exceeded

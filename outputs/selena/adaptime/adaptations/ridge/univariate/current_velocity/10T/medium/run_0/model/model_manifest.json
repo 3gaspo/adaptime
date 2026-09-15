@@ -1,0 +1,5139 @@
+{
+  "bayes_covariate_protocol": {
+    "fit_evidence": "paired_adaptation_train_window_msse_wins",
+    "prior": {
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "selection_evidence": "adaptation_validation_date_msse_with_paired_block_bootstrap",
+    "tie_weight": 0.5
+  },
+  "bootstrap": {
+    "by_method": {
+      "bayes_covariate_prediction": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 5,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 15,
+          "method": "bayes_covariate_prediction",
+          "probability_covariate_better": 0.5369928400954654,
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5232862202845742,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 149
+      },
+      "bayes_past_targets_prediction": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 5,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 0,
+          "method": "bayes_past_targets_prediction",
+          "probability_past_targets_better": 0.5610047846889952,
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5296897249772471,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 149
+      },
+      "cov_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 5,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 0,
+          "method": "vanilla",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5437483059699504,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 149
+      },
+      "full_ridge_per_variate": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 5,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 0,
+          "method": "vanilla",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5437483059699504,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 149
+      },
+      "full_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 5,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.1,
+          "bootstrap_standard_error": 0.0,
+          "k": 15,
+          "method": "full_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5435081147656133,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 149
+      },
+      "y_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 5,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.1,
+          "bootstrap_standard_error": 0.0,
+          "k": 15,
+          "method": "y_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5434838897857606,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 149
+      }
+    },
+    "overall": {
+      "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+      "block_length": 5,
+      "block_length_source": "automatic",
+      "fallback_reason": null,
+      "method": "paired_moving_date_block_bootstrap_one_standard_error",
+      "observed_best": {
+        "alpha": null,
+        "bootstrap_standard_error": 0.0,
+        "k": 5,
+        "method": "bayes_covariate_prediction",
+        "probability_covariate_better": 0.5381861575178998,
+        "validation_difference_from_best": 0.0,
+        "validation_msse": 0.5260162747994467,
+        "within_one_standard_error": true
+      },
+      "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+      "replications": 1000,
+      "validation_dates": 149
+    }
+  },
+  "config": {
+    "alpha_values": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "bootstrap_block_length": null,
+    "bootstrap_replications": 1000,
+    "chunk_size": 1024,
+    "default_alpha": 0.01,
+    "default_k": 10,
+    "fitting_scopes": [
+      "all",
+      "same_series"
+    ],
+    "k_values": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "minimum_training_window_ratio": 1.0,
+    "minimum_validation_window_ratio": 0.1,
+    "seed": 1
+  },
+  "coverage": {
+    "adaptation_train": {
+      "1": {
+        "adapted_dates": 279,
+        "adapted_windows": 1674,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1674,
+        "total_dates": 279,
+        "total_windows": 1674,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_dates": 279,
+        "adapted_windows": 1674,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1674,
+        "total_dates": 279,
+        "total_windows": 1674,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_dates": 279,
+        "adapted_windows": 1674,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1674,
+        "total_dates": 279,
+        "total_windows": 1674,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_dates": 279,
+        "adapted_windows": 1674,
+        "excluded_label_windows": 0,
+        "label_complete_windows": 1674,
+        "total_dates": 279,
+        "total_windows": 1674,
+        "vanilla_fallback_windows": 0
+      }
+    },
+    "adaptation_validation": {
+      "1": {
+        "adapted_dates": 149,
+        "adapted_windows": 894,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 894,
+        "total_dates": 150,
+        "total_windows": 900,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_dates": 149,
+        "adapted_windows": 894,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 894,
+        "total_dates": 150,
+        "total_windows": 900,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_dates": 149,
+        "adapted_windows": 894,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 894,
+        "total_dates": 150,
+        "total_windows": 900,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_dates": 149,
+        "adapted_windows": 894,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 894,
+        "total_dates": 150,
+        "total_windows": 900,
+        "vanilla_fallback_windows": 0
+      }
+    },
+    "per_variate": {
+      "0:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "0:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "0:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "0:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "0:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "0:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "1:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "1:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "1:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "1:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "1:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "1:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "2:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "2:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "2:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "2:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "2:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "2:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "3:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "3:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "3:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "3:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "3:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "3:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 14,
+            "adapted_windows": 14,
+            "excluded_label_windows": 1,
+            "label_complete_windows": 14,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "4:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "4:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "4:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "4:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "4:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "4:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "5:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "5:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "5:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "5:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "5:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "5:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "6:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "6:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "6:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "6:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "6:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "6:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "7:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "7:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "7:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "7:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "7:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "7:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 18,
+            "adapted_windows": 18,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 18,
+            "total_dates": 18,
+            "total_windows": 18,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "8:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "8:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "8:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "8:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "8:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "8:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 30,
+            "adapted_windows": 30,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 30,
+            "total_dates": 30,
+            "total_windows": 30,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "9:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "9:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "9:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "9:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "9:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      },
+      "9:5": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 21,
+            "adapted_windows": 21,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 21,
+            "total_dates": 21,
+            "total_windows": 21,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 15,
+            "adapted_windows": 15,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 15,
+            "total_dates": 15,
+            "total_windows": 15,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 15
+      }
+    }
+  },
+  "evaluation_k_values": [
+    5,
+    15
+  ],
+  "extraction_signature": "95a896cf7682bb0928ffc191d77c6b28a708ea123ede26c0a4839d6a8d7f864e",
+  "feature_names": {
+    "cov_ridge_shared": [],
+    "full_ridge_per_variate": [],
+    "full_ridge_shared": [
+      "V",
+      "C",
+      "Y_1",
+      "Y_2",
+      "Y_3",
+      "Y_4",
+      "Y_5",
+      "N_1",
+      "N_2",
+      "N_3",
+      "N_4",
+      "N_5"
+    ],
+    "y_ridge_shared": [
+      "V",
+      "Y_1",
+      "Y_2",
+      "Y_3",
+      "Y_4",
+      "Y_5",
+      "Y_6",
+      "Y_7",
+      "Y_8",
+      "Y_9",
+      "Y_10",
+      "Y_11",
+      "Y_12",
+      "Y_13",
+      "Y_14",
+      "Y_15"
+    ]
+  },
+  "files": {
+    "bayes_mixture": "bayes_mixture.json",
+    "bayes_past_targets_mixture": "bayes_past_targets_mixture.json",
+    "coefficients": {
+      "full_ridge_shared": "full_ridge_shared_coefficients.npy",
+      "y_ridge_shared": "y_ridge_shared_coefficients.npy"
+    },
+    "selection": "selection.json"
+  },
+  "format": "adaptime_full_ridge_model",
+  "method": "adaptime_validation_selector",
+  "method_selections": {
+    "bayes_covariate_prediction": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0035881955070579674,
+      "k": 5,
+      "method": "bayes_covariate_prediction",
+      "probability_covariate_better": 0.5381861575178998,
+      "validation_difference_from_best": 0.0027300545148724346,
+      "validation_msse": 0.5260162747994467,
+      "within_one_standard_error": true
+    },
+    "bayes_past_targets_prediction": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0,
+      "k": 0,
+      "method": "bayes_past_targets_prediction",
+      "probability_past_targets_better": 0.5610047846889952,
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5296897249772471,
+      "within_one_standard_error": true
+    },
+    "cov_ridge_shared": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0,
+      "k": 0,
+      "method": "vanilla",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5437483059699504,
+      "within_one_standard_error": true
+    },
+    "full_ridge_per_variate": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0,
+      "k": 0,
+      "method": "vanilla",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5437483059699504,
+      "within_one_standard_error": true
+    },
+    "full_ridge_shared": {
+      "alpha": 0.1,
+      "bootstrap_standard_error": 0.00015473780413676475,
+      "k": 5,
+      "method": "full_ridge_shared",
+      "validation_difference_from_best": 0.00014616957712998462,
+      "validation_msse": 0.5436542843427432,
+      "within_one_standard_error": true
+    },
+    "y_ridge_shared": {
+      "alpha": 0.1,
+      "bootstrap_standard_error": 0.0,
+      "k": 15,
+      "method": "y_ridge_shared",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5434838897857606,
+      "within_one_standard_error": true
+    }
+  },
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "protocol": "fit_on_adaptation_train_select_every_family_with_paired_date_block_bootstrap_one_se_against_virtual_vanilla_on_validation_freeze_before_time_test",
+  "schema_version": 1,
+  "selected": {
+    "alpha": null,
+    "bootstrap_standard_error": 0.006529499400058267,
+    "k": 0,
+    "method": "bayes_past_targets_prediction",
+    "probability_past_targets_better": 0.5610047846889952,
+    "validation_difference_from_best": 0.003673450177800443,
+    "validation_msse": 0.5296897249772471,
+    "within_one_standard_error": true
+  },
+  "selection_methods": [
+    "vanilla",
+    "bayes_covariate_prediction",
+    "bayes_past_targets_prediction",
+    "cov_ridge_shared",
+    "y_ridge_shared",
+    "full_ridge_shared",
+    "full_ridge_per_variate"
+  ],
+  "signature": "b6a470298b118f160643def8fd69cddc37dd85cb9f3e625b030fc7470bf800a7",
+  "status": "completed",
+  "validation_selection_protocol": "paired_moving_date_block_bootstrap_one_standard_error",
+  "window_support": {
+    "minimum_training_windows_exclusive": 900.0,
+    "minimum_validation_windows_exclusive": 90.0,
+    "test_windows": 900
+  }
+}

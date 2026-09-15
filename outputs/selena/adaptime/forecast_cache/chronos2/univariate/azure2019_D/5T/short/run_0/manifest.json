@@ -34,6 +34,10 @@
     ],
     "weights_id": "chronos2"
   },
+  "error": {
+    "message": "launch selena_adaptime_unified_20260915T093500Z_51105_ridge ended before task completion",
+    "type": "InterruptedLaunch"
+  },
   "format": "adaptime_source_forecast_cache",
   "launch": {
     "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_ridge",
@@ -42,10 +46,11 @@
   },
   "schema_version": 1,
   "shards": [],
-  "status": "running",
+  "status": "interrupted",
   "storage": {
     "compression": "none",
     "dtype": "float32",
     "shard_rows": 8192
-  }
+  },
+  "updated_at": "2026-09-15T15:33:38.863554+00:00"
 }
