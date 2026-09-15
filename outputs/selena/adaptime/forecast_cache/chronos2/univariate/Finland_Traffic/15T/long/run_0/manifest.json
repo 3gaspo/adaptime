@@ -1,0 +1,79 @@
+{
+  "config": {
+    "cached_value": "source_window_vanilla_backbone_forecast",
+    "model": "chronos2",
+    "prediction_length": 672,
+    "prepared_artifact": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Finland_Traffic/15T/long/run_0/prepared",
+    "prepared_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 1561,
+      "adaptation_validation_length": 1053,
+      "context_length": 8192,
+      "dataset": "Finland_Traffic/15T",
+      "datastore_prediction_length": 672,
+      "datastore_scope": "all",
+      "datastore_stride": 672,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 672,
+      "reference_context_length": 672,
+      "retrieval_context_length": 672,
+      "retrieval_period": 672,
+      "seasonality": 96,
+      "target_mode": "univariate",
+      "term": "long",
+      "test_length": 2976
+    },
+    "reference_columns": [
+      "item",
+      "channel",
+      "origin",
+      "context_length"
+    ],
+    "weights_id": "chronos2"
+  },
+  "counts": {
+    "computed_rows": 182,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 182,
+    "written_rows": 182
+  },
+  "format": "adaptime_source_forecast_cache",
+  "launch": {
+    "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_ridge",
+    "slurm_array_task_id": null,
+    "slurm_job_id": "3432398"
+  },
+  "schema_version": 1,
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 182,
+      "value_shape": [
+        1,
+        672
+      ],
+      "values": "shards/000000_values.npy"
+    }
+  ],
+  "status": "completed",
+  "storage": {
+    "compression": "none",
+    "dtype": "float32",
+    "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 1.5312397982925177,
+    "discovery_seconds": 0.0006675180047750473,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.00013409554958343506,
+    "manifest_seconds": 0.001566086895763874,
+    "measured_cache_overhead_seconds": 0.0071954624727368355,
+    "measured_operation_seconds": 1.5384352607652545,
+    "read_seconds": 0.0004561217501759529,
+    "write_seconds": 0.004371640272438526
+  }
+}
