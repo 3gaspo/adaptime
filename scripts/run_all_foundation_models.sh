@@ -7,6 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$ROOT_DIR/src/slurm/runtime_paths.sh"
 source "$ROOT_DIR/src/slurm/foundation_model_runners.sh"
+require_foundation_schedule
 
 cd "$ROOT_DIR"
 for runner in "${FOUNDATION_RUNNERS[@]}"; do

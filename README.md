@@ -74,13 +74,16 @@ dataset/frequency identifiers. The standard Adaptime launchers exclude
 preparation, forecasting, adaptation, evaluation, and reporting, so existing
 artifacts for excluded datasets are not admitted to a new report.
 
-First generate the shared Seasonal Naive store from Evaluating TSFMs. It owns
-the common evaluation grid used by every foundation and Adaptime result:
+First generate the Seasonal Naive store with Adaptime's inherited launcher. It
+owns the common evaluation grid used by every foundation and Adaptime result:
 
 ```bash
-cd ../evaluating_tsfms
-bash scripts/submit_seasonal_naive.sh dgx
+bash scripts/submit_seasonal_naive.sh dgx shared
 ```
+
+The optional scope is `shared` (the default) or `project`. Use the same
+`TIME_SEASONAL_SCOPE` for later launchers, unless `TIME_SEASONAL_ROOT`
+explicitly selects the artifact location.
 
 After that job completes, the main Adaptime front schedules shared
 preparation, the vanilla pass, the Adaptime family and independent TS-RAG
@@ -147,9 +150,10 @@ least 64. Its causal cross-variate datastore is capped at 10,000 windows with
 one common size across adapted query and fitting dates. Insufficient fitting
 or retrieval support falls back to vanilla for that query.
 
-Foundation-model grids and channel-comparison experiments belong to the
-independent Evaluating TSFMs project. Adaptime retains only the common model
-adapters needed by its adaptation methods. Dataset diagnostics use
+Foundation-model comparison grids and channel-comparison experiments belong to
+the independent Evaluating TSFMs project. Adaptime inherits the common model,
+Seasonal Naive, diagnostics, reporting, cluster, and artifact implementations;
+its project schedule excludes TimesFM-3. Dataset diagnostics use
 `scripts/dataset_diagnostics.sh`.
 
 Independent inference latency uses one fresh process per random official test

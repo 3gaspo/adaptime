@@ -17,7 +17,7 @@ def resolve_shared_evaluation_grid(
     tasks_root = os.environ.get("TIME_SEASONAL_TASKS_ROOT")
     if not tasks_root:
         raise ManifestError(
-            "TIME_SEASONAL_TASKS_ROOT must point to evaluating_tsfms Seasonal Naive tasks"
+            "TIME_SEASONAL_TASKS_ROOT must point to Seasonal Naive task artifacts"
         )
     if target_mode not in {"univariate", "multivariate"}:
         raise ManifestError(f"Unknown target mode {target_mode!r}")

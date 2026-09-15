@@ -5,6 +5,7 @@ set -euo pipefail
 PROJECT_ROOT="${PROJECT_ROOT:?PROJECT_ROOT must be set by the Slurm front}"
 source "$PROJECT_ROOT/src/slurm/runtime_paths.sh"
 source "$PROJECT_ROOT/src/slurm/foundation_model_runners.sh"
+require_foundation_schedule
 
 TIME_WORKFLOW_NAME=foundation_summary
 TIME_EXPERIMENT=foundation_models

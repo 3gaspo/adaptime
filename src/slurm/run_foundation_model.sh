@@ -8,14 +8,14 @@ source "$PROJECT_ROOT/src/slurm/foundation_model_runners.sh"
 
 model="${TIME_MODEL:?TIME_MODEL must name one registered foundation model}"
 runner=""
-for model_index in "${!FOUNDATION_MODELS[@]}"; do
-    if [ "${FOUNDATION_MODELS[$model_index]}" = "$model" ]; then
-        runner="${FOUNDATION_RUNNERS[$model_index]}"
+for model_index in "${!FOUNDATION_SUPPORTED_MODELS[@]}"; do
+    if [ "${FOUNDATION_SUPPORTED_MODELS[$model_index]}" = "$model" ]; then
+        runner="${FOUNDATION_SUPPORTED_RUNNERS[$model_index]}"
         break
     fi
 done
 if [ -z "$runner" ]; then
-    echo "unknown TIME_MODEL=$model; expected one of: ${FOUNDATION_MODELS[*]}" >&2
+    echo "unknown TIME_MODEL=$model; expected one of: ${FOUNDATION_SUPPORTED_MODELS[*]}" >&2
     exit 2
 fi
 

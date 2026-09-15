@@ -22,6 +22,30 @@ if [ "$platform" = dgx ]; then
         "$PROJECT_ROOT/outputs/selena"
     )
 else
+    runtime_path_variables=(
+        TIME_STORAGE_ROOT TIME_SCRATCH_ROOT
+        OUTPUTS_ROOT LOGS_ROOT TIME_OUTPUTS TIME_LOGS
+    )
+    declare -A runtime_path_overrides=()
+    for runtime_path_variable in "${runtime_path_variables[@]}"; do
+        if [[ -v "$runtime_path_variable" ]]; then
+            runtime_path_overrides["$runtime_path_variable"]="${!runtime_path_variable}"
+        fi
+    done
+    if [ -f "$PROJECT_ROOT/.env" ]; then
+        runtime_allexport=false
+        [[ "$-" == *a* ]] && runtime_allexport=true
+        set -a
+        source "$PROJECT_ROOT/.env"
+        [ "$runtime_allexport" = true ] || set +a
+    fi
+    for runtime_path_variable in "${!runtime_path_overrides[@]}"; do
+        printf -v "$runtime_path_variable" '%s' \
+            "${runtime_path_overrides[$runtime_path_variable]}"
+        export "$runtime_path_variable"
+    done
+    unset runtime_path_variable runtime_path_variables runtime_path_overrides runtime_allexport
+
     NNI_FILE="${TIME_NNI_FILE:-$HOME/codes/.secrets/nni}"
     if [ ! -f "$NNI_FILE" ]; then
         echo "ERROR: missing $NNI_FILE" >&2
@@ -33,10 +57,13 @@ else
         echo "ERROR: $NNI_FILE must contain one valid NNI" >&2
         exit 1
     fi
-    scratch_project_root="/scratch/users/$nni/codes/$PROJECT_NAME"
+    TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-/scratch/users/$nni}"
+    TIME_SCRATCH_ROOT="${TIME_SCRATCH_ROOT:-$TIME_STORAGE_ROOT/codes/$PROJECT_NAME}"
+    OUTPUTS_ROOT="${OUTPUTS_ROOT:-${TIME_OUTPUTS:-$TIME_SCRATCH_ROOT/outputs}}"
+    LOGS_ROOT="${LOGS_ROOT:-${TIME_LOGS:-$TIME_SCRATCH_ROOT/logs}}"
     artifact_roots=(
-        "$scratch_project_root/logs"
-        "$scratch_project_root/outputs"
+        "$LOGS_ROOT"
+        "$OUTPUTS_ROOT"
     )
 fi
 

@@ -10,6 +10,7 @@ MODELS = (
     "ts_icl",
     "seasonal_naive",
 )
+SUPPORTED_MODELS = (*MODELS[:-1], "timesfm3", MODELS[-1])
 
 
 def main() -> None:
@@ -32,10 +33,10 @@ def main() -> None:
         "tsrag_comparison_selena.slurm",
     ]
     assert sorted(path.name for path in dgx_models.glob("*.slurm")) == [
-        f"{model}.slurm" for model in sorted(MODELS)
+        f"{model}.slurm" for model in sorted(SUPPORTED_MODELS)
     ]
     assert sorted(path.name for path in selena_models.glob("*.slurm")) == [
-        f"{model}_selena.slurm" for model in sorted(MODELS)
+        f"{model}_selena.slurm" for model in sorted(SUPPORTED_MODELS)
     ]
 
     comparison_modes = ("covariate", "multivariate", "univariate")
@@ -62,7 +63,7 @@ def main() -> None:
         for front in (dgx_front, selena_front):
             assert 'source "$PROJECT_ROOT/src/slurm/run_chronos2_comparison.sh"' in front
 
-    for model in MODELS:
+    for model in SUPPORTED_MODELS:
         dgx_front = (dgx_models / f"{model}.slurm").read_text(encoding="utf-8")
         selena_front = (selena_models / f"{model}_selena.slurm").read_text(
             encoding="utf-8"
@@ -74,7 +75,7 @@ def main() -> None:
         assert "#SBATCH --qos=an_preemptable" in selena_front
         assert "#SBATCH --exclusive" in selena_front
         assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_front
-        assert f"/codes/{PROJECT_ROOT.name}/logs/" in selena_front
+        assert "#SBATCH --output=logs/%x_%j.out" in selena_front
         assert f"export TIME_MODEL={model}" in dgx_front
         assert f"export TIME_MODEL={model}" in selena_front
         for front in (dgx_front, selena_front):
@@ -190,10 +191,14 @@ def main() -> None:
     mapping = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
         encoding="utf-8"
     )
-    assert mapping.count("    run_") == 4
+    schedule = (PROJECT_ROOT / "src/slurm/foundation_model_schedule.sh").read_text(
+        encoding="utf-8"
+    )
+    assert mapping.count("    run_") == 5
     assert "FOUNDATION_MODEL_COUNT" in mapping
+    assert "foundation_model_schedule.sh" in mapping
     for model in MODELS:
-        assert f"    {model}\n" in mapping
+        assert f"    {model}\n" in schedule
     foundation_runners = (
         "run_chronos_bolt.sh",
         "run_chronos2.sh",
@@ -413,7 +418,6 @@ def main() -> None:
         "run_timesfm1.sh",
         "run_timesfm2.sh",
         "run_timesfm2p5.sh",
-        "run_timesfm3.sh",
         "run_toto.sh",
         "run_visiontspp.sh",
         "run_tirex.sh",
@@ -435,6 +439,8 @@ def main() -> None:
     )
     for runner in removed_runners:
         assert not (PROJECT_ROOT / "scripts" / runner).exists()
+    assert (PROJECT_ROOT / "scripts/run_timesfm3.sh").is_file()
+    assert "timesfm3" not in schedule
     for experiment in removed_experiments:
         assert not (PROJECT_ROOT / "experiments" / experiment).exists()
     for runner_path in (PROJECT_ROOT / "scripts").glob("run_*.sh"):

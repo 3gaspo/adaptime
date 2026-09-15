@@ -19,7 +19,7 @@ time_write_status() {
     local state="$1"
     local exit_code="$2"
     local temporary="${TIME_STATUS_FILE}.tmp.$$"
-    {
+    if ! {
         echo "workflow=$TIME_WORKFLOW_NAME"
         echo "launch_id=$TIME_LAUNCH_ID"
         echo "task=$TIME_TASK_NAME"
@@ -32,8 +32,10 @@ time_write_status() {
         echo "slurm_job_id=${SLURM_JOB_ID:-none}"
         echo "slurm_array_job_id=${SLURM_ARRAY_JOB_ID:-none}"
         echo "slurm_array_task_id=${SLURM_ARRAY_TASK_ID:-none}"
-    } > "$temporary"
-    mv "$temporary" "$TIME_STATUS_FILE"
+    } > "$temporary" || ! mv "$temporary" "$TIME_STATUS_FILE"; then
+        rm -f -- "$temporary"
+        return 1
+    fi
 }
 
 time_workflow_on_exit() {
@@ -46,13 +48,15 @@ time_workflow_on_exit() {
         if [ -n "$TIME_ACTIVE_STAGE" ]; then
             time_log "stage $TIME_ACTIVE_STAGE completed status=failed exit_code=$status" >&2
         fi
-        time_write_status failed "$status"
         if [ -n "${TIME_RESULT_SCOPE:-}" ]; then
             PYTHONPATH="$PROJECT_ROOT/src" python \
                 "$PROJECT_ROOT/scripts/interrupt_result_launch.py" \
                 "$TIME_RESULT_SCOPE" \
                 --launch-id "$TIME_LAUNCH_ID" >&2 || \
                 time_log "warning: could not mark unfinished task manifests interrupted" >&2
+        fi
+        if ! time_write_status failed "$status"; then
+            time_log "warning: could not write failed workflow status to $TIME_STATUS_FILE" >&2
         fi
         time_log "workflow $TIME_WORKFLOW_NAME completed status=failed exit_code=$status" >&2
     fi

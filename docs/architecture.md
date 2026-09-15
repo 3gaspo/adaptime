@@ -90,7 +90,7 @@ foundation models.
 The combined submission order is:
 
 ```text
-shared Evaluating-TSFMs Seasonal Naive grid (prerequisite)
+inherited shared or project-owned Seasonal Naive grid (prerequisite)
   -> prepare -> vanilla test pass
        -> fit-grid extraction -> Ridge and Bayesian fit
           -> selected-K test extraction -> family predictions/evaluations

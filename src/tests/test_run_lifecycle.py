@@ -1,5 +1,6 @@
 """Dependency-free task recovery and run-selection contract."""
 
+import errno
 import os
 import sys
 import tempfile
@@ -17,6 +18,7 @@ from timebench.pipeline import (
     select_completed_runs,
     set_selected_run,
 )
+from timebench.pipeline import runs as run_lifecycle
 
 
 def _allocate(
@@ -92,6 +94,23 @@ def main() -> None:
             assert interrupt_launch(root.parent, "another_launch") == []
             assert interrupt_launch(root.parent, "launch_3") == [interrupted.run_dir]
             assert load_manifest(interrupted.run_dir)["status"] == "interrupted"
+
+            quota_root = Path(temporary) / "quota_identity"
+            os.environ["TIME_LAUNCH_ID"] = "quota_launch"
+            quota_run = _allocate(quota_root)
+            atomic_writer = run_lifecycle._write_manifest
+
+            def quota_failure(path, manifest) -> None:
+                raise OSError(errno.EDQUOT, "quota exceeded")
+
+            run_lifecycle._write_manifest = quota_failure
+            try:
+                assert interrupt_launch(quota_root, "quota_launch") == [
+                    quota_run.run_dir
+                ]
+            finally:
+                run_lifecycle._write_manifest = atomic_writer
+            assert load_manifest(quota_run.run_dir)["status"] == "interrupted"
 
             os.environ["TIME_LAUNCH_ID"] = "launch_4"
             os.environ["SLURM_JOB_ID"] = "404"
@@ -183,6 +202,19 @@ def main() -> None:
             )
             fallback = _allocate(fallback_root, experiment="channels_comparison")
             assert fallback.action == "new"
+
+            workflow = (
+                PROJECT_ROOT / "src/slurm/workflow_common.sh"
+            ).read_text(encoding="utf-8")
+            assert workflow.index('interrupt_result_launch.py"') < workflow.index(
+                "time_write_status failed"
+            )
+            assert 'if ! time_write_status failed "$status"; then' in workflow
+            clearer = (PROJECT_ROOT / "clear_selena_artifacts.sh").read_text(
+                encoding="utf-8"
+            )
+            assert 'source "$PROJECT_ROOT/.env"' in clearer
+            assert '"$LOGS_ROOT"' in clearer and '"$OUTPUTS_ROOT"' in clearer
     finally:
         for name, value in previous.items():
             if value is None:

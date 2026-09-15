@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=stsicl
+#SBATCH --job-name=stimesfm3
 #SBATCH --gres=gpu:1
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
@@ -17,6 +17,7 @@ PROJECT_ROOT="${SLURM_SUBMIT_DIR:-$(pwd)}"
 cd "$PROJECT_ROOT"
 export PROJECT_ROOT
 source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"
-export TIME_MODEL=ts_icl
+export TIME_MODEL=timesfm3
 export TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"
 source "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"
+

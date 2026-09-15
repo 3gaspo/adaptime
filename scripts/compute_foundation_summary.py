@@ -20,6 +20,7 @@ from timebench.pipeline import parse_config_filters, select_completed_runs
 DEFAULT_MODELS = (
     "chronos_bolt",
     "chronos2",
+    "timesfm3",
     "ts_icl",
     "seasonal_naive",
 )
