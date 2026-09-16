@@ -1,0 +1,50 @@
+{
+  "dataset_config": "Global_Price/Q/short",
+  "num_series": 1,
+  "num_windows": 5,
+  "num_variates": 60,
+  "num_model_inputs": 5,
+  "prediction_length": 4,
+  "num_quantiles": 9,
+  "quantile_levels": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "freq": "Q",
+  "seasonality": 4,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Global_Price/Q/short/run_0/evaluation_grid.npz",
+    "valid_values": 300,
+    "total_values": 300
+  },
+  "launch_id": "selena_20260915T202251Z_44927",
+  "inference_seconds": 0.19874065928161144,
+  "model": "chronos2",
+  "covariate_mode": "none",
+  "covariate_channels": 0,
+  "experiment": "foundation_models",
+  "target_mode": "multivariate",
+  "covariate_source": "none",
+  "covariate_time_span": "none"
+}
