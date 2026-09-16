@@ -30,13 +30,10 @@ No Adaptime result is claimed until its cluster artifacts are complete and inspe
 
 ## Setup
 
-Adaptime uses the project `uv` environment on its execution host. Download the
-TIME saved-Arrow datasets on an internet-connected host:
-
-```bash
-PYTHONPATH=src uv run --no-sync python scripts/download_time_dataset.py \
-  --destination datasets/hf_dataset
-```
+Adaptime uses the project `uv` environment on its execution host and consumes
+an already prepared TIME saved-Arrow dataset selected by `TIME_DATASET`.
+Dataset downloading and standalone diagnostics are preparation tasks outside
+this repository's experiment surface.
 
 Learned models run offline. The standard local checkpoint layout is:
 
@@ -152,9 +149,11 @@ or retrieval support falls back to vanilla for that query.
 
 Foundation-model comparison grids and channel-comparison experiments belong to
 the independent Evaluating TSFMs project. Adaptime inherits the common model,
-Seasonal Naive, diagnostics, reporting, cluster, and artifact implementations;
-its project schedule excludes TimesFM-3. Dataset diagnostics use
-`scripts/dataset_diagnostics.sh`.
+Seasonal Naive, reporting, cluster, and artifact implementations but exposes
+only its Ridge/TS-RAG workflows, rolling Ridge, and independent method timing.
+Standalone foundation and channel launchers, model-grid shell runners,
+diagnostic/download commands, and feature-performance plot commands are not
+part of this repository. TimesFM-3 remains outside the active Adaptime paths.
 
 Independent inference latency uses one fresh process per random official test
 example and method, so no test-time cache is shared:

@@ -1,7 +1,9 @@
 # Time Series Features Extraction
 
 This module extracts per-variate and dataset-level time-series features for
-pattern-based evaluation.
+pattern-based evaluation. It is inherited implementation documentation, not
+an Adaptime experiment. Adaptime consumes prepared shared data and does not
+provide standalone diagnostic or feature-performance command fronts.
 
 ## Input/Output
 
@@ -77,20 +79,5 @@ only binary-valued output: it is `1` when the ADF test rejects a unit root at
 the hard-coded 0.05 threshold and `0` otherwise; the inherited implementation
 falls back to `1` if the test fails.
 
-Dataset-level Seasonal-Naive-scaled MASE can be plotted against explicit
-features or the five with
-the largest mean absolute within-model Spearman correlation:
-
-```bash
-python scripts/plot_feature_performance.py \
-  --features-root "$TIME_METADATA/stl_features" \
-  --results-dir outputs/foundation_models/tasks \
-  --top 5
-```
-
-The SVG is accompanied by the joined per-dataset data and correlation tables.
-Because Seasonal Naive is the scaling reference, its scaled MASE is identically
-one wherever defined. Its within-model correlation is therefore undefined and
-is retained as NaN in the table, but excluded from the mean-absolute
-correlation used to select features. Any other constant model outcome is
-handled the same way.
+The standalone foundation feature-performance study belongs to Evaluating
+TSFMs. Its plotting command is deliberately absent from Adaptime.

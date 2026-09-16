@@ -1,5 +1,12 @@
 # Code architecture
 
+Adaptime's public command surface is limited to fixed Ridge/TS-RAG, rolling
+Ridge, independent method timing, and their required Seasonal-grid, lifecycle,
+and transfer tooling. Foundation-model benchmarking and channel experiments
+belong exclusively to Evaluating TSFMs. Dataset download, standalone
+diagnostics/audits, and foundation feature-performance command fronts are not
+part of Adaptime; shared imported implementation remains available.
+
 Adaptime separates data preparation, method-specific extraction, adaptation,
 prediction, evaluation, and reporting. Each boundary is independently callable
 and owns a configuration-addressed schema-1 run.

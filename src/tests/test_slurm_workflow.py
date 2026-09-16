@@ -1,89 +1,52 @@
-"""Static contract for TIME's DGX/Selena foundation-model workflow."""
+"""Static contract for Adaptime's Ridge/TS-RAG workflows and inherited runtime."""
 
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-MODELS = (
-    "chronos_bolt",
-    "chronos2",
-    "ts_icl",
-    "seasonal_naive",
-)
-SUPPORTED_MODELS = (*MODELS[:-1], "timesfm3", MODELS[-1])
 
 
 def main() -> None:
     dgx = PROJECT_ROOT / "slurm/dgx"
     selena = PROJECT_ROOT / "slurm/selena"
-    dgx_models = dgx / "foundation_models"
-    selena_models = selena / "foundation_models"
+    # Deliberate downstream deletions survive parent merges.
+    for name in (
+        "submit_foundation_models.sh",
+        "run_all_foundation_models.sh",
+        "channels_comparison.sh",
+        "run_chronos2_comparison.sh",
+        "dataset_diagnostics.sh",
+        "download_time_dataset.py",
+        "audit_time_windows.py",
+        "compute_foundation_summary.py",
+        "compute_local_leaderboard.py",
+        "plot_feature_performance.py",
+        "run_chronos2.sh",
+        "run_chronos_bolt.sh",
+        "run_timesfm3.sh",
+        "run_tsicl.sh",
+    ):
+        assert not (PROJECT_ROOT / "scripts" / name).exists(), name
+    for name in (
+        "foundation_model_schedule.sh",
+        "benchmark_foundation_models.sh",
+        "summarize_foundation_models.sh",
+        "run_chronos2_comparison.sh",
+        "run_dataset_diagnostics.sh",
+        "export_dataset_metadata.sh",
+    ):
+        assert not (PROJECT_ROOT / "src/slurm" / name).exists(), name
+    for cluster in (dgx, selena):
+        assert not list((cluster / "chronos2_comparison").glob("*.slurm"))
+        assert sorted(path.name for path in (cluster / "foundation_models").glob("*.slurm")) == [
+            "seasonal_naive.slurm" if cluster == dgx else "seasonal_naive_selena.slurm"
+        ]
     assert sorted(path.name for path in dgx.glob("*.slurm")) == [
-        "adaptime_comparison.slurm",
-        "dataset_diagnostics.slurm",
-        "foundation_summary.slurm",
-        "time_inference.slurm",
-        "tsrag_comparison.slurm",
+        "adaptime_comparison.slurm", "time_inference.slurm", "tsrag_comparison.slurm"
     ]
     assert sorted(path.name for path in selena.glob("*.slurm")) == [
-        "adaptime_comparison_selena.slurm",
-        "dataset_diagnostics_selena.slurm",
-        "foundation_summary_selena.slurm",
-        "time_inference.slurm",
-        "tsrag_comparison_selena.slurm",
+        "adaptime_comparison_selena.slurm", "time_inference.slurm", "tsrag_comparison_selena.slurm"
     ]
-    assert sorted(path.name for path in dgx_models.glob("*.slurm")) == [
-        f"{model}.slurm" for model in sorted(SUPPORTED_MODELS)
-    ]
-    assert sorted(path.name for path in selena_models.glob("*.slurm")) == [
-        f"{model}_selena.slurm" for model in sorted(SUPPORTED_MODELS)
-    ]
-
-    comparison_modes = ("covariate", "multivariate", "univariate")
-    dgx_comparison = dgx / "chronos2_comparison"
-    selena_comparison = selena / "chronos2_comparison"
-    assert sorted(path.name for path in dgx_comparison.glob("*.slurm")) == [
-        f"{mode}.slurm" for mode in comparison_modes
-    ]
-    assert sorted(path.name for path in selena_comparison.glob("*.slurm")) == [
-        f"{mode}_selena.slurm" for mode in comparison_modes
-    ]
-    for mode in comparison_modes:
-        dgx_front = (dgx_comparison / f"{mode}.slurm").read_text(encoding="utf-8")
-        selena_front = (
-            selena_comparison / f"{mode}_selena.slurm"
-        ).read_text(encoding="utf-8")
-        assert f"export TIME_COMPARISON={mode}" in dgx_front
-        assert f"export TIME_COMPARISON={mode}" in selena_front
-        assert "#SBATCH --partition=h100" in dgx_front
-        assert "#SBATCH --partition=an" in selena_front
-        assert "#SBATCH --qos=an_preemptable" in selena_front
-        assert "#SBATCH --exclusive" in selena_front
-        assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_front
-        for front in (dgx_front, selena_front):
-            assert 'source "$PROJECT_ROOT/src/slurm/run_chronos2_comparison.sh"' in front
-
-    for model in SUPPORTED_MODELS:
-        dgx_front = (dgx_models / f"{model}.slurm").read_text(encoding="utf-8")
-        selena_front = (selena_models / f"{model}_selena.slurm").read_text(
-            encoding="utf-8"
-        )
-        assert "#SBATCH --array" not in dgx_front
-        assert "#SBATCH --array" not in selena_front
-        assert "#SBATCH --partition=h100" in dgx_front
-        assert "#SBATCH --partition=an" in selena_front
-        assert "#SBATCH --qos=an_preemptable" in selena_front
-        assert "#SBATCH --exclusive" in selena_front
-        assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_front
-        assert "#SBATCH --output=logs/%x_%j.out" in selena_front
-        assert f"export TIME_MODEL={model}" in dgx_front
-        assert f"export TIME_MODEL={model}" in selena_front
-        for front in (dgx_front, selena_front):
-            assert "export PROJECT_ROOT" in front
-            assert 'source "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"' in front
-        assert 'export TIME_STORAGE_ROOT="${TIME_STORAGE_ROOT:-$HOME}"' in dgx_front
-        assert 'source "$PROJECT_ROOT/src/slurm/selena_runtime.sh"' in selena_front
-        assert 'TIME_LAUNCH_ID="${TIME_LAUNCH_ID:-selena_${SLURM_JOB_ID}}"' in selena_front
 
     adaptime_fronts = (
         (dgx / "adaptime_comparison.slurm").read_text(encoding="utf-8"),
@@ -176,38 +139,6 @@ def main() -> None:
     assert "with run:" in workflow_source
     assert "build_adaptation_comparison(" in workflow_source
 
-    dgx_summary = (dgx / "foundation_summary.slurm").read_text(encoding="utf-8")
-    selena_summary = (selena / "foundation_summary_selena.slurm").read_text(
-        encoding="utf-8"
-    )
-    assert 'source "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in dgx_summary
-    assert 'source "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in selena_summary
-    assert "#SBATCH --partition=h100" in dgx_summary
-    assert "#SBATCH --partition=an" in selena_summary
-    assert "#SBATCH --qos=an_preemptable" in selena_summary
-    assert "#SBATCH --exclusive" in selena_summary
-    assert "#SBATCH --wckey=P12CU:DATASCIENCE" in selena_summary
-
-    mapping = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
-        encoding="utf-8"
-    )
-    schedule = (PROJECT_ROOT / "src/slurm/foundation_model_schedule.sh").read_text(
-        encoding="utf-8"
-    )
-    assert mapping.count("    run_") == 5
-    assert "FOUNDATION_MODEL_COUNT" in mapping
-    assert "foundation_model_schedule.sh" in mapping
-    for model in MODELS:
-        assert f"    {model}\n" in schedule
-    foundation_runners = (
-        "run_chronos_bolt.sh",
-        "run_chronos2.sh",
-        "run_tsicl.sh",
-        "run_seasonal_naive.sh",
-    )
-    for runner in foundation_runners:
-        assert (PROJECT_ROOT / "scripts" / runner).is_file()
-
     workflow = (PROJECT_ROOT / "src/slurm/workflow_common.sh").read_text(
         encoding="utf-8"
     )
@@ -231,14 +162,6 @@ def main() -> None:
     assert "SLURM_ARRAY_TASK_ID" not in model_workflow
     assert "TIMESFM_DIR" not in model_workflow
 
-    sequential_workflow = (
-        PROJECT_ROOT / "src/slurm/benchmark_foundation_models.sh"
-    ).read_text(encoding="utf-8")
-    assert 'for model_index in "${!FOUNDATION_MODELS[@]}"' in sequential_workflow
-    assert 'TIME_MODEL="$model"' in sequential_workflow
-    assert 'bash "$PROJECT_ROOT/src/slurm/run_foundation_model.sh"' in sequential_workflow
-    assert 'bash "$PROJECT_ROOT/src/slurm/summarize_foundation_models.sh"' in sequential_workflow
-
     slurm_runner = (PROJECT_ROOT / "src/slurm/run_time_script.sh").read_text(
         encoding="utf-8"
     )
@@ -246,80 +169,6 @@ def main() -> None:
     assert 'srun --ntasks=1 "${runner_command[@]}"' in slurm_runner
     assert 'if [ ! -d "$TIME_DATASET" ]' in slurm_runner
     assert 'TIME dataset directory not found: $TIME_DATASET' in slurm_runner
-
-    comparison_workflow = (
-        PROJECT_ROOT / "src/slurm/run_chronos2_comparison.sh"
-    ).read_text(encoding="utf-8")
-    assert "TIME_COVARIATE_MODE=past_targets" in comparison_workflow
-    assert "TIME_TARGET_MODE=multivariate" in comparison_workflow
-    assert "TIME_TARGET_MODE=univariate" in comparison_workflow
-    assert "all_multivariate_datasets" in (
-        PROJECT_ROOT / "scripts/run_chronos2_comparison.sh"
-    ).read_text(encoding="utf-8")
-
-    diagnostic_fronts = (
-        (dgx / "dataset_diagnostics.slurm").read_text(encoding="utf-8"),
-        (selena / "dataset_diagnostics_selena.slurm").read_text(encoding="utf-8"),
-    )
-    for front in diagnostic_fronts:
-        assert "#SBATCH --array" not in front
-        assert 'source "$PROJECT_ROOT/src/slurm/run_dataset_diagnostics.sh"' in front
-    diagnostic_workflow = (
-        PROJECT_ROOT / "src/slurm/run_dataset_diagnostics.sh"
-    ).read_text(encoding="utf-8")
-    assert "scripts/audit_time_windows.py" in diagnostic_workflow
-    assert "--input-format hf" in diagnostic_workflow
-    assert "--split full" in diagnostic_workflow
-    assert "--force" not in diagnostic_workflow
-    assert 'diagnostics_root="$TIME_METADATA/window_audit"' in diagnostic_workflow
-    assert '--output_dir "$TIME_METADATA"' in diagnostic_workflow
-    assert diagnostic_workflow.count("export_dataset_metadata.sh") == 2
-    assert diagnostic_workflow.index("export_dataset_metadata.sh\" audit") < (
-        diagnostic_workflow.index("time_stage_start dataset_features")
-    )
-    assert diagnostic_workflow.index("export_dataset_metadata.sh\" features") > (
-        diagnostic_workflow.index('srun --ntasks=1 "${feature_command[@]}"')
-    )
-    metadata_export = (
-        PROJECT_ROOT / "src/slurm/export_dataset_metadata.sh"
-    ).read_text(encoding="utf-8")
-    audit_export = metadata_export.partition("    audit)\n")[2].partition(
-        "        ;;\n"
-    )[0]
-    feature_export = metadata_export.partition("    features)\n")[2].partition(
-        "        ;;\n"
-    )[0]
-    assert 'copy_artifact "$feature_root/dataset_features_full.csv"' not in audit_export
-    assert 'rm -f "$export_root/dataset_features_full.csv"' in audit_export
-    assert "dataset_features_full.csv" in feature_export
-    diagnostic_submit = (
-        PROJECT_ROOT / "scripts/dataset_diagnostics.sh"
-    ).read_text(encoding="utf-8")
-    assert "dgx|selena" in diagnostic_submit
-    assert "dataset diagnostics submitted" in diagnostic_submit
-
-    window_audit = (
-        PROJECT_ROOT / "src/timebench/evaluation/window_audit.py"
-    ).read_text(encoding="utf-8")
-    assert '"seasonal_naive": None' in window_audit
-    assert "distinct_context_limits = list(dict.fromkeys(context_profiles.values()))" in window_audit
-    assert "for source_position in np.flatnonzero(~np.isfinite(values))" in window_audit
-    assert "_interval_counts(" in window_audit
-    assert "dataset.test_data" not in window_audit
-
-    summary = (
-        PROJECT_ROOT / "src/slurm/summarize_foundation_models.sh"
-    ).read_text(encoding="utf-8")
-    assert "uv run --no-sync python" in summary
-    assert '--models "${FOUNDATION_MODELS[@]}"' in summary
-    assert 'status_root="$TIME_LOGS/workflow_status/foundation_models/$TIME_LAUNCH_ID"' in summary
-    assert 'time_stage_start feature_plot' in summary
-    assert 'scripts/plot_feature_performance.py' in summary
-    assert '--features-root "$TIME_METADATA/stl_features"' in summary
-    assert '--output "$analysis_root/mase_vs_features.svg"' in summary
-    assert '--launch-id "$TIME_LAUNCH_ID"' in summary
-    assert "reports_root" not in summary
-    assert "conda" not in summary
 
     runtime = (PROJECT_ROOT / "src/slurm/selena_runtime.sh").read_text(
         encoding="utf-8"
@@ -403,70 +252,6 @@ def main() -> None:
     assert "-path '*/manifest_history/*.json'" in publisher
     assert "git push origin main" in publisher
 
-    direct = (PROJECT_ROOT / "scripts/run_all_foundation_models.sh").read_text(
-        encoding="utf-8"
-    )
-    assert 'source "$ROOT_DIR/src/slurm/foundation_model_runners.sh"' in direct
-    assert 'uv run --no-sync bash "$SCRIPT_DIR/$runner"' in direct
-    removed_runners = (
-        "run_kairos.sh",
-        "run_litespecformer.sh",
-        "run_moirai.sh",
-        "run_moirai2.sh",
-        "run_patchtst_fm.sh",
-        "run_sundial.sh",
-        "run_timesfm1.sh",
-        "run_timesfm2.sh",
-        "run_timesfm2p5.sh",
-        "run_toto.sh",
-        "run_visiontspp.sh",
-        "run_tirex.sh",
-    )
-    removed_experiments = (
-        "kairos_model.py",
-        "litespecformer_model.py",
-        "moirai.py",
-        "moirai2.py",
-        "patchtst_fm.py",
-        "sundial.py",
-        "timesfm1.0.py",
-        "timesfm2.0.py",
-        "timesfm2.5.py",
-        "timesfm3.py",
-        "toto_model.py",
-        "visiontspp.py",
-        "tirex_model.py",
-    )
-    for runner in removed_runners:
-        assert not (PROJECT_ROOT / "scripts" / runner).exists()
-    assert (PROJECT_ROOT / "scripts/run_timesfm3.sh").is_file()
-    assert "timesfm3" not in schedule
-    for experiment in removed_experiments:
-        assert not (PROJECT_ROOT / "experiments" / experiment).exists()
-    for runner_path in (PROJECT_ROOT / "scripts").glob("run_*.sh"):
-        runner_text = runner_path.read_text(encoding="utf-8")
-        assert "conda" not in runner_text.lower()
-        assert "pip install" not in runner_text
-        assert not any(line.startswith("srun ") for line in runner_text.splitlines())
-    for runner in foundation_runners:
-        runner_text = (PROJECT_ROOT / "scripts" / runner).read_text(encoding="utf-8")
-        assert "set -euo pipefail" in runner_text
-    for experiment in (
-        "chronos_bolt.py",
-        "chronos2.py",
-        "ts_icl.py",
-        "seasonal_naive.py",
-    ):
-        experiment_text = (PROJECT_ROOT / "experiments" / experiment).read_text(
-            encoding="utf-8"
-        )
-        assert "Failed to run experiment" not in experiment_text
-        assert "except Exception" not in experiment_text
-        assert experiment_text.index("run = allocate_run(") < experiment_text.index(
-            "timer.start()"
-        )
-        assert "if not run.should_run:" in experiment_text
-
     lifecycle = (PROJECT_ROOT / "src/timebench/pipeline/runs.py").read_text(
         encoding="utf-8"
     )
@@ -478,23 +263,7 @@ def main() -> None:
     assert (PROJECT_ROOT / "scripts/select_result_run.py").is_file()
     assert (PROJECT_ROOT / "scripts/interrupt_result_launch.py").is_file()
 
-    workflow_common = (PROJECT_ROOT / "src/slurm/workflow_common.sh").read_text(
-        encoding="utf-8"
-    )
-    foundation_runner = (
-        PROJECT_ROOT / "src/slurm/run_foundation_model.sh"
-    ).read_text(encoding="utf-8")
-    comparison_runner = (
-        PROJECT_ROOT / "src/slurm/run_chronos2_comparison.sh"
-    ).read_text(encoding="utf-8")
-    assert "interrupt_result_launch.py" in workflow_common
-    assert 'TIME_RESULT_SCOPE="$TIME_OUTPUTS/foundation_models/tasks/$model"' in foundation_runner
-    assert (
-        'TIME_RESULT_SCOPE="$TIME_TASKS_ROOT/chronos2/$TIME_TARGET_MODE"'
-        in comparison_runner
-    )
-    assert "TIME_REUSE_IF_AVAILABLE_FROM" in comparison_runner
-    print("TIME Slurm and DGX/Selena synchronization contract passed.")
+    print("Adaptime workflow ownership and inherited runtime contracts passed.")
 
 
 if __name__ == "__main__":

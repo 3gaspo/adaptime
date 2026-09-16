@@ -101,22 +101,7 @@ class AdaptimeMaintenanceContractTest(unittest.TestCase):
         self.assertIn("forecast.quantiles", experiment)
         self.assertIn("self._quantiles = np.stack", predictor)
 
-    def test_time_dataset_download_and_current_model_surface(self) -> None:
-        downloader = (PROJECT_ROOT / "scripts/download_time_dataset.py").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn('DEFAULT_REPO_ID = "Real-TSF/TIME"', downloader)
-        self.assertIn('os.environ["HF_HUB_DISABLE_XET"] = "1"', downloader)
-        self.assertLess(
-            downloader.index('os.environ["HF_HUB_DISABLE_XET"] = "1"'),
-            downloader.index("from huggingface_hub import"),
-        )
-        self.assertIn("resolved_revision = info.sha", downloader)
-        self.assertIn('REVISION_FILE = ".time_snapshot_revision"', downloader)
-        self.assertIn("if destination_has_files and not resume", downloader)
-        self.assertIn("max_workers=max_workers", downloader)
-        self.assertIn('destination.rglob("state.json")', downloader)
-
+    def test_current_model_surface(self) -> None:
         self.assertFalse((PROJECT_ROOT / "experiments/tirex_model.py").exists())
         self.assertFalse((PROJECT_ROOT / "scripts/run_tirex.sh").exists())
         self.assertFalse(
@@ -132,11 +117,7 @@ class AdaptimeMaintenanceContractTest(unittest.TestCase):
         registry = (PROJECT_ROOT / "src/slurm/foundation_model_runners.sh").read_text(
             encoding="utf-8"
         )
-        summary = (PROJECT_ROOT / "scripts/compute_foundation_summary.py").read_text(
-            encoding="utf-8"
-        )
         self.assertNotIn("tirex", registry.lower())
-        self.assertNotIn('"tirex"', summary.lower())
 
 
 if __name__ == "__main__":
