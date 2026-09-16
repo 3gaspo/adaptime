@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import math
 import os
@@ -831,6 +832,7 @@ def _allocation(
     *,
     runtime_config: dict[str, object],
     provenance: dict[str, object],
+    force: bool = False,
 ):
     spec = _spec(task, workflow, stage, method)
     experiment, identity, model_config, pipeline_config, experiment_config = (
@@ -846,6 +848,7 @@ def _allocation(
         runtime_config=runtime_config,
         experiment_config=experiment_config,
         provenance=provenance,
+        force=force,
     )
 
 
@@ -1416,6 +1419,11 @@ def _run_evaluation(
     evaluation_grid = resolve_shared_evaluation_grid(
         task.dataset, task.term, workflow.target_mode
     )
+    evaluation_root = _stage_root(artifact_root, "evaluations", method, task)
+    replace_fallback = any(
+        json.loads(path.read_text(encoding="utf-8")).get("adaptation_fallback_reason")
+        for path in evaluation_root.glob("run_*/config.json")
+    ) if method in ADAPTATION_METHODS and method != "vanilla" else False
     run = _allocation(
         artifact_root,
         task,
@@ -1428,6 +1436,7 @@ def _run_evaluation(
             "prediction_manifest": str(prediction),
             "evaluation_grid": str(evaluation_grid),
         },
+        force=replace_fallback,
     )
     if not run.should_run:
         return run.run_dir / "metrics_summary.json"
@@ -1441,6 +1450,112 @@ def _run_evaluation(
         )
         run.complete(["predictions.npz", "metrics.npz", "config.json", "metrics_summary.json"])
     return run.run_dir / "metrics_summary.json"
+
+
+def _run_ridge_fallback(
+    artifact_root: Path,
+    task: AdaptimeTask,
+    workflow: AdaptimeWorkflowConfig,
+    reason: dict[str, object],
+) -> list[Path]:
+    """Publish actual vanilla results for every unavailable Ridge-family method."""
+
+    vanilla_summary = _run_evaluation(artifact_root, task, workflow, "vanilla")
+    vanilla_root = vanilla_summary.parent
+    summary = json.loads(vanilla_summary.read_text(encoding="utf-8"))
+    config = json.loads((vanilla_root / "config.json").read_text(encoding="utf-8"))
+    eligible = int(config["evaluation_grid"]["valid_values"])
+    outputs = []
+    for method in ADAPTATION_METHODS:
+        if method == "vanilla":
+            continue
+        root = _stage_root(artifact_root, "evaluations", method, task)
+        replace_provisional = any(
+            (json.loads(path.read_text(encoding="utf-8")).get("adaptation_fallback_reason") or {}).get("code")
+            == "ridge_not_completed"
+            for path in root.glob("run_*/config.json")
+        )
+        run = _allocation(
+            artifact_root, task, workflow, "evaluations", method,
+            runtime_config={},
+            provenance={"vanilla_evaluation": str(vanilla_root / "manifest.json"), "fallback": reason},
+            force=replace_provisional,
+        )
+        output = run.run_dir / "metrics_summary.json"
+        if run.should_run:
+            with run:
+                raw_sources = {
+                    name: os.path.relpath(vanilla_root / name, run.run_dir)
+                    for name in ("predictions.npz", "metrics.npz")
+                }
+                fallback_config = {
+                    **config,
+                    "model": method,
+                    "selected_adaptation": {"method": "vanilla", "k": 0, "alpha": None},
+                    "adaptation_fallback_reason": reason,
+                    "nonfinite_prediction_fallback": {"policy": "task_level_vanilla_fallback", "count": 0},
+                    "fallback_to_vanilla": {
+                        "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
+                        "count": eligible, "eligible_evaluation_windows": eligible,
+                        "rate": 1.0 if eligible else None,
+                    },
+                    "artifact_sources": raw_sources,
+                }
+                output.write_text(json.dumps({**summary, "model": method}, indent=2), encoding="utf-8")
+                (run.run_dir / "config.json").write_text(json.dumps(fallback_config, indent=2), encoding="utf-8")
+                run.complete(["metrics_summary.json", "config.json", *raw_sources.values()])
+        outputs.append(output)
+    print(f"Adaptime vanilla fallback {task.dataset}/{task.term}: {reason}", flush=True)
+    return outputs
+
+
+def _ridge_evaluations_complete(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig
+) -> bool:
+    for method in ADAPTATION_METHODS:
+        if method == "vanilla":
+            continue
+        try:
+            root = _completed_run(
+                _stage_root(artifact_root, "evaluations", method, task),
+                _spec(task, workflow, "evaluations", method),
+            )
+            config = json.loads((root / "config.json").read_text(encoding="utf-8"))
+            if (config.get("adaptation_fallback_reason") or {}).get("code") == "ridge_not_completed":
+                return False
+        except (FileNotFoundError, ValueError):
+            return False
+    return True
+
+
+def _run_ridge_task(
+    artifact_root: Path, task: AdaptimeTask, workflow: AdaptimeWorkflowConfig,
+    stages: tuple[str, ...] = ("extract", "fit", "extract_eval", "predict", "evaluate"),
+) -> list[Path]:
+    """A task failure leaves vanilla outputs and never blocks the next task."""
+
+    if _ridge_evaluations_complete(artifact_root, task, workflow):
+        return []
+    outputs = []
+    for stage in stages:
+        try:
+            if stage == "evaluate":
+                for method in ADAPTATION_METHODS:
+                    if method != "vanilla":
+                        outputs.append(_run_evaluation(artifact_root, task, workflow, method))
+            else:
+                runner = {
+                    "extract": _run_ridge_extraction, "fit": _run_fit,
+                    "extract_eval": _run_ridge_eval_extraction, "predict": _run_ridge_prediction,
+                }[stage]
+                outputs.append(runner(artifact_root, task, workflow))
+        except Exception as error:
+            outputs.extend(_run_ridge_fallback(artifact_root, task, workflow, {
+                "code": "ridge_stage_failed", "stage": stage,
+                "error_type": type(error).__name__, "message": str(error),
+            }))
+            break
+    return outputs
 
 
 def run_adaptation_stage(
@@ -1568,7 +1683,34 @@ def run_adaptation_stage(
             repeat_policy=repeat_policy,
         )
         print(report, flush=True)
+        with (report.parent / "adaptation_summary.csv").open(encoding="utf-8", newline="") as stream:
+            print("method,MASE,total_inference_seconds,task_fallbacks", flush=True)
+            for row in csv.DictReader(stream):
+                if row["base_model"] in {
+                    "vanilla", "covariate_prediction", "full_ridge_shared",
+                    "full_ridge_per_variate", "selected_adaptation", "tsrag",
+                }:
+                    print(f"{row['model']},{row['MASE']},{row['inference_seconds']},{row['task_fallbacks']}", flush=True)
         return [report]
+    if method == "ridge" and stage != "prepare":
+        outputs = []
+        if stage == "all":
+            for task in tasks:
+                outputs.append(_run_prepare(artifact_root, task, workflow))
+        # Publish the independent baseline and genuine fallback outputs first.
+        # A killed Ridge process therefore cannot remove the available results.
+        for task in tasks:
+            outputs.append(_run_vanilla(artifact_root, task, workflow))
+            outputs.append(_run_evaluation(artifact_root, task, workflow, "vanilla"))
+            outputs.extend(_run_ridge_fallback(artifact_root, task, workflow, {
+                "code": "ridge_not_completed", "message": "Ridge has not completed this task; using canonical vanilla",
+            }))
+        ridge_stages = ("extract", "fit", "extract_eval", "predict", "evaluate")
+        if stage not in {"pipeline", "all"}:
+            ridge_stages = (stage,)
+        for task in tasks:
+            outputs.extend(_run_ridge_task(artifact_root, task, workflow, ridge_stages))
+        return outputs
     pipeline_stages = {
         "seasonal_naive": ("predict", "evaluate"),
         "vanilla": ("vanilla",),
@@ -1630,19 +1772,11 @@ def run_adaptation_stage(
                 result = _run_evaluation(artifact_root, task, workflow, "vanilla")
             elif current == "predict" and method == "seasonal_naive":
                 result = _run_seasonal_naive(artifact_root, task, workflow)
-            elif current == "extract" and method == "ridge":
-                result = _run_ridge_extraction(artifact_root, task, workflow)
             elif current == "extract":
                 assert retriever is not None
                 result = _run_tsrag_extraction(
                     artifact_root, task, workflow, retriever
                 )
-            elif current == "fit":
-                result = _run_fit(artifact_root, task, workflow)
-            elif current == "extract_eval":
-                result = _run_ridge_eval_extraction(artifact_root, task, workflow)
-            elif current == "predict" and method == "ridge":
-                result = _run_ridge_prediction(artifact_root, task, workflow)
             elif current == "predict" and method == ROLLING_RIDGE_METHOD:
                 result = _run_rolling_ridge_prediction(
                     artifact_root, task, workflow
@@ -1652,19 +1786,6 @@ def run_adaptation_stage(
                 result = _run_tsrag_prediction(
                     artifact_root, task, workflow, retriever, loaded
                 )
-            elif current == "evaluate" and method == "ridge":
-                for comparison_method in ADAPTATION_METHODS:
-                    if comparison_method == "vanilla":
-                        continue
-                    result = _run_evaluation(
-                        artifact_root,
-                        task,
-                        workflow,
-                        comparison_method,
-                    )
-                    outputs.append(result)
-                    print(result, flush=True)
-                continue
             elif current == "evaluate":
                 result = _run_evaluation(
                     artifact_root, task, workflow, method

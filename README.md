@@ -45,8 +45,9 @@ weights/ts-rag/
 weights/tsicl/tsicl-v1.ckpt
 ```
 
-Optional `.env` settings can override dataset, weight, output, log, and shared
-metadata roots.
+Optional `.env` settings can override dataset, weight, and shared metadata
+roots. Standard Adaptime jobs select their own output and log directories;
+inherited settings from another project cannot redirect those artifacts.
 
 ## Main executions
 
@@ -90,6 +91,21 @@ succeed:
 ```bash
 bash scripts/submit_adaptime_comparison.sh dgx
 ```
+
+The vanilla job computes official-test metrics immediately after forecasting,
+including when completed forecasts are reused. Ridge evaluation does not
+compute vanilla metrics. The report summary and report stdout include the
+arithmetic mean of task MASE values and summed inference seconds.
+
+Ridge publishes canonical-vanilla fallback results before attempting adaptation
+and then processes each task through extraction, fitting, test extraction,
+prediction, and evaluation. Any exception in these stages leaves explicit
+vanilla fallback results for that task and allows the next task to continue.
+Successful method evaluations replace their provisional fallbacks. Reports
+identify task fallbacks and retain the error and responsible stage; a fallback
+does not claim that Ridge fitting succeeded. Fallback evaluation configurations
+reference the owning project's vanilla raw predictions and metrics through
+`artifact_sources`, avoiding duplicate large payloads. No runtime cap is added.
 
 The independent rolling experiment uses the same preparation, vanilla
 forecast, shared evaluation-grid, and source-forecast cache contracts:

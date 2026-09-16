@@ -428,12 +428,18 @@ def build_adaptation_comparison(
                 "scaled_MASE": _geometric_mean(
                     cell["scaled_MASE"] for cell in method_cells
                 ),
+                "MASE": _mean(
+                    dict(cell["metrics"])["MASE"].get("mean") for cell in method_cells
+                ),
                 "inference_seconds": (
                     sum(timed) if len(timed) == len(method_cells) else None
                 ),
                 "datasets": len({cell["dataset"] for cell in method_cells}),
                 "tasks": len(method_cells),
                 "timed_tasks": len(timed),
+                "task_fallbacks": sum(
+                    cell["fallback_reason"] is not None for cell in method_cells
+                ),
                 "tasks_with_nonfinite_fallback": sum(
                     bool(cell["nonfinite_fallback_count"])
                     for cell in method_cells
@@ -558,6 +564,7 @@ def build_adaptation_comparison(
                 "total_values": "<metric>_total_values",
             },
             "aggregation": {
+                "MASE": "arithmetic_mean_of_task_means",
                 "scaled_MASE": "geometric_mean_over_tasks",
                 "inference_seconds": "sum_over_tasks_when_all_are_timed",
                 "selection_rate": (

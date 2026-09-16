@@ -3,6 +3,19 @@
 set -euo pipefail
 
 PROJECT_ROOT="${PROJECT_ROOT:?PROJECT_ROOT must be set by the Slurm front}"
+# Adaptime jobs own these roots; inherited settings from another checkout
+# must never redirect the baseline or Ridge artifacts into that project.
+if [ -n "${SELENA_NNI:-}" ]; then
+    ADAPTIME_PROJECT_ROOT="$TIME_STORAGE_ROOT/codes/adaptime"
+else
+    ADAPTIME_PROJECT_ROOT="$PROJECT_ROOT"
+fi
+export TIME_SCRATCH_ROOT="$ADAPTIME_PROJECT_ROOT"
+export OUTPUTS_ROOT="$ADAPTIME_PROJECT_ROOT/outputs"
+export LOGS_ROOT="$ADAPTIME_PROJECT_ROOT/logs"
+export TIME_OUTPUTS="$OUTPUTS_ROOT" TIME_LOGS="$LOGS_ROOT"
+export ADAPTIME_OUTPUT_ROOT="$OUTPUTS_ROOT/adaptime"
+export TIME_PROJECT_NAME=adaptime
 source "$PROJECT_ROOT/src/slurm/runtime_paths.sh"
 export PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 
