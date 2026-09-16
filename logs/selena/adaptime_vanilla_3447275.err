@@ -1,0 +1,34 @@
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/json.py:102: UserWarning: Using `json`-module for json-handling. Consider installing one of `orjson`, `ujson` to speed up serialization and deserialization.
+  warnings.warn(
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'T' is deprecated and will be removed in a future version, please use 'min' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+/fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
+  offset = pd.tseries.frequencies.to_offset(freq)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 195, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 137, in main
+    run_adaptation_stage(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 1627, in run_adaptation_stage
+    result = _run_vanilla(artifact_root, task, workflow)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 915, in _run_vanilla
+    prepared = _data_manifest(artifact_root, task, workflow)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 856, in _data_manifest
+    run = _completed_run(root, _spec(task, workflow, "data", "shared"))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 801, in _completed_run
+    raise FileNotFoundError(
+FileNotFoundError: expected one completed exact adaptime_data input below /fslarge/scratch/users/h61084/codes/evaluating_tsfms/outputs/adaptime/data/shared/univariate/Water_Quality_Darwin/15T/short, found 0
+srun: error: sean0014: task 0: Exited with exit code 1
+2026-09-16 13:21:05 | task TIME-wide Adaptime method=vanilla stage=vanilla completed status=failed exit_code=1
+2026-09-16 13:21:05 | stage vanilla completed status=failed exit_code=1
+TIME interrupted-launch recovery launch_id=selena_adaptime_3447275 tasks=0 root=/scratch/users/h61084/codes/evaluating_tsfms/outputs/adaptime
+2026-09-16 13:21:05 | workflow adaptime completed status=failed exit_code=1

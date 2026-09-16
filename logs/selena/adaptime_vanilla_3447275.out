@@ -1,0 +1,3 @@
+2026-09-16 13:20:55 | workflow adaptime started launch_id=selena_adaptime_3447275 task=vanilla_vanilla slurm_job_id=3447275 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-16 13:20:55 | stage vanilla started
+2026-09-16 13:20:55 | task TIME-wide Adaptime method=vanilla stage=vanilla started
