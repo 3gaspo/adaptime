@@ -1,49 +1,63 @@
 {
   "dataset_config": "Supply_Chain_Location/D/short",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Supply_Chain_Location/D/short/run_0/evaluation_grid.npz",
+    "valid_values": 612,
+    "total_values": 612
+  },
   "metrics": {
     "MSE": {
       "mean": 21935462.068158448,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     },
     "MAE": {
       "mean": 1805.3296236989804,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     },
     "RMSE": {
       "mean": 2434.7465614075995,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     },
     "MAPE": {
       "mean": 0.5001591288792211,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     },
     "sMAPE": {
       "mean": 0.429110546691776,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     },
     "MASE": {
       "mean": 0.6600931788215425,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     },
     "ND": {
       "mean": 0.385239134016576,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     },
     "CRPS": {
       "mean": 0.385239134016576,
       "finite_values": 612,
+      "evaluation_values": 612,
       "total_values": 612
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 1.2493591820821166
+  "inference_seconds": 1.2758537381887436
 }

@@ -24,8 +24,14 @@
   ],
   "prediction_scale_factor": 1.0,
   "metrics_summary_file": "metrics_summary.json",
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
-  "inference_seconds": 1.063293896149844,
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/CPHL/30T/short/run_0/evaluation_grid.npz",
+    "valid_values": 240,
+    "total_values": 240
+  },
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
+  "inference_seconds": 1.0674892915412784,
   "model": "tsrag",
   "experiment": "adaptime",
   "target_mode": "univariate",
@@ -36,5 +42,13 @@
   "adaptation_fallback_reason": {
     "code": "insufficient_global_datastore",
     "message": "global datastore requires at least 11 dates per variate; the least-covered variate has 0"
-  }
+  },
+  "nonfinite_prediction_fallback": {
+    "count": 0,
+    "eligible_evaluation_windows": 240,
+    "policy": "not_applicable_task_level_vanilla_fallback",
+    "task_level_fallback_windows": 240,
+    "mask": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/tsrag/univariate/CPHL/30T/short/run_0/prediction/nonfinite_prediction_fallback.npy"
+  },
+  "fallback_to_vanilla": null
 }

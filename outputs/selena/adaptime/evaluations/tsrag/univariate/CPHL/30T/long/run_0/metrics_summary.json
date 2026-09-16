@@ -1,49 +1,63 @@
 {
   "dataset_config": "CPHL/30T/long",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/CPHL/30T/long/run_0/evaluation_grid.npz",
+    "valid_values": 20,
+    "total_values": 20
+  },
   "metrics": {
     "MSE": {
-      "mean": 0.021104841668333107,
-      "finite_values": 5,
+      "mean": 0.8957772827516077,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     },
     "MAE": {
-      "mean": 0.10838364556210234,
-      "finite_values": 5,
+      "mean": 0.5771452769148414,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     },
     "RMSE": {
-      "mean": 0.1327601997019288,
-      "finite_values": 5,
+      "mean": 0.708695913748563,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     },
     "MAPE": {
-      "mean": 0.35764182208967876,
-      "finite_values": 8,
+      "mean": 0.5321001734669888,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     },
     "sMAPE": {
-      "mean": 0.3275429755790479,
-      "finite_values": 8,
+      "mean": 0.42066552933159773,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     },
     "MASE": {
-      "mean": 1.2285135628537605,
-      "finite_values": 5,
+      "mean": 1.82943919419252,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     },
     "ND": {
-      "mean": 0.33737520720109215,
-      "finite_values": 5,
+      "mean": 0.3937747992852145,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     },
     "CRPS": {
-      "mean": 0.33737520720109215,
-      "finite_values": 5,
+      "mean": 0.3937747992852145,
+      "finite_values": 20,
+      "evaluation_values": 20,
       "total_values": 20
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 0.18491085711866617
+  "inference_seconds": 0.1850359607487917
 }

@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-15T03:43:30.708093+00:00",
+  "completed_at": "2026-09-16T09:41:12.276907+00:00",
   "experiment": "adaptime_evaluation",
   "experiment_config": {
     "metrics": [
@@ -29,15 +29,15 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
-        "launched_at": "2026-09-15T03:43:30.639882+00:00",
+        "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
+        "launched_at": "2026-09-16T09:41:12.209306+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3427124"
+        "slurm_job_id": "3445481"
       }
     ],
-    "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
-    "launched_at": "2026-09-15T03:43:30.639882+00:00",
-    "slurm_job_id": "3427124"
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
+    "launched_at": "2026-09-16T09:41:12.209306+00:00",
+    "slurm_job_id": "3445481"
   },
   "model_config": {
     "forecast_type": "point",
@@ -67,6 +67,7 @@
       "term": "long",
       "test_length": 1440
     },
+    "evaluation_grid": "finite_ground_truth_and_seasonal_naive_mase",
     "evaluator": "timebench.evaluation.saver.save_window_predictions",
     "prediction_config": {
       "checkpoint": "released_tsrag_arm",
@@ -79,12 +80,14 @@
         "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
         "top_k": 10
       },
-      "method": "tsrag"
+      "method": "tsrag",
+      "nonfinite_prediction_fallback": "vanilla_on_shared_evaluation_grid"
     }
   },
   "project": "adaptime",
   "provenance": {
     "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/15T/long/run_0/prepared/manifest.json",
+    "evaluation_grid": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/current_velocity/15T/long/run_0/evaluation_grid.npz",
     "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/tsrag/univariate/current_velocity/15T/long/run_0/prediction/prediction_manifest.json"
   },
   "required_artifacts": [
@@ -95,7 +98,7 @@
   ],
   "runtime_config": {},
   "schema_version": 1,
-  "started_at": "2026-09-15T03:43:30.639882+00:00",
+  "started_at": "2026-09-16T09:41:12.209306+00:00",
   "status": "completed",
-  "updated_at": "2026-09-15T03:43:30.708093+00:00"
+  "updated_at": "2026-09-16T09:41:12.276907+00:00"
 }

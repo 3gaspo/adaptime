@@ -30,11 +30,11 @@
   "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
   "status": "completed",
   "timing_seconds": {
-    "datastore_index_construction_seconds": 0.4912496283650398,
-    "datastore_representation_seconds": 206.42139350622892,
-    "extraction_total_seconds": 207.1637935033068,
-    "test_representation_seconds": 0.1386789195239544,
-    "test_retrieval_seconds": 0.03823929838836193
+    "datastore_index_construction_seconds": 0.3570862580090761,
+    "datastore_representation_seconds": 210.34520114213228,
+    "extraction_total_seconds": 210.99003513157368,
+    "test_representation_seconds": 0.14305917732417583,
+    "test_retrieval_seconds": 0.04082060605287552
   },
   "top_k": 10
 }

@@ -1,49 +1,63 @@
 {
   "dataset_config": "Port_Activity/D/short",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Port_Activity/D/short/run_0/evaluation_grid.npz",
+    "valid_values": 2376,
+    "total_values": 2376
+  },
   "metrics": {
     "MSE": {
       "mean": 954252567.5941133,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     },
     "MAE": {
       "mean": 15481.04548929707,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     },
     "RMSE": {
       "mean": 21244.147341031054,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     },
     "MAPE": {
       "mean": 2.738443318425764,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     },
     "sMAPE": {
       "mean": 0.9438747899683094,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     },
     "MASE": {
       "mean": 0.6626222744711092,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     },
     "ND": {
       "mean": 0.7451603844401525,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     },
     "CRPS": {
       "mean": 0.7451603844401525,
       "finite_values": 2376,
+      "evaluation_values": 2376,
       "total_values": 2376
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 4.878011289983988
+  "inference_seconds": 4.97962030954659
 }

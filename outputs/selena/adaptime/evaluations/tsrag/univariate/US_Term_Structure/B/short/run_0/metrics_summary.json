@@ -1,49 +1,63 @@
 {
   "dataset_config": "US_Term_Structure/B/short",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/US_Term_Structure/B/short/run_0/evaluation_grid.npz",
+    "valid_values": 1400,
+    "total_values": 1400
+  },
   "metrics": {
     "MSE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.023067453546776404,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     },
     "MAE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.10213047977591405,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     },
     "RMSE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.12272495689317574,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     },
     "MAPE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.9471594868415626,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     },
     "sMAPE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.2691588102408878,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     },
     "MASE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 1.498343397371125,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     },
     "ND": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.2604909029587153,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     },
     "CRPS": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.2604909029587153,
+      "finite_values": 1400,
+      "evaluation_values": 1400,
       "total_values": 1400
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 3.2120047891512513
+  "inference_seconds": 3.281010188162327
 }

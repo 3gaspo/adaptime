@@ -1,49 +1,63 @@
 {
   "dataset_config": "Job_Claims/W/short",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Job_Claims/W/short/run_0/evaluation_grid.npz",
+    "valid_values": 8,
+    "total_values": 8
+  },
   "metrics": {
     "MSE": {
       "mean": 773731298.4360703,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     },
     "MAE": {
       "mean": 18364.71649639423,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     },
     "RMSE": {
       "mean": 21751.896358700356,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     },
     "MAPE": {
       "mean": 0.024863747492457965,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     },
     "sMAPE": {
       "mean": 0.02518671177953908,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     },
     "MASE": {
       "mean": 3.1948713176767605,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     },
     "ND": {
       "mean": 0.025047320783500884,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     },
     "CRPS": {
       "mean": 0.025047320783500884,
       "finite_values": 8,
+      "evaluation_values": 8,
       "total_values": 8
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 0.05546468123793602
+  "inference_seconds": 0.05577073525637388
 }

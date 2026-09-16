@@ -1,49 +1,63 @@
 {
   "dataset_config": "OpenElectricity_NEM/5T/medium",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/OpenElectricity_NEM/5T/medium/run_0/evaluation_grid.npz",
+    "valid_values": 420,
+    "total_values": 420
+  },
   "metrics": {
     "MSE": {
       "mean": 191493.42888431484,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "MAE": {
       "mean": 202.6556678348934,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "RMSE": {
       "mean": 258.32813720116803,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "MAPE": {
       "mean": 7.2516608116313215,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "sMAPE": {
       "mean": 0.2918959037749594,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "MASE": {
       "mean": 1.031858252116598,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "ND": {
       "mean": 0.29060810040857327,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "CRPS": {
       "mean": 0.29060810040857327,
       "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 1.699360647238791
+  "inference_seconds": 1.7437908742576838
 }

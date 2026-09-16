@@ -34,6 +34,13 @@
     ],
     "weights_id": "chronos2"
   },
+  "counts": {
+    "computed_rows": 35220,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 35220,
+    "written_rows": 35220
+  },
   "format": "adaptime_source_forecast_cache",
   "launch": {
     "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
@@ -41,11 +48,77 @@
     "slurm_job_id": "3445480"
   },
   "schema_version": 1,
-  "shards": [],
-  "status": "running",
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 8192,
+      "value_shape": [
+        1,
+        144
+      ],
+      "values": "shards/000000_values.npy"
+    },
+    {
+      "references": "shards/000001_references.npy",
+      "rows": 14,
+      "value_shape": [
+        1,
+        144
+      ],
+      "values": "shards/000001_values.npy"
+    },
+    {
+      "references": "shards/000002_references.npy",
+      "rows": 8192,
+      "value_shape": [
+        1,
+        144
+      ],
+      "values": "shards/000002_values.npy"
+    },
+    {
+      "references": "shards/000003_references.npy",
+      "rows": 8192,
+      "value_shape": [
+        1,
+        144
+      ],
+      "values": "shards/000003_values.npy"
+    },
+    {
+      "references": "shards/000004_references.npy",
+      "rows": 8192,
+      "value_shape": [
+        1,
+        144
+      ],
+      "values": "shards/000004_values.npy"
+    },
+    {
+      "references": "shards/000005_references.npy",
+      "rows": 2438,
+      "value_shape": [
+        1,
+        144
+      ],
+      "values": "shards/000005_values.npy"
+    }
+  ],
+  "status": "completed",
   "storage": {
     "compression": "none",
     "dtype": "float32",
     "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 305.53057854715735,
+    "discovery_seconds": 0.0006273975595831871,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.03709041140973568,
+    "manifest_seconds": 0.0015058768913149834,
+    "measured_cache_overhead_seconds": 0.25817921943962574,
+    "measured_operation_seconds": 305.788757766597,
+    "read_seconds": 0.08595151361078024,
+    "write_seconds": 0.13300401996821165
   }
 }

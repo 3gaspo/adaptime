@@ -43,9 +43,9 @@
   },
   "format": "adaptime_source_forecast_cache",
   "launch": {
-    "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_ridge",
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
     "slurm_array_task_id": null,
-    "slurm_job_id": "3432398"
+    "slurm_job_id": "3445480"
   },
   "schema_version": 1,
   "shards": [
@@ -66,14 +66,14 @@
     "shard_rows": 8192
   },
   "timing_seconds": {
-    "compute_seconds": 33.419525135308504,
-    "discovery_seconds": 0.0006316769868135452,
+    "compute_seconds": 32.53252539969981,
+    "discovery_seconds": 0.0006364788860082626,
     "final_manifest_write_included": false,
-    "lookup_seconds": 0.0018792618066072464,
-    "manifest_seconds": 0.0015361681580543518,
-    "measured_cache_overhead_seconds": 0.023598793894052505,
-    "measured_operation_seconds": 33.44312392920256,
-    "read_seconds": 0.002614285796880722,
-    "write_seconds": 0.01693740114569664
+    "lookup_seconds": 0.0018723681569099426,
+    "manifest_seconds": 0.001489916816353798,
+    "measured_cache_overhead_seconds": 0.023459259420633316,
+    "measured_operation_seconds": 32.55598465912044,
+    "read_seconds": 0.002608124166727066,
+    "write_seconds": 0.016852371394634247
   }
 }

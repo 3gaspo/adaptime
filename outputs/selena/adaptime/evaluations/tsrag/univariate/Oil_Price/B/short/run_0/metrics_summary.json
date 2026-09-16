@@ -1,49 +1,63 @@
 {
   "dataset_config": "Oil_Price/B/short",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Oil_Price/B/short/run_0/evaluation_grid.npz",
+    "valid_values": 420,
+    "total_values": 420
+  },
   "metrics": {
     "MSE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 3.076797964098311,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "MAE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.6698824115098646,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "RMSE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.7766318553296516,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "MAPE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.05722643642256675,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "sMAPE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.05626318301104897,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "MASE": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 1.366502456436393,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "ND": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.05678766442831534,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     },
     "CRPS": {
-      "mean": null,
-      "finite_values": 0,
+      "mean": 0.05678766442831534,
+      "finite_values": 420,
+      "evaluation_values": 420,
       "total_values": 420
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 0.9315630383789539
+  "inference_seconds": 0.9555942192673683
 }

@@ -143,7 +143,7 @@
     "adaptation_train.context_forecast_k1_seconds": 0.0,
     "adaptation_train.context_forecast_k5_seconds": 0.0,
     "adaptation_train.past_target_covariate_forecast_seconds": 0.0,
-    "adaptation_train.retrieval_seconds": 0.0008530393242835999,
+    "adaptation_train.retrieval_seconds": 0.0008452814072370529,
     "adaptation_validation.context_construction_k10_seconds": 0.0,
     "adaptation_validation.context_construction_k15_seconds": 0.0,
     "adaptation_validation.context_construction_k1_seconds": 0.0,
@@ -153,8 +153,8 @@
     "adaptation_validation.context_forecast_k1_seconds": 0.0,
     "adaptation_validation.context_forecast_k5_seconds": 0.0,
     "adaptation_validation.past_target_covariate_forecast_seconds": 0.0,
-    "adaptation_validation.retrieval_seconds": 0.000464804470539093,
-    "extraction_total_seconds": 0.24108369927853346,
+    "adaptation_validation.retrieval_seconds": 0.00041473470628261566,
+    "extraction_total_seconds": 0.28715108521282673,
     "offline.neighbor_forecast_seconds": 0.0
   },
   "weights_id": "chronos2"

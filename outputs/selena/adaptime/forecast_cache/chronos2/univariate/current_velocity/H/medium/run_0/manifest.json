@@ -1,0 +1,88 @@
+{
+  "config": {
+    "cached_value": "source_window_vanilla_backbone_forecast",
+    "model": "chronos2",
+    "prediction_length": 168,
+    "prepared_artifact": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/medium/run_0/prepared",
+    "prepared_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 1057,
+      "adaptation_validation_length": 549,
+      "context_length": 8192,
+      "dataset": "current_velocity/H",
+      "datastore_prediction_length": 168,
+      "datastore_scope": "all",
+      "datastore_stride": 24,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 168,
+      "reference_context_length": 512,
+      "retrieval_context_length": 168,
+      "retrieval_period": 24,
+      "seasonality": 24,
+      "target_mode": "univariate",
+      "term": "medium",
+      "test_length": 672
+    },
+    "reference_columns": [
+      "item",
+      "channel",
+      "origin",
+      "context_length"
+    ],
+    "weights_id": "chronos2"
+  },
+  "counts": {
+    "computed_rows": 15732,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 15732,
+    "written_rows": 15732
+  },
+  "format": "adaptime_source_forecast_cache",
+  "launch": {
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
+    "slurm_array_task_id": null,
+    "slurm_job_id": "3445480"
+  },
+  "schema_version": 1,
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 8192,
+      "value_shape": [
+        1,
+        168
+      ],
+      "values": "shards/000000_values.npy"
+    },
+    {
+      "references": "shards/000001_references.npy",
+      "rows": 7540,
+      "value_shape": [
+        1,
+        168
+      ],
+      "values": "shards/000001_values.npy"
+    }
+  ],
+  "status": "completed",
+  "storage": {
+    "compression": "none",
+    "dtype": "float32",
+    "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 184.33739353716373,
+    "discovery_seconds": 0.0006475076079368591,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.021422017365694046,
+    "manifest_seconds": 0.0015047872439026833,
+    "measured_cache_overhead_seconds": 0.1286632651463151,
+    "measured_operation_seconds": 184.46605680231005,
+    "read_seconds": 0.06486866436898708,
+    "write_seconds": 0.040220288559794426
+  }
+}

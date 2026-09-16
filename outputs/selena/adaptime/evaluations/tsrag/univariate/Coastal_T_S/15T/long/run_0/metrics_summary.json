@@ -1,49 +1,63 @@
 {
   "dataset_config": "Coastal_T_S/15T/long",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Coastal_T_S/15T/long/run_0/evaluation_grid.npz",
+    "valid_values": 75,
+    "total_values": 75
+  },
   "metrics": {
     "MSE": {
       "mean": 109.44358808793581,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     },
     "MAE": {
       "mean": 4.747495173083411,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     },
     "RMSE": {
       "mean": 4.896431828249751,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     },
     "MAPE": {
       "mean": 0.14285112304664346,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     },
     "sMAPE": {
       "mean": 0.12266257035432412,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     },
     "MASE": {
       "mean": 1.4182922914067775,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     },
     "ND": {
       "mean": 0.11652827393676905,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     },
     "CRPS": {
       "mean": 0.11652827393676905,
       "finite_values": 75,
+      "evaluation_values": 75,
       "total_values": 75
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 0.9587332345545292
+  "inference_seconds": 0.9628181476145983
 }

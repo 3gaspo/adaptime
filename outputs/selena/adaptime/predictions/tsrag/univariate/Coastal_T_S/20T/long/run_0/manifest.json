@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-15T03:40:12.162126+00:00",
+  "completed_at": "2026-09-16T09:40:26.368984+00:00",
   "experiment": "adaptime_prediction",
   "experiment_config": {
     "forecast_type": "point",
@@ -17,15 +17,15 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
-        "launched_at": "2026-09-15T03:40:11.966936+00:00",
+        "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
+        "launched_at": "2026-09-16T09:40:26.160870+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3427124"
+        "slurm_job_id": "3445481"
       }
     ],
-    "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
-    "launched_at": "2026-09-15T03:40:11.966936+00:00",
-    "slurm_job_id": "3427124"
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
+    "launched_at": "2026-09-16T09:40:26.160870+00:00",
+    "slurm_job_id": "3445481"
   },
   "model_config": {
     "checkpoint": "released_tsrag_arm",
@@ -38,7 +38,8 @@
       "source_commit": "73ac807789d2e61b8a3dfc8514e3fc947fe185cc",
       "top_k": 10
     },
-    "method": "tsrag"
+    "method": "tsrag",
+    "nonfinite_prediction_fallback": "vanilla_on_shared_evaluation_grid"
   },
   "pipeline_config": {
     "data_config": {
@@ -63,16 +64,20 @@
       "target_mode": "univariate",
       "term": "long",
       "test_length": 1080
-    }
+    },
+    "evaluation_grid": "finite_ground_truth_and_seasonal_naive_mase"
   },
   "project": "adaptime",
   "provenance": {
     "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/20T/long/run_0/prepared/manifest.json",
-    "extraction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Coastal_T_S/20T/long/run_0/extraction/manifest.json"
+    "evaluation_grid": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Coastal_T_S/20T/long/run_0/evaluation_grid.npz",
+    "extraction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Coastal_T_S/20T/long/run_0/extraction/manifest.json",
+    "vanilla_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/long/run_0/vanilla/manifest.json"
   },
   "required_artifacts": [
     "prediction/prediction_manifest.json",
-    "prediction/predictions.npy"
+    "prediction/predictions.npy",
+    "prediction/nonfinite_prediction_fallback.npy"
   ],
   "runtime_config": {
     "arrow_cache_items": 2,
@@ -83,7 +88,7 @@
     "retriever_path": "/fslarge/scratch/users/h61084/weights/chronos-t5-base"
   },
   "schema_version": 1,
-  "started_at": "2026-09-15T03:40:11.966936+00:00",
+  "started_at": "2026-09-16T09:40:26.160870+00:00",
   "status": "completed",
-  "updated_at": "2026-09-15T03:40:12.162126+00:00"
+  "updated_at": "2026-09-16T09:40:26.368984+00:00"
 }

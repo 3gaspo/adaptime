@@ -1,49 +1,63 @@
 {
   "dataset_config": "current_velocity/5T/long",
-  "aggregation": "mean over finite series/window/variate metric values",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/current_velocity/5T/long/run_0/evaluation_grid.npz",
+    "valid_values": 30,
+    "total_values": 30
+  },
   "metrics": {
     "MSE": {
       "mean": 6.681805626298083,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     },
     "MAE": {
       "mean": 1.008279856418642,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     },
     "RMSE": {
       "mean": 1.2312314436105016,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     },
     "MAPE": {
       "mean": 1.0411040791882429,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     },
     "sMAPE": {
       "mean": 0.4396285211448445,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     },
     "MASE": {
       "mean": 1.2729475781279578,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     },
     "ND": {
       "mean": 0.45873491718213805,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     },
     "CRPS": {
       "mean": 0.45873491718213805,
       "finite_values": 30,
+      "evaluation_values": 30,
       "total_values": 30
     }
   },
-  "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_tsrag",
+  "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_tsrag",
   "model": "tsrag",
-  "inference_seconds": 1.0318777710199356
+  "inference_seconds": 1.0399280730634928
 }
