@@ -1,4 +1,5 @@
 {
+  "completed_at": "2026-09-16T10:44:05.065584+00:00",
   "experiment": "adaptime_adaptation",
   "experiment_config": {
     "phase": "closed_form_fitting"
@@ -15,15 +16,15 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_adaptime_unified_20260915T153415Z_57382_ridge",
-        "launched_at": "2026-09-15T15:36:51.394423+00:00",
+        "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
+        "launched_at": "2026-09-16T10:44:03.875809+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3437179"
+        "slurm_job_id": "3445480"
       }
     ],
-    "launch_id": "selena_adaptime_unified_20260915T153415Z_57382_ridge",
-    "launched_at": "2026-09-15T15:36:51.394423+00:00",
-    "slurm_job_id": "3437179"
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
+    "launched_at": "2026-09-16T10:44:03.875809+00:00",
+    "slurm_job_id": "3445480"
   },
   "model_config": {
     "alpha_values": [
@@ -118,12 +119,17 @@
     "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Coastal_T_S/H/short/run_0/prepared/manifest.json",
     "extraction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/ridge/univariate/Coastal_T_S/H/short/run_0/extraction/manifest.json"
   },
-  "required_artifacts": [],
+  "required_artifacts": [
+    "model/model_manifest.json",
+    "model/selection.json",
+    "model/bayes_mixture.json",
+    "model/bayes_past_targets_mixture.json"
+  ],
   "runtime_config": {
     "chunk_size": 1024
   },
   "schema_version": 1,
-  "started_at": "2026-09-15T15:36:51.394423+00:00",
-  "status": "running",
-  "updated_at": "2026-09-15T15:36:51.394423+00:00"
+  "started_at": "2026-09-16T10:44:03.875809+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-16T10:44:05.065584+00:00"
 }

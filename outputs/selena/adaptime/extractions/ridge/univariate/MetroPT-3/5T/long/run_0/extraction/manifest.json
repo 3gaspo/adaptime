@@ -143,9 +143,9 @@
     "adaptation_train.context_forecast_k1_seconds": 0.0,
     "adaptation_train.context_forecast_k5_seconds": 0.0,
     "adaptation_train.past_target_covariate_forecast_seconds": 0.0,
-    "adaptation_train.representation_seconds": 0.0004492253065109253,
-    "adaptation_train.retrieval_seconds": 0.009181535802781582,
-    "adaptation_train.vanilla_forecast_seconds": 0.16981209255754948,
+    "adaptation_train.representation_seconds": 0.0004548747092485428,
+    "adaptation_train.retrieval_seconds": 0.008893691003322601,
+    "adaptation_train.vanilla_forecast_seconds": 0.16645780391991138,
     "adaptation_validation.context_construction_k10_seconds": 0.0,
     "adaptation_validation.context_construction_k15_seconds": 0.0,
     "adaptation_validation.context_construction_k1_seconds": 0.0,
@@ -155,12 +155,12 @@
     "adaptation_validation.context_forecast_k1_seconds": 0.0,
     "adaptation_validation.context_forecast_k5_seconds": 0.0,
     "adaptation_validation.past_target_covariate_forecast_seconds": 0.0,
-    "adaptation_validation.representation_seconds": 0.00030881259590387344,
-    "adaptation_validation.retrieval_seconds": 0.006860402412712574,
-    "adaptation_validation.vanilla_forecast_seconds": 0.09554728679358959,
-    "datastore.representation_seconds": 0.017288152128458023,
-    "extraction_total_seconds": 0.7315562656149268,
-    "offline.neighbor_forecast_seconds": 0.06637631263583899
+    "adaptation_validation.representation_seconds": 0.00031461194157600403,
+    "adaptation_validation.retrieval_seconds": 0.006884308531880379,
+    "adaptation_validation.vanilla_forecast_seconds": 0.10015088133513927,
+    "datastore.representation_seconds": 0.017245717346668243,
+    "extraction_total_seconds": 0.9808193910866976,
+    "offline.neighbor_forecast_seconds": 0.06726834550499916
   },
   "weights_id": "chronos2"
 }

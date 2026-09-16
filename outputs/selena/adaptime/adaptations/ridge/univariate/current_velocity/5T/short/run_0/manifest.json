@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-15T15:35:31.540719+00:00",
+  "completed_at": "2026-09-16T10:42:48.310283+00:00",
   "experiment": "adaptime_adaptation",
   "experiment_config": {
     "phase": "closed_form_fitting"
@@ -16,15 +16,15 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_adaptime_unified_20260915T153415Z_57382_ridge",
-        "launched_at": "2026-09-15T15:35:31.283846+00:00",
+        "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
+        "launched_at": "2026-09-16T10:42:48.060941+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3437179"
+        "slurm_job_id": "3445480"
       }
     ],
-    "launch_id": "selena_adaptime_unified_20260915T153415Z_57382_ridge",
-    "launched_at": "2026-09-15T15:35:31.283846+00:00",
-    "slurm_job_id": "3437179"
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
+    "launched_at": "2026-09-16T10:42:48.060941+00:00",
+    "slurm_job_id": "3445480"
   },
   "model_config": {
     "alpha_values": [
@@ -129,7 +129,7 @@
     "chunk_size": 1024
   },
   "schema_version": 1,
-  "started_at": "2026-09-15T15:35:31.283846+00:00",
+  "started_at": "2026-09-16T10:42:48.060941+00:00",
   "status": "completed",
-  "updated_at": "2026-09-15T15:35:31.540719+00:00"
+  "updated_at": "2026-09-16T10:42:48.310283+00:00"
 }

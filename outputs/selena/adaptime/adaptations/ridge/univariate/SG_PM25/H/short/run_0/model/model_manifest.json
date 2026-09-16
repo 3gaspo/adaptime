@@ -1,0 +1,807 @@
+{
+  "bayes_covariate_protocol": {
+    "fit_evidence": "paired_adaptation_train_window_msse_wins",
+    "prior": {
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "selection_evidence": "adaptation_validation_date_msse_with_paired_block_bootstrap",
+    "tie_weight": 0.5
+  },
+  "bootstrap": {
+    "by_method": {
+      "bayes_covariate_prediction": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 4,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 10,
+          "method": "bayes_covariate_prediction",
+          "probability_covariate_better": 0.5505181347150259,
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5606300094052257,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 84
+      },
+      "bayes_past_targets_prediction": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 4,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 0,
+          "method": "vanilla",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5689123691017739,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 84
+      },
+      "cov_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 4,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.001,
+          "bootstrap_standard_error": 0.0,
+          "k": 10,
+          "method": "cov_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5463062982535007,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 84
+      },
+      "full_ridge_per_variate": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 4,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.1,
+          "bootstrap_standard_error": 0.0,
+          "fitted_variates": 5,
+          "k": 5,
+          "method": "full_ridge_per_variate",
+          "total_variates": 5,
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5570208099074326,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 84
+      },
+      "full_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 4,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.1,
+          "bootstrap_standard_error": 0.0,
+          "k": 15,
+          "method": "full_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.552196100664108,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 84
+      },
+      "y_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 4,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.1,
+          "bootstrap_standard_error": 0.0,
+          "k": 15,
+          "method": "y_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 0.5505681315695613,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 84
+      }
+    },
+    "overall": {
+      "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+      "block_length": 4,
+      "block_length_source": "automatic",
+      "fallback_reason": null,
+      "method": "paired_moving_date_block_bootstrap_one_standard_error",
+      "observed_best": {
+        "alpha": 0.001,
+        "bootstrap_standard_error": 0.0,
+        "k": 10,
+        "method": "cov_ridge_shared",
+        "validation_difference_from_best": 0.0,
+        "validation_msse": 0.5463062982535007,
+        "within_one_standard_error": true
+      },
+      "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+      "replications": 1000,
+      "validation_dates": 84
+    }
+  },
+  "config": {
+    "alpha_values": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "bootstrap_block_length": null,
+    "bootstrap_replications": 1000,
+    "chunk_size": 1024,
+    "default_alpha": 0.01,
+    "default_k": 10,
+    "fitting_scopes": [
+      "all",
+      "same_series"
+    ],
+    "k_values": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "minimum_training_window_ratio": 1.0,
+    "minimum_validation_window_ratio": 0.1,
+    "seed": 1
+  },
+  "coverage": {
+    "adaptation_train": {
+      "1": {
+        "adapted_dates": 154,
+        "adapted_windows": 770,
+        "excluded_label_windows": 115,
+        "label_complete_windows": 805,
+        "total_dates": 184,
+        "total_windows": 920,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_dates": 154,
+        "adapted_windows": 770,
+        "excluded_label_windows": 115,
+        "label_complete_windows": 805,
+        "total_dates": 184,
+        "total_windows": 920,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_dates": 154,
+        "adapted_windows": 770,
+        "excluded_label_windows": 115,
+        "label_complete_windows": 805,
+        "total_dates": 184,
+        "total_windows": 920,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_dates": 154,
+        "adapted_windows": 770,
+        "excluded_label_windows": 115,
+        "label_complete_windows": 805,
+        "total_dates": 184,
+        "total_windows": 920,
+        "vanilla_fallback_windows": 0
+      }
+    },
+    "adaptation_validation": {
+      "1": {
+        "adapted_dates": 83,
+        "adapted_windows": 414,
+        "excluded_label_windows": 41,
+        "label_complete_windows": 419,
+        "total_dates": 92,
+        "total_windows": 460,
+        "vanilla_fallback_windows": 5
+      },
+      "10": {
+        "adapted_dates": 83,
+        "adapted_windows": 414,
+        "excluded_label_windows": 41,
+        "label_complete_windows": 419,
+        "total_dates": 92,
+        "total_windows": 460,
+        "vanilla_fallback_windows": 5
+      },
+      "15": {
+        "adapted_dates": 83,
+        "adapted_windows": 414,
+        "excluded_label_windows": 41,
+        "label_complete_windows": 419,
+        "total_dates": 92,
+        "total_windows": 460,
+        "vanilla_fallback_windows": 5
+      },
+      "5": {
+        "adapted_dates": 83,
+        "adapted_windows": 414,
+        "excluded_label_windows": 41,
+        "label_complete_windows": 419,
+        "total_dates": 92,
+        "total_windows": 460,
+        "vanilla_fallback_windows": 5
+      }
+    },
+    "per_variate": {
+      "0:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "10": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "15": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "5": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          }
+        },
+        "test_windows": 92
+      },
+      "0:1": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "10": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "15": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "5": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          }
+        },
+        "test_windows": 92
+      },
+      "0:2": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 82,
+            "adapted_windows": 82,
+            "excluded_label_windows": 9,
+            "label_complete_windows": 83,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "10": {
+            "adapted_dates": 82,
+            "adapted_windows": 82,
+            "excluded_label_windows": 9,
+            "label_complete_windows": 83,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "15": {
+            "adapted_dates": 82,
+            "adapted_windows": 82,
+            "excluded_label_windows": 9,
+            "label_complete_windows": 83,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "5": {
+            "adapted_dates": 82,
+            "adapted_windows": 82,
+            "excluded_label_windows": 9,
+            "label_complete_windows": 83,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          }
+        },
+        "test_windows": 92
+      },
+      "0:3": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "10": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "15": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "5": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          }
+        },
+        "test_windows": 92
+      },
+      "0:4": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 154,
+            "adapted_windows": 154,
+            "excluded_label_windows": 23,
+            "label_complete_windows": 161,
+            "total_dates": 184,
+            "total_windows": 184,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "10": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "15": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          },
+          "5": {
+            "adapted_dates": 83,
+            "adapted_windows": 83,
+            "excluded_label_windows": 8,
+            "label_complete_windows": 84,
+            "total_dates": 92,
+            "total_windows": 92,
+            "vanilla_fallback_windows": 1
+          }
+        },
+        "test_windows": 92
+      }
+    }
+  },
+  "evaluation_k_values": [
+    1,
+    5,
+    10,
+    15
+  ],
+  "extraction_signature": "413e135238ab178588d69b07045a1973275e245fffcbca2059738d7c3b07a2d8",
+  "feature_names": {
+    "cov_ridge_shared": [
+      "V",
+      "C"
+    ],
+    "full_ridge_per_variate": [
+      "V",
+      "C",
+      "Y_1",
+      "N_1"
+    ],
+    "full_ridge_shared": [
+      "V",
+      "C",
+      "Y_1",
+      "Y_2",
+      "Y_3",
+      "Y_4",
+      "Y_5",
+      "N_1",
+      "N_2",
+      "N_3",
+      "N_4",
+      "N_5"
+    ],
+    "y_ridge_shared": [
+      "V",
+      "Y_1",
+      "Y_2",
+      "Y_3",
+      "Y_4",
+      "Y_5",
+      "Y_6",
+      "Y_7",
+      "Y_8",
+      "Y_9",
+      "Y_10",
+      "Y_11",
+      "Y_12",
+      "Y_13",
+      "Y_14",
+      "Y_15"
+    ]
+  },
+  "files": {
+    "bayes_mixture": "bayes_mixture.json",
+    "bayes_past_targets_mixture": "bayes_past_targets_mixture.json",
+    "coefficients": {
+      "cov_ridge_shared": "cov_ridge_shared_coefficients.npy",
+      "full_ridge_shared": "full_ridge_shared_coefficients.npy",
+      "y_ridge_shared": "y_ridge_shared_coefficients.npy"
+    },
+    "per_variate_coefficients": "full_ridge_per_variate_coefficients.npy",
+    "per_variate_series": "full_ridge_per_variate_series.npy",
+    "selection": "selection.json"
+  },
+  "format": "adaptime_full_ridge_model",
+  "method": "adaptime_validation_selector",
+  "method_selections": {
+    "bayes_covariate_prediction": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0,
+      "k": 10,
+      "method": "bayes_covariate_prediction",
+      "probability_covariate_better": 0.5505181347150259,
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5606300094052257,
+      "within_one_standard_error": true
+    },
+    "bayes_past_targets_prediction": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0,
+      "k": 0,
+      "method": "vanilla",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5689123691017739,
+      "within_one_standard_error": true
+    },
+    "cov_ridge_shared": {
+      "alpha": 0.001,
+      "bootstrap_standard_error": 0.0,
+      "k": 10,
+      "method": "cov_ridge_shared",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5463062982535007,
+      "within_one_standard_error": true
+    },
+    "full_ridge_per_variate": {
+      "alpha": 0.1,
+      "bootstrap_standard_error": 0.004622705990468537,
+      "fitted_variates": 5,
+      "k": 1,
+      "method": "full_ridge_per_variate",
+      "total_variates": 5,
+      "validation_difference_from_best": 0.00244788939076857,
+      "validation_msse": 0.5594686992982012,
+      "within_one_standard_error": true
+    },
+    "full_ridge_shared": {
+      "alpha": 0.001,
+      "bootstrap_standard_error": 0.004324727761948131,
+      "k": 5,
+      "method": "full_ridge_shared",
+      "validation_difference_from_best": 0.0036955708463867806,
+      "validation_msse": 0.5558916715104947,
+      "within_one_standard_error": true
+    },
+    "y_ridge_shared": {
+      "alpha": 0.1,
+      "bootstrap_standard_error": 0.0,
+      "k": 15,
+      "method": "y_ridge_shared",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 0.5505681315695613,
+      "within_one_standard_error": true
+    }
+  },
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "protocol": "fit_on_adaptation_train_select_every_family_with_paired_date_block_bootstrap_one_se_against_virtual_vanilla_on_validation_freeze_before_time_test",
+  "schema_version": 1,
+  "selected": {
+    "alpha": 0.001,
+    "bootstrap_standard_error": 0.0,
+    "k": 10,
+    "method": "cov_ridge_shared",
+    "validation_difference_from_best": 0.0,
+    "validation_msse": 0.5463062982535007,
+    "within_one_standard_error": true
+  },
+  "selection_methods": [
+    "vanilla",
+    "bayes_covariate_prediction",
+    "bayes_past_targets_prediction",
+    "cov_ridge_shared",
+    "y_ridge_shared",
+    "full_ridge_shared",
+    "full_ridge_per_variate"
+  ],
+  "signature": "12c535a39dc05bda3afc21016eefc8ebc7c208e7449b22874858e5d00ab7f319",
+  "status": "completed",
+  "validation_selection_protocol": "paired_moving_date_block_bootstrap_one_standard_error",
+  "window_support": {
+    "minimum_training_windows_exclusive": 460.0,
+    "minimum_validation_windows_exclusive": 46.0,
+    "test_windows": 460
+  }
+}

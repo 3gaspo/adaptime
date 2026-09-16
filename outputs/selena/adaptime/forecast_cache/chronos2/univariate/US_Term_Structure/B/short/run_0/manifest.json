@@ -34,6 +34,13 @@
     ],
     "weights_id": "chronos2"
   },
+  "counts": {
+    "computed_rows": 13421,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 13421,
+    "written_rows": 13421
+  },
   "format": "adaptime_source_forecast_cache",
   "launch": {
     "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
@@ -41,11 +48,41 @@
     "slurm_job_id": "3445480"
   },
   "schema_version": 1,
-  "shards": [],
-  "status": "running",
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 8192,
+      "value_shape": [
+        1,
+        20
+      ],
+      "values": "shards/000000_values.npy"
+    },
+    {
+      "references": "shards/000001_references.npy",
+      "rows": 5229,
+      "value_shape": [
+        1,
+        20
+      ],
+      "values": "shards/000001_values.npy"
+    }
+  ],
+  "status": "completed",
   "storage": {
     "compression": "none",
     "dtype": "float32",
     "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 159.08208168298006,
+    "discovery_seconds": 0.0006481483578681946,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.01870722696185112,
+    "manifest_seconds": 0.0015257578343153,
+    "measured_cache_overhead_seconds": 0.10808436758816242,
+    "measured_operation_seconds": 159.19016605056822,
+    "read_seconds": 0.05867619253695011,
+    "write_seconds": 0.028527041897177696
   }
 }

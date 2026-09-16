@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-15T11:16:11.021899+00:00",
+  "completed_at": "2026-09-16T10:37:29.043138+00:00",
   "experiment": "adaptime_extraction",
   "experiment_config": {
     "phase": "fit_grid_extraction"
@@ -16,22 +16,15 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_ridge",
-        "launched_at": "2026-09-15T11:16:10.865007+00:00",
+        "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
+        "launched_at": "2026-09-16T10:37:28.891857+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3432398"
-      },
-      {
-        "action": "reuse",
-        "launch_id": "selena_adaptime_unified_20260915T153415Z_57382_ridge",
-        "launched_at": "2026-09-15T15:34:43.853453+00:00",
-        "slurm_array_task_id": null,
-        "slurm_job_id": "3437179"
+        "slurm_job_id": "3445480"
       }
     ],
-    "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_ridge",
-    "launched_at": "2026-09-15T11:16:10.865007+00:00",
-    "slurm_job_id": "3432398"
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_ridge",
+    "launched_at": "2026-09-16T10:37:28.891857+00:00",
+    "slurm_job_id": "3445480"
   },
   "model_config": {
     "arrow_cache_items": 2,
@@ -91,7 +84,7 @@
     "model_path": null
   },
   "schema_version": 1,
-  "started_at": "2026-09-15T11:16:10.865007+00:00",
+  "started_at": "2026-09-16T10:37:28.891857+00:00",
   "status": "completed",
-  "updated_at": "2026-09-15T15:34:43.853453+00:00"
+  "updated_at": "2026-09-16T10:37:29.043138+00:00"
 }

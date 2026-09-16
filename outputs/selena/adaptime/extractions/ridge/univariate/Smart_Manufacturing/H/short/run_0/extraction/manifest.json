@@ -143,7 +143,7 @@
     "adaptation_train.context_forecast_k1_seconds": 0.0,
     "adaptation_train.context_forecast_k5_seconds": 0.0,
     "adaptation_train.past_target_covariate_forecast_seconds": 0.0,
-    "adaptation_train.retrieval_seconds": 0.00043293461203575134,
+    "adaptation_train.retrieval_seconds": 0.00047189369797706604,
     "adaptation_validation.context_construction_k10_seconds": 0.0,
     "adaptation_validation.context_construction_k15_seconds": 0.0,
     "adaptation_validation.context_construction_k1_seconds": 0.0,
@@ -153,10 +153,10 @@
     "adaptation_validation.context_forecast_k1_seconds": 0.0,
     "adaptation_validation.context_forecast_k5_seconds": 0.0,
     "adaptation_validation.past_target_covariate_forecast_seconds": 0.0,
-    "adaptation_validation.representation_seconds": 0.004749703221023083,
-    "adaptation_validation.retrieval_seconds": 0.0016541862860321999,
-    "adaptation_validation.vanilla_forecast_seconds": 1.8335276786237955,
-    "extraction_total_seconds": 2.3049618750810623,
+    "adaptation_validation.representation_seconds": 0.00515003502368927,
+    "adaptation_validation.retrieval_seconds": 0.0017116684466600418,
+    "adaptation_validation.vanilla_forecast_seconds": 1.3213744182139635,
+    "extraction_total_seconds": 1.8655038885772228,
     "offline.neighbor_forecast_seconds": 0.0
   },
   "weights_id": "chronos2"

@@ -9,3 +9,27 @@
 /fssmall/home/h61084/codes/adaptime/.venv/lib/python3.12/site-packages/gluonts/time_feature/seasonality.py:47: FutureWarning: 'Q' is deprecated and will be removed in a future version, please use 'QE' instead.
   offset = pd.tseries.frequencies.to_offset(freq)
 Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 100/170 [00:00<00:00, 995.20it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 982.46it/s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 195, in <module>
+    main()
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/scripts/run_adaptation_stage.py", line 137, in main
+    run_adaptation_stage(
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 1614, in run_adaptation_stage
+    result = _run_fit(artifact_root, task, workflow)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_workflow.py", line 1091, in _run_fit
+    manifest = fit_full_ridge(
+               ^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/pipeline/adaptime_training.py", line 861, in fit_full_ridge
+    vanilla_msse = validation_by_k[default_k].mean_squared_error(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/fssmall/home/h61084/codes/adaptime/src/timebench/adaptime/ridge.py", line 191, in mean_squared_error
+    raise ValueError("cannot score empty ridge statistics")
+ValueError: cannot score empty ridge statistics
+srun: error: sean0014: task 0: Exited with exit code 1
+2026-09-16 12:45:30 | task TIME-wide Adaptime method=ridge stage=pipeline completed status=failed exit_code=1
+2026-09-16 12:45:30 | stage pipeline completed status=failed exit_code=1
+TIME interrupted-launch recovery launch_id=selena_adaptime_unified_20260916T080019Z_10942_ridge tasks=0 root=/scratch/users/h61084/codes/adaptime/outputs/adaptime
+2026-09-16 12:45:33 | workflow adaptime completed status=failed exit_code=1
