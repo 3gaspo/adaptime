@@ -1,0 +1,65 @@
+{
+  "dataset_config": "Water_Quality_Darwin/15T/short",
+  "num_series": 7,
+  "num_windows": 90,
+  "num_variates": 6,
+  "num_model_inputs": 3780,
+  "prediction_length": 16,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "15T",
+  "seasonality": 96,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Water_Quality_Darwin/15T/short/run_0/evaluation_grid.npz",
+    "valid_values": 3780,
+    "total_values": 3780
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+  "inference_seconds": 27.421389640308917,
+  "model": "covariate_prediction",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/Water_Quality_Darwin/15T/short/run_0/prediction/prediction_manifest.json",
+  "selected_adaptation": {
+    "alpha": null,
+    "bootstrap_standard_error": 0.0,
+    "k": 0,
+    "method": "bayes_past_targets_prediction",
+    "probability_past_targets_better": 0.5159914712153518,
+    "validation_difference_from_best": 0.0,
+    "validation_msse": 0.4309526344745307,
+    "within_one_standard_error": true
+  },
+  "bayes_probability_covariate_better": 0.0,
+  "adaptation_fallback_reason": null,
+  "nonfinite_prediction_fallback": {
+    "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+    "count": 0,
+    "eligible_evaluation_windows": 3780,
+    "mask": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/Water_Quality_Darwin/15T/short/run_0/prediction/nonfinite_prediction_fallback.npy",
+    "mask_row": 1
+  },
+  "fallback_to_vanilla": {
+    "policy": "count_shared_grid_cells_using_canonical_vanilla_after_selection_support_and_nonfinite_fallback",
+    "count": 3780,
+    "eligible_evaluation_windows": 3780,
+    "rate": 1.0
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "dataset_config": "Smart_Manufacturing/H/medium",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Smart_Manufacturing/H/medium/run_0/evaluation_grid.npz",
+    "valid_values": 340,
+    "total_values": 340
+  },
+  "metrics": {
+    "MSE": {
+      "mean": 78.42242082994515,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    },
+    "MAE": {
+      "mean": 5.719729275807407,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    },
+    "RMSE": {
+      "mean": 7.149743318916848,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    },
+    "MAPE": {
+      "mean": 0.33770011080722584,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    },
+    "sMAPE": {
+      "mean": 0.22534742998680352,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    },
+    "MASE": {
+      "mean": 0.7114699311085539,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    },
+    "ND": {
+      "mean": 0.2153353035221406,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    },
+    "CRPS": {
+      "mean": 0.2153353035221406,
+      "finite_values": 340,
+      "evaluation_values": 340,
+      "total_values": 340
+    }
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "model": "full_ridge_per_variate",
+  "inference_seconds": 0.3783683842048049
+}

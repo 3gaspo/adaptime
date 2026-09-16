@@ -1,0 +1,64 @@
+{
+  "dataset_config": "current_velocity/H/long",
+  "num_series": 21,
+  "num_windows": 2,
+  "num_variates": 6,
+  "num_model_inputs": 252,
+  "prediction_length": 336,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "H",
+  "seasonality": 24,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/current_velocity/H/long/run_0/evaluation_grid.npz",
+    "valid_values": 252,
+    "total_values": 252
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "inference_seconds": 0.6827243361622095,
+  "model": "cov_ridge_shared",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/long/run_0/vanilla/manifest.json",
+  "selected_adaptation": {
+    "method": "vanilla",
+    "k": 0,
+    "alpha": null
+  },
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": {
+    "code": "ridge_not_completed",
+    "message": "Ridge has not completed this task; using canonical vanilla"
+  },
+  "nonfinite_prediction_fallback": {
+    "policy": "task_level_vanilla_fallback",
+    "count": 0
+  },
+  "fallback_to_vanilla": {
+    "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
+    "count": 252,
+    "eligible_evaluation_windows": 252,
+    "rate": 1.0
+  },
+  "artifact_sources": {
+    "predictions.npz": "../../../../../../vanilla/univariate/current_velocity/H/long/run_0/predictions.npz",
+    "metrics.npz": "../../../../../../vanilla/univariate/current_velocity/H/long/run_0/metrics.npz"
+  }
+}

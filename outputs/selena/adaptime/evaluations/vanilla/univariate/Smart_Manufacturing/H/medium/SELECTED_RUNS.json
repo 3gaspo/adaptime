@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "selections": [
+    {
+      "mode": "auto",
+      "run": "run_0",
+      "scientific_config": {
+        "experiment_config": {
+          "metrics": [
+            "MSE",
+            "MAE",
+            "RMSE",
+            "MAPE",
+            "sMAPE",
+            "MASE",
+            "ND",
+            "CRPS"
+          ],
+          "phase": "evaluation",
+          "quantile_levels": [
+            0.5
+          ]
+        },
+        "model_config": {
+          "forecast_type": "point",
+          "method": "vanilla"
+        },
+        "pipeline_config": {
+          "data_config": {
+            "adaptation_stride": 127,
+            "adaptation_train_length": 549,
+            "adaptation_validation_length": 295,
+            "context_length": 8192,
+            "dataset": "Smart_Manufacturing/H",
+            "dataset_fingerprint": "37a131e03f9491ca",
+            "datastore_prediction_length": 168,
+            "datastore_scope": "all",
+            "datastore_stride": 168,
+            "fitting_window_scope": "all",
+            "max_datastore_windows": null,
+            "max_fitting_windows": null,
+            "minimum_datastore_dates_per_variate": 11,
+            "prediction_length": 168,
+            "reference_context_length": 512,
+            "retrieval_context_length": 168,
+            "retrieval_period": 168,
+            "seasonality": 24,
+            "target_mode": "univariate",
+            "term": "medium",
+            "test_length": 336
+          },
+          "evaluation_grid": "finite_ground_truth_and_seasonal_naive_mase",
+          "evaluator": "timebench.evaluation.saver.save_window_predictions",
+          "prediction_config": {
+            "context_policy": "all_available_history_capped_at_model_limit",
+            "model": "chronos2",
+            "weights_id": null
+          }
+        }
+      }
+    }
+  ]
+}

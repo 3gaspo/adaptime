@@ -20,6 +20,20 @@
         "launched_at": "2026-09-16T08:04:18.857377+00:00",
         "slurm_array_task_id": null,
         "slurm_job_id": "3445479"
+      },
+      {
+        "action": "reuse",
+        "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+        "launched_at": "2026-09-16T11:45:42.665486+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3447347"
+      },
+      {
+        "action": "reuse",
+        "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+        "launched_at": "2026-09-16T11:46:02.303670+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3447348"
       }
     ],
     "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_vanilla",
@@ -72,5 +86,5 @@
   "schema_version": 1,
   "started_at": "2026-09-16T08:04:18.857377+00:00",
   "status": "completed",
-  "updated_at": "2026-09-16T08:04:19.621126+00:00"
+  "updated_at": "2026-09-16T11:46:02.303670+00:00"
 }

@@ -1,0 +1,50 @@
+{
+  "dataset_config": "Commodity_Production/M/short",
+  "num_series": 32,
+  "num_windows": 5,
+  "num_variates": 1,
+  "num_model_inputs": 160,
+  "prediction_length": 12,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "M",
+  "seasonality": 12,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Commodity_Production/M/short/run_0/evaluation_grid.npz",
+    "valid_values": 160,
+    "total_values": 160
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "inference_seconds": 1.6309412345290184,
+  "model": "vanilla",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Commodity_Production/M/short/run_0/vanilla/manifest.json",
+  "selected_adaptation": null,
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": null,
+  "nonfinite_prediction_fallback": {
+    "policy": "not_applicable_non_adaptor",
+    "count": 0,
+    "eligible_evaluation_windows": null,
+    "mask": null
+  },
+  "fallback_to_vanilla": null
+}

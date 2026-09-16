@@ -1,0 +1,64 @@
+{
+  "dataset_config": "Smart_Manufacturing/H/short",
+  "num_series": 34,
+  "num_windows": 14,
+  "num_variates": 5,
+  "num_model_inputs": 2380,
+  "prediction_length": 24,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "H",
+  "seasonality": 24,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Smart_Manufacturing/H/short/run_0/evaluation_grid.npz",
+    "valid_values": 2380,
+    "total_values": 2380
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "inference_seconds": 2.5479564433917403,
+  "model": "full_ridge_shared",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Smart_Manufacturing/H/short/run_0/vanilla/manifest.json",
+  "selected_adaptation": {
+    "method": "vanilla",
+    "k": 0,
+    "alpha": null
+  },
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": {
+    "code": "ridge_not_completed",
+    "message": "Ridge has not completed this task; using canonical vanilla"
+  },
+  "nonfinite_prediction_fallback": {
+    "policy": "task_level_vanilla_fallback",
+    "count": 0
+  },
+  "fallback_to_vanilla": {
+    "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
+    "count": 2380,
+    "eligible_evaluation_windows": 2380,
+    "rate": 1.0
+  },
+  "artifact_sources": {
+    "predictions.npz": "../../../../../../vanilla/univariate/Smart_Manufacturing/H/short/run_0/predictions.npz",
+    "metrics.npz": "../../../../../../vanilla/univariate/Smart_Manufacturing/H/short/run_0/metrics.npz"
+  }
+}

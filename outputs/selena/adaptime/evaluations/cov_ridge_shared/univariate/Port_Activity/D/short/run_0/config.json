@@ -1,0 +1,64 @@
+{
+  "dataset_config": "Port_Activity/D/short",
+  "num_series": 99,
+  "num_windows": 12,
+  "num_variates": 2,
+  "num_model_inputs": 2376,
+  "prediction_length": 30,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "D",
+  "seasonality": 1,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 10.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Port_Activity/D/short/run_0/evaluation_grid.npz",
+    "valid_values": 2376,
+    "total_values": 2376
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "inference_seconds": 2.6521398844197392,
+  "model": "cov_ridge_shared",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Port_Activity/D/short/run_0/vanilla/manifest.json",
+  "selected_adaptation": {
+    "method": "vanilla",
+    "k": 0,
+    "alpha": null
+  },
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": {
+    "code": "ridge_not_completed",
+    "message": "Ridge has not completed this task; using canonical vanilla"
+  },
+  "nonfinite_prediction_fallback": {
+    "policy": "task_level_vanilla_fallback",
+    "count": 0
+  },
+  "fallback_to_vanilla": {
+    "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
+    "count": 2376,
+    "eligible_evaluation_windows": 2376,
+    "rate": 1.0
+  },
+  "artifact_sources": {
+    "predictions.npz": "../../../../../../vanilla/univariate/Port_Activity/D/short/run_0/predictions.npz",
+    "metrics.npz": "../../../../../../vanilla/univariate/Port_Activity/D/short/run_0/metrics.npz"
+  }
+}

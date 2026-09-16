@@ -1,0 +1,50 @@
+{
+  "dataset_config": "current_velocity/10T/medium",
+  "num_series": 10,
+  "num_windows": 15,
+  "num_variates": 6,
+  "num_model_inputs": 900,
+  "prediction_length": 144,
+  "num_quantiles": 1,
+  "quantile_levels": [
+    0.5
+  ],
+  "freq": "10T",
+  "seasonality": 144,
+  "context_length": 8192,
+  "metric_names": [
+    "MSE",
+    "MAE",
+    "RMSE",
+    "MAPE",
+    "sMAPE",
+    "MASE",
+    "ND",
+    "CRPS"
+  ],
+  "prediction_scale_factor": 1.0,
+  "metrics_summary_file": "metrics_summary.json",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/current_velocity/10T/medium/run_0/evaluation_grid.npz",
+    "valid_values": 900,
+    "total_values": 900
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "inference_seconds": 4.038198382593691,
+  "model": "vanilla",
+  "experiment": "adaptime",
+  "target_mode": "univariate",
+  "forecast_type": "point",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/medium/run_0/vanilla/manifest.json",
+  "selected_adaptation": null,
+  "bayes_probability_covariate_better": null,
+  "adaptation_fallback_reason": null,
+  "nonfinite_prediction_fallback": {
+    "policy": "not_applicable_non_adaptor",
+    "count": 0,
+    "eligible_evaluation_windows": null,
+    "mask": null
+  },
+  "fallback_to_vanilla": null
+}

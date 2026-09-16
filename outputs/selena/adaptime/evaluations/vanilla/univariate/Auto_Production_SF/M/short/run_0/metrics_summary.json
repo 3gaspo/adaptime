@@ -1,0 +1,63 @@
+{
+  "dataset_config": "Auto_Production_SF/M/short",
+  "aggregation": "mean over the shared Seasonal Naive MASE evaluation grid",
+  "evaluation_grid": {
+    "definition": "finite_ground_truth_and_seasonal_naive_mase",
+    "source": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/Auto_Production_SF/M/short/run_0/evaluation_grid.npz",
+    "valid_values": 5,
+    "total_values": 5
+  },
+  "metrics": {
+    "MSE": {
+      "mean": 9.272226822076481,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    },
+    "MAE": {
+      "mean": 2.3962774912516274,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    },
+    "RMSE": {
+      "mean": 2.946290309442225,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    },
+    "MAPE": {
+      "mean": 0.024828383344163797,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    },
+    "sMAPE": {
+      "mean": 0.02454779208880714,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    },
+    "MASE": {
+      "mean": 0.6043605452526348,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    },
+    "ND": {
+      "mean": 0.024046073576934612,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    },
+    "CRPS": {
+      "mean": 0.024046073576934612,
+      "finite_values": 5,
+      "evaluation_values": 5,
+      "total_values": 5
+    }
+  },
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "model": "vanilla",
+  "inference_seconds": 0.06461440306156874
+}

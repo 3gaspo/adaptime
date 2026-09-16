@@ -1,0 +1,1988 @@
+2026-09-16 13:45:34 | workflow adaptime started launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla task=vanilla_vanilla slurm_job_id=3447347 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-16 13:45:34 | stage vanilla started
+2026-09-16 13:45:34 | task TIME-wide Adaptime method=vanilla stage=vanilla started
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:38.383974+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:38.400873+00:00
+    Total instances: 3780, Series during experiment: 42, Windows: 90
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2.0430
+      MAE: 0.4199
+      RMSE: 0.5028
+      MAPE: 0.0527
+      sMAPE: 0.0497
+      MASE: 0.6095
+      ND: 0.0506
+      CRPS: 0.0506
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.020680+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.034909+00:00
+    Total instances: 630, Series during experiment: 42, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.3565
+      MAE: 0.5678
+      RMSE: 0.7336
+      MAPE: 0.0685
+      sMAPE: 0.0642
+      MASE: 0.8815
+      ND: 0.0632
+      CRPS: 0.0632
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.196790+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.211158+00:00
+    Total instances: 210, Series during experiment: 42, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 42 flat series -> 7 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9.0305
+      MAE: 0.9201
+      RMSE: 1.1709
+      MAPE: 0.0962
+      sMAPE: 0.0940
+      MASE: 1.3526
+      ND: 0.0888
+      CRPS: 0.0888
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Water_Quality_Darwin/15T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.322916+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.337727+00:00
+    Total instances: 720, Series during experiment: 6, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2.9136
+      MAE: 0.5493
+      RMSE: 0.6554
+      MAPE: 0.4360
+      sMAPE: 0.3435
+      MASE: 0.3677
+      ND: 0.2955
+      CRPS: 0.2955
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.508570+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.523935+00:00
+    Total instances: 90, Series during experiment: 6, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.0089
+      MAE: 0.7779
+      RMSE: 0.9558
+      MAPE: 0.6799
+      sMAPE: 0.4154
+      MASE: 0.5819
+      ND: 0.3629
+      CRPS: 0.3629
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.603462+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/5T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.616916+00:00
+    Total instances: 30, Series during experiment: 6, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5.4947
+      MAE: 0.8914
+      RMSE: 1.0733
+      MAPE: 0.8593
+      sMAPE: 0.4829
+      MASE: 0.8300
+      ND: 0.4495
+      CRPS: 0.4495
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/5T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.685844+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:39.700384+00:00
+    Total instances: 7200, Series during experiment: 60, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 10 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 7.0144
+      MAE: 0.7190
+      RMSE: 0.9037
+      MAPE: 3150.0567
+      sMAPE: 0.4371
+      MASE: 0.5283
+      ND: 0.3258
+      CRPS: 0.3258
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:40.977239+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:40.991106+00:00
+    Total instances: 900, Series during experiment: 60, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 10 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9.5572
+      MAE: 0.8879
+      RMSE: 1.1819
+      MAPE: 3372.1383
+      sMAPE: 0.4860
+      MASE: 0.6911
+      ND: 0.3363
+      CRPS: 0.3363
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:41.269518+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/10T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:41.283722+00:00
+    Total instances: 300, Series during experiment: 60, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 10 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 11.6768
+      MAE: 1.0309
+      RMSE: 1.3565
+      MAPE: 3330.7745
+      sMAPE: 0.5385
+      MASE: 0.9351
+      ND: 0.3834
+      CRPS: 0.3834
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/10T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:41.463087+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:41.477282+00:00
+    Total instances: 3600, Series during experiment: 30, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 30 flat series -> 5 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 6.0552
+      MAE: 0.7411
+      RMSE: 0.9016
+      MAPE: 108212.7994
+      sMAPE: 0.4683
+      MASE: 0.5023
+      ND: 0.3838
+      CRPS: 0.3838
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:41.958472+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:41.972400+00:00
+    Total instances: 450, Series during experiment: 30, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 30 flat series -> 5 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 8.9162
+      MAE: 0.9588
+      RMSE: 1.2072
+      MAPE: 122394.5203
+      sMAPE: 0.5727
+      MASE: 0.7292
+      ND: 0.4318
+      CRPS: 0.4318
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.088673+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.102921+00:00
+    Total instances: 150, Series during experiment: 30, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 30 flat series -> 5 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 10.5457
+      MAE: 1.0611
+      RMSE: 1.3414
+      MAPE: 119975.5289
+      sMAPE: 0.5962
+      MASE: 0.8344
+      ND: 0.4490
+      CRPS: 0.4490
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/15T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.183232+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.197500+00:00
+    Total instances: 3528, Series during experiment: 126, Windows: 28
+    Collecting ground truth and context...
+    Detected to_univariate case: 126 flat series -> 21 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 6.5846
+      MAE: 0.7995
+      RMSE: 0.9959
+      MAPE: 1990655322254.2659
+      sMAPE: 0.4414
+      MASE: 0.7026
+      ND: 0.3334
+      CRPS: 0.3334
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.545335+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.561355+00:00
+    Total instances: 504, Series during experiment: 126, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 126 flat series -> 21 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 10.9568
+      MAE: 1.1122
+      RMSE: 1.3904
+      MAPE: 2525141588144.6694
+      sMAPE: 0.5615
+      MASE: 1.1527
+      ND: 0.4016
+      CRPS: 0.4016
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.665486+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/current_velocity/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.679046+00:00
+    Total instances: 252, Series during experiment: 126, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 126 flat series -> 21 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 11.7062
+      MAE: 1.1858
+      RMSE: 1.4933
+      MAPE: 2265187340389.5234
+      sMAPE: 0.6041
+      MASE: 1.3406
+      ND: 0.4294
+      CRPS: 0.4294
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/current_velocity/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.764018+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.779092+00:00
+    Total instances: 240, Series during experiment: 2, Windows: 120
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0638
+      MAE: 0.1378
+      RMSE: 0.1612
+      MAPE: 0.1945
+      sMAPE: 0.1776
+      MASE: 0.6512
+      ND: 0.1859
+      CRPS: 0.1859
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.833876+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.847877+00:00
+    Total instances: 30, Series during experiment: 2, Windows: 15
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.1238
+      MAE: 0.2186
+      RMSE: 0.2766
+      MAPE: 0.3434
+      sMAPE: 0.2942
+      MASE: 1.0652
+      ND: 0.2928
+      CRPS: 0.2928
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.883694+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.897592+00:00
+    Total instances: 10, Series during experiment: 2, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.1268
+      MAE: 0.2303
+      RMSE: 0.3097
+      MAPE: 0.3676
+      sMAPE: 0.3149
+      MASE: 1.1569
+      ND: 0.3148
+      CRPS: 0.3148
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/15T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.931086+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:42.945465+00:00
+    Total instances: 240, Series during experiment: 2, Windows: 120
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.6417
+      MAE: 0.4646
+      RMSE: 0.5627
+      MAPE: 0.3677
+      sMAPE: 0.2924
+      MASE: 1.3695
+      ND: 0.2852
+      CRPS: 0.2852
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.008597+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.022675+00:00
+    Total instances: 60, Series during experiment: 2, Windows: 30
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.7479
+      MAE: 0.5134
+      RMSE: 0.6303
+      MAPE: 0.4312
+      sMAPE: 0.3324
+      MASE: 1.5182
+      ND: 0.3229
+      CRPS: 0.3229
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.064169+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.078201+00:00
+    Total instances: 20, Series during experiment: 2, Windows: 10
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.8957
+      MAE: 0.5742
+      RMSE: 0.7055
+      MAPE: 0.5006
+      sMAPE: 0.4063
+      MASE: 1.7965
+      ND: 0.3692
+      CRPS: 0.3692
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/30T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.113900+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.128431+00:00
+    Total instances: 112, Series during experiment: 4, Windows: 28
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.3634
+      MAE: 0.3390
+      RMSE: 0.4102
+      MAPE: 0.3331
+      sMAPE: 0.2884
+      MASE: 1.2422
+      ND: 0.2836
+      CRPS: 0.2836
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.170138+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.184231+00:00
+    Total instances: 16, Series during experiment: 4, Windows: 4
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.4790
+      MAE: 0.4370
+      RMSE: 0.5400
+      MAPE: 0.4630
+      sMAPE: 0.4131
+      MASE: 1.8357
+      ND: 0.3947
+      CRPS: 0.3947
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.218493+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.232747+00:00
+    Total instances: 8, Series during experiment: 4, Windows: 2
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.5239
+      MAE: 0.4664
+      RMSE: 0.5840
+      MAPE: 0.5131
+      sMAPE: 0.4727
+      MASE: 2.1391
+      ND: 0.4464
+      CRPS: 0.4464
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/CPHL/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.265436+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.280556+00:00
+    Total instances: 1800, Series during experiment: 15, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 5 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 111.0752
+      MAE: 4.6570
+      RMSE: 4.8515
+      MAPE: 0.1344
+      sMAPE: 0.1194
+      MASE: 1.1296
+      ND: 0.1149
+      CRPS: 0.1149
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.578993+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.593291+00:00
+    Total instances: 225, Series during experiment: 15, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 5 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 110.3513
+      MAE: 4.7092
+      RMSE: 4.8814
+      MAPE: 0.1370
+      sMAPE: 0.1212
+      MASE: 1.2530
+      ND: 0.1150
+      CRPS: 0.1150
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.682500+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.696794+00:00
+    Total instances: 75, Series during experiment: 15, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 5 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 108.9629
+      MAE: 4.7375
+      RMSE: 4.8886
+      MAPE: 0.1390
+      sMAPE: 0.1226
+      MASE: 1.3934
+      ND: 0.1162
+      CRPS: 0.1162
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/15T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.764225+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.778646+00:00
+    Total instances: 360, Series during experiment: 3, Windows: 120
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0064
+      MAE: 0.0558
+      RMSE: 0.0638
+      MAPE: 0.0023
+      sMAPE: 0.0023
+      MASE: 0.4510
+      ND: 0.0023
+      CRPS: 0.0023
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.845320+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.859887+00:00
+    Total instances: 45, Series during experiment: 3, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0305
+      MAE: 0.1290
+      RMSE: 0.1561
+      MAPE: 0.0053
+      sMAPE: 0.0053
+      MASE: 1.0186
+      ND: 0.0053
+      CRPS: 0.0053
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.899983+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/20T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.919623+00:00
+    Total instances: 15, Series during experiment: 3, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0822
+      MAE: 0.1989
+      RMSE: 0.2429
+      MAPE: 0.0081
+      sMAPE: 0.0080
+      MASE: 1.6549
+      ND: 0.0080
+      CRPS: 0.0080
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/20T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.959979+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:43.974397+00:00
+    Total instances: 2016, Series during experiment: 72, Windows: 28
+    Collecting ground truth and context...
+    Detected to_univariate case: 72 flat series -> 24 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 14.5924
+      MAE: 1.0799
+      RMSE: 1.3386
+      MAPE: 0.0294
+      sMAPE: 0.0275
+      MASE: 0.9169
+      ND: 0.0272
+      CRPS: 0.0272
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.211988+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.225840+00:00
+    Total instances: 288, Series during experiment: 72, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 72 flat series -> 24 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 21.7698
+      MAE: 1.3562
+      RMSE: 1.6914
+      MAPE: 0.0415
+      sMAPE: 0.0363
+      MASE: 1.6218
+      ND: 0.0392
+      CRPS: 0.0392
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.310410+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.326476+00:00
+    Total instances: 144, Series during experiment: 72, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 72 flat series -> 24 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 23.3840
+      MAE: 1.4582
+      RMSE: 1.8620
+      MAPE: 0.0469
+      sMAPE: 0.0411
+      MASE: 2.3177
+      ND: 0.0416
+      CRPS: 0.0416
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Coastal_T_S/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.397571+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.412584+00:00
+    Total instances: 2928, Series during experiment: 24, Windows: 122
+    Collecting ground truth and context...
+    Detected to_univariate case: 24 flat series -> 6 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2268.2581
+      MAE: 17.0659
+      RMSE: 20.0979
+      MAPE: 0.3431
+      sMAPE: 0.2193
+      MASE: 0.8503
+      ND: 0.2265
+      CRPS: 0.2265
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.654196+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.667719+00:00
+    Total instances: 1248, Series during experiment: 24, Windows: 52
+    Collecting ground truth and context...
+    Detected to_univariate case: 24 flat series -> 6 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2293.0161
+      MAE: 17.4155
+      RMSE: 22.1103
+      MAPE: 0.3482
+      sMAPE: 0.2234
+      MASE: 0.8850
+      ND: 0.2168
+      CRPS: 0.2168
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.792105+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Weather/D/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.806079+00:00
+    Total instances: 624, Series during experiment: 24, Windows: 26
+    Collecting ground truth and context...
+    Detected to_univariate case: 24 flat series -> 6 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2284.1942
+      MAE: 17.4142
+      RMSE: 22.9106
+      MAPE: 0.3499
+      sMAPE: 0.2253
+      MASE: 0.8988
+      ND: 0.2139
+      CRPS: 0.2139
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Weather/D/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.887205+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:44.902393+00:00
+    Total instances: 460, Series during experiment: 5, Windows: 92
+    Collecting ground truth and context...
+    Detected to_univariate case: 5 flat series -> 1 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 40.9557
+      MAE: 4.6339
+      RMSE: 5.7175
+      MAPE: 0.4953
+      sMAPE: 0.3954
+      MASE: 0.8815
+      ND: 0.3926
+      CRPS: 0.3926
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.059047+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.073069+00:00
+    Total instances: 150, Series during experiment: 5, Windows: 30
+    Collecting ground truth and context...
+    Detected to_univariate case: 5 flat series -> 1 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 47.1329
+      MAE: 4.9147
+      RMSE: 6.2847
+      MAPE: 0.5108
+      sMAPE: 0.4164
+      MASE: 0.9340
+      ND: 0.4022
+      CRPS: 0.4022
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.173835+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.187385+00:00
+    Total instances: 65, Series during experiment: 5, Windows: 13
+    Collecting ground truth and context...
+    Detected to_univariate case: 5 flat series -> 1 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 49.1567
+      MAE: 5.0626
+      RMSE: 6.6204
+      MAPE: 0.5347
+      sMAPE: 0.4263
+      MASE: 0.9633
+      ND: 0.4131
+      CRPS: 0.4131
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_PM25/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.269320+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.283884+00:00
+    Total instances: 120, Series during experiment: 4, Windows: 30
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0986
+      MAE: 0.2133
+      RMSE: 0.2496
+      MAPE: 0.8395
+      sMAPE: 0.4869
+      MASE: 0.5042
+      ND: 0.4323
+      CRPS: 0.4323
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.332672+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.348013+00:00
+    Total instances: 40, Series during experiment: 4, Windows: 10
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.2382
+      MAE: 0.3584
+      RMSE: 0.4166
+      MAPE: 0.9946
+      sMAPE: 0.6860
+      MASE: 0.8980
+      ND: 0.5423
+      CRPS: 0.5423
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.388551+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/NE_China_Wind/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.402434+00:00
+    Total instances: 16, Series during experiment: 4, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.3216
+      MAE: 0.4365
+      RMSE: 0.5253
+      MAPE: 1.1979
+      sMAPE: 0.7967
+      MASE: 1.1843
+      ND: 0.6048
+      CRPS: 0.6048
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.441061+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.454851+00:00
+    Total instances: 315, Series during experiment: 3, Windows: 105
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (1848281.62) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 25681174568.9489
+      MAE: 80595.9907
+      RMSE: 105275.9097
+      MAPE: 201.8888
+      sMAPE: 0.5864
+      MASE: 1.0930
+      ND: 0.3179
+      CRPS: 0.3179
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.560570+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.574253+00:00
+    Total instances: 105, Series during experiment: 3, Windows: 35
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (1855403.50) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 28984573121.6620
+      MAE: 86466.6106
+      RMSE: 125407.8776
+      MAPE: 221.1128
+      sMAPE: 0.6062
+      MASE: 1.2043
+      ND: 0.2893
+      CRPS: 0.2893
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.643601+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Australia_Solar/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.657419+00:00
+    Total instances: 45, Series during experiment: 3, Windows: 15
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (1611371.25) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 29006793062.3748
+      MAE: 84644.9922
+      RMSE: 131066.9759
+      MAPE: 237.3807
+      sMAPE: 0.6058
+      MASE: 1.2377
+      ND: 0.2751
+      CRPS: 0.2751
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Australia_Solar/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.717254+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.732031+00:00
+    Total instances: 525, Series during experiment: 5, Windows: 105
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 124.5275
+      MAE: 6.0704
+      RMSE: 7.6309
+      MAPE: 1.2407
+      sMAPE: 0.1578
+      MASE: 0.9583
+      ND: 0.1610
+      CRPS: 0.1610
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.903260+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:45.917163+00:00
+    Total instances: 175, Series during experiment: 5, Windows: 35
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 191.3619
+      MAE: 7.6055
+      RMSE: 10.0094
+      MAPE: 1.7642
+      sMAPE: 0.1903
+      MASE: 1.2098
+      ND: 0.1877
+      CRPS: 0.1877
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.009622+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.023409+00:00
+    Total instances: 75, Series during experiment: 5, Windows: 15
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 221.4279
+      MAE: 8.5088
+      RMSE: 11.7802
+      MAPE: 1.7855
+      sMAPE: 0.2088
+      MASE: 1.3994
+      ND: 0.2000
+      CRPS: 0.2000
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/epf_electricity_price/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.091776+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.106047+00:00
+    Total instances: 1680, Series during experiment: 10, Windows: 168
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9329.7484
+      MAE: 49.6822
+      RMSE: 58.8919
+      MAPE: 3.5202
+      sMAPE: 0.1567
+      MASE: 0.3870
+      ND: 0.1487
+      CRPS: 0.1487
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.574549+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.588555+00:00
+    Total instances: 420, Series during experiment: 10, Windows: 42
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 33266.1932
+      MAE: 87.0124
+      RMSE: 109.4158
+      MAPE: 4.8053
+      sMAPE: 0.2120
+      MASE: 0.5804
+      ND: 0.2051
+      CRPS: 0.2051
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.808366+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.822950+00:00
+    Total instances: 140, Series during experiment: 10, Windows: 14
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 47413.4168
+      MAE: 108.8805
+      RMSE: 144.0165
+      MAPE: 4.9506
+      sMAPE: 0.2605
+      MASE: 0.7347
+      ND: 0.2333
+      CRPS: 0.2333
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/OpenElectricity_NEM/5T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.983498+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:46.998354+00:00
+    Total instances: 560, Series during experiment: 10, Windows: 56
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1113.6207
+      MAE: 12.4983
+      RMSE: 16.0054
+      MAPE: 0.3238
+      sMAPE: 0.2765
+      MASE: 0.5334
+      ND: 0.3333
+      CRPS: 0.3333
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:47.144611+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:47.158373+00:00
+    Total instances: 140, Series during experiment: 10, Windows: 14
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1200.0988
+      MAE: 13.9604
+      RMSE: 19.0042
+      MAPE: 0.3690
+      sMAPE: 0.3030
+      MASE: 0.6379
+      ND: 0.2144
+      CRPS: 0.2144
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:47.247779+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/EWELD_Load/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:47.261612+00:00
+    Total instances: 20, Series during experiment: 10, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1323.3334
+      MAE: 15.1111
+      RMSE: 21.0553
+      MAPE: 0.3824
+      sMAPE: 0.3302
+      MASE: 0.7570
+      ND: 0.2280
+      CRPS: 0.2280
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/EWELD_Load/15T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:47.338785+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:47.353312+00:00
+    Total instances: 14868, Series during experiment: 354, Windows: 42
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 201.9511
+      MAE: 5.3187
+      RMSE: 6.8017
+      MAPE: 0.0333
+      sMAPE: 0.0441
+      MASE: 0.3701
+      ND: 0.0329
+      CRPS: 0.0329
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:49.262797+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:49.275921+00:00
+    Total instances: 2478, Series during experiment: 354, Windows: 7
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 435.7240
+      MAE: 7.8854
+      RMSE: 10.9200
+      MAPE: 0.0453
+      sMAPE: 0.0547
+      MASE: 0.5286
+      ND: 0.0430
+      CRPS: 0.0430
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:49.845089+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_Carpark/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:49.858990+00:00
+    Total instances: 354, Series during experiment: 354, Windows: 1
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 738.5261
+      MAE: 10.8760
+      RMSE: 15.6459
+      MAPE: 0.0632
+      sMAPE: 0.0671
+      MASE: 0.7260
+      ND: 0.0626
+      CRPS: 0.0626
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Finland_Traffic/15T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.193969+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Finland_Traffic/15T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.208486+00:00
+    Total instances: 186, Series during experiment: 1, Windows: 186
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 835.9956
+      MAE: 16.5352
+      RMSE: 20.3036
+      MAPE: 0.2612
+      sMAPE: 0.1848
+      MASE: 0.4022
+      ND: 0.2314
+      CRPS: 0.2314
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Finland_Traffic/15T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.279323+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Finland_Traffic/15T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.293004+00:00
+    Total instances: 31, Series during experiment: 1, Windows: 31
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1455.0135
+      MAE: 22.0362
+      RMSE: 30.9316
+      MAPE: 0.3024
+      sMAPE: 0.2171
+      MASE: 0.5358
+      ND: 0.1782
+      CRPS: 0.1782
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Finland_Traffic/15T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.335862+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Finland_Traffic/15T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.349642+00:00
+    Total instances: 4, Series during experiment: 1, Windows: 4
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1830.3235
+      MAE: 24.4235
+      RMSE: 38.6678
+      MAPE: 0.3722
+      sMAPE: 0.2329
+      MASE: 0.5926
+      ND: 0.1891
+      CRPS: 0.1891
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Finland_Traffic/15T/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Port_Activity/D/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.387357+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Port_Activity/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/D/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.402475+00:00
+    Total instances: 2376, Series during experiment: 198, Windows: 12
+    Collecting ground truth and context...
+    Detected to_univariate case: 198 flat series -> 99 series x 2 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (354135.69) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/D/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/D/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/D/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/D/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 949152196.0511
+      MAE: 15412.2398
+      RMSE: 21205.5488
+      MAPE: 2.7356
+      sMAPE: 0.9460
+      MASE: 0.6583
+      ND: 0.7443
+      CRPS: 0.7443
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/D/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Port_Activity/W/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.628083+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Port_Activity/W/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/W/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.642793+00:00
+    Total instances: 792, Series during experiment: 198, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 198 flat series -> 99 series x 2 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (2522195.25) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/W/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/W/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/W/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/W/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 5957653731.7841
+      MAE: 43832.3428
+      RMSE: 53649.4112
+      MAPE: 0.6274
+      sMAPE: 0.3413
+      MASE: 0.7792
+      ND: 0.3371
+      CRPS: 0.3371
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Port_Activity/W/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/ECDC_COVID/D/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.730588+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/ECDC_COVID/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/D/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.754650+00:00
+    Total instances: 45, Series during experiment: 9, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/D/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/D/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/D/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/D/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 50053.3006
+      MAE: 122.2206
+      RMSE: 143.2937
+      MAPE: 0.5303
+      sMAPE: 0.3391
+      MASE: 3.2511
+      ND: 0.4029
+      CRPS: 0.4029
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/D/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/ECDC_COVID/W/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.792902+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/ECDC_COVID/W/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/W/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.807400+00:00
+    Total instances: 64, Series during experiment: 16, Windows: 4
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/W/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/W/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/W/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/W/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2437815.8545
+      MAE: 573.4415
+      RMSE: 668.2329
+      MAPE: 1.0931
+      sMAPE: 0.5419
+      MASE: 1.4614
+      ND: 0.6585
+      CRPS: 0.6585
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/ECDC_COVID/W/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Global_Influenza/W/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.842137+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Global_Influenza/W/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Influenza/W/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.856596+00:00
+    Total instances: 240, Series during experiment: 60, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 15 series x 4 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (76647.05) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Influenza/W/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Influenza/W/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Influenza/W/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Influenza/W/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2518066.9035
+      MAE: 440.6013
+      RMSE: 557.9441
+      MAPE: 0.6219
+      sMAPE: 0.4610
+      MASE: 2.7027
+      ND: 0.4612
+      CRPS: 0.4612
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Influenza/W/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Crypto/D/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.903022+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Crypto/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Crypto/D/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.917867+00:00
+    Total instances: 36, Series during experiment: 4, Windows: 9
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (116893.29) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Crypto/D/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Crypto/D/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Crypto/D/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Crypto/D/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 13407382.1244
+      MAE: 1476.1535
+      RMSE: 1767.7680
+      MAPE: 0.0932
+      sMAPE: 0.0935
+      MASE: 6.4147
+      ND: 0.0945
+      CRPS: 0.0945
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Crypto/D/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/US_Term_Structure/B/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.954188+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/US_Term_Structure/B/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Term_Structure/B/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:50.968921+00:00
+    Total instances: 1400, Series during experiment: 40, Windows: 35
+    Collecting ground truth and context...
+    Detected to_univariate case: 40 flat series -> 1 series x 40 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Term_Structure/B/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Term_Structure/B/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Term_Structure/B/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Term_Structure/B/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0231
+      MAE: 0.1021
+      RMSE: 0.1227
+      MAPE: 0.9472
+      sMAPE: 0.2692
+      MASE: 1.4983
+      ND: 0.2605
+      CRPS: 0.2605
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Term_Structure/B/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Oil_Price/B/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.221999+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Oil_Price/B/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Oil_Price/B/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.237240+00:00
+    Total instances: 420, Series during experiment: 12, Windows: 35
+    Collecting ground truth and context...
+    Detected to_univariate case: 12 flat series -> 1 series x 12 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Oil_Price/B/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Oil_Price/B/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Oil_Price/B/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Oil_Price/B/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.0768
+      MAE: 0.6699
+      RMSE: 0.7766
+      MAPE: 0.0572
+      sMAPE: 0.0563
+      MASE: 1.3665
+      ND: 0.0568
+      CRPS: 0.0568
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Oil_Price/B/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Job_Claims/W/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.316046+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Job_Claims/W/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Job_Claims/W/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.331517+00:00
+    Total instances: 8, Series during experiment: 2, Windows: 4
+    Collecting ground truth and context...
+    Detected to_univariate case: 2 flat series -> 1 series x 2 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (1959527.38) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Job_Claims/W/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Job_Claims/W/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Job_Claims/W/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Job_Claims/W/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 773731298.4361
+      MAE: 18364.7165
+      RMSE: 21751.8964
+      MAPE: 0.0249
+      sMAPE: 0.0252
+      MASE: 3.1949
+      ND: 0.0250
+      CRPS: 0.0250
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Job_Claims/W/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Uncertainty_1M/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.367673+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Uncertainty_1M/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Uncertainty_1M/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.382739+00:00
+    Total instances: 21, Series during experiment: 3, Windows: 7
+    Collecting ground truth and context...
+    Detected to_univariate case: 3 flat series -> 1 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Uncertainty_1M/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Uncertainty_1M/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Uncertainty_1M/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Uncertainty_1M/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0012
+      MAE: 0.0268
+      RMSE: 0.0305
+      MAPE: 0.0333
+      sMAPE: 0.0328
+      MASE: 0.3320
+      ND: 0.0330
+      CRPS: 0.0330
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Uncertainty_1M/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Housing_Inventory/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.415715+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Housing_Inventory/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Housing_Inventory/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.431242+00:00
+    Total instances: 12, Series during experiment: 4, Windows: 3
+    Collecting ground truth and context...
+    Detected to_univariate case: 4 flat series -> 1 series x 4 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (938584.50) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 100 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Housing_Inventory/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Housing_Inventory/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Housing_Inventory/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Housing_Inventory/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 4419966111.8691
+      MAE: 31923.6982
+      RMSE: 35589.2656
+      MAPE: 0.0681
+      sMAPE: 0.0690
+      MASE: 0.5630
+      ND: 0.0687
+      CRPS: 0.0687
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Housing_Inventory/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/JOLTS/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.463128+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/JOLTS/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/JOLTS/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.477741+00:00
+    Total instances: 30, Series during experiment: 6, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/JOLTS/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/JOLTS/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/JOLTS/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/JOLTS/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 434621.7960
+      MAE: 326.8781
+      RMSE: 391.4143
+      MAPE: 0.0783
+      sMAPE: 0.0788
+      MASE: 1.0340
+      ND: 0.0784
+      CRPS: 0.0784
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/JOLTS/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/US_Labor/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.510769+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/US_Labor/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Labor/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.525410+00:00
+    Total instances: 70, Series during experiment: 14, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 14 flat series -> 1 series x 14 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (170858.69) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Labor/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Labor/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Labor/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Labor/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 473194.0676
+      MAE: 338.2947
+      RMSE: 383.6731
+      MAPE: 0.0621
+      sMAPE: 0.0595
+      MASE: 0.8665
+      ND: 0.0622
+      CRPS: 0.0622
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/US_Labor/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Vehicle_Supply/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.561605+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Vehicle_Supply/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Supply/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.576558+00:00
+    Total instances: 30, Series during experiment: 6, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Supply/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Supply/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Supply/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Supply/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2704.5870
+      MAE: 22.3202
+      RMSE: 26.4496
+      MAPE: 0.2518
+      sMAPE: 0.2109
+      MASE: 0.8042
+      ND: 0.2309
+      CRPS: 0.2309
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Supply/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Auto_Production_SF/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.609441+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Auto_Production_SF/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Auto_Production_SF/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.624034+00:00
+    Total instances: 5, Series during experiment: 1, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Auto_Production_SF/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Auto_Production_SF/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Auto_Production_SF/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Auto_Production_SF/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 9.2722
+      MAE: 2.3963
+      RMSE: 2.9463
+      MAPE: 0.0248
+      sMAPE: 0.0245
+      MASE: 0.6044
+      ND: 0.0240
+      CRPS: 0.0240
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Auto_Production_SF/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Commodity_Production/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.653943+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Commodity_Production/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Production/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.668331+00:00
+    Total instances: 160, Series during experiment: 32, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Production/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Production/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Production/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Production/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 58078.3749
+      MAE: 65.7979
+      RMSE: 76.8030
+      MAPE: 0.2059
+      sMAPE: 0.1638
+      MASE: 0.9052
+      ND: 0.1572
+      CRPS: 0.1572
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Production/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Commodity_Import/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.710340+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Commodity_Import/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Import/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.724735+00:00
+    Total instances: 40, Series during experiment: 8, Windows: 5
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Import/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Import/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Import/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Import/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1553826.9339
+      MAE: 502.5970
+      RMSE: 607.3308
+      MAPE: 0.3745
+      sMAPE: 0.2365
+      MASE: 1.4590
+      ND: 0.2954
+      CRPS: 0.2954
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Commodity_Import/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/WUI_Global/Q/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.758478+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/WUI_Global/Q/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/WUI_Global/Q/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.773116+00:00
+    Total instances: 75, Series during experiment: 15, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 15 flat series -> 1 series x 15 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/WUI_Global/Q/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/WUI_Global/Q/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/WUI_Global/Q/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/WUI_Global/Q/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 0.0486
+      MAE: 0.1480
+      RMSE: 0.1749
+      MAPE: 0.5793
+      sMAPE: 0.6437
+      MASE: 0.9822
+      ND: 0.6727
+      CRPS: 0.6727
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/WUI_Global/Q/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Global_Price/Q/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.809996+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Global_Price/Q/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Price/Q/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.824566+00:00
+    Total instances: 300, Series during experiment: 60, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 60 flat series -> 1 series x 60 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Price/Q/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Price/Q/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Price/Q/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Price/Q/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 1781288.0287
+      MAE: 313.4901
+      RMSE: 353.6570
+      MAPE: 0.1798
+      sMAPE: 0.1925
+      MASE: 1.5801
+      ND: 0.1810
+      CRPS: 0.1810
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Global_Price/Q/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Vehicle_Sales/M/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.876199+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Vehicle_Sales/M/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Sales/M/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.890917+00:00
+    Total instances: 50, Series during experiment: 10, Windows: 5
+    Collecting ground truth and context...
+    Detected to_univariate case: 10 flat series -> 1 series x 10 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Sales/M/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Sales/M/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Sales/M/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Sales/M/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 2666.5882
+      MAE: 13.7315
+      RMSE: 15.3027
+      MAPE: 0.0899
+      sMAPE: 0.0885
+      MASE: 0.8236
+      ND: 0.0900
+      CRPS: 0.0900
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Vehicle_Sales/M/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.926057+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.940242+00:00
+    Total instances: 6, Series during experiment: 1, Windows: 6
+    Collecting ground truth and context...
+    Organizing data into arrays...
+    ⚠️  Predictions max value (80600.97) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 308363463.3661
+      MAE: 10064.9795
+      RMSE: 16022.4758
+      MAPE: 0.3003
+      sMAPE: 0.5430
+      MASE: 0.6093
+      ND: 0.2960
+      CRPS: 0.2960
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Online_Retail_2_UCI/D/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Supply_Chain_Customer/D/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.970962+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Supply_Chain_Customer/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Customer/D/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:51.985507+00:00
+    Total instances: 432, Series during experiment: 36, Windows: 12
+    Collecting ground truth and context...
+    Detected to_univariate case: 36 flat series -> 1 series x 36 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (166618.97) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Customer/D/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Customer/D/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Customer/D/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Customer/D/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 29400554.9458
+      MAE: 1553.1127
+      RMSE: 2207.4213
+      MAPE: 0.4072
+      sMAPE: 0.3825
+      MASE: 0.5576
+      ND: 0.3354
+      CRPS: 0.3354
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Customer/D/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Supply_Chain_Location/D/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.061164+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Supply_Chain_Location/D/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Location/D/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.076086+00:00
+    Total instances: 612, Series during experiment: 51, Windows: 12
+    Collecting ground truth and context...
+    Detected to_univariate case: 51 flat series -> 1 series x 51 variates
+    Organizing data into arrays...
+    ⚠️  Predictions max value (72778.27) exceeds float16 safe range.
+    ⚠️  Applying scale factor: 10 (values will be divided)
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Location/D/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Location/D/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Location/D/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Location/D/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 19273968.6441
+      MAE: 1714.7489
+      RMSE: 2278.6413
+      MAPE: 0.4863
+      sMAPE: 0.3920
+      MASE: 0.6095
+      ND: 0.3586
+      CRPS: 0.3586
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Supply_Chain_Location/D/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/azure2019_U/5T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.178564+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/azure2019_U/5T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/azure2019_U/5T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.205009+00:00
+    Total instances: 1404, Series during experiment: 234, Windows: 6
+    Collecting ground truth and context...
+    Detected to_univariate case: 234 flat series -> 78 series x 3 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/azure2019_U/5T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/azure2019_U/5T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/azure2019_U/5T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/azure2019_U/5T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 69.3260
+      MAE: 2.3909
+      RMSE: 3.3254
+      MAPE: 0.3706
+      sMAPE: 0.1648
+      MASE: 0.6571
+      ND: 0.1773
+      CRPS: 0.1773
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/azure2019_U/5T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Smart_Manufacturing/H/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.355885+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Smart_Manufacturing/H/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.370741+00:00
+    Total instances: 2380, Series during experiment: 170, Windows: 14
+    Collecting ground truth and context...
+    Detected to_univariate case: 170 flat series -> 34 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 78.3464
+      MAE: 5.7164
+      RMSE: 7.0635
+      MAPE: 0.3321
+      sMAPE: 0.2253
+      MASE: 0.7118
+      ND: 0.2165
+      CRPS: 0.2165
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Smart_Manufacturing/H/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.590043+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Smart_Manufacturing/H/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.603947+00:00
+    Total instances: 340, Series during experiment: 170, Windows: 2
+    Collecting ground truth and context...
+    Detected to_univariate case: 170 flat series -> 34 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 78.4224
+      MAE: 5.7197
+      RMSE: 7.1497
+      MAPE: 0.3377
+      sMAPE: 0.2253
+      MASE: 0.7115
+      ND: 0.2153
+      CRPS: 0.2153
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Smart_Manufacturing/H/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.682155+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Smart_Manufacturing/H/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.696175+00:00
+    Total instances: 170, Series during experiment: 170, Windows: 1
+    Collecting ground truth and context...
+    Detected to_univariate case: 170 flat series -> 34 series x 5 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 78.4263
+      MAE: 5.7196
+      RMSE: 7.1591
+      MAPE: 0.3402
+      sMAPE: 0.2253
+      MASE: 0.7110
+      ND: 0.2152
+      CRPS: 0.2152
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/Smart_Manufacturing/H/long/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/MetroPT-3/5T/short/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.762323+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/MetroPT-3/5T/short/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/short/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.777367+00:00
+    Total instances: 216, Series during experiment: 6, Windows: 36
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/short/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/short/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/short/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/short/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.3005
+      MAE: 1.1011
+      RMSE: 1.4651
+      MAPE: 3.2997
+      sMAPE: 0.4905
+      MASE: 0.6110
+      ND: 0.3142
+      CRPS: 0.3142
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/short/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/MetroPT-3/5T/medium/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.854273+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/MetroPT-3/5T/medium/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/medium/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.868491+00:00
+    Total instances: 36, Series during experiment: 6, Windows: 6
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/medium/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/medium/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/medium/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/medium/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.3363
+      MAE: 1.1450
+      RMSE: 1.5182
+      MAPE: 3.0558
+      sMAPE: 0.5167
+      MASE: 0.6476
+      ND: 0.3286
+      CRPS: 0.3286
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/medium/run_0/metrics_summary.json
+TIME run allocation action=skip run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/MetroPT-3/5T/long/run_0 source_launch=selena_adaptime_unified_20260916T080019Z_10942_vanilla launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.925645+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/MetroPT-3/5T/long/run_0/vanilla/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/long/run_0 launch_id=selena_adaptime_unified_20260916T114518Z_9070_vanilla slurm_job_id=3447347 launched_at=2026-09-16T11:45:52.939515+00:00
+    Total instances: 18, Series during experiment: 6, Windows: 3
+    Collecting ground truth and context...
+    Detected to_univariate case: 6 flat series -> 1 series x 6 variates
+    Organizing data into arrays...
+    Saved predictions (quantiles) to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/long/run_0/predictions.npz
+    Computing per-window metrics...
+    Saved metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/long/run_0/metrics.npz
+    Saved config to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/long/run_0/config.json
+    Saved aggregate metrics to /fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/long/run_0/metrics_summary.json
+    Metrics summary (averaged over all series/windows/variates):
+      MSE: 3.4136
+      MAE: 1.1577
+      RMSE: 1.5336
+      MAPE: 3.0809
+      sMAPE: 0.5202
+      MASE: 0.6643
+      ND: 0.3314
+      CRPS: 0.3314
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/MetroPT-3/5T/long/run_0/metrics_summary.json
+2026-09-16 13:45:53 | task TIME-wide Adaptime method=vanilla stage=vanilla completed status=success
+2026-09-16 13:45:53 | stage vanilla completed status=success
+2026-09-16 13:45:53 | workflow adaptime completed status=success exit_code=0
