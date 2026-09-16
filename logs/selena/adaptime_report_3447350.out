@@ -1,0 +1,14 @@
+2026-09-16 14:12:06 | workflow adaptime started launch_id=selena_adaptime_unified_20260916T114518Z_9070_report task=unified_report slurm_job_id=3447350 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-16 14:12:06 | stage report started
+2026-09-16 14:12:06 | task TIME-wide Adaptime method=unified stage=report started
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/reports/selena_adaptime_unified_20260916T114518Z_9070_report/report_manifest.json
+method,MASE,total_inference_seconds,task_fallbacks
+selected_adaptation,1.0652926159276148,1244.8856513178907,18
+vanilla,1.069229713316869,263.93891216628253,0
+full_ridge_shared,1.0709195644403315,890.8297175560147,18
+covariate_prediction,1.076395233315836,727.3216267852113,18
+full_ridge_per_variate,1.0723845538623655,890.8297175560147,18
+tsrag,1.1376226763868145,284.59439651761204,49
+2026-09-16 14:12:25 | task TIME-wide Adaptime method=unified stage=report completed status=success
+2026-09-16 14:12:25 | stage report completed status=success
+2026-09-16 14:12:25 | workflow adaptime completed status=success exit_code=0

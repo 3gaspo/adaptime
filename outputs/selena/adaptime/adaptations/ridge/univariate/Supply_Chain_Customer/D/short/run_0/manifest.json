@@ -1,0 +1,135 @@
+{
+  "completed_at": "2026-09-16T12:10:44.695437+00:00",
+  "experiment": "adaptime_adaptation",
+  "experiment_config": {
+    "phase": "closed_form_fitting"
+  },
+  "identity": {
+    "dataset": "Supply_Chain_Customer",
+    "frequency": "D",
+    "model": "full_ridge_shared",
+    "target_mode": "univariate",
+    "term": "short"
+  },
+  "launch": {
+    "action": "new",
+    "attempts": [
+      {
+        "action": "new",
+        "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+        "launched_at": "2026-09-16T12:10:43.661335+00:00",
+        "slurm_array_task_id": null,
+        "slurm_job_id": "3447348"
+      }
+    ],
+    "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+    "launched_at": "2026-09-16T12:10:43.661335+00:00",
+    "slurm_job_id": "3447348"
+  },
+  "model_config": {
+    "alpha_values": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "bayes_covariate_protocol": {
+      "fit_evidence": "paired_adaptation_train_window_msse_wins",
+      "prior": "beta_1_1",
+      "selection_evidence": "adaptation_validation_msse",
+      "tie_weight": 0.5
+    },
+    "bootstrap_block_length": null,
+    "bootstrap_replications": 1000,
+    "chunk_size": 1024,
+    "default_alpha": 0.01,
+    "default_k": 10,
+    "fitting_scopes": [
+      "all",
+      "same_series"
+    ],
+    "k_values": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "method": "adaptime_validation_selector",
+    "minimum_training_window_ratio": 1.0,
+    "minimum_validation_window_ratio": 0.1,
+    "seed": 1,
+    "selection_methods": [
+      "vanilla",
+      "bayes_covariate_prediction",
+      "bayes_past_targets_prediction",
+      "cov_ridge_shared",
+      "y_ridge_shared",
+      "full_ridge_shared",
+      "full_ridge_per_variate"
+    ]
+  },
+  "pipeline_config": {
+    "data_config": {
+      "adaptation_stride": 27,
+      "adaptation_train_length": 651,
+      "adaptation_validation_length": 327,
+      "context_length": 8192,
+      "dataset": "Supply_Chain_Customer/D",
+      "dataset_fingerprint": "bf47280226474006",
+      "datastore_prediction_length": 64,
+      "datastore_scope": "all",
+      "datastore_stride": 7,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 30,
+      "reference_context_length": 512,
+      "retrieval_context_length": 35,
+      "retrieval_period": 7,
+      "seasonality": 1,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 365
+    },
+    "extraction": {
+      "arrow_cache_items": 2,
+      "backbone": "chronos2",
+      "context_k": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "datastore_block_size": 4096,
+      "distance_metric": "euclidean",
+      "max_k": 15,
+      "minimum_overlap_fraction": 0.8,
+      "minimum_query_finite_fraction": 0.8,
+      "model_batch_size": 64,
+      "past_target_covariates": true,
+      "query_block_size": 256,
+      "representation": "instance",
+      "retrieval_scope": "all",
+      "weights_id": null
+    },
+    "fit_extraction_contract": "fixed_context_train_validation_only"
+  },
+  "project": "adaptime",
+  "provenance": {
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/Supply_Chain_Customer/D/short/run_0/prepared/manifest.json",
+    "extraction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/ridge/univariate/Supply_Chain_Customer/D/short/run_0/extraction/manifest.json"
+  },
+  "required_artifacts": [
+    "model/model_manifest.json",
+    "model/selection.json",
+    "model/bayes_mixture.json",
+    "model/bayes_past_targets_mixture.json"
+  ],
+  "runtime_config": {
+    "chunk_size": 1024
+  },
+  "schema_version": 1,
+  "started_at": "2026-09-16T12:10:43.661335+00:00",
+  "status": "completed",
+  "updated_at": "2026-09-16T12:10:44.695437+00:00"
+}

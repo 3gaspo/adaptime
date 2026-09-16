@@ -30,35 +30,37 @@
     "valid_values": 225,
     "total_values": 225
   },
-  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
-  "inference_seconds": 1.0220469972118735,
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+  "inference_seconds": 38.51250432012603,
   "model": "full_ridge_shared",
   "experiment": "adaptime",
   "target_mode": "univariate",
   "forecast_type": "point",
-  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/Coastal_T_S/15T/medium/run_0/vanilla/manifest.json",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/Coastal_T_S/15T/medium/run_0/prediction/prediction_manifest.json",
   "selected_adaptation": {
-    "method": "vanilla",
-    "k": 0,
-    "alpha": null
+    "alpha": 0.1,
+    "bootstrap_standard_error": 0.0,
+    "fitted_variates": 15,
+    "k": 1,
+    "method": "full_ridge_per_variate",
+    "total_variates": 15,
+    "validation_difference_from_best": 0.0,
+    "validation_msse": 1.521332366396143,
+    "within_one_standard_error": true
   },
-  "bayes_probability_covariate_better": null,
-  "adaptation_fallback_reason": {
-    "code": "ridge_not_completed",
-    "message": "Ridge has not completed this task; using canonical vanilla"
-  },
+  "bayes_probability_covariate_better": 0.49336283185840707,
+  "adaptation_fallback_reason": null,
   "nonfinite_prediction_fallback": {
-    "policy": "task_level_vanilla_fallback",
-    "count": 0
+    "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+    "count": 0,
+    "eligible_evaluation_windows": 225,
+    "mask": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/Coastal_T_S/15T/medium/run_0/prediction/nonfinite_prediction_fallback.npy",
+    "mask_row": 6
   },
   "fallback_to_vanilla": {
-    "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
-    "count": 225,
+    "policy": "count_shared_grid_cells_using_canonical_vanilla_after_selection_support_and_nonfinite_fallback",
+    "count": 0,
     "eligible_evaluation_windows": 225,
-    "rate": 1.0
-  },
-  "artifact_sources": {
-    "predictions.npz": "../../../../../../vanilla/univariate/Coastal_T_S/15T/medium/run_0/predictions.npz",
-    "metrics.npz": "../../../../../../vanilla/univariate/Coastal_T_S/15T/medium/run_0/metrics.npz"
+    "rate": 0.0
   }
 }

@@ -1,0 +1,71 @@
+{
+  "adaptation_signature": "9d548796867d33756f325f86783eff459caa6d2d47a0249e7916183d33c559fa",
+  "arrays": {
+    "test.fallback_reason": "test/fallback_reason.npy",
+    "test.past_target_covariate_available": "test/past_target_covariate_available.npy",
+    "test.past_target_covariate_forecast": "test/past_target_covariate_forecast.npy",
+    "test.rag_eligible": "test/rag_eligible.npy"
+  },
+  "config": {
+    "arrow_cache_items": 2,
+    "context_k": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "datastore_block_size": 4096,
+    "distance_metric": "euclidean",
+    "max_k": 15,
+    "minimum_overlap_fraction": 0.8,
+    "minimum_query_finite_fraction": 0.8,
+    "model_batch_size": 64,
+    "past_target_covariates": true,
+    "query_block_size": 256,
+    "representation": "instance",
+    "retrieval_scope": "all"
+  },
+  "counts": {
+    "test": 560
+  },
+  "eligibility": {
+    "fallback_reasons": {
+      "insufficient_finite_query_context": 0,
+      "insufficient_past_context": 0,
+      "insufficient_training_support": 560,
+      "insufficient_valid_neighbors": 0,
+      "nonfinite_adaptation_design": 0,
+      "nonfinite_datastore_target": 0
+    },
+    "rag_eligible": 0,
+    "total": 560,
+    "vanilla_fallback": 560
+  },
+  "fallback_reason_codes": {
+    "0": "rag_eligible",
+    "1": "insufficient_finite_query_context",
+    "2": "insufficient_valid_neighbors",
+    "3": "nonfinite_datastore_target",
+    "4": "insufficient_past_context",
+    "5": "nonfinite_adaptation_design",
+    "6": "insufficient_training_support"
+  },
+  "fit_extraction_signature": "01d46149b2782a45bcb30b80e1ab5a71e9bb88684b41241264873ce0edb7d0da",
+  "format": "adaptime_eval_extraction",
+  "model": "chronos2",
+  "neighbor_forecasts": {
+    "computed_for_test": 0,
+    "reused_from_fit_extraction": 0
+  },
+  "prepared_signature": "13b7787ef2674a330104d28a3983f853500ad1c9ee9857910e49e940af099bb7",
+  "schema_version": 1,
+  "selected_k_values": [],
+  "signature": "3d7c3ed14fdd947171b6db7db2d87a13591ce03424182beb4fbfab605d6825cf",
+  "status": "completed",
+  "timing_contract": "component_seconds",
+  "timing_seconds": {
+    "test.past_target_covariate_forecast_seconds": 27.567762308288366
+  },
+  "vanilla_signature": "0c668bf800fe768f21233f6e3db415c6bd4d3fca6b5ec2d2f792ae8fdd564be4",
+  "weights_id": "chronos2"
+}

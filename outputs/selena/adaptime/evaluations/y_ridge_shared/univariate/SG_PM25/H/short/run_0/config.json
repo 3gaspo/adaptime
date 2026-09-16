@@ -30,35 +30,35 @@
     "valid_values": 460,
     "total_values": 460
   },
-  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
-  "inference_seconds": 2.0856688199564815,
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+  "inference_seconds": 81.05666848877445,
   "model": "y_ridge_shared",
   "experiment": "adaptime",
   "target_mode": "univariate",
   "forecast_type": "point",
-  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/SG_PM25/H/short/run_0/vanilla/manifest.json",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/SG_PM25/H/short/run_0/prediction/prediction_manifest.json",
   "selected_adaptation": {
-    "method": "vanilla",
-    "k": 0,
-    "alpha": null
+    "alpha": 0.001,
+    "bootstrap_standard_error": 0.0,
+    "k": 10,
+    "method": "cov_ridge_shared",
+    "validation_difference_from_best": 0.0,
+    "validation_msse": 0.5463062982535007,
+    "within_one_standard_error": true
   },
-  "bayes_probability_covariate_better": null,
-  "adaptation_fallback_reason": {
-    "code": "ridge_not_completed",
-    "message": "Ridge has not completed this task; using canonical vanilla"
-  },
+  "bayes_probability_covariate_better": 0.5505181347150259,
+  "adaptation_fallback_reason": null,
   "nonfinite_prediction_fallback": {
-    "policy": "task_level_vanilla_fallback",
-    "count": 0
+    "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+    "count": 0,
+    "eligible_evaluation_windows": 460,
+    "mask": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/SG_PM25/H/short/run_0/prediction/nonfinite_prediction_fallback.npy",
+    "mask_row": 5
   },
   "fallback_to_vanilla": {
-    "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
-    "count": 460,
+    "policy": "count_shared_grid_cells_using_canonical_vanilla_after_selection_support_and_nonfinite_fallback",
+    "count": 0,
     "eligible_evaluation_windows": 460,
-    "rate": 1.0
-  },
-  "artifact_sources": {
-    "predictions.npz": "../../../../../../vanilla/univariate/SG_PM25/H/short/run_0/predictions.npz",
-    "metrics.npz": "../../../../../../vanilla/univariate/SG_PM25/H/short/run_0/metrics.npz"
+    "rate": 0.0
   }
 }

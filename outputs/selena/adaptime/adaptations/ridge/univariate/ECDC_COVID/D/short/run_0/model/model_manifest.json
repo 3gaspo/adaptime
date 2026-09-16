@@ -1,0 +1,1088 @@
+{
+  "bayes_covariate_protocol": {
+    "fit_evidence": "paired_adaptation_train_window_msse_wins",
+    "prior": {
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "selection_evidence": "adaptation_validation_date_msse_with_paired_block_bootstrap",
+    "tie_weight": 0.5
+  },
+  "bootstrap": {
+    "by_method": {
+      "bayes_covariate_prediction": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 3,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 0,
+          "method": "vanilla",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 52.87356654257477,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 39
+      },
+      "bayes_past_targets_prediction": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 3,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": null,
+          "bootstrap_standard_error": 0.0,
+          "k": 0,
+          "method": "vanilla",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 52.87356654257477,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 39
+      },
+      "cov_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 3,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.001,
+          "bootstrap_standard_error": 0.0,
+          "k": 5,
+          "method": "cov_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 42.06239841243437,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 39
+      },
+      "full_ridge_per_variate": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 3,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.1,
+          "bootstrap_standard_error": 0.0,
+          "fitted_variates": 7,
+          "k": 5,
+          "method": "full_ridge_per_variate",
+          "total_variates": 9,
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 38.820440964308894,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 39
+      },
+      "full_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 3,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.1,
+          "bootstrap_standard_error": 0.0,
+          "k": 1,
+          "method": "full_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 46.027286896017124,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 39
+      },
+      "y_ridge_shared": {
+        "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+        "block_length": 3,
+        "block_length_source": "automatic",
+        "fallback_reason": null,
+        "method": "paired_moving_date_block_bootstrap_one_standard_error",
+        "observed_best": {
+          "alpha": 0.001,
+          "bootstrap_standard_error": 0.0,
+          "k": 1,
+          "method": "y_ridge_shared",
+          "validation_difference_from_best": 0.0,
+          "validation_msse": 45.8854454293192,
+          "within_one_standard_error": true
+        },
+        "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+        "replications": 1000,
+        "validation_dates": 39
+      }
+    },
+    "overall": {
+      "automatic_block_length_rule": "max(round(T^(1/3)), ceil(prediction_length/fitting_stride))",
+      "block_length": 3,
+      "block_length_source": "automatic",
+      "fallback_reason": null,
+      "method": "paired_moving_date_block_bootstrap_one_standard_error",
+      "observed_best": {
+        "alpha": 0.001,
+        "bootstrap_standard_error": 0.0,
+        "k": 5,
+        "method": "cov_ridge_shared",
+        "validation_difference_from_best": 0.0,
+        "validation_msse": 42.06239841243437,
+        "within_one_standard_error": true
+      },
+      "preference_within_threshold": "vanilla_then_lowest_k_then_highest_alpha_then_method_name",
+      "replications": 1000,
+      "validation_dates": 39
+    }
+  },
+  "config": {
+    "alpha_values": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "bootstrap_block_length": null,
+    "bootstrap_replications": 1000,
+    "chunk_size": 1024,
+    "default_alpha": 0.01,
+    "default_k": 10,
+    "fitting_scopes": [
+      "all",
+      "same_series"
+    ],
+    "k_values": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "minimum_training_window_ratio": 1.0,
+    "minimum_validation_window_ratio": 0.1,
+    "seed": 1
+  },
+  "coverage": {
+    "adaptation_train": {
+      "1": {
+        "adapted_dates": 73,
+        "adapted_windows": 73,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 74,
+        "total_dates": 80,
+        "total_windows": 80,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_dates": 73,
+        "adapted_windows": 73,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 74,
+        "total_dates": 80,
+        "total_windows": 80,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_dates": 73,
+        "adapted_windows": 73,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 74,
+        "total_dates": 80,
+        "total_windows": 80,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_dates": 73,
+        "adapted_windows": 73,
+        "excluded_label_windows": 6,
+        "label_complete_windows": 74,
+        "total_dates": 80,
+        "total_windows": 80,
+        "vanilla_fallback_windows": 0
+      }
+    },
+    "adaptation_validation": {
+      "1": {
+        "adapted_dates": 39,
+        "adapted_windows": 39,
+        "excluded_label_windows": 5,
+        "label_complete_windows": 39,
+        "total_dates": 44,
+        "total_windows": 44,
+        "vanilla_fallback_windows": 0
+      },
+      "10": {
+        "adapted_dates": 39,
+        "adapted_windows": 39,
+        "excluded_label_windows": 5,
+        "label_complete_windows": 39,
+        "total_dates": 44,
+        "total_windows": 44,
+        "vanilla_fallback_windows": 0
+      },
+      "15": {
+        "adapted_dates": 39,
+        "adapted_windows": 39,
+        "excluded_label_windows": 5,
+        "label_complete_windows": 39,
+        "total_dates": 44,
+        "total_windows": 44,
+        "vanilla_fallback_windows": 0
+      },
+      "5": {
+        "adapted_dates": 39,
+        "adapted_windows": 39,
+        "excluded_label_windows": 5,
+        "label_complete_windows": 39,
+        "total_dates": 44,
+        "total_windows": 44,
+        "vanilla_fallback_windows": 0
+      }
+    },
+    "per_variate": {
+      "0:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "1:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "2:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 6,
+            "label_complete_windows": 4,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 6,
+            "label_complete_windows": 4,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 6,
+            "label_complete_windows": 4,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 6,
+            "label_complete_windows": 4,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 5,
+            "label_complete_windows": 0,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 5,
+            "label_complete_windows": 0,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 5,
+            "label_complete_windows": 0,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 5,
+            "label_complete_windows": 0,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "3:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "4:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "5:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "6:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 0,
+            "total_dates": 0,
+            "total_windows": 0,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 0,
+            "total_dates": 0,
+            "total_windows": 0,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 0,
+            "total_dates": 0,
+            "total_windows": 0,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 0,
+            "adapted_windows": 0,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 0,
+            "total_dates": 0,
+            "total_windows": 0,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 4,
+            "total_dates": 4,
+            "total_windows": 4,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 4,
+            "total_dates": 4,
+            "total_windows": 4,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 4,
+            "total_dates": 4,
+            "total_windows": 4,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 4,
+            "adapted_windows": 4,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 4,
+            "total_dates": 4,
+            "total_windows": 4,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "7:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 9,
+            "adapted_windows": 9,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 9,
+            "adapted_windows": 9,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 9,
+            "adapted_windows": 9,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 9,
+            "adapted_windows": 9,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      },
+      "8:0": {
+        "adaptation_train": {
+          "1": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 10,
+            "adapted_windows": 10,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 10,
+            "total_dates": 10,
+            "total_windows": 10,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "adaptation_validation": {
+          "1": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "10": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "15": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          },
+          "5": {
+            "adapted_dates": 5,
+            "adapted_windows": 5,
+            "excluded_label_windows": 0,
+            "label_complete_windows": 5,
+            "total_dates": 5,
+            "total_windows": 5,
+            "vanilla_fallback_windows": 0
+          }
+        },
+        "test_windows": 5
+      }
+    }
+  },
+  "evaluation_k_values": [
+    1,
+    5
+  ],
+  "extraction_signature": "e81b9be9b0a02148db6948677eb40685462d540601138c42f46add865baf836f",
+  "feature_names": {
+    "cov_ridge_shared": [
+      "V",
+      "C"
+    ],
+    "full_ridge_per_variate": [],
+    "full_ridge_shared": [
+      "V",
+      "C",
+      "Y_1",
+      "N_1"
+    ],
+    "y_ridge_shared": [
+      "V",
+      "Y_1"
+    ]
+  },
+  "files": {
+    "bayes_mixture": "bayes_mixture.json",
+    "bayes_past_targets_mixture": "bayes_past_targets_mixture.json",
+    "coefficients": {
+      "cov_ridge_shared": "cov_ridge_shared_coefficients.npy",
+      "full_ridge_shared": "full_ridge_shared_coefficients.npy",
+      "y_ridge_shared": "y_ridge_shared_coefficients.npy"
+    },
+    "selection": "selection.json"
+  },
+  "format": "adaptime_full_ridge_model",
+  "method": "adaptime_validation_selector",
+  "method_selections": {
+    "bayes_covariate_prediction": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0,
+      "k": 0,
+      "method": "vanilla",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 52.87356654257477,
+      "within_one_standard_error": true
+    },
+    "bayes_past_targets_prediction": {
+      "alpha": null,
+      "bootstrap_standard_error": 0.0,
+      "k": 0,
+      "method": "vanilla",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 52.87356654257477,
+      "within_one_standard_error": true
+    },
+    "cov_ridge_shared": {
+      "alpha": 0.001,
+      "bootstrap_standard_error": 0.0,
+      "k": 5,
+      "method": "cov_ridge_shared",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 42.06239841243437,
+      "within_one_standard_error": true
+    },
+    "full_ridge_per_variate": {
+      "alpha": null,
+      "bootstrap_standard_error": 22.16535098651924,
+      "k": 0,
+      "method": "vanilla",
+      "validation_difference_from_best": 14.053125578265876,
+      "validation_msse": 52.87356654257477,
+      "within_one_standard_error": true
+    },
+    "full_ridge_shared": {
+      "alpha": 0.1,
+      "bootstrap_standard_error": 0.0,
+      "k": 1,
+      "method": "full_ridge_shared",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 46.027286896017124,
+      "within_one_standard_error": true
+    },
+    "y_ridge_shared": {
+      "alpha": 0.001,
+      "bootstrap_standard_error": 0.0,
+      "k": 1,
+      "method": "y_ridge_shared",
+      "validation_difference_from_best": 0.0,
+      "validation_msse": 45.8854454293192,
+      "within_one_standard_error": true
+    }
+  },
+  "primary_configuration": {
+    "alpha": 0.01,
+    "k": 10
+  },
+  "protocol": "fit_on_adaptation_train_select_every_family_with_paired_date_block_bootstrap_one_se_against_virtual_vanilla_on_validation_freeze_before_time_test",
+  "schema_version": 1,
+  "selected": {
+    "alpha": 0.001,
+    "bootstrap_standard_error": 0.0,
+    "k": 5,
+    "method": "cov_ridge_shared",
+    "validation_difference_from_best": 0.0,
+    "validation_msse": 42.06239841243437,
+    "within_one_standard_error": true
+  },
+  "selection_methods": [
+    "vanilla",
+    "bayes_covariate_prediction",
+    "bayes_past_targets_prediction",
+    "cov_ridge_shared",
+    "y_ridge_shared",
+    "full_ridge_shared",
+    "full_ridge_per_variate"
+  ],
+  "signature": "b7463fe614ace63084201eb1b106c863ee6a6ad0641bfa746b6c7a8d5b6fc470",
+  "status": "completed",
+  "validation_selection_protocol": "paired_moving_date_block_bootstrap_one_standard_error",
+  "window_support": {
+    "minimum_training_windows_exclusive": 45.0,
+    "minimum_validation_windows_exclusive": 4.5,
+    "test_windows": 45
+  }
+}

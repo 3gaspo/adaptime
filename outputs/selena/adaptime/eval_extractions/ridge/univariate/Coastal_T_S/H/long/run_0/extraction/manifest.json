@@ -1,0 +1,86 @@
+{
+  "adaptation_signature": "9511e35d49849c9a08683f28105d28882cb66d2eaefd382757bb45c74c225a84",
+  "arrays": {
+    "datastore.selected_forecast": "datastore/selected_forecast.npy",
+    "datastore.selected_forecast_id": "datastore/selected_forecast_id.npy",
+    "test.context_finite_fraction": "test/context_finite_fraction.npy",
+    "test.context_forecast_k5": "test/context_forecast_k5.npy",
+    "test.fallback_reason": "test/fallback_reason.npy",
+    "test.neighbor_distance": "test/neighbor_distance.npy",
+    "test.neighbor_id": "test/neighbor_id.npy",
+    "test.past_target_covariate_available": "test/past_target_covariate_available.npy",
+    "test.past_target_covariate_forecast": "test/past_target_covariate_forecast.npy",
+    "test.query_scale": "test/query_scale.npy",
+    "test.rag_eligible": "test/rag_eligible.npy",
+    "test.representation": "test/representation.npy"
+  },
+  "config": {
+    "arrow_cache_items": 2,
+    "context_k": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "datastore_block_size": 4096,
+    "distance_metric": "euclidean",
+    "max_k": 15,
+    "minimum_overlap_fraction": 0.8,
+    "minimum_query_finite_fraction": 0.8,
+    "model_batch_size": 64,
+    "past_target_covariates": true,
+    "query_block_size": 256,
+    "representation": "instance",
+    "retrieval_scope": "all"
+  },
+  "counts": {
+    "test": 144
+  },
+  "eligibility": {
+    "fallback_reasons": {
+      "insufficient_finite_query_context": 0,
+      "insufficient_past_context": 0,
+      "insufficient_training_support": 0,
+      "insufficient_valid_neighbors": 0,
+      "nonfinite_adaptation_design": 0,
+      "nonfinite_datastore_target": 0
+    },
+    "rag_eligible": 144,
+    "total": 144,
+    "vanilla_fallback": 0
+  },
+  "fallback_reason_codes": {
+    "0": "rag_eligible",
+    "1": "insufficient_finite_query_context",
+    "2": "insufficient_valid_neighbors",
+    "3": "nonfinite_datastore_target",
+    "4": "insufficient_past_context",
+    "5": "nonfinite_adaptation_design",
+    "6": "insufficient_training_support"
+  },
+  "fit_extraction_signature": "8dc8680c7b17809a74b0de3db89cf0942e2d67041897381bd5ccd7f6d9407850",
+  "format": "adaptime_eval_extraction",
+  "model": "chronos2",
+  "neighbor_forecasts": {
+    "computed_for_test": 435,
+    "reused_from_fit_extraction": 162
+  },
+  "prepared_signature": "caa3bb919a0becc6fa877b6198390d8f8c6c8f1b33ab396f57b065b862b5a4d8",
+  "schema_version": 1,
+  "selected_k_values": [
+    5
+  ],
+  "signature": "45980690c2e4ca10a38330b42c2089e9c6b12d2ad1e775a3ca992ddee0ef770c",
+  "status": "completed",
+  "timing_contract": "component_seconds",
+  "timing_seconds": {
+    "test.context_construction_seconds": 0.015084137208759785,
+    "test.context_forecast_seconds": 2.6089061689563096,
+    "test.neighbor_forecast_seconds": 5.1755083268508315,
+    "test.past_target_covariate_forecast_seconds": 0.0,
+    "test.representation_seconds": 0.0006391871720552444,
+    "test.retrieval_seconds": 1.3411781028844416
+  },
+  "vanilla_signature": "cc5a68b9d1219dba9cb5388328f6284c8426e0cb459ee22e57b9da7651b49d13",
+  "weights_id": "chronos2"
+}

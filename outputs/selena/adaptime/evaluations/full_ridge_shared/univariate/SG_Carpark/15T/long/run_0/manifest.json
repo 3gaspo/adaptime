@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-16T11:46:06.526683+00:00",
+  "completed_at": "2026-09-16T12:08:34.957731+00:00",
   "experiment": "adaptime_evaluation",
   "experiment_config": {
     "metrics": [
@@ -25,18 +25,18 @@
     "term": "long"
   },
   "launch": {
-    "action": "new",
+    "action": "overwrite",
     "attempts": [
       {
-        "action": "new",
+        "action": "overwrite",
         "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
-        "launched_at": "2026-09-16T11:46:06.522373+00:00",
+        "launched_at": "2026-09-16T12:08:34.950614+00:00",
         "slurm_array_task_id": null,
         "slurm_job_id": "3447348"
       }
     ],
     "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
-    "launched_at": "2026-09-16T11:46:06.522373+00:00",
+    "launched_at": "2026-09-16T12:08:34.950614+00:00",
     "slurm_job_id": "3447348"
   },
   "model_config": {
@@ -135,8 +135,10 @@
   "project": "adaptime",
   "provenance": {
     "fallback": {
-      "code": "ridge_not_completed",
-      "message": "Ridge has not completed this task; using canonical vanilla"
+      "code": "ridge_stage_failed",
+      "error_type": "ValueError",
+      "message": "cannot score empty ridge statistics",
+      "stage": "fit"
     },
     "vanilla_evaluation": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/SG_Carpark/15T/long/run_0/manifest.json"
   },
@@ -148,7 +150,7 @@
   ],
   "runtime_config": {},
   "schema_version": 1,
-  "started_at": "2026-09-16T11:46:06.522373+00:00",
+  "started_at": "2026-09-16T12:08:34.950614+00:00",
   "status": "completed",
-  "updated_at": "2026-09-16T11:46:06.526683+00:00"
+  "updated_at": "2026-09-16T12:08:34.957731+00:00"
 }

@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-16T11:46:04.809850+00:00",
+  "completed_at": "2026-09-16T12:04:16.746598+00:00",
   "experiment": "adaptime_evaluation",
   "experiment_config": {
     "metrics": [
@@ -25,18 +25,18 @@
     "term": "short"
   },
   "launch": {
-    "action": "new",
+    "action": "overwrite",
     "attempts": [
       {
-        "action": "new",
+        "action": "overwrite",
         "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
-        "launched_at": "2026-09-16T11:46:04.805817+00:00",
+        "launched_at": "2026-09-16T12:04:16.708270+00:00",
         "slurm_array_task_id": null,
         "slurm_job_id": "3447348"
       }
     ],
     "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
-    "launched_at": "2026-09-16T11:46:04.805817+00:00",
+    "launched_at": "2026-09-16T12:04:16.708270+00:00",
     "slurm_job_id": "3447348"
   },
   "model_config": {
@@ -134,21 +134,19 @@
   },
   "project": "adaptime",
   "provenance": {
-    "fallback": {
-      "code": "ridge_not_completed",
-      "message": "Ridge has not completed this task; using canonical vanilla"
-    },
-    "vanilla_evaluation": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/evaluations/vanilla/univariate/NE_China_Wind/H/short/run_0/manifest.json"
+    "data_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/NE_China_Wind/H/short/run_0/prepared/manifest.json",
+    "evaluation_grid": "/fslarge/scratch/users/h61084/codes/seasonal/foundation_models/tasks/seasonal_naive/univariate/NE_China_Wind/H/short/run_0/evaluation_grid.npz",
+    "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/NE_China_Wind/H/short/run_0/prediction/prediction_manifest.json"
   },
   "required_artifacts": [
-    "metrics_summary.json",
+    "predictions.npz",
+    "metrics.npz",
     "config.json",
-    "../../../../../../vanilla/univariate/NE_China_Wind/H/short/run_0/predictions.npz",
-    "../../../../../../vanilla/univariate/NE_China_Wind/H/short/run_0/metrics.npz"
+    "metrics_summary.json"
   ],
   "runtime_config": {},
   "schema_version": 1,
-  "started_at": "2026-09-16T11:46:04.805817+00:00",
+  "started_at": "2026-09-16T12:04:16.708270+00:00",
   "status": "completed",
-  "updated_at": "2026-09-16T11:46:04.809850+00:00"
+  "updated_at": "2026-09-16T12:04:16.746598+00:00"
 }

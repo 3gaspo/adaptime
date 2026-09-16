@@ -30,35 +30,35 @@
     "valid_values": 175,
     "total_values": 175
   },
-  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
   "inference_seconds": 0.7774838339537382,
   "model": "cov_ridge_shared",
   "experiment": "adaptime",
   "target_mode": "univariate",
   "forecast_type": "point",
-  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/epf_electricity_price/H/medium/run_0/vanilla/manifest.json",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/epf_electricity_price/H/medium/run_0/prediction/prediction_manifest.json",
   "selected_adaptation": {
-    "method": "vanilla",
+    "alpha": null,
+    "bootstrap_standard_error": 0.0,
     "k": 0,
-    "alpha": null
+    "method": "vanilla",
+    "validation_difference_from_best": 0.0,
+    "validation_msse": 0.46297318556796124,
+    "within_one_standard_error": true
   },
-  "bayes_probability_covariate_better": null,
-  "adaptation_fallback_reason": {
-    "code": "ridge_not_completed",
-    "message": "Ridge has not completed this task; using canonical vanilla"
-  },
+  "bayes_probability_covariate_better": 0.0,
+  "adaptation_fallback_reason": null,
   "nonfinite_prediction_fallback": {
-    "policy": "task_level_vanilla_fallback",
-    "count": 0
+    "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+    "count": 0,
+    "eligible_evaluation_windows": 175,
+    "mask": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/epf_electricity_price/H/medium/run_0/prediction/nonfinite_prediction_fallback.npy",
+    "mask_row": 4
   },
   "fallback_to_vanilla": {
-    "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
+    "policy": "count_shared_grid_cells_using_canonical_vanilla_after_selection_support_and_nonfinite_fallback",
     "count": 175,
     "eligible_evaluation_windows": 175,
     "rate": 1.0
-  },
-  "artifact_sources": {
-    "predictions.npz": "../../../../../../vanilla/univariate/epf_electricity_price/H/medium/run_0/predictions.npz",
-    "metrics.npz": "../../../../../../vanilla/univariate/epf_electricity_price/H/medium/run_0/metrics.npz"
   }
 }

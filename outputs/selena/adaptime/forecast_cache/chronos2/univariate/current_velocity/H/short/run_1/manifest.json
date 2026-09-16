@@ -1,0 +1,69 @@
+{
+  "config": {
+    "cached_value": "source_window_vanilla_backbone_forecast",
+    "model": "chronos2",
+    "prediction_length": 24,
+    "prepared_artifact": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/H/short/run_0/prepared",
+    "prepared_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 7009,
+      "adaptation_validation_length": 3453,
+      "context_length": 8192,
+      "dataset": "current_velocity/H",
+      "datastore_prediction_length": 64,
+      "datastore_scope": "all",
+      "datastore_stride": 24,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 24,
+      "reference_context_length": 512,
+      "retrieval_context_length": 168,
+      "retrieval_period": 24,
+      "seasonality": 24,
+      "target_mode": "univariate",
+      "term": "short",
+      "test_length": 672
+    },
+    "reference_columns": [
+      "item",
+      "channel",
+      "origin",
+      "context_length"
+    ],
+    "weights_id": "chronos2"
+  },
+  "counts": {
+    "computed_rows": 0,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 0,
+    "written_rows": 0
+  },
+  "format": "adaptime_source_forecast_cache",
+  "launch": {
+    "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+    "slurm_array_task_id": null,
+    "slurm_job_id": "3447348"
+  },
+  "schema_version": 1,
+  "shards": [],
+  "status": "completed",
+  "storage": {
+    "compression": "none",
+    "dtype": "float32",
+    "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 0.0,
+    "discovery_seconds": 0.005833026021718979,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.0,
+    "manifest_seconds": 0.0015146643854677677,
+    "measured_cache_overhead_seconds": 0.007347690407186747,
+    "measured_operation_seconds": 0.007347690407186747,
+    "read_seconds": 0.0,
+    "write_seconds": 0.0
+  }
+}

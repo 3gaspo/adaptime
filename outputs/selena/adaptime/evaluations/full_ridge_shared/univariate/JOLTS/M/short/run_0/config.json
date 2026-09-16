@@ -44,8 +44,10 @@
   },
   "bayes_probability_covariate_better": null,
   "adaptation_fallback_reason": {
-    "code": "ridge_not_completed",
-    "message": "Ridge has not completed this task; using canonical vanilla"
+    "code": "ridge_stage_failed",
+    "stage": "fit",
+    "error_type": "ValueError",
+    "message": "cannot score empty ridge statistics"
   },
   "nonfinite_prediction_fallback": {
     "policy": "task_level_vanilla_fallback",

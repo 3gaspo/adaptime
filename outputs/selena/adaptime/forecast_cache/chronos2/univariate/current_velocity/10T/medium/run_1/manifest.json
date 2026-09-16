@@ -1,0 +1,79 @@
+{
+  "config": {
+    "cached_value": "source_window_vanilla_backbone_forecast",
+    "model": "chronos2",
+    "prediction_length": 144,
+    "prepared_artifact": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/current_velocity/10T/medium/run_0/prepared",
+    "prepared_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 3827,
+      "adaptation_validation_length": 1922,
+      "context_length": 8192,
+      "dataset": "current_velocity/10T",
+      "datastore_prediction_length": 144,
+      "datastore_scope": "all",
+      "datastore_stride": 144,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 144,
+      "reference_context_length": 1008,
+      "retrieval_context_length": 1008,
+      "retrieval_period": 144,
+      "seasonality": 144,
+      "target_mode": "univariate",
+      "term": "medium",
+      "test_length": 2160
+    },
+    "reference_columns": [
+      "item",
+      "channel",
+      "origin",
+      "context_length"
+    ],
+    "weights_id": "chronos2"
+  },
+  "counts": {
+    "computed_rows": 4794,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 4794,
+    "written_rows": 4794
+  },
+  "format": "adaptime_source_forecast_cache",
+  "launch": {
+    "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+    "slurm_array_task_id": null,
+    "slurm_job_id": "3447348"
+  },
+  "schema_version": 1,
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 4794,
+      "value_shape": [
+        1,
+        144
+      ],
+      "values": "shards/000000_values.npy"
+    }
+  ],
+  "status": "completed",
+  "storage": {
+    "compression": "none",
+    "dtype": "float32",
+    "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 43.06116987299174,
+    "discovery_seconds": 0.23826990416273475,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 0.005982859525829554,
+    "manifest_seconds": 0.001625285018235445,
+    "measured_cache_overhead_seconds": 0.27274057641625404,
+    "measured_operation_seconds": 43.333910449407995,
+    "read_seconds": 0.012261116411536932,
+    "write_seconds": 0.014601411297917366
+  }
+}

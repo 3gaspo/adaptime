@@ -1,0 +1,79 @@
+{
+  "config": {
+    "cached_value": "source_window_vanilla_backbone_forecast",
+    "model": "chronos2",
+    "prediction_length": 288,
+    "prepared_artifact": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/data/shared/univariate/CPHL/15T/long/run_0/prepared",
+    "prepared_config": {
+      "adaptation_stride": 127,
+      "adaptation_train_length": 1431,
+      "adaptation_validation_length": 796,
+      "context_length": 8192,
+      "dataset": "CPHL/15T",
+      "datastore_prediction_length": 288,
+      "datastore_scope": "all",
+      "datastore_stride": 96,
+      "fitting_window_scope": "all",
+      "max_datastore_windows": null,
+      "max_fitting_windows": null,
+      "minimum_datastore_dates_per_variate": 11,
+      "prediction_length": 288,
+      "reference_context_length": 672,
+      "retrieval_context_length": 672,
+      "retrieval_period": 96,
+      "seasonality": 96,
+      "target_mode": "univariate",
+      "term": "long",
+      "test_length": 1440
+    },
+    "reference_columns": [
+      "item",
+      "channel",
+      "origin",
+      "context_length"
+    ],
+    "weights_id": "chronos2"
+  },
+  "counts": {
+    "computed_rows": 4,
+    "deduplicated_rows": 0,
+    "hit_rows": 0,
+    "requested_rows": 4,
+    "written_rows": 4
+  },
+  "format": "adaptime_source_forecast_cache",
+  "launch": {
+    "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+    "slurm_array_task_id": null,
+    "slurm_job_id": "3447348"
+  },
+  "schema_version": 1,
+  "shards": [
+    {
+      "references": "shards/000000_references.npy",
+      "rows": 4,
+      "value_shape": [
+        1,
+        288
+      ],
+      "values": "shards/000000_values.npy"
+    }
+  ],
+  "status": "completed",
+  "storage": {
+    "compression": "none",
+    "dtype": "float32",
+    "shard_rows": 8192
+  },
+  "timing_seconds": {
+    "compute_seconds": 0.06393863260746002,
+    "discovery_seconds": 0.003384543117135763,
+    "final_manifest_write_included": false,
+    "lookup_seconds": 6.979797035455704e-06,
+    "manifest_seconds": 0.0015736049972474575,
+    "measured_cache_overhead_seconds": 0.008172559551894665,
+    "measured_operation_seconds": 0.07211119215935469,
+    "read_seconds": 1.780083402991295e-05,
+    "write_seconds": 0.0031896308064460754
+  }
+}

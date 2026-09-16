@@ -57,7 +57,7 @@
       "total_values": 20
     }
   },
-  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
   "model": "covariate_prediction",
   "inference_seconds": 0.08680534549057484
 }

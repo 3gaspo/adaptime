@@ -1,0 +1,86 @@
+{
+  "adaptation_signature": "638b2145d30830be8139e89dfc527084f312ecc6513a7d6f33629781e59935be",
+  "arrays": {
+    "datastore.selected_forecast": "datastore/selected_forecast.npy",
+    "datastore.selected_forecast_id": "datastore/selected_forecast_id.npy",
+    "test.context_finite_fraction": "test/context_finite_fraction.npy",
+    "test.context_forecast_k1": "test/context_forecast_k1.npy",
+    "test.fallback_reason": "test/fallback_reason.npy",
+    "test.neighbor_distance": "test/neighbor_distance.npy",
+    "test.neighbor_id": "test/neighbor_id.npy",
+    "test.past_target_covariate_available": "test/past_target_covariate_available.npy",
+    "test.past_target_covariate_forecast": "test/past_target_covariate_forecast.npy",
+    "test.query_scale": "test/query_scale.npy",
+    "test.rag_eligible": "test/rag_eligible.npy",
+    "test.representation": "test/representation.npy"
+  },
+  "config": {
+    "arrow_cache_items": 2,
+    "context_k": [
+      1,
+      5,
+      10,
+      15
+    ],
+    "datastore_block_size": 4096,
+    "distance_metric": "euclidean",
+    "max_k": 15,
+    "minimum_overlap_fraction": 0.8,
+    "minimum_query_finite_fraction": 0.8,
+    "model_batch_size": 64,
+    "past_target_covariates": true,
+    "query_block_size": 256,
+    "representation": "instance",
+    "retrieval_scope": "all"
+  },
+  "counts": {
+    "test": 15
+  },
+  "eligibility": {
+    "fallback_reasons": {
+      "insufficient_finite_query_context": 0,
+      "insufficient_past_context": 0,
+      "insufficient_training_support": 0,
+      "insufficient_valid_neighbors": 0,
+      "nonfinite_adaptation_design": 0,
+      "nonfinite_datastore_target": 0
+    },
+    "rag_eligible": 15,
+    "total": 15,
+    "vanilla_fallback": 0
+  },
+  "fallback_reason_codes": {
+    "0": "rag_eligible",
+    "1": "insufficient_finite_query_context",
+    "2": "insufficient_valid_neighbors",
+    "3": "nonfinite_datastore_target",
+    "4": "insufficient_past_context",
+    "5": "nonfinite_adaptation_design",
+    "6": "insufficient_training_support"
+  },
+  "fit_extraction_signature": "d19d943aab403942931e0c993657bf3b1e43bbe5ac191fdae7bf6267dca58932",
+  "format": "adaptime_eval_extraction",
+  "model": "chronos2",
+  "neighbor_forecasts": {
+    "computed_for_test": 7,
+    "reused_from_fit_extraction": 7
+  },
+  "prepared_signature": "8aa0f2c148757bc50a9159114c0c757e72cf681e353dc073bb0bc07f62e077bc",
+  "schema_version": 1,
+  "selected_k_values": [
+    1
+  ],
+  "signature": "738a4896cd1fd285072c0f0e68e5c289dbd73c654f8eaf1ded228fb591c5b383",
+  "status": "completed",
+  "timing_contract": "component_seconds",
+  "timing_seconds": {
+    "test.context_construction_seconds": 0.001091239508241415,
+    "test.context_forecast_seconds": 0.15259806951507926,
+    "test.neighbor_forecast_seconds": 0.09034636244177818,
+    "test.past_target_covariate_forecast_seconds": 0.2085752529092133,
+    "test.representation_seconds": 0.00021438207477331161,
+    "test.retrieval_seconds": 0.017419876996427774
+  },
+  "vanilla_signature": "a0c5534bbe5b80581877e9ec88cf6832866f96e10f1b120c10c452c3699d5227",
+  "weights_id": "chronos2"
+}

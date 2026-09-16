@@ -30,35 +30,36 @@
     "valid_values": 60,
     "total_values": 60
   },
-  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
-  "inference_seconds": 0.2574187507852912,
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
+  "inference_seconds": 0.2574367611669004,
   "model": "bayes_past_targets_prediction",
   "experiment": "adaptime",
   "target_mode": "univariate",
   "forecast_type": "point",
-  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/vanilla/univariate/CPHL/30T/medium/run_0/vanilla/manifest.json",
+  "prediction_manifest": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/CPHL/30T/medium/run_0/prediction/prediction_manifest.json",
   "selected_adaptation": {
-    "method": "vanilla",
-    "k": 0,
-    "alpha": null
+    "alpha": null,
+    "bootstrap_standard_error": 0.0,
+    "k": 5,
+    "method": "bayes_covariate_prediction",
+    "probability_covariate_better": 0.5119047619047619,
+    "validation_difference_from_best": 0.0,
+    "validation_msse": 0.5387796872183059,
+    "within_one_standard_error": true
   },
-  "bayes_probability_covariate_better": null,
-  "adaptation_fallback_reason": {
-    "code": "ridge_not_completed",
-    "message": "Ridge has not completed this task; using canonical vanilla"
-  },
+  "bayes_probability_covariate_better": 0.5119047619047619,
+  "adaptation_fallback_reason": null,
   "nonfinite_prediction_fallback": {
-    "policy": "task_level_vanilla_fallback",
-    "count": 0
+    "policy": "replace_complete_forecast_with_vanilla_on_shared_evaluation_grid",
+    "count": 0,
+    "eligible_evaluation_windows": 60,
+    "mask": "/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/predictions/ridge/univariate/CPHL/30T/medium/run_0/prediction/nonfinite_prediction_fallback.npy",
+    "mask_row": 3
   },
   "fallback_to_vanilla": {
-    "policy": "ridge_failure_or_unfinished_task_uses_canonical_vanilla",
+    "policy": "count_shared_grid_cells_using_canonical_vanilla_after_selection_support_and_nonfinite_fallback",
     "count": 60,
     "eligible_evaluation_windows": 60,
     "rate": 1.0
-  },
-  "artifact_sources": {
-    "predictions.npz": "../../../../../../vanilla/univariate/CPHL/30T/medium/run_0/predictions.npz",
-    "metrics.npz": "../../../../../../vanilla/univariate/CPHL/30T/medium/run_0/metrics.npz"
   }
 }

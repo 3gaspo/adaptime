@@ -9,55 +9,55 @@
   },
   "metrics": {
     "MSE": {
-      "mean": 5.008877920412857,
+      "mean": 6.457677273931809,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     },
     "MAE": {
-      "mean": 0.7779179214746375,
+      "mean": 0.8816868211506292,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     },
     "RMSE": {
-      "mean": 0.9558272813308873,
+      "mean": 1.0778478596997796,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     },
     "MAPE": {
-      "mean": 0.6799373477765973,
+      "mean": 0.7226410840053938,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     },
     "sMAPE": {
-      "mean": 0.41541689088656164,
+      "mean": 0.40929047140230923,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     },
     "MASE": {
-      "mean": 0.5819090315280525,
+      "mean": 0.6016647963379559,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     },
     "ND": {
-      "mean": 0.3628913936041706,
+      "mean": 0.36862573466858384,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     },
     "CRPS": {
-      "mean": 0.3628913936041706,
+      "mean": 0.36862573466858384,
       "finite_values": 90,
       "evaluation_values": 90,
       "total_values": 90
     }
   },
-  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_vanilla",
+  "launch_id": "selena_adaptime_unified_20260916T114518Z_9070_ridge",
   "model": "covariate_prediction",
-  "inference_seconds": 0.41148190945386887
+  "inference_seconds": 3.569762078579515
 }
