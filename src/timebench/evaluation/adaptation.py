@@ -10,6 +10,7 @@ from timebench.evaluation.adaptation_data import PreparedDataset
 from timebench.evaluation.data import Dataset
 from timebench.evaluation.saver import save_window_predictions
 from timebench.pipeline.adaptation_prediction import open_point_predictions
+from timebench.pipeline.adaptime_vanilla import open_vanilla_test_forecasts
 
 
 def _storage_root(source_path: Path, dataset_name: str) -> Path:
@@ -30,13 +31,29 @@ def evaluate_point_predictions(
     """Evaluate one wrapper through the same saver used by foundation models."""
 
     prepared = PreparedDataset(prepared_path)
-    prediction_root, prediction = open_point_predictions(prediction_path)
+    if method == "vanilla":
+        prediction_root, prediction = open_vanilla_test_forecasts(prediction_path)
+    else:
+        prediction_root, prediction = open_point_predictions(prediction_path)
     if prediction["prepared_signature"] != prepared.signature:
         raise ValueError("predictions and shared TIME data do not match")
     if prepared.target_mode != "univariate":
         raise ValueError("adaptation wrapper evaluation currently requires univariate rows")
 
-    if prediction["format"] == "adaptime_family_predictions":
+    if method == "vanilla":
+        prediction_file = prediction["arrays"]["predictions"]
+        inference_seconds = float(
+            prediction["timing_seconds"]["vanilla_model_forecast_seconds"]
+        )
+        prediction_method = "vanilla"
+        nonfinite_fallback = {
+            "policy": "not_applicable_non_adaptor",
+            "count": 0,
+            "eligible_evaluation_windows": None,
+            "mask": None,
+        }
+        vanilla_fallback = None
+    elif prediction["format"] == "adaptime_family_predictions":
         available = tuple(prediction["methods"])
         if method not in available:
             raise ValueError(f"method must be one of {available} for this prediction")
@@ -145,9 +162,16 @@ def evaluate_point_predictions(
             "target_mode": prepared.target_mode,
             "forecast_type": "point",
             "prediction_manifest": str(
-                (prediction_root / "prediction_manifest.json").resolve()
+                (
+                    prediction_root
+                    / ("manifest.json" if method == "vanilla" else "prediction_manifest.json")
+                ).resolve()
             ),
-            "context_length": int(prediction["context_length"]),
+            "context_length": int(
+                prediction["maximum_context_length"]
+                if method == "vanilla"
+                else prediction["context_length"]
+            ),
             "selected_adaptation": prediction.get("selected"),
             "bayes_probability_covariate_better": prediction.get(
                 "bayes_probability_covariate_better"

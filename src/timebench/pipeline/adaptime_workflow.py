@@ -535,6 +535,27 @@ def _spec(
             {"data_config": data_config},
             {"phase": "unconditional_official_test_vanilla"},
         )
+    if method == "vanilla" and stage == "evaluations":
+        return (
+            "adaptime_evaluation",
+            _task_identity(task, "vanilla"),
+            {"method": "vanilla", "forecast_type": "point"},
+            {
+                "data_config": data_config,
+                "prediction_config": {
+                    "model": workflow.model,
+                    "weights_id": workflow.weights_id,
+                    "context_policy": "all_available_history_capped_at_model_limit",
+                },
+                "evaluator": "timebench.evaluation.saver.save_window_predictions",
+                "evaluation_grid": EVALUATION_GRID_DEFINITION,
+            },
+            {
+                "phase": "evaluation",
+                "quantile_levels": [0.5],
+                "metrics": ["MSE", "MAE", "RMSE", "MAPE", "sMAPE", "MASE", "ND", "CRPS"],
+            },
+        )
     if method == "seasonal_naive" and stage in {"predictions", "evaluations"}:
         return (
             f"adaptime_{stage[:-1]}",
@@ -1380,15 +1401,18 @@ def _run_evaluation(
     method: str,
 ) -> Path:
     prepared = _data_manifest(artifact_root, task, workflow)
-    prediction_method = "ridge" if method in ADAPTATION_METHODS else method
-    prediction = _artifact_manifest(
-        artifact_root,
-        task,
-        workflow,
-        "predictions",
-        prediction_method,
-        "prediction/prediction_manifest.json",
-    )
+    if method == "vanilla":
+        prediction = _vanilla_manifest(artifact_root, task, workflow)
+    else:
+        prediction_method = "ridge" if method in ADAPTATION_METHODS else method
+        prediction = _artifact_manifest(
+            artifact_root,
+            task,
+            workflow,
+            "predictions",
+            prediction_method,
+            "prediction/prediction_manifest.json",
+        )
     evaluation_grid = resolve_shared_evaluation_grid(
         task.dataset, task.term, workflow.target_mode
     )
@@ -1601,6 +1625,9 @@ def run_adaptation_stage(
                 result = _run_prepare(artifact_root, task, workflow)
             elif current == "vanilla":
                 result = _run_vanilla(artifact_root, task, workflow)
+                outputs.append(result)
+                print(result, flush=True)
+                result = _run_evaluation(artifact_root, task, workflow, "vanilla")
             elif current == "predict" and method == "seasonal_naive":
                 result = _run_seasonal_naive(artifact_root, task, workflow)
             elif current == "extract" and method == "ridge":
@@ -1627,6 +1654,8 @@ def run_adaptation_stage(
                 )
             elif current == "evaluate" and method == "ridge":
                 for comparison_method in ADAPTATION_METHODS:
+                    if comparison_method == "vanilla":
+                        continue
                     result = _run_evaluation(
                         artifact_root,
                         task,
