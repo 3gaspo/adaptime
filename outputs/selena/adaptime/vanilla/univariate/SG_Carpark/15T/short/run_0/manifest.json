@@ -1,5 +1,5 @@
 {
-  "completed_at": "2026-09-14T20:51:09.640980+00:00",
+  "completed_at": "2026-09-16T08:06:29.340961+00:00",
   "experiment": "adaptime_vanilla",
   "experiment_config": {
     "phase": "unconditional_official_test_vanilla"
@@ -16,29 +16,15 @@
     "attempts": [
       {
         "action": "new",
-        "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_vanilla",
-        "launched_at": "2026-09-14T20:50:00.424113+00:00",
+        "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_vanilla",
+        "launched_at": "2026-09-16T08:05:21.223169+00:00",
         "slurm_array_task_id": null,
-        "slurm_job_id": "3427122"
-      },
-      {
-        "action": "reuse",
-        "launch_id": "selena_adaptime_unified_20260915T093500Z_51105_vanilla",
-        "launched_at": "2026-09-15T09:35:23.276200+00:00",
-        "slurm_array_task_id": null,
-        "slurm_job_id": "3432397"
-      },
-      {
-        "action": "reuse",
-        "launch_id": "selena_adaptime_unified_20260915T153415Z_57382_vanilla",
-        "launched_at": "2026-09-15T15:34:36.703369+00:00",
-        "slurm_array_task_id": null,
-        "slurm_job_id": "3437178"
+        "slurm_job_id": "3445479"
       }
     ],
-    "launch_id": "selena_adaptime_unified_20260914T204328Z_25264_vanilla",
-    "launched_at": "2026-09-14T20:50:00.424113+00:00",
-    "slurm_job_id": "3427122"
+    "launch_id": "selena_adaptime_unified_20260916T080019Z_10942_vanilla",
+    "launched_at": "2026-09-16T08:05:21.223169+00:00",
+    "slurm_job_id": "3445479"
   },
   "model_config": {
     "context_policy": "all_available_history_capped_at_model_limit",
@@ -84,7 +70,7 @@
     "model_path": null
   },
   "schema_version": 1,
-  "started_at": "2026-09-14T20:50:00.424113+00:00",
+  "started_at": "2026-09-16T08:05:21.223169+00:00",
   "status": "completed",
-  "updated_at": "2026-09-15T15:34:36.703369+00:00"
+  "updated_at": "2026-09-16T08:06:29.340961+00:00"
 }

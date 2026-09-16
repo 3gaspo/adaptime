@@ -1,0 +1,20 @@
+2026-09-16 10:07:16 | workflow adaptime started launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag task=tsrag_pipeline slurm_job_id=3445481 slurm_array_job_id=none slurm_array_task_id=none
+2026-09-16 10:07:16 | stage pipeline started
+2026-09-16 10:07:16 | task TIME-wide Adaptime method=tsrag stage=pipeline started
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/short/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:08:05.487081+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/short/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/medium/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:08:05.504940+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/medium/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/long/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:17:21.121365+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/Water_Quality_Darwin/15T/long/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/short/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:27:15.512216+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/short/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/medium/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:27:15.539931+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/medium/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/long/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:27:38.476783+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/5T/long/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/10T/short/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:27:46.845773+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/10T/short/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/10T/medium/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:27:46.865858+00:00
+/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/10T/medium/run_0/extraction/manifest.json
+TIME run allocation action=new run=/fslarge/scratch/users/h61084/codes/adaptime/outputs/adaptime/extractions/tsrag/univariate/current_velocity/10T/long/run_0 launch_id=selena_adaptime_unified_20260916T080019Z_10942_tsrag slurm_job_id=3445481 launched_at=2026-09-16T08:27:46.908764+00:00

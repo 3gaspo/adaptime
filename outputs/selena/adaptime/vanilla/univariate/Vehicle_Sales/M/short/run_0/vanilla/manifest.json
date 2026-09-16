@@ -19,12 +19,11 @@
   "prediction_length": 12,
   "prepared_signature": "4df22b77dd033950a6e27d9108079c5d493a982131b41b263818beb5b72445f6",
   "schema_version": 1,
-  "shared_cache_signature": "f06729595d4d30e1bb97232659f66aa63f0acf77cd99ee586425ea871e803446",
-  "signature": "baba10766ac6ac4ae50823b3257e0e749b831273e26f3fbf5f8ec75c9184bb33",
+  "signature": "bf7d31c0ab855130488181b0f1112828add0bf84d05d649515c1477a97527e89",
   "status": "completed",
   "test_windows": 50,
   "timing_seconds": {
-    "vanilla_model_forecast_seconds": 0.07090604165568948
+    "vanilla_model_forecast_seconds": 0.07101259473711252
   },
   "weights_id": "chronos2"
 }
